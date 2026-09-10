@@ -1,4 +1,4 @@
-package com.ominidevs.backend.exceptions;
+package com.ominidevs.backend.manifesto.exception;
 
 public class ArquivoInvalidoException extends RuntimeException {
 

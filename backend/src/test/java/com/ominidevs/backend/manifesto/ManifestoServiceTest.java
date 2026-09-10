@@ -1,8 +1,8 @@
-package com.ominidevs.backend.services;
+package com.ominidevs.backend.manifesto;
 
-import com.ominidevs.backend.exceptions.ArquivoInvalidoException;
-import com.ominidevs.backend.parsers.CsvParser;
-import com.ominidevs.backend.parsers.ExcelParser;
+import com.ominidevs.backend.manifesto.exception.ArquivoInvalidoException;
+import com.ominidevs.backend.manifesto.parser.CsvParser;
+import com.ominidevs.backend.manifesto.parser.ExcelParser;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -16,6 +16,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.mock.web.MockMultipartFile;
 
 import java.io.ByteArrayOutputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
 
@@ -52,8 +53,8 @@ class ManifestoServiceTest {
     @Test
     @DisplayName("Deve fazer parse de CSV válido e retornar dados corretos")
     void deveParsearCsvValido() {
-        String csvContent = "nome,cidade,frete\nJoão,São Paulo,1500.00\nMaria,Curitiba,2300.50\n";
-        byte[] bytes = csvContent.getBytes();
+        String csvContent = "nome;cidade;frete\nJoão;São Paulo;1500.00\nMaria;Curitiba;2300.50\n";
+        byte[] bytes = csvContent.getBytes(StandardCharsets.ISO_8859_1);
 
         MockMultipartFile file = new MockMultipartFile(
                 "file", "manifesto.csv", "text/csv", bytes
@@ -152,8 +153,8 @@ class ManifestoServiceTest {
     @Test
     @DisplayName("Mesmo conteúdo enviado 2x deve chamar o parser apenas 1 vez (cache por hash)")
     void deveUsarCacheEEvitarReprocessamento() {
-        String csvContent = "coluna1,coluna2\nvalor1,valor2\n";
-        byte[] bytes = csvContent.getBytes();
+        String csvContent = "coluna1;coluna2\nvalor1;valor2\n";
+        byte[] bytes = csvContent.getBytes(StandardCharsets.ISO_8859_1);
 
         // Calcular o hash esperado para os mesmos bytes
         String hash = service.calcularHashSHA256(bytes);
@@ -253,6 +254,78 @@ class ManifestoServiceTest {
 
         assertNotNull(result);
         assertTrue(result.isEmpty(), "Excel só com cabeçalho deve retornar lista vazia");
+    }
+
+    // ========== 6. Formatação Excel ="valor" ==========
+
+    @Test
+    @DisplayName("Deve remover formatação Excel =\"...\" e extrair apenas o valor interno")
+    void deveRemoverFormatacaoExcelPreservandoZerosAEsquerda() {
+        // No CSV cru, ="00153057041" é gravado como: "=""00153057041"""
+        // OpenCSV faz o unescape das aspas e entrega: ="00153057041"
+        // O CsvParser deve limpar para: 00153057041
+        String csvContent = "renavam;autorizacao\n"
+                + "\"=\"\"00153057041\"\"\";\"=\"\"ABC123\"\"\"\n";
+        byte[] bytes = csvContent.getBytes(StandardCharsets.ISO_8859_1);
+
+        MockMultipartFile file = new MockMultipartFile(
+                "file", "veiculos.csv", "text/csv", bytes
+        );
+
+        List<Map<String, String>> result = service.processarManifesto(file);
+
+        assertNotNull(result);
+        assertEquals(1, result.size());
+        assertEquals("00153057041", result.get(0).get("renavam"),
+                "Zeros à esquerda devem ser preservados após remover =\"...\"");
+        assertEquals("ABC123", result.get(0).get("autorizacao"));
+    }
+
+    // ========== 7. Acentuação ISO-8859-1 ==========
+
+    @Test
+    @DisplayName("Deve preservar acentuação em arquivo codificado como ISO-8859-1")
+    void devePreservarAcentuacaoISO88591() {
+        String csvContent = "tipo;descricao\nCombustível;Não disponível\n";
+        byte[] bytes = csvContent.getBytes(StandardCharsets.ISO_8859_1);
+
+        MockMultipartFile file = new MockMultipartFile(
+                "file", "acentos.csv", "text/csv", bytes
+        );
+
+        List<Map<String, String>> result = service.processarManifesto(file);
+
+        assertNotNull(result);
+        assertEquals(1, result.size());
+        assertEquals("Combustível", result.get(0).get("tipo"));
+        assertEquals("Não disponível", result.get(0).get("descricao"));
+    }
+
+    // ========== 8. Limitação conhecida: UTF-8 ==========
+
+    @Test
+    @DisplayName("[LIMITAÇÃO] Arquivo UTF-8 com acentos é corrompido — parser fixo em ISO-8859-1")
+    void arquivoUtf8ComAcentosSaiCorrompido() {
+        // LIMITAÇÃO CONHECIDA: o CsvParser decodifica sempre como ISO-8859-1.
+        // Se o arquivo vier em UTF-8, caracteres multi-byte (ex: "ã" = 0xC3 0xA3)
+        // serão interpretados como dois caracteres ISO-8859-1 ("Ã£"), corrompendo o texto.
+        //
+        // Quando implementarmos detecção automática de charset (ex: chardet4j),
+        // este teste deve ser ATUALIZADO para assertar o valor CORRETO.
+        String csvContent = "nome;cidade\nJoão;São Paulo\n";
+        byte[] bytesUtf8 = csvContent.getBytes(StandardCharsets.UTF_8);
+
+        MockMultipartFile file = new MockMultipartFile(
+                "file", "utf8.csv", "text/csv", bytesUtf8
+        );
+
+        List<Map<String, String>> result = service.processarManifesto(file);
+
+        assertNotNull(result);
+        assertEquals(1, result.size());
+        // "João" em UTF-8 (4 bytes: 4A 6F C3 A3 6F) lido como ISO-8859-1 → "João"
+        assertNotEquals("João", result.get(0).get("nome"),
+                "Enquanto o parser for fixo em ISO-8859-1, UTF-8 multi-byte será corrompido");
     }
 
     // ========== Helper methods ==========
