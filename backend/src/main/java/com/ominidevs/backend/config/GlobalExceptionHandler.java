@@ -1,5 +1,6 @@
-package com.ominidevs.backend.exceptions;
+package com.ominidevs.backend.config;
 
+import com.ominidevs.backend.manifesto.exception.ArquivoInvalidoException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;

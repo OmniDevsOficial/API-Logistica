@@ -1,6 +1,6 @@
-package com.ominidevs.backend.parsers;
+package com.ominidevs.backend.manifesto.parser;
 
-import com.ominidevs.backend.exceptions.ArquivoInvalidoException;
+import com.ominidevs.backend.manifesto.exception.ArquivoInvalidoException;
 
 import java.io.InputStream;
 import java.util.List;

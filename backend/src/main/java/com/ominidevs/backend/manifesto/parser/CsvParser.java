@@ -1,6 +1,6 @@
-package com.ominidevs.backend.parsers;
+package com.ominidevs.backend.manifesto.parser;
 
-import com.ominidevs.backend.exceptions.ArquivoInvalidoException;
+import com.ominidevs.backend.manifesto.exception.ArquivoInvalidoException;
 import com.opencsv.CSVParser;
 import com.opencsv.CSVParserBuilder;
 import com.opencsv.CSVReader;
@@ -49,7 +49,7 @@ public class CsvParser implements ArquivoParser {
                 String[] row = allRows.get(i);
                 Map<String, String> rowMap = new LinkedHashMap<>();
                 for (int j = 0; j < headers.length; j++) {
-                    String value = (j < row.length) ? row[j] : "";
+                    String value = (j < row.length) ? limparValorExcel(row[j]) : "";
                     rowMap.put(headers[j], value);
                 }
                 result.add(rowMap);
@@ -62,5 +62,16 @@ public class CsvParser implements ArquivoParser {
         } catch (CsvException | java.io.IOException e) {
             throw new ArquivoInvalidoException("esse arquivo é inválido", e);
         }
+    }
+
+    /**
+     * Remove a formatação Excel do tipo ="valor" usada para preservar zeros à esquerda.
+     * Exemplo: ="00153057041" → 00153057041
+     */
+    private String limparValorExcel(String value) {
+        if (value != null && value.startsWith("=\"") && value.endsWith("\"")) {
+            return value.substring(2, value.length() - 1);
+        }
+        return value;
     }
 }
