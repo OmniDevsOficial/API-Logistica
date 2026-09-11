@@ -1,8 +1,6 @@
-// src/features/enviar-relatorio/ui/BotaoEnviarRelatorio.tsx
-import { useState } from 'react';
-import { Upload } from 'lucide-react';
-
-import { ModalEnviarRelatorio } from './ModalEnviarRelatorio';
+import { useState } from "react";
+import { Upload } from "lucide-react";
+import { ModalEnviarRelatorio } from "./ModalEnviarRelatorio";
 
 export function BotaoEnviarRelatorio() {
   const [modalAberto, setModalAberto] = useState(false);
@@ -11,20 +9,10 @@ export function BotaoEnviarRelatorio() {
     <div>
       <button
         type="button"
-        className="
-          inline-flex cursor-pointer items-center gap-2
-          rounded-full border-0 bg-[#3355FF]
-          px-6 py-2.5
-          text-[15px] font-semibold text-white
-          transition-colors duration-150
-          hover:bg-[#2444E0]
-          focus-visible:outline-2
-          focus-visible:outline-offset-2
-          focus-visible:outline-[#3355FF]
-        "
+        className="inline-flex cursor-pointer items-center gap-2 rounded-md bg-primary px-5 py-3 text-sm font-semibold text-white transition-colors duration-150 hover:bg-primary-dark"
         onClick={() => setModalAberto(true)}
       >
-        <Upload className="h-[18px] w-[18px]" />
+        <Upload size={16} />
         Upload
       </button>
 
