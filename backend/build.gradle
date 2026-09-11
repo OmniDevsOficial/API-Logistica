@@ -21,6 +21,14 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-h2console'
 	implementation 'org.springframework.boot:spring-boot-starter-session-jdbc'
 	implementation 'org.springframework.boot:spring-boot-starter-webmvc'
+	implementation 'org.springframework.boot:spring-boot-starter-cache'
+
+	// Apache POI para leitura de arquivos .xlsx
+	implementation 'org.apache.poi:poi-ooxml:5.3.0'
+
+	// OpenCSV para leitura de arquivos .csv
+	implementation 'com.opencsv:opencsv:5.9'
+
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
 	runtimeOnly 'com.h2database:h2'
 	testImplementation 'org.springframework.boot:spring-boot-starter-session-jdbc-test'
