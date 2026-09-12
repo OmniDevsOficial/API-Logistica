@@ -1,5 +1,6 @@
-import { Bell, Calendar, Menu, Moon, Upload, User } from "lucide-react";
+import { Bell, Calendar, Menu, Moon, User } from "lucide-react";
 import type { PeriodOption } from "@entities/dashboard-metrics";
+import { BotaoEnviarRelatorio } from "@features/enviar-relatorio/ui/BotaoEnviarRelatorio";
 import { PeriodFilter } from "@features/period-filter";
 
 interface DashboardTopbarProps {
@@ -10,10 +11,7 @@ interface DashboardTopbarProps {
 }
 
 const ICON_BUTTON_CLASS =
-  "flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-surface text-black cursor-pointer hover:text-fg";
-
-const UPLOAD_BUTTON_CLASS =
-  "inline-flex cursor-not-allowed items-center gap-2 rounded-md bg-primary px-5 py-3 text-sm font-semibold text-white";
+  "flex h-10 w-10 shrink-0 cursor-pointer items-center justify-center rounded-full bg-surface text-black hover:text-fg";
 
 const DATE_RANGE_CLASS =
   "flex items-center gap-2 whitespace-nowrap rounded-md bg-surface px-4 py-2.5 text-sm font-medium text-black";
@@ -45,6 +43,7 @@ export function DashboardTopbar({
             >
               <Moon size={18} />
             </button>
+
             <button
               type="button"
               className={ICON_BUTTON_CLASS}
@@ -52,21 +51,24 @@ export function DashboardTopbar({
             >
               <Bell size={18} />
             </button>
+
             <div className="flex h-10 w-10 items-center justify-center rounded-full bg-border text-fg-muted">
               <User size={18} />
             </div>
           </div>
         </div>
 
-        <h1 className="text-[28px] font-semibold text-fg">Dashboard</h1>
+        <h1 className="text-[28px] font-semibold text-fg">
+          Dashboard
+        </h1>
 
         <div className="flex items-center justify-between gap-3">
-          <button type="button" className={UPLOAD_BUTTON_CLASS} disabled>
-            <Upload size={16} />
-            Upload
-          </button>
+          <BotaoEnviarRelatorio />
 
-          <PeriodFilter value={period} onChange={onPeriodChange} />
+          <PeriodFilter
+            value={period}
+            onChange={onPeriodChange}
+          />
         </div>
 
         <div className={`${DATE_RANGE_CLASS} w-full justify-center`}>
@@ -86,7 +88,10 @@ export function DashboardTopbar({
             >
               <Menu size={18} />
             </button>
-            <h1 className="text-[28px] font-semibold text-fg">Dashboard</h1>
+
+            <h1 className="text-[28px] font-semibold text-fg">
+              Dashboard
+            </h1>
           </div>
 
           <div className="flex items-center gap-3">
@@ -97,6 +102,7 @@ export function DashboardTopbar({
             >
               <Moon size={18} />
             </button>
+
             <button
               type="button"
               className={ICON_BUTTON_CLASS}
@@ -104,6 +110,7 @@ export function DashboardTopbar({
             >
               <Bell size={18} />
             </button>
+
             <div className="flex h-10 w-10 items-center justify-center rounded-full bg-border text-fg-muted">
               <User size={18} />
             </div>
@@ -111,13 +118,13 @@ export function DashboardTopbar({
         </div>
 
         <div className="flex flex-wrap items-center justify-between gap-3">
-          <button type="button" className={UPLOAD_BUTTON_CLASS} disabled>
-            <Upload size={16} />
-            Upload
-          </button>
+          <BotaoEnviarRelatorio />
 
           <div className="flex flex-wrap items-center gap-3">
-            <PeriodFilter value={period} onChange={onPeriodChange} />
+            <PeriodFilter
+              value={period}
+              onChange={onPeriodChange}
+            />
 
             <div className={DATE_RANGE_CLASS}>
               <Calendar size={16} />

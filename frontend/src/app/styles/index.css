@@ -48,7 +48,7 @@
   }
 
   body {
-    @apply m-0 bg-background text-fg font-sans antialiased;
+    @apply m-0 bg-background font-sans text-fg antialiased;
     text-rendering: optimizeLegibility;
   }
 
