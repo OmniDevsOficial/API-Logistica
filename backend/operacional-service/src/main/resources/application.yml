@@ -1,0 +1,25 @@
+server:
+  port: 8081
+
+spring:
+  import: 
+    optional:file:.env[.properties]
+  application:
+    name: operacional-service
+  datasource:
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/newelog_db?currentSchema=operacional}
+    username: ${SPRING_DATASOURCE_USERNAME:newelog_app}
+    password: ${SPRING_DATASOURCE_PASSWORD:newelog_app}
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        default_schema: operacional
+  flyway:
+    schemas: operacional
+    create-schemas: true
+
+# Libera o front-end local para chamar esse serviço.
+cors:
+  allowed-origins: http://localhost:5173

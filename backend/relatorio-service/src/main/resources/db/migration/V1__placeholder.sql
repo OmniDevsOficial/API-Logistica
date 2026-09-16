@@ -1,0 +1,2 @@
+-- O relatorio-service só precisa de migration própria se ele guardar
+-- alguma tabela sua (ex: cache de indicadores calculados).

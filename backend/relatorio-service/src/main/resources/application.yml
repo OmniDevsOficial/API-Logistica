@@ -1,0 +1,31 @@
+server:
+  port: 8082
+
+spring:
+  import:
+    optional:file:.env[.properties]
+  application:
+    name: relatorio-service
+  datasource:
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/newelog_db?currentSchema=relatorio}
+    username: ${SPRING_DATASOURCE_USERNAME:newelog_app}
+    password: ${SPRING_DATASOURCE_PASSWORD:newelog_app}
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        default_schema: relatorio
+  flyway:
+    schemas: relatorio
+    create-schemas: true
+
+# Endereço do operacional-service - é assim que este serviço busca dados
+# de motorista/viagem/veiculo, sempre via HTTP, nunca acessando o schema
+# "operacional" diretamente.
+operacional:
+  service:
+    url: ${OPERACIONAL_SERVICE_URL:http://localhost:8081}
+
+cors:
+  allowed-origins: http://localhost:5173
