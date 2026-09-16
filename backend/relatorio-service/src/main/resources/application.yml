@@ -2,8 +2,8 @@ server:
   port: 8082
 
 spring:
-  import:
-    optional:file:.env[.properties]
+  config:
+    import: optional:file:.env[.properties]
   application:
     name: relatorio-service
   datasource:
