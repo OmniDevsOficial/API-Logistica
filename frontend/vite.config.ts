@@ -1,11 +1,13 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
+import tailwindcss from '@tailwindcss/vite'
 import { fileURLToPath, URL } from 'node:url'
 
-const src = (path: string) => fileURLToPath(new URL(`./src/${path}`, import.meta.url))
+const src = (path: string) =>
+  fileURLToPath(new URL(`./src/${path}`, import.meta.url))
 
 export default defineConfig({
-  plugins: [react()],
+  plugins: [react(), tailwindcss()],
   resolve: {
     alias: {
       '@': src(''),
@@ -15,6 +17,14 @@ export default defineConfig({
       '@features': src('features'),
       '@entities': src('entities'),
       '@shared': src('shared'),
+    },
+  },
+  server: {
+    proxy: {
+      '/api': {
+        target: 'http://localhost:8080',
+        changeOrigin: true,
+      },
     },
   },
 })
