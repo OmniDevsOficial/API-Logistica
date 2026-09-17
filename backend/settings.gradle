@@ -1,4 +1,5 @@
 rootProject.name = 'backend'
 
+// Diz quais microsserviços existem para serem coordenados
 include 'operacional-service'
 include 'relatorio-service'
