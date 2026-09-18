@@ -5,7 +5,6 @@ plugins{
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-webmvc'
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-    implementation 'org.springframework.boot:spring-boot-starter-cache'
 
     // Flyway
     implementation 'org.springframework.boot:spring-boot-starter-flyway'
@@ -14,14 +13,6 @@ dependencies {
 
     // PostgreSQL
     runtimeOnly 'org.postgresql:postgresql'
-
-    // H2 — para testes/desenvolvimento
-	implementation 'org.springframework.boot:spring-boot-h2console'
-    runtimeOnly 'com.h2database:h2'
-
-    // Importação de manifesto
-    implementation 'org.apache.poi:poi-ooxml:5.3.0'
-    implementation 'com.opencsv:opencsv:5.9'
 
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
 
