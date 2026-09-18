@@ -7,7 +7,7 @@ spring:
   application:
     name: relatorio-service
   datasource:
-    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/newelog_db?currentSchema=relatorio}
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5433/newelog_db?currentSchema=relatorio}
     username: ${SPRING_DATASOURCE_USERNAME:newelog_app}
     password: ${SPRING_DATASOURCE_PASSWORD:newelog_app}
   jpa:
@@ -19,6 +19,10 @@ spring:
   flyway:
     schemas: relatorio
     create-schemas: true
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 15MB
 
 # Endereço do operacional-service - é assim que este serviço busca dados
 # de motorista/viagem/veiculo, sempre via HTTP, nunca acessando o schema
@@ -26,6 +30,3 @@ spring:
 operacional:
   service:
     url: ${OPERACIONAL_SERVICE_URL:http://localhost:8081}
-
-cors:
-  allowed-origins: http://localhost:5173

@@ -12,7 +12,7 @@ export async function enviarRelatorio(
   // O backend usa @RequestParam("file")
   formulario.append('file', arquivo);
 
-  const resposta = await fetch('/api/manifestos/upload', {
+  const resposta = await fetch('/api/relatorio/manifestos/upload', {
     method: 'POST',
     body: formulario,
   });

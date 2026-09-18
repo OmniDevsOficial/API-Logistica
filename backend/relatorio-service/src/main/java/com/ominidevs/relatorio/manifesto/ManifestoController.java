@@ -1,4 +1,4 @@
-package com.ominidevs.backend.manifesto;
+package com.ominidevs.relatorio.manifesto;
 
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -15,7 +15,7 @@ import java.util.Map;
  * Controller REST para upload e processamento de manifestos.
  */
 @RestController
-@RequestMapping("/api/manifestos")
+@RequestMapping("/manifestos")
 public class ManifestoController {
 
     private final ManifestoService manifestoService;

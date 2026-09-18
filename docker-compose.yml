@@ -1,0 +1,64 @@
+name: api-logistica
+
+services:
+  postgres:
+    build: ./database
+    container_name: logistica-postgres
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  operacional-service:
+    build:
+      context: ./backend
+      dockerfile: operacional-service/Dockerfile
+    container_name: logistica-operacional
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/${POSTGRES_DB}?currentSchema=operacional
+      SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER}
+      SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD}
+    ports:
+      - "8081:8081"
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  relatorio-service:
+    build:
+      context: ./backend
+      dockerfile: relatorio-service/Dockerfile
+    container_name: logistica-relatorio
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/${POSTGRES_DB}?currentSchema=relatorio
+      SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER}
+      SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD}
+      OPERACIONAL_SERVICE_URL: http://operacional-service:8081
+    ports:
+      - "8082:8082"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      operacional-service:
+        condition: service_started
+
+  frontend:
+    build: ./frontend
+    container_name: logistica-frontend
+    ports:
+      - "3000:80"
+    depends_on:
+      - operacional-service
+      - relatorio-service
+
+volumes:
+  postgres_data:
