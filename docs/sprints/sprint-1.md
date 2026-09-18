@@ -8,7 +8,6 @@
   <a href="#sprint-1-meta"> Metas Sprint 1 </a> |
   <a href="#sprint-1"> Sprint 1 </a> |
   <a href="#documentos"> Documentos </a> |
-  <a href="#Estrategia-de-Branches"> Estratégia de Branches </a> |
   <a href="#equipe"> Equipe </a> |
 </p>
 
@@ -37,22 +36,22 @@
 | 🎗 4 | US6 | Alta | Como operador, quero ver a % de utilização de cada motorista, para evitar a desocupação de frotas. | 3 |
 | 🎗 5 | US3 | Alta | Como gestor, quero visualizar quantas viagens cada motorista fez no mês, para medir a frequência de contratação. | 4 |
 
-
 ## 📂 Documentos e anexos <a id="documentos"></a>
  
 - [Cenários de User Stories](../documentacao/cenarios.pdf)
 - [Backlog completo](../../README.md#backlog)
-
+- [DoR completo](../../README.md#definition-of-ready-dor)
+- [DoD completo](../../README.md#definition-of-done-dod)
 
 ## 🎓 Conheça a equipe talentosa por trás do projeto <a id="equipe"></a>
 
 | Foto | Nome | Função | GitHub |
 | :---: | :--- | :--- | :---: |
-| <img src="https://github.com/KathelynZanin.png" width=50px alt="Foto da Kathelyn"> | **Kathelyn Zanin** | Product Owner | <a href="https://github.com/KathelynZanin"><img src="https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white"></a> |
+| <img src="https://github.com/Marcio-gustavoI.png" width=50px alt="Foto do Márcio"> | **Márcio Inocêncio** | Product Owner | <a href="https://github.com/Marcio-gustavoI"><img src="https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white"></a> |
 | <img src="https://github.com/Viniciuss-Moreira.png" width=50px alt="Foto do Vinicius"> | **Vinicius Moreira** | Scrum Master | <a href="https://github.com/Viniciuss-Moreira"><img src="https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white"></a> |
+| <img src="https://github.com/KathelynZanin.png" width=50px alt="Foto da Kathelyn"> | **Kathelyn Zanin** | Desenvolvedor | <a href="https://github.com/KathelynZanin"><img src="https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white"></a> |
 | <img src="https://github.com/hiGuigo.png" width=50px alt="Foto do Guilherme"> | **Guilherme Alvarenga** | Desenvolvedor | <a href="https://github.com/hiGuigo"><img src="https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white"></a> |
 | <img src="https://github.com/DeveloperCorsair.png" width=50px alt="Foto do Henrique"> | **Henrique Martins** | Desenvolvedor | <a href="https://github.com/DeveloperCorsair"><img src="https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white"></a> |
-| <img src="https://github.com/Marcio-gustavoI.png" width=50px alt="Foto do Márcio"> | **Márcio Inocêncio** | Desenvolvedor | <a href="https://github.com/Marcio-gustavoI"><img src="https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white"></a> |
 | <img src="https://github.com/pedrodevroot.png" width=50px alt="Foto do Pedro"> | **Pedro Lucas** | Desenvolvedor | <a href="https://github.com/pedrodevroot"><img src="https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white"></a> |
 | <img src="https://github.com/ThOMaZMe11o.png" width=50px alt="Foto do Thomaz"> | **Thomaz De Mello** | Desenvolvedor | <a href="https://github.com/ThOMaZMe11o"><img src="https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white"></a> |
 | <img src="https://github.com/Yuri-Dev-OH.png" width=50px alt="Foto do Yuri"> | **Yuri Gonçalves** | Desenvolvedor | <a href="https://github.com/Yuri-Dev-OH"><img src="https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white"></a> |

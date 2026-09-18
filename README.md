@@ -9,8 +9,7 @@
 <div align="center">
                                                                                                                                                                                                                                
 
-| <a href="#tecnologias">Tecnologias</a> • <a href="#problema">Problema</a> • <a href="#solucao">Solução</a> • <a href="#repositorios">Repositórios</a> • <a href="#roadmap">Roadmap</a> • <a href="#cronograma">Cronograma</a> 
-<a href="#backlog">Backlog</a> • <a href="#instalacao">Instalação</a> • <a href="#usuario">Manual do Usuário</a> • <a href="#modelagem">Modelagem do Banco</a> • <a href="#equipe">Equipe</a> |
+<a href="#problema">Problema</a> • <a href="#solucao">Solução</a> • <a href="#backlog">Backlog</a> • <a href="#cronograma">Cronograma de Sprints</a> • <a href="#definition-of-ready-dor">DoR</a> • <a href="#definition-of-done-dod">DoD</a> • <a href="#tecnologias">Tecnologias</a> • <a href="fluxo-de-trabalho">Fluxo de Trabalho</a> • <a href="#equipe">Equipe</a> |
 </div>
 
 
@@ -53,23 +52,73 @@ Parceiro: Newelog
 | **SPRINT 2** | 26/10 - 30/10 | [Sprint 2 docs](docs/sprints/sprint-2.md) | ⚪ Não iniciada |
 | **SPRINT 3** | 23/11 - 27/11 | [Sprint 3 docs](docs/sprints/sprint-3.md) | ⚪ Não iniciada|
 
-## 💻 **Tecnologias e ferramentas utilizadas** <a id="tecnologias"></a>
+### 📋Definition of Ready (DoR) <a id="definition-of-ready-dor"></a>
 
-## ⚙️ **Manual de instalação** <a id="instalacao"></a>
+| DoR |
+| :--- |
+| **Definição do (MVP):** Estar definido entregas de maior valor para o usuário. |
+| **Critérios de Aceitação e Regras de Negócio:** Listar as condições, cobrindo o fluxo principal e os principais cenários alternativos que definem quando a história está concluída. As regras de negócio associadas devem estar detalhadas. |
+| **Definição de Dados e Mensagens:** Os dados a armazenar foram bem definidos, com tipos e validações. Mensagens de confirmação, erro e aviso foram definidas. |
+| **Esforço estimado:** Realizar a estimativa de esforço técnico em conjunto com a equipe com planning poker, atribuindo pontuação de esforço estimado à história. |
+| **Sem impedimentos para o início:** Verificar que não há dependências externas, bloqueios técnicos ou pendências que impeçam o início do desenvolvimento da história na Sprint. |
+| **Esboço visual:** O esboço visual (telas/wireframes) e a navegação estão prontas (se necessário). |
 
-## 👤 **Manual do usuário** <a id="usuario"></a>
+### 📋Definition of Done (DoD) <a id="definition-of-done-dod"></a>
 
-## 🛠️ **Modelagem do banco de dados** <a id="modelagem"></a>
+| DoD |
+| :--- |
+| **Critérios de Aceitação:** Critérios de aceitação foram atendidos. |
+| **Versionamento:** Código versionado seguindo o padrão gitflow. |
+| **Testes:** Testes unitários validados. |
+| **Code Review:** Pull Request aprovado por no mínimo 1 membro da equipe. |
+| **Manuais:** O manual de usuário e o manual de instalação foram atualizados (se a funcionalidade exigir). |
+
+## 💻 Tecnologias <a id="tecnologias"></a>
+
+### ⚙️ Backend
+![Java](https://img.shields.io/badge/Java-ED8B00?style=for-the-badge&logo=openjdk&logoColor=white)
+![Spring Boot](https://img.shields.io/badge/Spring_Boot-6DB33F?style=for-the-badge&logo=spring-boot&logoColor=white)
+![Spring Web MVC](https://img.shields.io/badge/Spring_Web_MVC-6DB33F?style=for-the-badge&logo=spring&logoColor=white)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-316192?style=for-the-badge&logo=postgresql&logoColor=white)
+
+### 🖥️ Frontend
+![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)
+![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white)
+![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black)
+![Vite](https://img.shields.io/badge/Vite-646CFF?style=for-the-badge&logo=vite&logoColor=FFD62E)
+
+## 🔀 Fluxo de Trabalho <a id="fluxo-de-trabalho"></a>
+
+```text
+┌──────────────────────────────────────────────┐   📋 PASSO A PASSO
+│               main — produção                │   
+└──────────────────────────────────────────────┘   1️ - Criar branch Sempre da dev (feature/, fix/)
+                       ↑                        
+                       │ 4 PR dev → main           
+                       │                           2️ - Desenvolver commits claros (feat:, fix:, docs:)
+┌──────────────────────────────────────────────┐   
+│              dev — integração                |
+└──────────────────────────────────────────────┘   3️ - Abrir PR para a dev revisão da equipe obrigatória.
+         ↑                             │           (Apagar branch remota após merge)
+         │ 3 abrir PR          1 criar │           
+         │ para dev             da dev │           
+         │                             ↓           4️ - PR dev para main quando a US/Sprint acabar.
+   ┌────────────────────────────────────────┐      
+   │        feature/ fix/ docs/ ...         │      
+   └────────────────────────────────────────┘      
+                       ↑                           
+          2 desenvolva e faça commits
+````
 
 ## 👥 **Equipe** <a id="equipe"></a>
 
 | Foto | Nome | Função | GitHub |
 | :---: | :--- | :--- | :---: |
-| <img src="https://github.com/KathelynZanin.png" width=50px alt="Foto da Kathelyn"> | **Kathelyn Zanin** | Product Owner | <a href="https://github.com/KathelynZanin"><img src="https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white"></a> |
+| <img src="https://github.com/Marcio-gustavoI.png" width=50px alt="Foto do Márcio"> | **Márcio Inocêncio** | Product Owner | <a href="https://github.com/Marcio-gustavoI"><img src="https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white"></a> |
 | <img src="https://github.com/Viniciuss-Moreira.png" width=50px alt="Foto do Vinicius"> | **Vinicius Moreira** | Scrum Master | <a href="https://github.com/Viniciuss-Moreira"><img src="https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white"></a> |
+| <img src="https://github.com/KathelynZanin.png" width=50px alt="Foto da Kathelyn"> | **Kathelyn Zanin** | Desenvolvedor | <a href="https://github.com/KathelynZanin"><img src="https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white"></a> |
 | <img src="https://github.com/hiGuigo.png" width=50px alt="Foto do Guilherme"> | **Guilherme Alvarenga** | Desenvolvedor | <a href="https://github.com/hiGuigo"><img src="https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white"></a> |
 | <img src="https://github.com/DeveloperCorsair.png" width=50px alt="Foto do Henrique"> | **Henrique Martins** | Desenvolvedor | <a href="https://github.com/DeveloperCorsair"><img src="https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white"></a> |
-| <img src="https://github.com/Marcio-gustavoI.png" width=50px alt="Foto do Márcio"> | **Márcio Inocêncio** | Desenvolvedor | <a href="https://github.com/Marcio-gustavoI"><img src="https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white"></a> |
 | <img src="https://github.com/pedrodevroot.png" width=50px alt="Foto do Pedro"> | **Pedro Lucas** | Desenvolvedor | <a href="https://github.com/pedrodevroot"><img src="https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white"></a> |
 | <img src="https://github.com/ThOMaZMe11o.png" width=50px alt="Foto do Thomaz"> | **Thomaz De Mello** | Desenvolvedor | <a href="https://github.com/ThOMaZMe11o"><img src="https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white"></a> |
 | <img src="https://github.com/Yuri-Dev-OH.png" width=50px alt="Foto do Yuri"> | **Yuri Gonçalves** | Desenvolvedor | <a href="https://github.com/Yuri-Dev-OH"><img src="https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white"></a> |
