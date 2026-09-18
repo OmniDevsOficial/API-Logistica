@@ -6,6 +6,14 @@ export function formatCurrency(value: number, fractionDigits = 2): string {
   return `$${formatted}`;
 }
 
+export function formatCurrencyBRL(value: number, fractionDigits = 0): string {
+  const formatted = value.toLocaleString("pt-BR", {
+    minimumFractionDigits: fractionDigits,
+    maximumFractionDigits: fractionDigits,
+  });
+  return `R$${formatted}`;
+}
+
 export function formatPercent(value: number): string {
   return `${value.toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}%`;
 }

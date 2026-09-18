@@ -1,1 +1,6 @@
-export { formatCurrency, formatPercent, formatDateRange } from "./format";
+export {
+  formatCurrency,
+  formatCurrencyBRL,
+  formatPercent,
+  formatDateRange,
+} from "./format";
