@@ -1,4 +1,5 @@
-import { Bell, Calendar, ListFilter, Menu, Moon, Search, User } from "lucide-react";
+import { Calendar, ListFilter, Search } from "lucide-react";
+import { PageHeader } from "@shared/ui";
 
 interface ViagensTopbarProps {
   search: string;
@@ -6,9 +7,6 @@ interface ViagensTopbarProps {
   periodoLabel: string;
   onMenuClick: () => void;
 }
-
-const ICON_BUTTON_CLASS =
-  "flex h-10 w-10 shrink-0 cursor-pointer items-center justify-center rounded-full bg-surface text-black hover:text-fg";
 
 const PILL_CLASS =
   "flex items-center gap-2 whitespace-nowrap rounded-md bg-surface px-4 py-2.5 text-sm font-medium text-black";
@@ -21,39 +19,7 @@ export function ViagensTopbar({
 }: ViagensTopbarProps) {
   return (
     <header className="mb-7 flex flex-col gap-5">
-      <div className="flex items-center justify-between gap-4">
-        <div className="flex items-center gap-3">
-          <button
-            type="button"
-            className={`${ICON_BUTTON_CLASS} lg:hidden`}
-            aria-label="Abrir menu"
-            onClick={onMenuClick}
-          >
-            <Menu size={18} />
-          </button>
-          <h1 className="text-[28px] font-semibold text-fg">Viagens</h1>
-        </div>
-
-        <div className="flex items-center gap-3">
-          <button
-            type="button"
-            className={ICON_BUTTON_CLASS}
-            aria-label="Alternar tema"
-          >
-            <Moon size={18} />
-          </button>
-          <button
-            type="button"
-            className={ICON_BUTTON_CLASS}
-            aria-label="Notificações"
-          >
-            <Bell size={18} />
-          </button>
-          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-border text-fg-muted">
-            <User size={18} />
-          </div>
-        </div>
-      </div>
+      <PageHeader title="Viagens" onMenuClick={onMenuClick} />
 
       <div className="flex flex-wrap items-center gap-3">
         <div className="relative min-w-[220px] flex-1">

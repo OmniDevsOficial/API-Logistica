@@ -26,11 +26,7 @@ export function DashboardPage() {
 
   return (
     <div className="min-h-screen">
-      <Sidebar
-        active="Dashboard"
-        open={sidebarOpen}
-        onClose={() => setSidebarOpen(false)}
-      />
+      <Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
       <main className="min-w-0 px-4 py-6 sm:px-10 sm:py-8 lg:ml-sidebar">
         <DashboardTopbar
           period={period}

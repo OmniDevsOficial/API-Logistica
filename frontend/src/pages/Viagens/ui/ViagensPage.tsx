@@ -33,11 +33,7 @@ export function ViagensPage() {
 
   return (
     <div className="min-h-screen lg:h-screen lg:overflow-hidden">
-      <Sidebar
-        active="Viagens"
-        open={sidebarOpen}
-        onClose={() => setSidebarOpen(false)}
-      />
+      <Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
       <main className="min-w-0 px-4 py-6 sm:px-10 sm:py-8 lg:ml-sidebar lg:flex lg:h-full lg:min-h-0 lg:flex-col">
         <ViagensTopbar
           search={search}

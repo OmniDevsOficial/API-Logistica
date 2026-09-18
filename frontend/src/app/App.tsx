@@ -1,7 +1,7 @@
-import { ViagensPage } from '@pages/Viagens'
+import { AppRouter } from '@app/router'
 
 function App() {
-  return <ViagensPage />
+  return <AppRouter />
 }
 
 export default App

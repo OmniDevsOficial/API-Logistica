@@ -1,4 +1,5 @@
 import type { ComponentType } from "react";
+import { NavLink } from "react-router-dom";
 import {
   LayoutGrid,
   User,
@@ -13,28 +14,29 @@ import {
 interface NavItem {
   label: string;
   icon: ComponentType<{ size?: number; strokeWidth?: number }>;
+  path?: string;
 }
 
 const MAIN_NAV_ITEMS: NavItem[] = [
-  { label: "Dashboard", icon: LayoutGrid },
+  { label: "Dashboard", icon: LayoutGrid, path: "/" },
   { label: "Motoristas", icon: User },
   { label: "Registros", icon: ClipboardList },
-  { label: "Viagens", icon: Truck },
+  { label: "Viagens", icon: Truck, path: "/viagens" },
   { label: "Ranking", icon: Trophy },
 ];
 
-const NAV_ITEM_INACTIVE_CLASS =
-  "flex cursor-default items-center gap-3 rounded-md px-3 py-[11px] text-sm font-medium text-black";
-const NAV_ITEM_ACTIVE_CLASS =
-  "flex cursor-default items-center gap-3 rounded-md bg-primary px-3 py-[11px] text-sm font-semibold text-white";
+const NAV_ITEM_BASE_CLASS =
+  "flex items-center gap-3 rounded-md px-3 py-[11px] text-sm font-medium";
+const NAV_ITEM_INACTIVE_CLASS = `${NAV_ITEM_BASE_CLASS} text-black`;
+const NAV_ITEM_ACTIVE_CLASS = `${NAV_ITEM_BASE_CLASS} bg-primary font-semibold text-white`;
+const NAV_ITEM_DISABLED_CLASS = `${NAV_ITEM_BASE_CLASS} cursor-default text-black`;
 
 interface SidebarProps {
-  active: string;
   open: boolean;
   onClose: () => void;
 }
 
-export function Sidebar({ active, open, onClose }: SidebarProps) {
+export function Sidebar({ open, onClose }: SidebarProps) {
   return (
     <>
       <div
@@ -71,19 +73,27 @@ export function Sidebar({ active, open, onClose }: SidebarProps) {
         </div>
 
         <nav className="flex flex-1 flex-col gap-1">
-          {MAIN_NAV_ITEMS.map(({ label, icon: Icon }) => (
-            <div
-              key={label}
-              className={
-                label === active
-                  ? NAV_ITEM_ACTIVE_CLASS
-                  : NAV_ITEM_INACTIVE_CLASS
-              }
-            >
-              <Icon size={18} strokeWidth={2} />
-              <span>{label}</span>
-            </div>
-          ))}
+          {MAIN_NAV_ITEMS.map(({ label, icon: Icon, path }) =>
+            path ? (
+              <NavLink
+                key={label}
+                to={path}
+                end={path === "/"}
+                onClick={onClose}
+                className={({ isActive }) =>
+                  isActive ? NAV_ITEM_ACTIVE_CLASS : NAV_ITEM_INACTIVE_CLASS
+                }
+              >
+                <Icon size={18} strokeWidth={2} />
+                <span>{label}</span>
+              </NavLink>
+            ) : (
+              <div key={label} className={NAV_ITEM_DISABLED_CLASS}>
+                <Icon size={18} strokeWidth={2} />
+                <span>{label}</span>
+              </div>
+            ),
+          )}
         </nav>
 
         <div className="flex flex-col gap-1">
