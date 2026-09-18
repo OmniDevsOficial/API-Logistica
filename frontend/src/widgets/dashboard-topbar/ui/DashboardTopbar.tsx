@@ -1,6 +1,7 @@
 import { Bell, Calendar, Menu, Moon, User } from "lucide-react";
 import type { PeriodOption } from "@entities/dashboard-metrics";
 import { BotaoEnviarRelatorio } from "@features/enviar-relatorio/ui/BotaoEnviarRelatorio";
+import { FiltrarPorDestinoButton } from "@/features/filtrar-viagens-por-regiao";
 import { PeriodFilter } from "@features/period-filter";
 
 interface DashboardTopbarProps {
@@ -93,7 +94,10 @@ export function DashboardTopbar({
               Dashboard
             </h1>
           </div>
-
+        <div className="w-16 h-2">
+          <FiltrarPorDestinoButton />
+        </div>
+        
           <div className="flex items-center gap-3">
             <button
               type="button"
