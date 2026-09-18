@@ -1,6 +1,6 @@
-package com.ominidevs.backend.manifesto.parser;
+package com.ominidevs.relatorio.manifesto.parser;
 
-import com.ominidevs.backend.manifesto.exception.ArquivoInvalidoException;
+import com.ominidevs.relatorio.manifesto.exception.ArquivoInvalidoException;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.DataFormatter;

@@ -1,8 +1,8 @@
-package com.ominidevs.backend.manifesto;
+package com.ominidevs.relatorio.manifesto;
 
-import com.ominidevs.backend.manifesto.exception.ArquivoInvalidoException;
-import com.ominidevs.backend.manifesto.parser.CsvParser;
-import com.ominidevs.backend.manifesto.parser.ExcelParser;
+import com.ominidevs.relatorio.manifesto.exception.ArquivoInvalidoException;
+import com.ominidevs.relatorio.manifesto.parser.CsvParser;
+import com.ominidevs.relatorio.manifesto.parser.ExcelParser;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;

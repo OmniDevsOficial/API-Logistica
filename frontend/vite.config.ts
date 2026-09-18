@@ -21,9 +21,15 @@ export default defineConfig({
   },
   server: {
     proxy: {
-      '/api': {
-        target: 'http://localhost:8080',
+      '/api/operacional': {
+        target: 'http://localhost:8081',
         changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api\/operacional/, ''),
+      },
+      '/api/relatorio': {
+        target: 'http://localhost:8082',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api\/relatorio/, ''),
       },
     },
   },

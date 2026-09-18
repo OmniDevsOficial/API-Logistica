@@ -1,6 +1,6 @@
-package com.ominidevs.backend.manifesto.parser;
+package com.ominidevs.relatorio.manifesto.parser;
 
-import com.ominidevs.backend.manifesto.exception.ArquivoInvalidoException;
+import com.ominidevs.relatorio.manifesto.exception.ArquivoInvalidoException;
 import com.opencsv.CSVParser;
 import com.opencsv.CSVParserBuilder;
 import com.opencsv.CSVReader;
