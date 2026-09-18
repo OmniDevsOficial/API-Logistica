@@ -23,19 +23,18 @@ const MAIN_NAV_ITEMS: NavItem[] = [
   { label: "Ranking", icon: Trophy },
 ];
 
-const ACTIVE_ITEM = "Dashboard";
-
 const NAV_ITEM_INACTIVE_CLASS =
   "flex cursor-default items-center gap-3 rounded-md px-3 py-[11px] text-sm font-medium text-black";
 const NAV_ITEM_ACTIVE_CLASS =
   "flex cursor-default items-center gap-3 rounded-md bg-primary px-3 py-[11px] text-sm font-semibold text-white";
 
 interface SidebarProps {
+  active: string;
   open: boolean;
   onClose: () => void;
 }
 
-export function Sidebar({ open, onClose }: SidebarProps) {
+export function Sidebar({ active, open, onClose }: SidebarProps) {
   return (
     <>
       <div
@@ -76,7 +75,7 @@ export function Sidebar({ open, onClose }: SidebarProps) {
             <div
               key={label}
               className={
-                label === ACTIVE_ITEM
+                label === active
                   ? NAV_ITEM_ACTIVE_CLASS
                   : NAV_ITEM_INACTIVE_CLASS
               }
