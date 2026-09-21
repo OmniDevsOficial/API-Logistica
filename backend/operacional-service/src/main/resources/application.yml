@@ -19,3 +19,12 @@ spring:
   flyway:
     schemas: operacional
     create-schemas: true
+  service:
+    servlet:
+      multipart:
+        max-file-size: 10MB
+        max-request-size: 10MB
+
+relatorio:
+  service:
+    url: ${RELATORIO_SERVICE_URL:http://localhost:8082}
