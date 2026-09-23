@@ -19,6 +19,7 @@ spring:
   flyway:
     schemas: operacional
     create-schemas: true
+<<<<<<< HEAD
   service:
     servlet:
       multipart:
@@ -28,3 +29,17 @@ spring:
 relatorio:
   service:
     url: ${RELATORIO_SERVICE_URL:http://localhost:8082}
+=======
+  # Correção: usar spring.servlet.multipart (sem "service") para aplicar
+  # o limite de 10 MB por arquivo, em vez do padrão de 1 MB do Spring.
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      # Margem para os campos e delimitadores do formulário multipart.
+      # O arquivo individual continua limitado a 10 MB.
+      max-request-size: 15MB
+
+relatorio:
+  service:
+    url: ${RELATORIO_SERVICE_URL:http://localhost:8082}
+>>>>>>> 143edf6 (feat(OM-73): Importação do manifesto no dashboard)
