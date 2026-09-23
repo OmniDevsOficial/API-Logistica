@@ -42,6 +42,9 @@
 
 - [Cenários de User Stories](../documentacao/cenarios.pdf)
 - [Backlog completo](../../README.md#backlog)
+- [DoR completo](../../README.md#definition-of-ready-dor)
+- [DoD completo](../../README.md#definition-of-done-dod)
+
 
 
 ## 🎓 Conheça a equipe talentosa por trás do projeto <a id="equipe"></a>

@@ -23,10 +23,9 @@ A proposta é um jeito simples e visual de acompanhar motoristas agregados, cruz
 
 
 
-## 📝 **Backlog do Produto** <a id="backlog"></a>
+## <a id="backlog"></a> 📝 **Backlog do Produto** 
 
 Parceiro: Newelog
-
 | Rank | ID | Prioridade | User Story | Estimativa | Sprint |
 |:---:|:---:|:---:|---|:---:|:---:|
 | 1 | US5 | Alta | Como operador, quero ver em uma tela única quais motoristas estão disponíveis, para direcionar novas viagens rapidamente. | 4 | 1 |
