@@ -34,11 +34,8 @@ export function MensagemFeedbackUpload({
   const Icone = tipo === 'erro' ? AlertCircle : CheckCircle2;
 
   useEffect(() => {
-<<<<<<< HEAD
-=======
     // ALTERAÇÃO: erros não expiram; somente sucessos têm contagem regressiva.
     if (tipo === 'erro') return;
->>>>>>> 143edf6 (feat(OM-73): Importação do manifesto no dashboard)
     let segundoFrame: number | undefined;
 
     const primeiroFrame = requestAnimationFrame(() => {
@@ -54,11 +51,7 @@ export function MensagemFeedbackUpload({
         cancelAnimationFrame(segundoFrame);
       }
     };
-<<<<<<< HEAD
-  }, []);
-=======
   }, [tipo]);
->>>>>>> 143edf6 (feat(OM-73): Importação do manifesto no dashboard)
 
   return (
     <div
@@ -106,25 +99,14 @@ export function MensagemFeedbackUpload({
         </button>
       </div>
 
-<<<<<<< HEAD
-      <div
-=======
       {tipo === 'sucesso' && <div
->>>>>>> 143edf6 (feat(OM-73): Importação do manifesto no dashboard)
         className={`
           h-[3px] origin-left shrink-0
           transition-transform duration-[5000ms] ease-linear
           ${estilo.barra}
           ${barraReduzida ? 'scale-x-0' : 'scale-x-100'}
         `}
-<<<<<<< HEAD
-      />
-    </div>
-  );
-}
-=======
       />}
     </div>
   );
 }
->>>>>>> 143edf6 (feat(OM-73): Importação do manifesto no dashboard)

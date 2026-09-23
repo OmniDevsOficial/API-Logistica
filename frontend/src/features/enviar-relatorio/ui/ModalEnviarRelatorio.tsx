@@ -7,12 +7,8 @@ import {
   X,
 } from 'lucide-react';
 
-<<<<<<< HEAD
-import { enviarRelatorio } from '../../../entities/relatorio/api/enviarRelatorio';
-=======
 // ALTERAÇÃO: endpoint operacional que salva viagens, sem simulação.
 import { importarManifesto, mensagemErroImportacao } from '../api/importarManifesto';
->>>>>>> 143edf6 (feat(OM-73): Importação do manifesto no dashboard)
 import { formatarTamanhoArquivo } from '../lib/formatarTamanhoArquivo';
 import { validarArquivoRelatorio } from '../lib/validarArquivoRelatorio';
 import {
@@ -45,11 +41,8 @@ export function ModalEnviarRelatorio({
   const timeoutFeedbackRef =
     useRef<ReturnType<typeof setTimeout> | null>(null);
   const proximaChaveFeedbackRef = useRef(0);
-<<<<<<< HEAD
-=======
   // Trava síncrona para impedir dois envios antes da atualização visual do React.
   const importacaoEmAndamentoRef = useRef(false);
->>>>>>> 143edf6 (feat(OM-73): Importação do manifesto no dashboard)
 
   useEffect(() => {
     return () => {
@@ -84,18 +77,6 @@ export function ModalEnviarRelatorio({
       chave: proximaChaveFeedbackRef.current,
     });
 
-<<<<<<< HEAD
-    timeoutFeedbackRef.current = setTimeout(() => {
-      setFeedback(null);
-      timeoutFeedbackRef.current = null;
-    }, DURACAO_MENSAGEM_MS);
-  }
-
-  function tratarNovoArquivo(arquivo: File) {
-    const resultado = validarArquivoRelatorio(arquivo);
-
-    if (!resultado.valido) {
-=======
     // Erros permanecem visíveis para o usuário ler as orientações de recuperação.
     if (tipo === 'sucesso') {
       timeoutFeedbackRef.current = setTimeout(() => {
@@ -111,7 +92,6 @@ export function ModalEnviarRelatorio({
 
     if (!resultado.valido) {
       setArquivoSelecionado(null);
->>>>>>> 143edf6 (feat(OM-73): Importação do manifesto no dashboard)
       if (inputRef.current) {
         inputRef.current.value = '';
       }
@@ -161,62 +141,39 @@ export function ModalEnviarRelatorio({
   }
 
   async function aoConfirmar() {
-<<<<<<< HEAD
-    if (!arquivoSelecionado || enviando) return;
-=======
     if (!arquivoSelecionado || importacaoEmAndamentoRef.current) return;
     importacaoEmAndamentoRef.current = true;
     fecharFeedback();
->>>>>>> 143edf6 (feat(OM-73): Importação do manifesto no dashboard)
 
     try {
       setEnviando(true);
 
-<<<<<<< HEAD
-      const dados = await enviarRelatorio(arquivoSelecionado);
-=======
       const resultado = await importarManifesto(arquivoSelecionado);
->>>>>>> 143edf6 (feat(OM-73): Importação do manifesto no dashboard)
 
       removerArquivo();
 
       exibirFeedback(
         'sucesso',
-<<<<<<< HEAD
-        `Relatório enviado com sucesso! ${dados.length} registros processados.`
-=======
         resultado.viagensImportadas === 1
           ? '1 viagem importada com sucesso!'
           : `${resultado.viagensImportadas} viagens importadas com sucesso!`
->>>>>>> 143edf6 (feat(OM-73): Importação do manifesto no dashboard)
       );
     } catch (erro) {
       exibirFeedback(
         'erro',
-<<<<<<< HEAD
-        erro instanceof Error
-          ? erro.message
-          : 'Não foi possível enviar o relatório.'
-      );
-    } finally {
-=======
         mensagemErroImportacao(erro)
       );
     } finally {
       importacaoEmAndamentoRef.current = false;
->>>>>>> 143edf6 (feat(OM-73): Importação do manifesto no dashboard)
       setEnviando(false);
     }
   }
 
-<<<<<<< HEAD
-=======
   // Fechar a janela não cancela uma gravação no servidor. Aguarde sua resposta.
   function tentarFechar() {
     if (!importacaoEmAndamentoRef.current) onFechar();
   }
 
->>>>>>> 143edf6 (feat(OM-73): Importação do manifesto no dashboard)
   return (
     <div
       className="
@@ -224,11 +181,7 @@ export function ModalEnviarRelatorio({
         flex items-center justify-center
         bg-black/50
       "
-<<<<<<< HEAD
-      onClick={onFechar}
-=======
       onClick={tentarFechar}
->>>>>>> 143edf6 (feat(OM-73): Importação do manifesto no dashboard)
     >
       <div
         className="
@@ -240,10 +193,7 @@ export function ModalEnviarRelatorio({
         "
         role="dialog"
         aria-modal="true"
-<<<<<<< HEAD
-=======
         aria-busy={enviando}
->>>>>>> 143edf6 (feat(OM-73): Importação do manifesto no dashboard)
         aria-labelledby="titulo-upload"
         onClick={(evento) => evento.stopPropagation()}
       >
@@ -252,11 +202,7 @@ export function ModalEnviarRelatorio({
             id="titulo-upload"
             className="m-0 text-xl font-bold text-gray-900"
           >
-<<<<<<< HEAD
-            Upload
-=======
             Importar manifesto
->>>>>>> 143edf6 (feat(OM-73): Importação do manifesto no dashboard)
           </h2>
 
           <button
@@ -269,12 +215,8 @@ export function ModalEnviarRelatorio({
               focus-visible:outline-offset-2
               focus-visible:outline-[#3355FF]
             "
-<<<<<<< HEAD
-            onClick={onFechar}
-=======
             onClick={tentarFechar}
             disabled={enviando}
->>>>>>> 143edf6 (feat(OM-73): Importação do manifesto no dashboard)
             aria-label="Fechar"
           >
             <X size={20} />
@@ -337,11 +279,7 @@ export function ModalEnviarRelatorio({
               "
               onClick={() => inputRef.current?.click()}
             >
-<<<<<<< HEAD
-              Navegador por arquivos
-=======
               Selecionar arquivo
->>>>>>> 143edf6 (feat(OM-73): Importação do manifesto no dashboard)
             </button>
 
             <input
@@ -413,12 +351,8 @@ export function ModalEnviarRelatorio({
               focus-visible:outline-offset-2
               focus-visible:outline-gray-400
             "
-<<<<<<< HEAD
-            onClick={onFechar}
-=======
             onClick={tentarFechar}
             disabled={enviando}
->>>>>>> 143edf6 (feat(OM-73): Importação do manifesto no dashboard)
           >
             Cancelar
           </button>
@@ -440,18 +374,10 @@ export function ModalEnviarRelatorio({
             onClick={aoConfirmar}
             disabled={!arquivoSelecionado || enviando}
           >
-<<<<<<< HEAD
-            {enviando ? 'Enviando...' : 'Confirmar'}
-=======
             {enviando ? 'Importando...' : 'Importar manifesto'}
->>>>>>> 143edf6 (feat(OM-73): Importação do manifesto no dashboard)
           </button>
         </div>
       </div>
     </div>
   );
-<<<<<<< HEAD
 }
-=======
-}
->>>>>>> 143edf6 (feat(OM-73): Importação do manifesto no dashboard)
