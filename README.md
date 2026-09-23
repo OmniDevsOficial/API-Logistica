@@ -23,10 +23,9 @@ A proposta é um jeito simples e visual de acompanhar motoristas agregados, cruz
 
 
 
-## 📝 **Backlog do Produto** <a id="backlog"></a>
+## <a id="backlog"></a> 📝 **Backlog do Produto** 
 
 Parceiro: Newelog
-
 | Rank | ID | Prioridade | User Story | Estimativa | Sprint |
 |:---:|:---:|:---:|---|:---:|:---:|
 | 1 | US5 | Alta | Como operador, quero ver em uma tela única quais motoristas estão disponíveis, para direcionar novas viagens rapidamente. | 4 | 1 |
@@ -75,17 +74,29 @@ Parceiro: Newelog
 
 ## 💻 Tecnologias <a id="tecnologias"></a>
 
-### ⚙️ Backend
-![Java](https://img.shields.io/badge/Java-ED8B00?style=for-the-badge&logo=openjdk&logoColor=white)
-![Spring Boot](https://img.shields.io/badge/Spring_Boot-6DB33F?style=for-the-badge&logo=spring-boot&logoColor=white)
-![Spring Web MVC](https://img.shields.io/badge/Spring_Web_MVC-6DB33F?style=for-the-badge&logo=spring&logoColor=white)
-![PostgreSQL](https://img.shields.io/badge/PostgreSQL-316192?style=for-the-badge&logo=postgresql&logoColor=white)
-
-### 🖥️ Frontend
-![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)
+### 🌐 Frontend
+![React](https://img.shields.io/badge/React_19-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)
 ![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white)
 ![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black)
 ![Vite](https://img.shields.io/badge/Vite-646CFF?style=for-the-badge&logo=vite&logoColor=FFD62E)
+![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS_v4-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)
+![React Router](https://img.shields.io/badge/React_Router-CA4245?style=for-the-badge&logo=react-router&logoColor=white)
+
+### ⚙️ Backend & SGBD
+![Java](https://img.shields.io/badge/Java_21-ED8B00?style=for-the-badge&logo=openjdk&logoColor=white)
+![Spring Boot](https://img.shields.io/badge/Spring_Boot-6DB33F?style=for-the-badge&logo=spring-boot&logoColor=white)
+![Spring Web MVC](https://img.shields.io/badge/Spring_Web_MVC-6DB33F?style=for-the-badge&logo=spring&logoColor=white)
+![Spring Data JPA](https://img.shields.io/badge/Spring_Data_JPA-6DB33F?style=for-the-badge&logo=spring&logoColor=white)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-316192?style=for-the-badge&logo=postgresql&logoColor=white)
+
+### 🛠️ DevOps & Ferramentas
+![Docker](https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white)
+![Docker Compose](https://img.shields.io/badge/Docker_Compose-2496ED?style=for-the-badge&logo=docker&logoColor=white)
+![Flyway](https://img.shields.io/badge/Flyway-CC0200?style=for-the-badge&logo=flyway&logoColor=white)
+![Gradle](https://img.shields.io/badge/Gradle-02303A?style=for-the-badge&logo=gradle&logoColor=white)
+![Git](https://img.shields.io/badge/Git-F05032?style=for-the-badge&logo=git&logoColor=white)
+![GitHub](https://img.shields.io/badge/GitHub-181717?style=for-the-badge&logo=github&logoColor=white)
+![Jira](https://img.shields.io/badge/Jira-0052CC?style=for-the-badge&logo=jira&logoColor=white)
 
 ## 🔀 Fluxo de Trabalho <a id="fluxo-de-trabalho"></a>
 
@@ -116,7 +127,6 @@ Parceiro: Newelog
 | :---: | :--- | :--- | :---: |
 | <img src="https://github.com/Marcio-gustavoI.png" width=50px alt="Foto do Márcio"> | **Márcio Inocêncio** | Product Owner | <a href="https://github.com/Marcio-gustavoI"><img src="https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white"></a> |
 | <img src="https://github.com/Viniciuss-Moreira.png" width=50px alt="Foto do Vinicius"> | **Vinicius Moreira** | Scrum Master | <a href="https://github.com/Viniciuss-Moreira"><img src="https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white"></a> |
-| <img src="https://github.com/KathelynZanin.png" width=50px alt="Foto da Kathelyn"> | **Kathelyn Zanin** | Desenvolvedor | <a href="https://github.com/KathelynZanin"><img src="https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white"></a> |
 | <img src="https://github.com/hiGuigo.png" width=50px alt="Foto do Guilherme"> | **Guilherme Alvarenga** | Desenvolvedor | <a href="https://github.com/hiGuigo"><img src="https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white"></a> |
 | <img src="https://github.com/DeveloperCorsair.png" width=50px alt="Foto do Henrique"> | **Henrique Martins** | Desenvolvedor | <a href="https://github.com/DeveloperCorsair"><img src="https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white"></a> |
 | <img src="https://github.com/pedrodevroot.png" width=50px alt="Foto do Pedro"> | **Pedro Lucas** | Desenvolvedor | <a href="https://github.com/pedrodevroot"><img src="https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white"></a> |
