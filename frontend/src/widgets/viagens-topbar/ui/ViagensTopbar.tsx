@@ -1,11 +1,13 @@
 import { Calendar, ListFilter, Search } from "lucide-react";
 import { PageHeader } from "@shared/ui";
+import { FiltrarViagensDropdown } from "../ui/FiltrarViagensDropdown";
 
 interface ViagensTopbarProps {
   search: string;
   onSearchChange: (value: string) => void;
   periodoLabel: string;
   onMenuClick: () => void;
+  onFiltroAplicado: (viagens: Viagem[]) => void;
 }
 
 const PILL_CLASS =
@@ -16,6 +18,7 @@ export function ViagensTopbar({
   onSearchChange,
   periodoLabel,
   onMenuClick,
+  onFiltroAplicado,
 }: ViagensTopbarProps) {
   return (
     <header className="mb-7 flex flex-col gap-5">
@@ -36,10 +39,11 @@ export function ViagensTopbar({
           />
         </div>
 
-        <button type="button" className={PILL_CLASS}>
-          <ListFilter size={16} />
-          Filtros
-        </button>
+        {/* Botão antigo removido — o dropdown assume o lugar dele, com a mesma pílula visual */}
+        <FiltrarViagensDropdown
+          onFiltroAplicado={onFiltroAplicado}
+          buttonClassName={PILL_CLASS}
+        />
 
         <div className={PILL_CLASS}>
           <Calendar size={16} />

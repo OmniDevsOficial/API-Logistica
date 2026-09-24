@@ -1,7 +1,6 @@
 import { Calendar } from "lucide-react";
 import type { PeriodOption } from "@entities/dashboard-metrics";
 import { BotaoEnviarRelatorio } from "@features/enviar-relatorio/ui/BotaoEnviarRelatorio";
-import { FiltrarPorDestinoButton } from "@/features/filtrar-viagens-por-regiao";
 import { PeriodFilter } from "@features/period-filter";
 import { PageHeader } from "@shared/ui";
 
@@ -50,7 +49,6 @@ export function DashboardTopbar({
           </div>
         </div>
       </div>
-      <FiltrarPorDestinoButton />
     </header>
   );
 }
