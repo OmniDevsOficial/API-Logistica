@@ -12,11 +12,13 @@ import { useFiltroViagens } from "../model/useFiltroViagens";
 
 type FiltrarViagensDropdownProps = {
   onFiltroAplicado?: (resultado: any[]) => void;
+  onFiltroLimpo?: () => void;
   buttonClassName?: string;
 };
 
 export function FiltrarViagensDropdown({
   onFiltroAplicado,
+  onFiltroLimpo,
   buttonClassName,
 }: FiltrarViagensDropdownProps) {
   const [aberto, setAberto] = useState(false);
@@ -49,6 +51,8 @@ export function FiltrarViagensDropdown({
     await aplicar();
     setAberto(false);
   };
+
+  const handleLimpar = () => limpar(onFiltroLimpo);
 
   return (
     <div className="relative inline-block" ref={containerRef}>
@@ -140,7 +144,7 @@ export function FiltrarViagensDropdown({
                 <input
                   type="number"
                   placeholder="Mín."
-                  value={(filtro.kmMin ?? "") ? "" : Number(filtro.kmMin)}
+                  value={filtro.kmMin == null ? "" : Number(filtro.kmMin)}
                   onChange={(e) =>
                     setFiltro((f) => ({
                       ...f,
@@ -153,7 +157,7 @@ export function FiltrarViagensDropdown({
                 <input
                   type="number"
                   placeholder="Máx."
-                  value={(filtro.kmMax ?? "") ? "" : Number(filtro.kmMax)}
+                  value={filtro.kmMax == null ? "" : Number(filtro.kmMax)}
                   onChange={(e) =>
                     setFiltro((f) => ({
                       ...f,
@@ -174,7 +178,7 @@ export function FiltrarViagensDropdown({
                 <input
                   type="number"
                   placeholder="Mín."
-                  value={(filtro.diasMin ?? "") ? "" : Number(filtro.diasMin)}
+                  value={filtro.diasMin == null ? "" : Number(filtro.diasMin)}
                   onChange={(e) =>
                     setFiltro((f) => ({
                       ...f,
@@ -210,7 +214,7 @@ export function FiltrarViagensDropdown({
           {/* Footer fixo: Limpar reseta sem fechar, Aplicar dispara a busca e fecha */}
           <div className="flex justify-between gap-2 border-t border-slate-100 bg-slate-50 px-5 py-3 rounded-b-xl">
             <button
-              onClick={limpar}
+              onClick={handleLimpar}
               className="text-sm font-medium text-slate-500 hover:text-slate-700 transition-colors"
             >
               Limpar

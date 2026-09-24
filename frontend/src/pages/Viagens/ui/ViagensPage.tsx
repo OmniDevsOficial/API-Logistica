@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { getViagensData, type ViagensData } from "@entities/viagem";
+import { getViagensData, type ViagensData, type Viagem } from "@entities/viagem";
 import { Sidebar } from "@widgets/sidebar";
 import { ViagensTopbar } from "@widgets/viagens-topbar";
 import { ViagensList } from "@widgets/viagens-list";
@@ -9,6 +9,10 @@ export function ViagensPage() {
   const [data, setData] = useState<ViagensData | null>(null);
   const [search, setSearch] = useState("");
   const [sidebarOpen, setSidebarOpen] = useState(false);
+
+  // null = dropdown ainda não aplicou nenhum filtro -> usa a lista completa da API
+  const [viagensFiltradasPorDropdown, setViagensFiltradasPorDropdown] =
+    useState<Viagem[] | null>(null);
 
   useEffect(() => {
     let isCurrent = true;
@@ -20,16 +24,19 @@ export function ViagensPage() {
     };
   }, []);
 
+  // Resultado do dropdown (se já rodou) ou tudo que veio da API
+  const viagensBase = viagensFiltradasPorDropdown ?? data?.viagens ?? [];
+
+  // Aqui é a Busca por texto do filtro
   const viagensFiltradas = useMemo(() => {
-    if (!data) return [];
     const termo = search.trim().toLowerCase();
-    if (!termo) return data.viagens;
-    return data.viagens.filter(
+    if (!termo) return viagensBase;
+    return viagensBase.filter(
       (viagem) =>
         viagem.origem.toLowerCase().includes(termo) ||
         viagem.destino.toLowerCase().includes(termo),
     );
-  }, [data, search]);
+  }, [viagensBase, search]);
 
   return (
     <div className="min-h-screen lg:h-screen lg:overflow-hidden">
@@ -40,10 +47,13 @@ export function ViagensPage() {
           onSearchChange={setSearch}
           periodoLabel={data?.periodoLabel ?? ""}
           onMenuClick={() => setSidebarOpen(true)}
+          onFiltroAplicado={setViagensFiltradasPorDropdown}
+          onFiltroLimpo={() => setViagensFiltradasPorDropdown(null)}
         />
         {data && (
           <div className="grid grid-cols-1 gap-6 lg:min-h-0 lg:flex-1 lg:grid-cols-[2fr_1fr]">
             <ViagensList viagens={viagensFiltradas} />
+            {/* Ranking mostra tudo, não é afetado pelos filtros de cima */}
             <ViagensRanking viagens={data.viagens} />
           </div>
         )}
