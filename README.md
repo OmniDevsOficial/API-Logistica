@@ -3,7 +3,7 @@
   <img src="https://i.imgur.com/VbBN3Tk.jpeg" width="170x" height="170x" style="border-radius:20%;">
 </p>
 <div align="center">
-  <strong>OMINIDEVS LOG</strong><br>
+  <strong>OMNIDEVS LOG</strong><br>
   Sistema para consumir dados e visualizar informações, proporcionando uma análise objetiva e apoiando a tomada de decisões.
 </div>
 <div align="center">
@@ -22,10 +22,12 @@ A transportadora não tem visibilidade consolidada sobre os motoristas agregados
 A proposta é um jeito simples e visual de acompanhar motoristas agregados, cruzando quantas viagens cada um fez, se está disponível pra novas operações e quanto retorno cada viagem realmente trouxe. Com isso, o time enxerga rápido quem está livre para pegar uma nova viagem (sem deixar ninguém parado à toa) e quem está trazendo o melhor resultado financeiro. 
 
 
+Parceiro: Newelog
+
 
 ## <a id="backlog"></a> 📝 **Backlog do Produto** 
 
-Parceiro: Newelog
+
 | Rank | ID | Prioridade | User Story | Estimativa | Sprint |
 |:---:|:---:|:---:|---|:---:|:---:|
 | 1 | US1 | Alta | Como operador, quero exportar a planilha da análise obtida e importá-la no sistema, para não perder o fluxo já usado. | 4 | 1 |
@@ -33,12 +35,12 @@ Parceiro: Newelog
 | 3 | US4 | Alta |  Como operador, quero filtrar viagens por destino/região, para entender a demanda por rota. | 4 | 1 |
 | 4 | US6 | Alta | Como operador, quero ver a % de utilização de cada motorista, para evitar a desocupação de frotas. | 3 | 1 |
 | 5 | US3 | Alta | Como gestor, quero visualizar quantas viagens cada motorista fez no mês, para medir a frequência de contratação. | 4 | 1 |
-| 6 | US8 | Média | Como gestor, quero registrar frete e custos de cada viagem, para calcular a rentabilidade. | 5 | 2 |
+| 6 | US8 | Média | Como gestor, quero registrar frete e custos de cada viagem, para calcular a rentabilidade. | 4 | 2 |
 | 7 | US9 | Média | Como gestor, quero visualizar a rentabilidade média por viagem de cada motorista, para comparar desempenho. | 4 | 2 |
 | 8 | US5 | Média | Como operador, quero ver em uma tela única quais motoristas estão disponíveis, para direcionar novas viagens rapidamente. | 4 | 2 |
-| 9 | US7 | Média | Como gestor, quero visualizar a rentabilidade média por viagem de cada motorista, para comparar desempenho. | 5 | 2 |
+| 9 | US7 | Média | Como gestor, quero receber um alerta de motoristas com baixa utilização no mês, para agir sobre ociosidade. | 5 | 2 |
 | 10 | US10 | Média | Como gestor, quero ver quanto cada motorista recebeu no mês, para controle de pagamento. | 3 | 2 |
-| 11 | US11 | Média | Como gestor, quero comparar a rentabilidade entre tipos de veículo, para decisões estratégicas de frota. | 3 | 3 |
+| 11 | US11 | Média | Como gestor, quero comparar a rentabilidade entre tipos de veículo, para decisões estratégicas de frota. | 5 | 3 |
 | 12 | US13 | Baixa | Como gestor, quero um ranking mensal de motoristas, para identificar os melhores resultados. | 4 | 3 |
 | 13 | US14 | Baixa | Como gestor, quero identificar as rotas mais concorridas do mês, para criar campanhas de engajamento de motoristas. | 3 | 3 |
 | 14 | US12 | Baixa | Como gestor, quero segmentar indicadores por gênero do motorista, para análise de diversidade da frota. | 3 | 3 |
@@ -47,9 +49,9 @@ Parceiro: Newelog
 
 | Sprint | Período | Documentação | Status | Vídeo |
 |:---:|:---:|:---:|:---:|:---:|
-| **SPRINT 1** | 28/09 - 02/10 | [Sprint 1 docs](docs/sprints/sprint-1.md) | 🟡 Em andamento | [🎥 Assistir](https://youtu.be/VLJHqNIcwLM) |
-| **SPRINT 2** | 26/10 - 30/10 | [Sprint 2 docs](docs/sprints/sprint-2.md) | ⚪ Não iniciada | |
-| **SPRINT 3** | 23/11 - 27/11 | [Sprint 3 docs](docs/sprints/sprint-3.md) | ⚪ Não iniciada | |
+| **SPRINT 1** | 07/09 - 27/09 | [Sprint 1 docs](docs/sprints/sprint-1.md) | 🟡 Em andamento | [🎥 Assistir](https://youtu.be/VLJHqNIcwLM) |
+| **SPRINT 2** | 05/10 - 25/10 | [Sprint 2 docs](docs/sprints/sprint-2.md) | ⚪ Não iniciada | |
+| **SPRINT 3** | 02/11 - 22/11 | [Sprint 3 docs](docs/sprints/sprint-3.md) | ⚪ Não iniciada | |
 
 ### 📋Definition of Ready (DoR) <a id="definition-of-ready-dor"></a>
 
@@ -123,7 +125,7 @@ Parceiro: Newelog
    └────────────────────────────────────────┘      
                        ↑                           
           2 desenvolva e faça commits
-````
+```
 
 ## ⚙️ Manual de Instalação <a id="manual-de-instalacao"></a>
 

@@ -22,7 +22,7 @@
 
 | Foco | User Story Meta |
 | :---: | :--- |
-| 🥇 | **US1:**  Como operador, quero ver em uma tela única quais motoristas estão disponíveis, para direcionar novas viagens rapidamente. |
+| 🥇 | **US1:**  Como operador, quero exportar a planilha da análise obtida e importá-la no sistema, para não perder o fluxo já usado. |
 | 🥈 | **US2:** Como operador, quero importar o relatório de manifesto para popular viagens automaticamente. |
 
 <br>

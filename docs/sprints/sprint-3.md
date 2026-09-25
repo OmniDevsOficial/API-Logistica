@@ -8,7 +8,6 @@
   <a href="#sprint-3-meta"> Metas Sprint 3 </a> |
   <a href="#sprint-3"> Sprint 3 </a> |
   <a href="#documentos"> Documentos </a> |
-  <a href="#Estrategia-de-Branches"> Estratégia de Branches </a> |
   <a href="#equipe"> Equipe </a> |
 </p>
 
@@ -38,7 +37,7 @@
 
 ## 📂 Documentos e anexos <a id="documentos"></a>
 
-- [Cenários de User Stories](../documentacao/Cenarios.pdf)
+- [Cenários de User Stories](../documentacao/Cenarios_sprint1.pdf)
 - [Backlog completo](../documentacao/Backlog.pdf)
 
 

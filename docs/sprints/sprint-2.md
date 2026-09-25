@@ -33,12 +33,12 @@
 | 🎗 1 | US8 | Média | Como gestor, quero registrar frete e custos de cada viagem, para calcular a rentabilidade. | 5 |
 | 🎗 2 | US9 | Média | Como gestor, quero visualizar a rentabilidade média por viagem de cada motorista, para comparar desempenho. | 4 |
 | 🎗 3 | US5 | Média | Como operador, quero ver em uma tela única quais motoristas estão disponíveis, para direcionar novas viagens rapidamente. | 4 |
-| 🎗 4 | US7 | Média | Como gestor, quero visualizar a rentabilidade média por viagem de cada motorista, para comparar desempenho. | 5 |
+| 🎗 4 | US7 | Média | Como gestor, quero receber um alerta de motoristas com baixa utilização no mês, para agir sobre ociosidade. | 5 |
 | 🎗 5 | US10 | Média | Como gestor, quero ver quanto cada motorista recebeu no mês, para controle de pagamento. | 3 |
 
 ## 📂 Documentos e anexos <a id="documentos"></a>
 
-- [Cenários de User Stories](../documentacao/Cenarios.pdf)
+- [Cenários de User Stories](../documentacao/Cenarios_sprint1.pdf)
 - [Backlog completo](../documentacao/Backlog.pdf)
 
 
