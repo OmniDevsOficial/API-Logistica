@@ -1,5 +1,9 @@
 import { useEffect, useMemo, useState } from "react";
-import { getViagensData, type ViagensData, type Viagem } from "@entities/viagem";
+import {
+  getViagensData,
+  type ViagensData,
+  type Viagem,
+} from "@entities/viagem";
 import { Sidebar } from "@widgets/sidebar";
 import { ViagensTopbar } from "@widgets/viagens-topbar";
 import { ViagensList } from "@widgets/viagens-list";
@@ -10,8 +14,8 @@ export function ViagensPage() {
   const [search, setSearch] = useState("");
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
-  // null = dropdown ainda não aplicou nenhum filtro -> usa a lista completa da API
-  const [viagensFiltradasPorDropdown, setViagensFiltradasPorDropdown] =
+  // null = modal ainda não aplicou nenhum filtro -> usa a lista completa da API
+  const [viagensFiltradasPorModal, setViagensFiltradasPorModal] =
     useState<Viagem[] | null>(null);
 
   useEffect(() => {
@@ -24,8 +28,8 @@ export function ViagensPage() {
     };
   }, []);
 
-  // Resultado do dropdown (se já rodou) ou tudo que veio da API
-  const viagensBase = viagensFiltradasPorDropdown ?? data?.viagens ?? [];
+  // Resultado do modal (se já rodou) ou tudo que veio da API
+  const viagensBase = viagensFiltradasPorModal ?? data?.viagens ?? [];
 
   // Aqui é a Busca por texto do filtro
   const viagensFiltradas = useMemo(() => {
@@ -47,8 +51,8 @@ export function ViagensPage() {
           onSearchChange={setSearch}
           periodoLabel={data?.periodoLabel ?? ""}
           onMenuClick={() => setSidebarOpen(true)}
-          onFiltroAplicado={setViagensFiltradasPorDropdown}
-          onFiltroLimpo={() => setViagensFiltradasPorDropdown(null)}
+          onFiltroAplicado={setViagensFiltradasPorModal}
+          onFiltroLimpo={() => setViagensFiltradasPorModal(null)}
         />
         {data && (
           <div className="grid grid-cols-1 gap-6 lg:min-h-0 lg:flex-1 lg:grid-cols-[2fr_1fr]">

@@ -12,15 +12,6 @@ export function useFiltroViagens(
   const [carregando, setCarregando] = useState(false);
   const [erro, setErro] = useState<string | null>(null);
 
-  // Conta quantos critérios estão preenchidos, só pra mostrar o valor no
-  // botão (ex: "Filtrar (2)"). apenasDisponiveis é boolean então trata à parte.
-  const quantidadeAtiva = Object.entries(filtro).filter(([chave, valor]) => {
-    if (chave === 'destino' || chave === 'mes') return valor !== '';
-    if (chave === 'status') return (valor as any[]).length > 0;
-    return valor !== null;
-  }).length;
-
-  // Aplica os filtros escolhidos no dropdown
   const aplicar = async () => {
     setCarregando(true);
     setErro(null);
@@ -28,9 +19,8 @@ export function useFiltroViagens(
     try {
       const dados = await filtrarViagensApi(filtro);
 
-      // Resposta vazia vira mensagem, ao invés de listar em branco
       if (!dados || dados.length === 0) {
-        setErro("Viagem não encontrada para estes filtros");
+        setErro("Nenhuma viagem encontrada para esses filtros");
       } else {
         onFiltroAplicado?.(dados);
       }
@@ -41,20 +31,11 @@ export function useFiltroViagens(
     }
   };
 
-  // Função de limpar o filtro
   const limpar = (onLimpo?: () => void) => {
     setFiltro(filtroVazio);
     setErro(null);
     onLimpo?.();
   };
 
-  return {
-    filtro,
-    setFiltro,
-    carregando,
-    erro,
-    quantidadeAtiva,
-    aplicar,
-    limpar,
-  };
+  return { filtro, setFiltro, carregando, erro, aplicar, limpar };
 }

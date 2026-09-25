@@ -2,7 +2,13 @@
 // 4 critérios: destino, status, frete (min/max) e mês — todos batendo
 // com os query params reais do endpoint GET /viagens.
 import { useState, useEffect, useRef } from "react";
-import { X, SlidersHorizontal, MapPin, Loader2, AlertCircle } from "lucide-react";
+import {
+  X,
+  SlidersHorizontal,
+  MapPin,
+  Loader2,
+  AlertCircle,
+} from "lucide-react";
 import { useFiltroViagens } from "../model/useFiltroViagens";
 
 type FiltrarViagensModalProps = {
@@ -25,14 +31,8 @@ export function FiltrarViagensModal({
   onFiltroAplicado,
   onFiltroLimpo,
 }: FiltrarViagensModalProps) {
-  const {
-    filtro,
-    setFiltro,
-    carregando,
-    erro,
-    aplicar,
-    limpar,
-  } = useFiltroViagens(onFiltroAplicado);
+  const { filtro, setFiltro, carregando, erro, aplicar, limpar } =
+    useFiltroViagens(onFiltroAplicado);
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -67,7 +67,7 @@ export function FiltrarViagensModal({
         <div className="flex items-start justify-between px-6 py-5 border-b border-slate-100">
           <div className="flex items-center gap-3">
             <div className="flex h-10 w-10 items-center justify-center rounded-full bg-blue-50">
-              <SlidersHorizontal className="h-5 w-5 text-blue-600" />
+              <SlidersHorizontal className="h-5 w-5 text-primary" />
             </div>
             <div>
               <h2 className="text-base font-semibold text-slate-900">
@@ -134,7 +134,7 @@ export function FiltrarViagensModal({
                     }}
                     className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-sm font-medium transition-colors ${
                       ativo
-                        ? "border-blue-600 bg-blue-50 text-blue-700"
+                        ? "border-primary bg-blue-50 text-blue-700"
                         : "border-slate-300 text-slate-600 hover:bg-slate-50"
                     }`}
                   >
@@ -222,7 +222,7 @@ export function FiltrarViagensModal({
           <button
             onClick={handleAplicar}
             disabled={carregando}
-            className="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-blue-700 disabled:opacity-40 transition-colors"
+            className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-blue-700 disabled:opacity-40 transition-colors"
           >
             {carregando && <Loader2 className="h-4 w-4 animate-spin" />}
             {carregando ? "Aplicando..." : "Aplicar filtro"}

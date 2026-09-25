@@ -1,6 +1,6 @@
 import { Calendar, Search } from "lucide-react";
 import { PageHeader } from "@shared/ui";
-import { FiltrarViagensButton  } from "./FiltrarViagensButton";
+import { FiltrarViagensButton } from "./FiltrarViagensButton";
 import type { Viagem } from "@/entities/viagem";
 
 interface ViagensTopbarProps {
@@ -21,7 +21,7 @@ export function ViagensTopbar({
   periodoLabel,
   onMenuClick,
   onFiltroAplicado,
-  onFiltroLimpo
+  onFiltroLimpo,
 }: ViagensTopbarProps) {
   return (
     <header className="mb-7 flex flex-col gap-5">
