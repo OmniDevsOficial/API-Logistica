@@ -1,18 +1,24 @@
 package com.ominidevs.operacional.viagem.controllers;
 
+import java.math.BigDecimal;
+import java.util.List;
+
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
+
 import com.ominidevs.operacional.viagem.entities.StatusViagem;
 import com.ominidevs.operacional.viagem.entities.Viagem;
 import com.ominidevs.operacional.viagem.services.ViagemService;
 
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
-
-import java.math.BigDecimal;
-import java.util.List;
-
+@CrossOrigin(origins = "http://localhost:5173")
 @RestController
-@RequestMapping("/viagens")
+@RequestMapping("api/operacional/viagens")
 public class ViagemController {
 
     private final ViagemService viagemService;

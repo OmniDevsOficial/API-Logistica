@@ -1,7 +1,7 @@
 // Modal de filtros do dashboard de viagens.
 // 4 critérios: destino, status, frete (min/max) e mês — todos batendo
 // com os query params reais do endpoint GET /viagens.
-import { useState, useEffect, useRef } from "react";
+import { useEffect, useRef } from "react";
 import {
   X,
   SlidersHorizontal,

@@ -3,13 +3,13 @@ server:
 
 spring:
   config:
-    import: optional:file:.env[.properties]
+    import: optional:file:.env[.properties],optional:file:../.env[.properties]
   application:
     name: operacional-service
   datasource:
-    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5433/newelog_db?currentSchema=operacional}
-    username: ${SPRING_DATASOURCE_USERNAME:postgresql}
-    password: ${SPRING_DATASOURCE_PASSWORD:DB_PASSWORD}
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/${POSTGRES_DB}?currentSchema=operacional}
+    username: ${SPRING_DATASOURCE_USERNAME:${POSTGRES_USER}}
+    password: ${SPRING_DATASOURCE_PASSWORD:${POSTGRES_PASSWORD}}
   jpa:
     hibernate:
       ddl-auto: validate
