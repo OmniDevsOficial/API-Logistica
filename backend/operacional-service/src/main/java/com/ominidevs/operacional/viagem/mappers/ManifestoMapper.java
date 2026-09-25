@@ -1,13 +1,14 @@
 package com.ominidevs.operacional.viagem.mappers;
 
-import com.ominidevs.operacional.viagem.dto.ManifestoDTO;
-import com.ominidevs.operacional.viagem.entities.StatusViagem;
-import com.ominidevs.operacional.viagem.entities.Viagem;
-import org.springframework.stereotype.Component;
-
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+
+import org.springframework.stereotype.Component;
+
+import com.ominidevs.operacional.viagem.dto.ManifestoDTO;
+import com.ominidevs.operacional.viagem.entities.StatusViagem;
+import com.ominidevs.operacional.viagem.entities.Viagem;
 
 @Component
 public class ManifestoMapper {
@@ -22,12 +23,14 @@ public class ManifestoMapper {
                 manifesto.getMotorista(),
                 manifesto.getCPF(),
                 manifesto.getVeiculo(),
+                manifesto.getOrigem(),
                 converterDestino(manifesto.getDestino()),
                 converterValor(manifesto.getValorFrete()),
                 converterInteiro(manifesto.getKmSaida()),
                 converterInteiro(manifesto.getKmChegada()),
                 converterStatus(manifesto.getStatus()),
-                manifesto.getObservacoes()
+                manifesto.getObservacoes(),
+                null
         );
     }
 

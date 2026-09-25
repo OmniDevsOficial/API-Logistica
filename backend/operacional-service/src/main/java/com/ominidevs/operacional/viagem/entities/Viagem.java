@@ -1,9 +1,16 @@
 package com.ominidevs.operacional.viagem.entities;
 
-import jakarta.persistence.*;
-
 import java.math.BigDecimal;
 import java.time.LocalDate;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "viagem")
@@ -47,6 +54,12 @@ public class Viagem {
     @Column(name = "observacoes", length = 500)
     private String observacoes;
 
+    @Column(name = "cidade_origem", length = 255)
+    private String cidadeOrigem;
+
+    @Column(name = "estimativa_dias")
+    private Integer estimativaDias;
+
     public Viagem() {
     }
 
@@ -56,24 +69,28 @@ public class Viagem {
             String motorista,
             String cpf_motorista,
             String veiculo,
+            String cidadeOrigem,
             String cidadeDestino,
             BigDecimal valorFrete,
             Integer kmSaida,
             Integer kmChegada,
             StatusViagem status,
-            String observacoes
+            String observacoes,
+            Integer estimativaDias
     ) {
         this.manifesto = manifesto;
         this.data = data;
         this.motorista = motorista;
         this.cpf_motorista = cpf_motorista;
         this.veiculo = veiculo;
+        this.cidadeOrigem = cidadeOrigem;
         this.cidadeDestino = cidadeDestino;
         this.valorFrete = valorFrete;
         this.kmSaida = kmSaida;
         this.kmChegada = kmChegada;
         this.status = status;
         this.observacoes = observacoes;
+        this.estimativaDias = estimativaDias;
     }
 
     public Integer getId() {
@@ -166,5 +183,21 @@ public class Viagem {
 
     public void setObservacoes(String observacoes) {
         this.observacoes = observacoes;
+    }
+
+    public String getCidadeOrigem() {
+        return cidadeOrigem;
+    }
+
+    public void setCidadeOrigem(String cidadeOrigem) {
+        this.cidadeOrigem = cidadeOrigem;
+    }
+
+    public Integer getEstimativaDias() {
+        return estimativaDias;
+    }
+
+    public void setEstimativaDias(Integer estimativaDias) {
+        this.estimativaDias = estimativaDias;
     }
 }

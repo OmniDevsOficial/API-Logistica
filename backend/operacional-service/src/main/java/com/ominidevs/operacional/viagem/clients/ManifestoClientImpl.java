@@ -1,6 +1,8 @@
 package com.ominidevs.operacional.viagem.clients;
 
-import com.ominidevs.operacional.viagem.dto.ManifestoDTO;
+import java.util.List;
+import java.util.Map;
+
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
@@ -9,8 +11,7 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.List;
-import java.util.Map;
+import com.ominidevs.operacional.viagem.dto.ManifestoDTO;
 
 @Component
 public class ManifestoClientImpl implements ManifestoClient {
@@ -24,8 +25,8 @@ public class ManifestoClientImpl implements ManifestoClient {
     @Override
     public List<ManifestoDTO> enviar(MultipartFile file) {
 
-        MultiValueMap<String, Object> body =
-                new LinkedMultiValueMap<>();
+        MultiValueMap<String, Object> body
+                = new LinkedMultiValueMap<>();
 
         body.add("file", file.getResource());
 
@@ -37,8 +38,8 @@ public class ManifestoClientImpl implements ManifestoClient {
                 .retrieve()
                 .body(
                         new ParameterizedTypeReference<
-                                List<Map<String, String>>
-                        >() {}
+                                List<Map<String, String>>>() {
+                }
                 );
 
         if (dados == null || dados.isEmpty()) {
@@ -58,6 +59,7 @@ public class ManifestoClientImpl implements ManifestoClient {
                 dados.get("Motorista"),
                 dados.get("CPF"),
                 dados.get("Veículo"),
+                dados.get("Origem"),
                 dados.get("Destino"),
                 dados.get("Valor Frete"),
                 dados.get("Km saída"),

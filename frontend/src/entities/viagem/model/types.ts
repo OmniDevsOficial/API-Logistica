@@ -1,7 +1,5 @@
-export type StatusViagem = "disponivel" | "confirmada" | "concluida";
-
 export interface Viagem {
-  id: string;
+  id: number;
   origem: string;
   destino: string;
   freteEstimado: number;
@@ -10,6 +8,8 @@ export interface Viagem {
   estimativaDias: number;
   status: StatusViagem;
 }
+
+export type StatusViagem = "disponivel" | "confirmada" | "concluida";
 
 export interface ViagensData {
   periodoLabel: string;

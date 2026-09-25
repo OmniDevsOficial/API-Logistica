@@ -12,7 +12,7 @@ export async function filtrarViagensApi(filtro: FiltroViagens) {
   if (filtro.freteMax !== null) params.set("freteMax", String(filtro.freteMax));
   if (filtro.mes) params.set("mes", filtro.mes);
 
-  const response = await fetch(`api/operacional/viagens?${params}`);
+  const response = await fetch(`/api/operacional/viagens?${params}`);
 
   if (!response.ok) {
     throw new Error(`Erro ao filtrar: ${response.statusText}`);
