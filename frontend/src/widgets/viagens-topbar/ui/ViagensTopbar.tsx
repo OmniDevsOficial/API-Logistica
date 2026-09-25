@@ -1,6 +1,6 @@
 import { Calendar, Search } from "lucide-react";
 import { PageHeader } from "@shared/ui";
-import { FiltrarViagensDropdown } from "../ui/FiltrarViagensDropdown";
+import { FiltrarViagensButton  } from "./FiltrarViagensButton";
 import type { Viagem } from "@/entities/viagem";
 
 interface ViagensTopbarProps {
@@ -43,7 +43,7 @@ export function ViagensTopbar({
         </div>
 
         {/* Botão de filtro com dropdown */}
-        <FiltrarViagensDropdown
+        <FiltrarViagensButton
           onFiltroAplicado={onFiltroAplicado}
           onFiltroLimpo={onFiltroLimpo}
           buttonClassName={PILL_CLASS}

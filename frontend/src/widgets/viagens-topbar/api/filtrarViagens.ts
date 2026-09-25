@@ -6,14 +6,15 @@ import type { FiltroViagens } from '../model/types';
 export async function filtrarViagensApi(filtro: FiltroViagens) {
   const params = new URLSearchParams();
 
-  if (filtro.apenasDisponiveis) params.set('disponivel', 'true');
-  if (filtro.ordenarPor) params.set('ordenarPor', filtro.ordenarPor);
-  if (filtro.kmMin !== null) params.set('kmMin', String(filtro.kmMin));
-  if (filtro.kmMax !== null) params.set('kmMax', String(filtro.kmMax));
-  if (filtro.diasMin !== null) params.set('diasMin', String(filtro.diasMin));
-  if (filtro.diasMax !== null) params.set('diasMax', String(filtro.diasMax));
+  if (filtro.destino) params.set('destino', filtro.destino);
+  if (filtro.status.length > 0) {
+    filtro.status.forEach(s => params.append('status', s));
+  }
+  if (filtro.freteMin !== null) params.set('freteMin', String(filtro.freteMin));
+  if (filtro.freteMax !== null) params.set('freteMax', String(filtro.freteMax));
+  if (filtro.mes) params.set('mes', filtro.mes);
 
-  const response = await fetch(`/api/viagens/filtrar?${params}`);
+  const response = await fetch(`/api/viagens?${params}`);
 
   if (!response.ok) {
     throw new Error(`Erro ao filtrar: ${response.statusText}`);

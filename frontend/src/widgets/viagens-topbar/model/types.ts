@@ -2,19 +2,19 @@
 // null significa que não há restrição/limite
 
 export type FiltroViagens = {
-    apenasDisponiveis: boolean;
-    ordenarPor: 'valor-maior' | 'valor-menor' | null;
-    kmMin: Number | null;
-    kmMax: Number | null;
-    diasMin: Number | null;
-    diasMax: Number | null;
-}
+  destino: string;
+  status: StatusViagem[];
+  freteMin: number | null;
+  freteMax: number | null;
+  mes: string; // formato YYYY-MM ou MM
+};
+
+export type StatusViagem = 'PENDENTE' | 'EM_TRANSITO' | 'FINALIZADO';
 
 export const filtroVazio: FiltroViagens = {
-    apenasDisponiveis: false,
-    ordenarPor: null,
-    kmMin: null,
-    kmMax: null,
-    diasMin: null,
-    diasMax: null
-}
+  destino: '',
+  status: [],
+  freteMin: null,
+  freteMax: null,
+  mes: '',
+};

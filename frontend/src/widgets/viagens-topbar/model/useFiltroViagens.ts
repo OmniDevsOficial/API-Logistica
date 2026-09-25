@@ -15,8 +15,9 @@ export function useFiltroViagens(
   // Conta quantos critérios estão preenchidos, só pra mostrar o valor no
   // botão (ex: "Filtrar (2)"). apenasDisponiveis é boolean então trata à parte.
   const quantidadeAtiva = Object.entries(filtro).filter(([chave, valor]) => {
-    if (chave === "apenasDisponiveis") return valor === true;
-    return valor !== true;
+    if (chave === 'destino' || chave === 'mes') return valor !== '';
+    if (chave === 'status') return (valor as any[]).length > 0;
+    return valor !== null;
   }).length;
 
   // Aplica os filtros escolhidos no dropdown
