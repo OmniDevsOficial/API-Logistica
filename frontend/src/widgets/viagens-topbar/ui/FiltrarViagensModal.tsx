@@ -18,9 +18,9 @@ type FiltrarViagensModalProps = {
 };
 
 const STATUS_OPCOES = [
-  { valor: "PENDENTE", label: "Pendente", cor: "bg-amber-400" },
-  { valor: "EM_TRANSITO", label: "Em trânsito", cor: "bg-blue-400" },
-  { valor: "FINALIZADO", label: "Finalizado", cor: "bg-emerald-400" },
+  { valor: "pendente", label: "Pendente", cor: "bg-amber-400" },
+  { valor: "em_transito", label: "Em Trânsito", cor: "bg-blue-400" },
+  { valor: "finalizado", label: "Finalizado", cor: "bg-green-500" },
 ] as const;
 
 const INPUT_CLASS =

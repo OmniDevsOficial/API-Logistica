@@ -5,15 +5,15 @@ interface StatusViagemBadgeProps {
 }
 
 const STATUS_LABEL: Record<StatusViagem, string> = {
-  disponivel: "Disponível",
-  confirmada: "Confirmada",
-  concluida: "Concluída",
+  pendente: "Pendente",
+  em_transito: "Em Trânsito",
+  finalizado: "Finalizado",
 };
 
 const STATUS_CLASS: Record<StatusViagem, string> = {
-  disponivel: "bg-border text-fg-muted",
-  confirmada: "bg-primary/10 text-primary",
-  concluida: "bg-success/15 text-success",
+  pendente: "bg-border text-fg-muted",
+  em_transito: "bg-primary/10 text-primary",
+  finalizado: "bg-success/15 text-success",
 };
 
 export function StatusViagemBadge({ status }: StatusViagemBadgeProps) {

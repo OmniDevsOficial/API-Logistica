@@ -53,13 +53,19 @@ public class ManifestoClientImpl implements ManifestoClient {
 
     private ManifestoDTO converterParaDTO(Map<String, String> dados) {
 
+        // Se não tiver "Origem", usar um valor padrão
+        String origem = dados.get("Origem");
+        if (origem == null || origem.isBlank()) {
+            origem = "Não informado";  // ou pedir info via outro campo
+        }
+
         return new ManifestoDTO(
                 dados.get("Manifesto"),
                 dados.get("Data"),
                 dados.get("Motorista"),
                 dados.get("CPF"),
                 dados.get("Veículo"),
-                dados.get("Origem"),
+                origem,
                 dados.get("Destino"),
                 dados.get("Valor Frete"),
                 dados.get("Km saída"),

@@ -23,7 +23,7 @@ public class ManifestoMapper {
                 manifesto.getMotorista(),
                 manifesto.getCPF(),
                 manifesto.getVeiculo(),
-                manifesto.getOrigem(),
+                converterOrigem(manifesto.getOrigem()),
                 converterDestino(manifesto.getDestino()),
                 converterValor(manifesto.getValorFrete()),
                 converterInteiro(manifesto.getKmSaida()),
@@ -83,6 +83,15 @@ public class ManifestoMapper {
         }
 
         return Integer.valueOf(valor.trim());
+    }
+
+    private String converterOrigem(String origem) {
+
+        if (estaVazio(origem)) {
+            return null;
+        }
+
+        return origem.trim();
     }
 
     private String converterDestino(String destino) {
