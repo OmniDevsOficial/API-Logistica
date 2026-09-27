@@ -185,7 +185,7 @@ export function FiltrarViagensModal({
           </div>
 
           {/* Mês */}
-          <div>
+          {/* <div>
             <label
               htmlFor="mes"
               className="mb-1.5 block text-sm font-medium text-slate-700"
@@ -201,7 +201,7 @@ export function FiltrarViagensModal({
               }
               className={INPUT_CLASS}
             />
-          </div>
+          </div> */}
 
           {erro && (
             <div className="flex items-start gap-2 rounded-lg bg-amber-50 border border-amber-200 px-3 py-2.5">

@@ -25,9 +25,7 @@ public class ManifestoClientImpl implements ManifestoClient {
     @Override
     public List<ManifestoDTO> enviar(MultipartFile file) {
 
-        MultiValueMap<String, Object> body
-                = new LinkedMultiValueMap<>();
-
+        MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
         body.add("file", file.getResource());
 
         List<Map<String, String>> dados = restClient
@@ -36,42 +34,36 @@ public class ManifestoClientImpl implements ManifestoClient {
                 .contentType(MediaType.MULTIPART_FORM_DATA)
                 .body(body)
                 .retrieve()
-                .body(
-                        new ParameterizedTypeReference<
-                                List<Map<String, String>>>() {
-                }
-                );
+                .body(new ParameterizedTypeReference<List<Map<String, String>>>() {
+                });
 
         if (dados == null || dados.isEmpty()) {
             return List.of();
         }
 
         return dados.stream()
-                .map(this::converterParaDTO)
+                .map(d -> {
+                    // Se tiver "Origem" no CSV, usa; senão usa fallback
+                    String origem = d.get("Origem");
+                    if (origem == null || origem.isBlank()) {
+                        origem = "Não informado";
+                    }
+
+                    return new ManifestoDTO(
+                            d.get("Manifesto"),
+                            d.get("Data"),
+                            d.get("Motorista"),
+                            d.get("CPF"),
+                            d.get("Veículo"),
+                            origem,
+                            d.get("Destino"),
+                            d.get("Valor Frete"),
+                            d.get("Km saída"),
+                            d.get("Km chegada"),
+                            d.get("Status"),
+                            d.get("Observações operacionais")
+                    );
+                })
                 .toList();
-    }
-
-    private ManifestoDTO converterParaDTO(Map<String, String> dados) {
-
-        // Se não tiver "Origem", usar um valor padrão
-        String origem = dados.get("Origem");
-        if (origem == null || origem.isBlank()) {
-            origem = "Não informado";  // ou pedir info via outro campo
-        }
-
-        return new ManifestoDTO(
-                dados.get("Manifesto"),
-                dados.get("Data"),
-                dados.get("Motorista"),
-                dados.get("CPF"),
-                dados.get("Veículo"),
-                origem,
-                dados.get("Destino"),
-                dados.get("Valor Frete"),
-                dados.get("Km saída"),
-                dados.get("Km chegada"),
-                dados.get("Status"),
-                dados.get("Observações operacionais")
-        );
     }
 }
