@@ -12,16 +12,13 @@ import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Testes unitários do ManifestoMapper.
- * Movido de ViagemServiceTest (OM-72) para acompanhar a extração
- * da lógica de mapeamento para o ManifestoMapper (a classe testada
- * mudou, os cenários cobertos são os mesmos).
  */
 class ManifestoMapperTest {
 
     private final ManifestoMapper mapper = new ManifestoMapper();
 
     @Test
-    void deveMapearManifestoConsistentemente() {
+    void deveMapearManifestoCompleto() {
 
         ManifestoDTO manifesto = new ManifestoDTO(
                 "MAN-001",
@@ -30,10 +27,11 @@ class ManifestoMapperTest {
                 "12233245124",
                 "ABC1D23",
                 "São Paulo",
+                "Rio de Janeiro",
                 "1500,50",
                 "10000",
                 "10250",
-                "Finalizado",
+                "PENDENTE",
                 "Entrega realizada"
         );
 
@@ -44,20 +42,55 @@ class ManifestoMapperTest {
         assertEquals("João da Silva", viagem.getMotorista());
         assertEquals("12233245124", viagem.getCPF());
         assertEquals("ABC1D23", viagem.getVeiculo());
-        assertEquals("São Paulo", viagem.getCidadeDestino());
+        assertEquals("São Paulo", viagem.getCidadeOrigem());
+        assertEquals("Rio de Janeiro", viagem.getCidadeDestino());
         assertEquals(new BigDecimal("1500.50"), viagem.getValorFrete());
         assertEquals(10000, viagem.getKmSaida());
         assertEquals(10250, viagem.getKmChegada());
-        assertEquals(StatusViagem.FINALIZADO, viagem.getStatus());
+        assertEquals(StatusViagem.PENDENTE, viagem.getStatus());
         assertEquals("Entrega realizada", viagem.getObservacoes());
+        assertNull(viagem.getEstimativaDias());
+    }
+
+    @Test
+    void deveMapearOrigemVazioComoNull() {
+
+        ManifestoDTO manifesto = new ManifestoDTO(
+                "MAN-002",
+                "20/09/2026",
+                "João da Silva",
+                "12233245124",
+                "ABC1D23",
+                "",  // origem vazia
+                "Rio de Janeiro",
+                "1500,50",
+                "10000",
+                "10250",
+                "PENDENTE",
+                null
+        );
+
+        Viagem viagem = mapper.toEntity(manifesto);
+
+        assertNull(viagem.getCidadeOrigem());
     }
 
     @Test
     void deveMapearDestinoVazioComoNull() {
 
         ManifestoDTO manifesto = new ManifestoDTO(
-                "MAN-001", "20/09/2026", "João da Silva", "12233245124",
-                "ABC1D23", "", "1500,50", null, null, null, null
+                "MAN-003",
+                "20/09/2026",
+                "João da Silva",
+                "12233245124",
+                "ABC1D23",
+                "São Paulo",
+                "",  // destino vazio
+                "1500,50",
+                "10000",
+                "10250",
+                "PENDENTE",
+                null
         );
 
         Viagem viagem = mapper.toEntity(manifesto);
@@ -69,8 +102,18 @@ class ManifestoMapperTest {
     void deveMapearKmVaziosComoNull() {
 
         ManifestoDTO manifesto = new ManifestoDTO(
-                "MAN-001", "20/09/2026", "João da Silva", "12233245124",
-                "ABC1D23", "São Paulo", "1500,50", "", "", null, null
+                "MAN-004",
+                "20/09/2026",
+                "João da Silva",
+                "12233245124",
+                "ABC1D23",
+                "São Paulo",
+                "Rio de Janeiro",
+                "1500,50",
+                "",  // km saída vazio
+                "",  // km chegada vazio
+                "PENDENTE",
+                null
         );
 
         Viagem viagem = mapper.toEntity(manifesto);
@@ -80,11 +123,44 @@ class ManifestoMapperTest {
     }
 
     @Test
+    void deveMapearValorFreteComVirgula() {
+
+        ManifestoDTO manifesto = new ManifestoDTO(
+                "MAN-005",
+                "20/09/2026",
+                "João da Silva",
+                "12233245124",
+                "ABC1D23",
+                "São Paulo",
+                "Rio de Janeiro",
+                "2.500,99",  // Com separador de milhar
+                "10000",
+                "10250",
+                "PENDENTE",
+                null
+        );
+
+        Viagem viagem = mapper.toEntity(manifesto);
+
+        assertEquals(new BigDecimal("2500.99"), viagem.getValorFrete());
+    }
+
+    @Test
     void deveAssumirPendenteQuandoStatusVazio() {
 
         ManifestoDTO manifesto = new ManifestoDTO(
-                "MAN-001", "20/09/2026", "João da Silva", "12233245124",
-                "ABC1D23", "São Paulo", "1500,50", null, null, "", null
+                "MAN-006",
+                "20/09/2026",
+                "João da Silva",
+                "12233245124",
+                "ABC1D23",
+                "São Paulo",
+                "Rio de Janeiro",
+                "1500,50",
+                "10000",
+                "10250",
+                "",  // status vazio
+                null
         );
 
         Viagem viagem = mapper.toEntity(manifesto);
@@ -93,11 +169,67 @@ class ManifestoMapperTest {
     }
 
     @Test
+    void deveMapearStatusEmTransito() {
+
+        ManifestoDTO manifesto = new ManifestoDTO(
+                "MAN-007",
+                "20/09/2026",
+                "João da Silva",
+                "12233245124",
+                "ABC1D23",
+                "São Paulo",
+                "Rio de Janeiro",
+                "1500,50",
+                "10000",
+                "10250",
+                "EM TRANSITO",
+                null
+        );
+
+        Viagem viagem = mapper.toEntity(manifesto);
+
+        assertEquals(StatusViagem.EM_TRANSITO, viagem.getStatus());
+    }
+
+    @Test
+    void deveMapearStatusFinalizado() {
+
+        ManifestoDTO manifesto = new ManifestoDTO(
+                "MAN-008",
+                "20/09/2026",
+                "João da Silva",
+                "12233245124",
+                "ABC1D23",
+                "São Paulo",
+                "Rio de Janeiro",
+                "1500,50",
+                "10000",
+                "10250",
+                "FINALIZADO",
+                null
+        );
+
+        Viagem viagem = mapper.toEntity(manifesto);
+
+        assertEquals(StatusViagem.FINALIZADO, viagem.getStatus());
+    }
+
+    @Test
     void deveRejeitarManifestoSemManifesto() {
 
         ManifestoDTO manifesto = new ManifestoDTO(
-                "", "20/09/2026", "João da Silva", "12233245124",
-                "ABC1D23", "São Paulo", "1500,50", null, null, null, null
+                "",  // manifesto vazio
+                "20/09/2026",
+                "João da Silva",
+                "12233245124",
+                "ABC1D23",
+                "São Paulo",
+                "Rio de Janeiro",
+                "1500,50",
+                "10000",
+                "10250",
+                "PENDENTE",
+                null
         );
 
         IllegalArgumentException exception = assertThrows(
@@ -112,8 +244,18 @@ class ManifestoMapperTest {
     void deveRejeitarManifestoSemData() {
 
         ManifestoDTO manifesto = new ManifestoDTO(
-                "MAN-001", "", "João da Silva", "12233245124",
-                "ABC1D23", "São Paulo", "1500,50", null, null, null, null
+                "MAN-001",
+                "",  // data vazia
+                "João da Silva",
+                "12233245124",
+                "ABC1D23",
+                "São Paulo",
+                "Rio de Janeiro",
+                "1500,50",
+                "10000",
+                "10250",
+                "PENDENTE",
+                null
         );
 
         IllegalArgumentException exception = assertThrows(
@@ -128,8 +270,18 @@ class ManifestoMapperTest {
     void deveRejeitarManifestoSemValorFrete() {
 
         ManifestoDTO manifesto = new ManifestoDTO(
-                "MAN-001", "20/09/2026", "João da Silva", "12233245124",
-                "ABC1D23", "São Paulo", "", null, null, null, null
+                "MAN-001",
+                "20/09/2026",
+                "João da Silva",
+                "12233245124",
+                "ABC1D23",
+                "São Paulo",
+                "Rio de Janeiro",
+                "",  // valor frete vazio
+                "10000",
+                "10250",
+                "PENDENTE",
+                null
         );
 
         IllegalArgumentException exception = assertThrows(
@@ -144,12 +296,46 @@ class ManifestoMapperTest {
     void deveRejeitarStatusInvalido() {
 
         ManifestoDTO manifesto = new ManifestoDTO(
-                "MAN-001", "20/09/2026", "João da Silva", "12233245124",
-                "ABC1D23", "São Paulo", "1500,50", null, null, "Cancelado", null
+                "MAN-001",
+                "20/09/2026",
+                "João da Silva",
+                "12233245124",
+                "ABC1D23",
+                "São Paulo",
+                "Rio de Janeiro",
+                "1500,50",
+                "10000",
+                "10250",
+                "CANCELADO",  // Status inválido
+                null
         );
 
         assertThrows(
                 IllegalArgumentException.class,
+                () -> mapper.toEntity(manifesto)
+        );
+    }
+
+    @Test
+    void deveRejeitarDataInvalida() {
+
+        ManifestoDTO manifesto = new ManifestoDTO(
+                "MAN-001",
+                "32/13/2026",  // Data inválida
+                "João da Silva",
+                "12233245124",
+                "ABC1D23",
+                "São Paulo",
+                "Rio de Janeiro",
+                "1500,50",
+                "10000",
+                "10250",
+                "PENDENTE",
+                null
+        );
+
+        assertThrows(
+                Exception.class,  // DateTimeParseException
                 () -> mapper.toEntity(manifesto)
         );
     }

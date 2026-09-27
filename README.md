@@ -1,6 +1,6 @@
 # <p align="center">**Plataforma de Controle de Motoristas Agregados**</p>
 <p align="center">
-  <img width="200" alt="ominidevs_logo" src="https://i.imgur.com/VbBN3Tk.jpeg" />
+  <img src="https://i.imgur.com/VbBN3Tk.jpeg" width="170x" height="170x" style="border-radius:20%;">
 </p>
 <div align="center">
   <strong>OMINIDEVS LOG</strong><br>
@@ -9,11 +9,9 @@
 <div align="center">
                                                                                                                                                                                                                                
 
-| <a href="#tecnologias">Tecnologias</a> • <a href="#problema">Problema</a> • <a href="#solucao">Solução</a> • <a href="#repositorios">Repositórios</a> • <a href="#roadmap">Roadmap</a> • <a href="#cronograma">Cronograma</a> 
-<a href="#backlog">Backlog</a> • <a href="#instalacao">Instalação</a> • <a href="#usuario">Manual do Usuário</a> • <a href="#modelagem">Modelagem do Banco</a> • <a href="#equipe">Equipe</a> |
+<a href="#problema">Problema</a> • <a href="#solucao">Solução</a> • <a href="#backlog">Backlog</a> • <a href="#cronograma">Cronograma de Sprints</a> • <a href="#definition-of-ready-dor">DoR</a> • <a href="#definition-of-done-dod">DoD</a> • <a href="#tecnologias">Tecnologias</a> • <a href="fluxo-de-trabalho">Fluxo de Trabalho</a> • <a href="#equipe">Equipe</a> |
 </div>
 
-## 💻 **Tecnologias e ferramentas utilizadas** <a id="tecnologias"></a>
 
 ## 📌 **Problema** <a id="problema"></a>
 
@@ -23,48 +21,114 @@ A transportadora não tem visibilidade consolidada sobre os motoristas agregados
 
 A proposta é um jeito simples e visual de acompanhar motoristas agregados, cruzando quantas viagens cada um fez, se está disponível pra novas operações e quanto retorno cada viagem realmente trouxe. Com isso, o time enxerga rápido quem está livre para pegar uma nova viagem (sem deixar ninguém parado à toa) e quem está trazendo o melhor resultado financeiro. 
 
-## 📦 **Repositórios do Projeto** <a id="repositorios"></a>
 
-## 🗺️ **Roadmap** <a id="roadmap"></a>
+
+## <a id="backlog"></a> 📝 **Backlog do Produto** 
+
+Parceiro: Newelog
+| Rank | ID | Prioridade | User Story | Estimativa | Sprint |
+|:---:|:---:|:---:|---|:---:|:---:|
+| 1 | US5 | Alta | Como operador, quero ver em uma tela única quais motoristas estão disponíveis, para direcionar novas viagens rapidamente. | 4 | 1 |
+| 2 | US2 | Alta | Como operador, quero importar o relatório de manifesto para popular viagens automaticamente. | 4 | 1 |
+| 3 | US1 | Alta |  Como operador, quero exportar a planilha da análise obtida e importá-la no sistema, para não perder o fluxo já usado. | 4 | 1 |
+| 4 | US6 | Alta | Como operador, quero ver a % de utilização de cada motorista, para evitar a desocupação de frotas. | 3 | 1 |
+| 5 | US3 | Alta | Como gestor, quero visualizar quantas viagens cada motorista fez no mês, para medir a frequência de contratação. | 4 | 1 |
+| 6 | US7 | Média | Como gestor, quero receber um alerta de motoristas com baixa utilização no mês, para agir sobre ociosidade. | 5 | 2 |
+| 7 | US4 | Média | Como operador, quero filtrar viagens por destino/região, para entender a demanda por rota. | 4 | 2 |
+| 8 | US8 | Média | Como gestor, quero registrar frete e custos de cada viagem, para calcular a rentabilidade. | 4 | 2 |
+| 9 | US9 | Média | Como gestor, quero visualizar a rentabilidade média por viagem de cada motorista, para comparar desempenho. | 4 | 2 |
+| 10 | US11 | Média | Como gestor, quero comparar a rentabilidade entre tipos de veículo, para decisões estratégicas de frota. | 5 | 2 |
+| 11 | US10 | Média | Como gestor, quero ver quanto cada motorista recebeu no mês, para controle de pagamento. | 3 | 2 |
+| 12 | US13 | Baixa | Como gestor, quero um ranking mensal de motoristas, para identificar os melhores resultados. | 4 | 3 |
+| 13 | US14 | Baixa | Como gestor, quero identificar as rotas mais concorridas do mês, para criar campanhas de engajamento de motoristas. | 3 | 3 |
+| 14 | US12 | Baixa | Como gestor, quero segmentar indicadores por gênero do motorista, para análise de diversidade da frota. | 3| 3 |
 
 ## 📅 **Cronograma de Sprints** <a id="cronograma"></a>
 
-## 📝 **Backlog do Produto** <a id="backlog"></a>
+| Sprint | Período | Documentação | Status |
+|:---:|:---:|:---:|:---:|
+| **SPRINT 1** | 28/09 - 02/10 | [Sprint 1 docs](docs/sprints/sprint-1.md) | 🟡 Em andamento |
+| **SPRINT 2** | 26/10 - 30/10 | [Sprint 2 docs](docs/sprints/sprint-2.md) | ⚪ Não iniciada |
+| **SPRINT 3** | 23/11 - 27/11 | [Sprint 3 docs](docs/sprints/sprint-3.md) | ⚪ Não iniciada|
 
-Parceiro: Newelog
+### 📋Definition of Ready (DoR) <a id="definition-of-ready-dor"></a>
 
-| Rank | ID | Prioridade | User Story | Estimativa | Sprint |
-|:---:|:---:|:---:|---|:---:|:---:|
-| 1 | US5 | Alta | Como operador, quero ver em uma tela única quais motoristas estão disponíveis, para direcionar novas viagens rapidamente. | | 1 |
-| 2 | US2 | Alta | Como operador, quero importar o relatório de manifesto para popular viagens automaticamente. | | 1 |
-| 3 | US1 | Alta |  Como operador, quero exportar a planilha da análise obtida e importá-la no sistema, para não perder o fluxo já usado. | | 1 |
-| 4 | US6 | Alta | Como operador, quero ver a % de utilização de cada motorista, para evitar a desocupação de frotas. | | 1 |
-| 5 | US3 | Alta | Como gestor, quero visualizar quantas viagens cada motorista fez no mês, para medir a frequência de contratação. | | 1 |
-| 6 | US7 | Média | Como gestor, quero receber um alerta de motoristas com baixa utilização no mês, para agir sobre ociosidade. | | 2 |
-| 7 | US4 | Média | Como operador, quero filtrar viagens por destino/região, para entender a demanda por rota. | | 2 |
-| 8 | US8 | Média | Como gestor, quero registrar frete e custos de cada viagem, para calcular a rentabilidade. | | 2 |
-| 9 | US9 | Média | Como gestor, quero visualizar a rentabilidade média por viagem de cada motorista, para comparar desempenho. | | 2 |
-| 10 | US11 | Média | Como gestor, quero comparar a rentabilidade entre tipos de veículo, para decisões estratégicas de frota. | | 2 |
-| 11 | US10 | Média | Como gestor, quero ver quanto cada motorista recebeu no mês, para controle de pagamento. | | 2 |
-| 12 | US13 | Baixa | Como gestor, quero um ranking mensal de motoristas, para identificar os melhores resultados. | | 3 |
-| 13 | US14 | Baixa | Como gestor, quero identificar as rotas mais concorridas do mês, para criar campanhas de engajamento de motoristas. | | 3 |
-| 14 | US12 | Baixa | Como gestor, quero segmentar indicadores por gênero do motorista, para análise de diversidade da frota. | | 3 |
+| DoR |
+| :--- |
+| **Definição do (MVP):** Estar definido entregas de maior valor para o usuário. |
+| **Critérios de Aceitação e Regras de Negócio:** Listar as condições, cobrindo o fluxo principal e os principais cenários alternativos que definem quando a história está concluída. As regras de negócio associadas devem estar detalhadas. |
+| **Definição de Dados e Mensagens:** Os dados a armazenar foram bem definidos, com tipos e validações. Mensagens de confirmação, erro e aviso foram definidas. |
+| **Esforço estimado:** Realizar a estimativa de esforço técnico em conjunto com a equipe com planning poker, atribuindo pontuação de esforço estimado à história. |
+| **Sem impedimentos para o início:** Verificar que não há dependências externas, bloqueios técnicos ou pendências que impeçam o início do desenvolvimento da história na Sprint. |
+| **Esboço visual:** O esboço visual (telas/wireframes) e a navegação estão prontas (se necessário). |
 
-## ⚙️ **Manual de instalação** <a id="instalacao"></a>
+### 📋Definition of Done (DoD) <a id="definition-of-done-dod"></a>
 
-## 👤 **Manual do usuário** <a id="usuario"></a>
+| DoD |
+| :--- |
+| **Critérios de Aceitação:** Critérios de aceitação foram atendidos. |
+| **Versionamento:** Código versionado seguindo o padrão gitflow. |
+| **Testes:** Testes unitários validados. |
+| **Code Review:** Pull Request aprovado por no mínimo 1 membro da equipe. |
+| **Manuais:** O manual de usuário e o manual de instalação foram atualizados (se a funcionalidade exigir). |
 
-## 🛠️ **Modelagem do banco de dados** <a id="modelagem"></a>
+## 💻 Tecnologias <a id="tecnologias"></a>
+
+### 🌐 Frontend
+![React](https://img.shields.io/badge/React_19-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)
+![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white)
+![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black)
+![Vite](https://img.shields.io/badge/Vite-646CFF?style=for-the-badge&logo=vite&logoColor=FFD62E)
+![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS_v4-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)
+![React Router](https://img.shields.io/badge/React_Router-CA4245?style=for-the-badge&logo=react-router&logoColor=white)
+
+### ⚙️ Backend & SGBD
+![Java](https://img.shields.io/badge/Java_21-ED8B00?style=for-the-badge&logo=openjdk&logoColor=white)
+![Spring Boot](https://img.shields.io/badge/Spring_Boot-6DB33F?style=for-the-badge&logo=spring-boot&logoColor=white)
+![Spring Web MVC](https://img.shields.io/badge/Spring_Web_MVC-6DB33F?style=for-the-badge&logo=spring&logoColor=white)
+![Spring Data JPA](https://img.shields.io/badge/Spring_Data_JPA-6DB33F?style=for-the-badge&logo=spring&logoColor=white)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-316192?style=for-the-badge&logo=postgresql&logoColor=white)
+
+### 🛠️ DevOps & Ferramentas
+![Docker](https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white)
+![Docker Compose](https://img.shields.io/badge/Docker_Compose-2496ED?style=for-the-badge&logo=docker&logoColor=white)
+![Flyway](https://img.shields.io/badge/Flyway-CC0200?style=for-the-badge&logo=flyway&logoColor=white)
+![Gradle](https://img.shields.io/badge/Gradle-02303A?style=for-the-badge&logo=gradle&logoColor=white)
+![Git](https://img.shields.io/badge/Git-F05032?style=for-the-badge&logo=git&logoColor=white)
+![GitHub](https://img.shields.io/badge/GitHub-181717?style=for-the-badge&logo=github&logoColor=white)
+![Jira](https://img.shields.io/badge/Jira-0052CC?style=for-the-badge&logo=jira&logoColor=white)
+
+## 🔀 Fluxo de Trabalho <a id="fluxo-de-trabalho"></a>
+
+```text
+┌──────────────────────────────────────────────┐   📋 PASSO A PASSO
+│               main — produção                │   
+└──────────────────────────────────────────────┘   1️ - Criar branch Sempre da dev (feature/, fix/)
+                       ↑                        
+                       │ 4 PR dev → main           
+                       │                           2️ - Desenvolver commits claros (feat:, fix:, docs:)
+┌──────────────────────────────────────────────┐   
+│              dev — integração                |
+└──────────────────────────────────────────────┘   3️ - Abrir PR para a dev revisão da equipe obrigatória.
+         ↑                             │           (Apagar branch remota após merge)
+         │ 3 abrir PR          1 criar │           
+         │ para dev             da dev │           
+         │                             ↓           4️ - PR dev para main quando a US/Sprint acabar.
+   ┌────────────────────────────────────────┐      
+   │        feature/ fix/ docs/ ...         │      
+   └────────────────────────────────────────┘      
+                       ↑                           
+          2 desenvolva e faça commits
+````
 
 ## 👥 **Equipe** <a id="equipe"></a>
 
-|       MEMBRO        |     PAPEL     |                                                                        GITHUB                                                                        |
-| :-----------------: | :-----------: | :--------------------------------------------------------------------------------------------------------------------------------------------------: |
-|     Kathelyn Zanin      | Product Owner | <a href="https://github.com/KathelynZanin"><img src="https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white"></a>  |
-|    Vinicius Moreira    | Scrum Master  | <a href="https://github.com/Viniciuss-Moreira"><img src="https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white"></a> |  
-| Guilherme Alvarenga | Desenvolvedor |   <a href="https://github.com/hiGuigo"><img src="https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white"></a>  |                     |
-|     Henrique Martins      | Desenvolvedor | <a href="https://github.com/DeveloperCorsair"><img src="https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white"></a>  |
-|     Márcio Inocêncio      | Desenvolvedor | <a href="https://github.com/Marcio-gustavoI"><img src="https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white"></a>  |                        |
-|     Pedro Lucas      | Desenvolvedor | <a href="https://github.com/pedrodevroot"><img src="https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white"></a>  |
-|     Thomaz De Mello      | Desenvolvedor | <a href="https://github.com/ThOMaZMe11o"><img src="https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white"></a>  |                         |
-|   Yuri Gonçalves    | Desenvolvedor |   <a href="https://github.com/Yuri-Dev-OH"><img src="https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white"></a> |
+| Foto | Nome | Função | GitHub |
+| :---: | :--- | :--- | :---: |
+| <img src="https://github.com/Marcio-gustavoI.png" width=50px alt="Foto do Márcio"> | **Márcio Inocêncio** | Product Owner | <a href="https://github.com/Marcio-gustavoI"><img src="https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white"></a> |
+| <img src="https://github.com/Viniciuss-Moreira.png" width=50px alt="Foto do Vinicius"> | **Vinicius Moreira** | Scrum Master | <a href="https://github.com/Viniciuss-Moreira"><img src="https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white"></a> |
+| <img src="https://github.com/hiGuigo.png" width=50px alt="Foto do Guilherme"> | **Guilherme Alvarenga** | Desenvolvedor | <a href="https://github.com/hiGuigo"><img src="https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white"></a> |
+| <img src="https://github.com/DeveloperCorsair.png" width=50px alt="Foto do Henrique"> | **Henrique Martins** | Desenvolvedor | <a href="https://github.com/DeveloperCorsair"><img src="https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white"></a> |
+| <img src="https://github.com/pedrodevroot.png" width=50px alt="Foto do Pedro"> | **Pedro Lucas** | Desenvolvedor | <a href="https://github.com/pedrodevroot"><img src="https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white"></a> |
+| <img src="https://github.com/ThOMaZMe11o.png" width=50px alt="Foto do Thomaz"> | **Thomaz De Mello** | Desenvolvedor | <a href="https://github.com/ThOMaZMe11o"><img src="https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white"></a> |
+| <img src="https://github.com/Yuri-Dev-OH.png" width=50px alt="Foto do Yuri"> | **Yuri Gonçalves** | Desenvolvedor | <a href="https://github.com/Yuri-Dev-OH"><img src="https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white"></a> |
