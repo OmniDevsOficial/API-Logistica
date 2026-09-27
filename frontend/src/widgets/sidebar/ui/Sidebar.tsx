@@ -19,7 +19,7 @@ interface NavItem {
 
 const MAIN_NAV_ITEMS: NavItem[] = [
   { label: "Dashboard", icon: LayoutGrid, path: "/" },
-  { label: "Motoristas", icon: User },
+  { label: "Motoristas", icon: User, path: "/motoristas" },
   { label: "Registros", icon: ClipboardList },
   { label: "Viagens", icon: Truck, path: "/viagens" },
   { label: "Ranking", icon: Trophy },
