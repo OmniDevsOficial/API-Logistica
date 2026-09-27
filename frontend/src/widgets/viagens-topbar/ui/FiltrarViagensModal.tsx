@@ -1,7 +1,7 @@
 // Modal de filtros do dashboard de viagens.
 // 4 critérios: destino, status, frete (min/max) e mês — todos batendo
 // com os query params reais do endpoint GET /viagens.
-import { useState, useEffect, useRef } from "react";
+import { useEffect, useRef } from "react";
 import {
   X,
   SlidersHorizontal,
@@ -18,9 +18,9 @@ type FiltrarViagensModalProps = {
 };
 
 const STATUS_OPCOES = [
-  { valor: "PENDENTE", label: "Pendente", cor: "bg-amber-400" },
-  { valor: "EM_TRANSITO", label: "Em trânsito", cor: "bg-blue-400" },
-  { valor: "FINALIZADO", label: "Finalizado", cor: "bg-emerald-400" },
+  { valor: "pendente", label: "Pendente", cor: "bg-amber-400" },
+  { valor: "em_transito", label: "Em Trânsito", cor: "bg-blue-400" },
+  { valor: "finalizado", label: "Finalizado", cor: "bg-green-500" },
 ] as const;
 
 const INPUT_CLASS =
@@ -185,7 +185,7 @@ export function FiltrarViagensModal({
           </div>
 
           {/* Mês */}
-          <div>
+          {/* <div>
             <label
               htmlFor="mes"
               className="mb-1.5 block text-sm font-medium text-slate-700"
@@ -201,7 +201,7 @@ export function FiltrarViagensModal({
               }
               className={INPUT_CLASS}
             />
-          </div>
+          </div> */}
 
           {erro && (
             <div className="flex items-start gap-2 rounded-lg bg-amber-50 border border-amber-200 px-3 py-2.5">

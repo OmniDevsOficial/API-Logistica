@@ -15,8 +15,7 @@ export function ViagensPage() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   // null = modal ainda não aplicou nenhum filtro -> usa a lista completa da API
-  const [viagensFiltradasPorModal, setViagensFiltradasPorModal] =
-    useState<Viagem[] | null>(null);
+  const [viagensFiltradasPorModal, setViagensFiltradasPorModal] = useState<Viagem[] | null>(null);
 
   useEffect(() => {
     let isCurrent = true;
@@ -28,7 +27,7 @@ export function ViagensPage() {
     };
   }, []);
 
-  // Resultado do modal (se já rodou) ou tudo que veio da API
+  // Resultado do modal
   const viagensBase = viagensFiltradasPorModal ?? data?.viagens ?? [];
 
   // Aqui é a Busca por texto do filtro
