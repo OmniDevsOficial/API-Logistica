@@ -35,6 +35,9 @@ public class Viagem {
     @Column(name = "veiculo", nullable = false, length = 50)
     private String veiculo;
 
+    @Column(name = "cidade_origem", length = 255)
+    private String cidadeOrigem;
+
     @Column(name = "cidade_destino", length = 255)
     private String cidadeDestino;
 
@@ -53,9 +56,6 @@ public class Viagem {
 
     @Column(name = "observacoes", length = 500)
     private String observacoes;
-
-    @Column(name = "cidade_origem", length = 255)
-    private String cidadeOrigem;
 
     @Column(name = "estimativa_dias")
     private Integer estimativaDias;
@@ -137,6 +137,14 @@ public class Viagem {
         this.veiculo = veiculo;
     }
 
+    public String getCidadeOrigem() {
+        return cidadeOrigem;
+    }
+
+    public void setCidadeOrigem(String cidadeOrigem) {
+        this.cidadeOrigem = cidadeOrigem;
+    }
+
     public String getCidadeDestino() {
         return cidadeDestino;
     }
@@ -183,14 +191,6 @@ public class Viagem {
 
     public void setObservacoes(String observacoes) {
         this.observacoes = observacoes;
-    }
-
-    public String getCidadeOrigem() {
-        return cidadeOrigem;
-    }
-
-    public void setCidadeOrigem(String cidadeOrigem) {
-        this.cidadeOrigem = cidadeOrigem;
     }
 
     public Integer getEstimativaDias() {

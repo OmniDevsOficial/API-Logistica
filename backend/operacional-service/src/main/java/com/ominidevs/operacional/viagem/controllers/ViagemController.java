@@ -39,6 +39,10 @@ public class ViagemController {
         return ResponseEntity.ok(viagens);
     }
 
+    /**
+     * Busca e filtra viagens Exemplo de requisição: GET
+     * /api/operacional/viagens?destino=São%20Paulo
+     */
     @GetMapping
     public ResponseEntity<List<ViagemResponseDTO>> listar(
             @RequestParam(required = false) String destino,
@@ -57,6 +61,10 @@ public class ViagemController {
         return ResponseEntity.ok(response);
     }
 
+    /**
+     * Converte entidade Viagem para DTO de resposta. Calcula distância em km a
+     * partir da diferença entre km chegada e km saída.
+     */
     private ViagemResponseDTO toResponseDTO(Viagem viagem) {
 
         Integer distanciaKm = null;
@@ -67,12 +75,12 @@ public class ViagemController {
 
         return new ViagemResponseDTO(
                 viagem.getId(),
-                "Não informado", // origem
+                viagem.getCidadeOrigem(),
                 viagem.getCidadeDestino(),
                 viagem.getValorFrete(),
                 viagem.getVeiculo(),
                 distanciaKm,
-                null, // estimativaDias
+                viagem.getEstimativaDias(),
                 converterStatusParaFrontend(viagem.getStatus())
         );
     }
@@ -80,11 +88,11 @@ public class ViagemController {
     private String converterStatusParaFrontend(StatusViagem status) {
         return switch (status) {
             case PENDENTE ->
-                "disponivel";
+                "pendente";
             case EM_TRANSITO ->
-                "confirmada";
+                "em_transito";
             case FINALIZADO ->
-                "concluida";
+                "finalizado";
         };
     }
 }

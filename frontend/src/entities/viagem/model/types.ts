@@ -9,7 +9,7 @@ export interface Viagem {
   status: StatusViagem;
 }
 
-export type StatusViagem = "disponivel" | "confirmada" | "concluida";
+export type StatusViagem = "pendente" | "em_transito" | "finalizado";
 
 export interface ViagensData {
   periodoLabel: string;

@@ -9,7 +9,7 @@ export type FiltroViagens = {
   mes: string; // formato YYYY-MM ou MM
 };
 
-export type StatusViagem = 'PENDENTE' | 'EM_TRANSITO' | 'FINALIZADO';
+export type StatusViagem = 'pendente' | 'em_transito' | 'finalizado';
 
 export const filtroVazio: FiltroViagens = {
   destino: '',
