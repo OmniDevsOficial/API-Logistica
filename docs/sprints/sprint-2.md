@@ -8,7 +8,6 @@
   <a href="#sprint-2-meta"> Metas Sprint 2 </a> |
   <a href="#sprint-2"> Sprint 2 </a> |
   <a href="#documentos"> Documentos </a> |
-  <a href="#Estrategia-de-Branches"> Estratégia de Branches </a> |
   <a href="#equipe"> Equipe </a> |
 </p>
 
@@ -31,19 +30,16 @@
 
 | Rank | ID | Prioridade | User Story | Estimativa |
 | :---: | :---: | :---: | :--- | :---: |
-| 🎗 1 | US7 | Média | Como gestor, quero receber um alerta de motoristas com baixa utilização no mês, para agir sobre ociosidade. | 5 |
-| 🎗 2 | US4 | Média | Como operador, quero filtrar viagens por destino/região, para entender a demanda por rota. | 4 |
-| 🎗 3 | US8 | Média | Como gestor, quero registrar frete e custos de cada viagem, para calcular a rentabilidade. | 4 |
-| 🎗 4 | US9 | Média | Como gestor, quero visualizar a rentabilidade média por viagem de cada motorista, para comparar desempenho. | 4 |
-| 🎗 5 | US11 | Média | Como gestor, quero comparar a rentabilidade entre tipos de veículo, para decisões estratégicas de frota. | 5 |
-| 🎗 6 | US10 | Média | Como gestor, quero ver quanto cada motorista recebeu no mês, para controle de pagamento. | 3 |
+| 🎗 1 | US8 | Média | Como gestor, quero registrar frete e custos de cada viagem, para calcular a rentabilidade. | 5 |
+| 🎗 2 | US9 | Média | Como gestor, quero visualizar a rentabilidade média por viagem de cada motorista, para comparar desempenho. | 4 |
+| 🎗 3 | US5 | Média | Como operador, quero ver em uma tela única quais motoristas estão disponíveis, para direcionar novas viagens rapidamente. | 4 |
+| 🎗 4 | US7 | Média | Como gestor, quero receber um alerta de motoristas com baixa utilização no mês, para agir sobre ociosidade. | 5 |
+| 🎗 5 | US10 | Média | Como gestor, quero ver quanto cada motorista recebeu no mês, para controle de pagamento. | 3 |
 
 ## 📂 Documentos e anexos <a id="documentos"></a>
 
-- [Cenários de User Stories](../documentacao/cenarios.pdf)
-- [Backlog completo](../../README.md#backlog)
-- [DoR completo](../../README.md#definition-of-ready-dor)
-- [DoD completo](../../README.md#definition-of-done-dod)
+- [Cenários de User Stories](../documentacao/Cenarios_sprint1.pdf)
+- [Backlog completo](../documentacao/Backlog.pdf)
 
 
 
