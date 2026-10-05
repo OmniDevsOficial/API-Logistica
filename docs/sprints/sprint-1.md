@@ -8,7 +8,7 @@
   <a href="#sprint-1-meta"> Metas Sprint 1 </a> |
   <a href="#sprint-1"> Sprint 1 </a> |
   <a href="#documentos"> Documentos </a> |
-  <a href="#Estrategia-de-Branches"> Estratégia de Branches </a> |
+    <a href="#Link-do-Video"> Link do vídeo </a> |
   <a href="#equipe"> Equipe </a> |
 </p>
 
@@ -22,7 +22,7 @@
 
 | Foco | User Story Meta |
 | :---: | :--- |
-| 🥇 | **US5:** Como operador, quero ver em uma tela única quais motoristas estão disponíveis, para direcionar novas viagens rapidamente. |
+| 🥇 | **US1:**  Como operador, quero exportar a planilha da análise obtida e importá-la no sistema, para não perder o fluxo já usado. |
 | 🥈 | **US2:** Como operador, quero importar o relatório de manifesto para popular viagens automaticamente. |
 
 <br>
@@ -31,19 +31,22 @@
 
 | Rank | ID | Prioridade | User Story | Estimativa |
 | :---: | :---: | :---: | :--- | :---: |
-| 🎗 1 | US5 | Alta | Como operador, quero ver em uma tela única quais motoristas estão disponíveis, para direcionar novas viagens rapidamente. | 4 |
+| 🎗 1 | US1 | Alta | Como operador, quero exportar a planilha da análise obtida e importá-la no sistema, para não perder o fluxo já usado. | 4 |
 | 🎗 2 | US2 | Alta | Como operador, quero importar o relatório de manifesto para popular viagens automaticamente. | 4 |
-| 🎗 3 | US1 | Alta | Como operador, quero exportar a planilha da análise obtida e importá-la no sistema, para não perder o fluxo já usado. | 4 |
+| 🎗 3 | US4 | Alta |  Como operador, quero filtrar viagens por destino/região, para entender a demanda por rota. | 4 |
 | 🎗 4 | US6 | Alta | Como operador, quero ver a % de utilização de cada motorista, para evitar a desocupação de frotas. | 3 |
 | 🎗 5 | US3 | Alta | Como gestor, quero visualizar quantas viagens cada motorista fez no mês, para medir a frequência de contratação. | 4 |
 
 
 ## 📂 Documentos e anexos <a id="documentos"></a>
  
-- [Cenários de User Stories](../documentacao/cenarios.pdf)
-- [Backlog completo](../../README.md#backlog)
-- [DoR completo](../../README.md#definition-of-ready-dor)
-- [DoD completo](../../README.md#definition-of-done-dod)
+- [Cenários de User Stories](../documentacao/Cenarios_sprint1.pdf)
+- [Backlog completo](../documentacao/Backlog.pdf)
+- [DoR e DoD da Sprint](../documentacao/DoR_e_DoD_sprint1.pdf)
+
+## 🎥 Link do Vídeo <a id="Link-do-Video"></a>
+
+<a href="#"><img src="https://img.shields.io/badge/YouTube-FF0000?style=for-the-badge&logo=youtube&logoColor=white"/></a> 
 
 
 ## 🎓 Conheça a equipe talentosa por trás do projeto <a id="equipe"></a>

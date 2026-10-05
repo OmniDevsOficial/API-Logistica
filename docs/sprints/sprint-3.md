@@ -8,7 +8,6 @@
   <a href="#sprint-3-meta"> Metas Sprint 3 </a> |
   <a href="#sprint-3"> Sprint 3 </a> |
   <a href="#documentos"> Documentos </a> |
-  <a href="#Estrategia-de-Branches"> Estratégia de Branches </a> |
   <a href="#equipe"> Equipe </a> |
 </p>
 
@@ -31,21 +30,21 @@
 
 | Rank | ID | Prioridade | User Story | Estimativa |
 | :---: | :---: | :---: | :--- | :---: |
-| 🎗 1 | US13 | Baixa | Como gestor, quero um ranking mensal de motoristas, para identificar os melhores resultados. | 4 |
-| 🎗 2 | US14 | Baixa | Como gestor, quero identificar as rotas mais concorridas do mês, para criar campanhas de engajamento de motoristas. | 3 |
-| 🎗 3 | US12 | Baixa | Como gestor, quero segmentar indicadores por gênero do motorista, para análise de diversidade da frota. | 3 |
+| 🎗 1 | US11 | Média | Como gestor, quero comparar a rentabilidade entre tipos de veículo, para decisões estratégicas de frota. | 3 |
+| 🎗 2 | US13 | Baixa | Como gestor, quero um ranking mensal de motoristas, para identificar os melhores resultados. | 4 |
+| 🎗 3 | US14 | Baixa | Como gestor, quero identificar as rotas mais concorridas do mês, para criar campanhas de engajamento de motoristas. | 3 |
+| 🎗 4 | US12 | Baixa | Como gestor, quero segmentar indicadores por gênero do motorista, para análise de diversidade da frota. | 3|
 
 ## 📂 Documentos e anexos <a id="documentos"></a>
 
-- [Cenários de User Stories](../documentacao/cenarios.pdf)
-- [Backlog completo](../../README.md#backlog)
-- [DoR completo](../../README.md#definition-of-ready-dor)
-- [DoD completo](../../README.md#definition-of-done-dod)
+- [Cenários de User Stories](../documentacao/Cenarios_sprint1.pdf)
+- [Backlog completo](../documentacao/Backlog.pdf)
 
 
 ## 🎓 Conheça a equipe talentosa por trás do projeto <a id="equipe"></a>
 
 | Foto | Nome | Função | GitHub |
+| :---: | :--- | :--- | :---: |
 | <img src="https://github.com/Marcio-gustavoI.png" width=50px alt="Foto do Márcio"> | **Márcio Inocêncio** | Product Owner | <a href="https://github.com/Marcio-gustavoI"><img src="https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white"></a> |
 | <img src="https://github.com/Viniciuss-Moreira.png" width=50px alt="Foto do Vinicius"> | **Vinicius Moreira** | Scrum Master | <a href="https://github.com/Viniciuss-Moreira"><img src="https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white"></a> |
 | <img src="https://github.com/hiGuigo.png" width=50px alt="Foto do Guilherme"> | **Guilherme Alvarenga** | Desenvolvedor | <a href="https://github.com/hiGuigo"><img src="https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white"></a> |
