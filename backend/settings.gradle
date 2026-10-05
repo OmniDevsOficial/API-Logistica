@@ -1,0 +1,9 @@
+plugins {
+    id 'org.gradle.toolchains.foojay-resolver-convention' version '1.0.0'
+}
+
+rootProject.name = 'backend'
+
+// Diz quais microsserviços existem para serem coordenados
+include 'operacional-service'
+include 'relatorio-service'
