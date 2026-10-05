@@ -1,0 +1,32 @@
+server:
+  port: 8082
+
+spring:
+  config:
+    import: optional:file:.env[.properties],optional:file:../.env[.properties]
+  application:
+    name: operacional-service
+  datasource:
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/${POSTGRES_DB}?currentSchema=relatorio}
+    username: ${SPRING_DATASOURCE_USERNAME:${POSTGRES_USER}}
+    password: ${SPRING_DATASOURCE_PASSWORD:${POSTGRES_PASSWORD}}
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        default_schema: relatorio
+  flyway:
+    schemas: relatorio
+    create-schemas: true
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 15MB
+
+# Endereço do operacional-service - é assim que este serviço busca dados
+# de motorista/viagem/veiculo, sempre via HTTP, nunca acessando o schema
+# "operacional" diretamente.
+operacional:
+  service:
+    url: ${OPERACIONAL_SERVICE_URL:http://localhost:8081}
