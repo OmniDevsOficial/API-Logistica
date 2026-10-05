@@ -24,12 +24,11 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 /**
- * Testes unitários do filtro de viagens (GET /viagens - OM-76).
- * Cobre os cenários dos critérios de aceite:
- * 1. Filtros combinados (destino + mês, e demais) delegam ao repository
- * 2. Sem resultado -> lista vazia, sem exceção
- * 3. Sem nenhum filtro informado -> busca tudo
- * 4. Parâmetros inválidos (mês fora do formato, freteMin > freteMax) -> exceção, sem consultar o banco
+ * Testes unitários do filtro de viagens (GET /viagens - OM-76). Cobre os
+ * cenários dos critérios de aceite: 1. Filtros combinados (destino + mês, e
+ * demais) delegam ao repository 2. Sem resultado -> lista vazia, sem exceção 3.
+ * Sem nenhum filtro informado -> busca tudo 4. Parâmetros inválidos (mês fora
+ * do formato, freteMin > freteMax) -> exceção, sem consultar o banco
  */
 @ExtendWith(MockitoExtension.class)
 class ViagemServiceTest {
@@ -54,10 +53,12 @@ class ViagemServiceTest {
                 "12233245124",
                 "ABC1D23",
                 "São Paulo",
+                "Curitiba",
                 new BigDecimal("1500.50"),
                 null,
                 null,
                 StatusViagem.PENDENTE,
+                null,
                 null
         );
     }
