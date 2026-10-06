@@ -7,6 +7,7 @@ public class ManifestoDTO {
     private String motorista;
     private String cpf_motorista;
     private String veiculo;
+    private String origem;
     private String destino;
     private String valorFrete;
     private String kmSaida;
@@ -23,6 +24,7 @@ public class ManifestoDTO {
             String motorista,
             String cpf_motorista,
             String veiculo,
+            String origem,
             String destino,
             String valorFrete,
             String kmSaida,
@@ -35,6 +37,7 @@ public class ManifestoDTO {
         this.motorista = motorista;
         this.cpf_motorista = cpf_motorista;
         this.veiculo = veiculo;
+        this.origem = origem;
         this.destino = destino;
         this.valorFrete = valorFrete;
         this.kmSaida = kmSaida;
@@ -61,6 +64,10 @@ public class ManifestoDTO {
 
     public String getVeiculo() {
         return veiculo;
+    }
+
+    public String getOrigem() {
+        return origem;
     }
 
     public String getDestino() {
