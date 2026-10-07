@@ -19,6 +19,8 @@ dependencies {
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
 
     testImplementation 'org.springframework.boot:spring-boot-starter-webmvc-test'
+    // PostgreSQL descartável para testar consultas reais, usando a versão gerenciada pelo Spring Boot.
+    testImplementation 'org.testcontainers:testcontainers-postgresql'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 

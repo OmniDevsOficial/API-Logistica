@@ -1,59 +1,55 @@
 package com.ominidevs.operacional.indicadores.repositories;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import org.junit.jupiter.api.*;
-import org.junit.jupiter.api.condition.EnabledIfEnvironmentVariable;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.datasource.SingleConnectionDataSource;
+import org.springframework.transaction.annotation.Transactional;
 import com.ominidevs.operacional.indicadores.model.PeriodoConsulta;
 import static org.junit.jupiter.api.Assertions.*;
 
-// Integração opcional com PostgreSQL DESCARTÁVEL, separado do banco do projeto.
-// Configure INDICADORES_TEST_URL, INDICADORES_TEST_USER e INDICADORES_TEST_PASSWORD.
-// DDL e dados ficam numa transação revertida ao final de cada teste.
-@EnabledIfEnvironmentVariable(named = "INDICADORES_TEST_URL", matches = ".+")
+/** PostgreSQL descartável com migrations reais. Docker obrigatório; não ignora testes. */
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE, properties = {
+        "spring.datasource.url=jdbc:tc:postgresql:17-alpine:///indicadores?currentSchema=operacional",
+        "spring.datasource.driver-class-name=org.testcontainers.jdbc.ContainerDatabaseDriver",
+        "spring.datasource.username=test",
+        "spring.datasource.password=test",
+        "spring.jpa.hibernate.ddl-auto=validate",
+        "spring.jpa.properties.hibernate.default_schema=operacional",
+        "spring.flyway.schemas=operacional",
+        "spring.flyway.create-schemas=true"
+})
+@Transactional
 class UtilizacaoRepositoryTest {
-    private Connection connection;
-    private UtilizacaoRepository repository;
+    @Autowired private JdbcTemplate jdbc;
+    @Autowired private UtilizacaoRepository repository;
+    private Integer anaId;
 
-    @BeforeEach void preparar() throws Exception {
-        connection = DriverManager.getConnection(System.getenv("INDICADORES_TEST_URL"),
-                System.getenv("INDICADORES_TEST_USER"), System.getenv("INDICADORES_TEST_PASSWORD"));
-        connection.setAutoCommit(false);
-        var jdbc = new JdbcTemplate(new SingleConnectionDataSource(connection, true));
-        // Falha se o schema já existir: nunca reutilizar o banco da aplicação neste teste.
-        jdbc.execute("CREATE SCHEMA operacional");
-        jdbc.execute("CREATE TABLE operacional.motorista (id INTEGER, nome TEXT, cpf TEXT)");
-        jdbc.execute("CREATE TABLE operacional.viagem (data DATE, motorista TEXT, cpf_motorista TEXT, status TEXT)");
+    @BeforeEach void preparar() {
         jdbc.execute("""
-                INSERT INTO operacional.motorista VALUES
-                (1, 'Ana', '00123456789'), (2, 'Carlos', '99999999999');
-                INSERT INTO operacional.viagem VALUES
-                ('2026-09-01', 'ANA', '001.234.567-89', 'PENDENTE'),
-                ('2026-09-01', 'Ana Silva', '00123456789', 'FINALIZADO'),
-                ('2026-09-10', 'Bruno', '11111111111', 'EM_TRANSITO'),
-                ('2026-09-10', 'Sem CPF', NULL, 'PENDENTE'),
-                ('2026-09-10', 'Outro sem CPF', '', 'FINALIZADO'),
-                ('2026-08-31', 'Ana', '00123456789', 'PENDENTE'),
-                ('2026-09-11', 'Bruno', '11111111111', 'PENDENTE')
+                INSERT INTO operacional.motorista (nome, cpf, cidade, estado, data_criacao) VALUES
+                ('Ana', '00123456789', 'Campinas', 'SP', '2026-01-01'),
+                ('Carlos', '99999999999', 'Campinas', 'SP', '2026-01-01');
+                INSERT INTO operacional.viagem (manifesto, data, motorista, cpf_motorista, status) VALUES
+                ('M1', '2026-09-01', 'ANA', '001.234.567-89', 'PENDENTE'),
+                ('M2', '2026-09-01', 'Ana Silva', '00123456789', 'FINALIZADO'),
+                ('M3', '2026-09-10', 'Bruno', '11111111111', 'EM_TRANSITO'),
+                ('M4', '2026-09-10', 'Sem CPF', NULL, 'PENDENTE'),
+                ('M5', '2026-09-10', 'Outro sem CPF', '', 'FINALIZADO'),
+                ('M6', '2026-08-31', 'Ana', '00123456789', 'PENDENTE'),
+                ('M7', '2026-09-11', 'Bruno', '11111111111', 'PENDENTE')
                 """);
-        repository = new UtilizacaoRepository(jdbc);
+        anaId = jdbc.queryForObject("SELECT id FROM operacional.motorista WHERE cpf = ?",
+                Integer.class, "00123456789");
     }
-
-    @AfterEach void desfazer() throws Exception {
-        if (connection != null) {
-            try { connection.rollback(); } finally { connection.close(); }
-        }
-    }
-
     @Test void agrupaPorCpfIncluiLimitesTodosStatusECadastroSemViagens() {
         var dados = repository.consultar(PeriodoConsulta.parse("01/09/2026", "10/09/2026"));
         assertEquals(4, dados.size());
         assertEquals(5, dados.stream().mapToLong(d -> d.quantidadeViagens()).sum());
         var ana = dados.stream().filter(d -> d.chave().equals("00123456789")).findFirst().orElseThrow();
         assertEquals(2, ana.quantidadeViagens());
-        assertEquals(1, ana.motoristaId());
+        assertEquals(anaId, ana.motoristaId());
         assertEquals("Ana", ana.nome());
         assertEquals(0, dados.stream().filter(d -> d.chave().equals("99999999999"))
                 .findFirst().orElseThrow().quantidadeViagens());
