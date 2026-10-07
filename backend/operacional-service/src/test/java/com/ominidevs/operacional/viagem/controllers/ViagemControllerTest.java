@@ -3,22 +3,21 @@ package com.ominidevs.operacional.viagem.controllers;
 import com.ominidevs.operacional.viagem.entities.StatusViagem;
 import com.ominidevs.operacional.viagem.entities.Viagem;
 import com.ominidevs.operacional.viagem.exceptions.FiltroInvalidoException;
-import com.ominidevs.operacional.viagem.exceptions.ViagemExceptionHandler;
 import com.ominidevs.operacional.viagem.services.ViagemService;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
+import org.springframework.test.util.ReflectionTestUtils;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.ArgumentMatchers.isNull;
-import static org.mockito.Mockito.mock;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -26,20 +25,17 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 /**
  * Cobre filtros, lista vazia e validação de parâmetros.
  */
+@WebMvcTest(ViagemController.class)
 class ViagemControllerTest {
 
-    private final ViagemService viagemService = mock(ViagemService.class);
+    @Autowired
     private MockMvc mockMvc;
 
-    @BeforeEach
-    void configurar() {
-        mockMvc = MockMvcBuilders.standaloneSetup(new ViagemController(viagemService))
-                .setControllerAdvice(new ViagemExceptionHandler())
-                .build();
-    }
+    @MockitoBean
+    private ViagemService viagemService;
 
     private Viagem criarViagem() {
-        return new Viagem(
+        Viagem viagem = new Viagem(
                 "MAN-001",                                    // manifesto
                 LocalDate.of(2026, 9, 10),                   // data
                 "João da Silva",                              // motorista
@@ -54,6 +50,9 @@ class ViagemControllerTest {
                 "Observação teste",                           // observacoes
                 2                                             // estimativaDias
         );
+        // Simula o ID atribuído pelo banco à viagem retornada pelo serviço.
+        ReflectionTestUtils.setField(viagem, "id", 123);
+        return viagem;
     }
 
     @Test
@@ -66,7 +65,7 @@ class ViagemControllerTest {
         mockMvc.perform(get("/viagens"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.length()").value(1))
-                .andExpect(jsonPath("$[0].id").doesNotExist())
+                .andExpect(jsonPath("$[0].id").value(123))
                 .andExpect(jsonPath("$[0].destino").value("Rio de Janeiro"));
     }
 
@@ -229,7 +228,7 @@ class ViagemControllerTest {
 
         mockMvc.perform(get("/viagens"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].id").doesNotExist())
+                .andExpect(jsonPath("$[0].id").exists())
                 .andExpect(jsonPath("$[0].origem").value("São Paulo"))      // getCidadeOrigem()
                 .andExpect(jsonPath("$[0].destino").value("Rio de Janeiro")) // getCidadeDestino()
                 .andExpect(jsonPath("$[0].freteEstimado").value(1500.50))
