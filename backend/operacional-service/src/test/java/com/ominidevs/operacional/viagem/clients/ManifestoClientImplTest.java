@@ -10,9 +10,8 @@ import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.web.client.RestClient;
-import org.springframework.web.client.RestClientException;
-import org.springframework.web.client.RestClientResponseException;
-import org.springframework.web.client.ResourceAccessException;
+import com.ominidevs.operacional.viagem.exceptions.IntegracaoManifestoException;
+import org.junit.jupiter.params.provider.CsvSource;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import static org.junit.jupiter.api.Assertions.*;
@@ -75,7 +74,7 @@ class ManifestoClientImplTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = {"[]", "null"})
+    @ValueSource(strings = {"[]"})
     void respostaSemDadosRetornaListaVazia(String json) {
         server.expect(requestTo("http://relatorio.test/manifestos/upload"))
                 .andRespond(withSuccess(json, MediaType.APPLICATION_JSON));
@@ -84,26 +83,30 @@ class ManifestoClientImplTest {
     }
 
     @ParameterizedTest
-    @ValueSource(ints = {400, 413, 500, 503})
-    void propagaErroHttpDoRelatorio(int status) {
+    @CsvSource({"400,400", "415,400", "422,400", "413,413", "500,503", "502,503", "503,503", "504,503", "429,503", "401,502", "403,502", "404,502"})
+    void traduzErroHttpDoRelatorio(int status, int esperado) {
         server.expect(requestTo("http://relatorio.test/manifestos/upload"))
-                .andRespond(withStatus(HttpStatus.valueOf(status)));
-        var erro = assertThrows(RestClientResponseException.class, () -> client.enviar(file));
-        assertEquals(status, erro.getStatusCode().value());
+                .andRespond(withStatus(HttpStatus.valueOf(status)).body("SEGREDO INTERNO").contentType(MediaType.TEXT_PLAIN));
+        var erro = assertThrows(IntegracaoManifestoException.class, () -> client.enviar(file));
+        assertEquals(esperado, erro.getStatus().value());
+        assertFalse(erro.getMessage().contains("SEGREDO"));
+        assertNotNull(erro.getCause());
         server.verify();
     }
 
     @Test void falhaDeRedeNaoViraSucessoVazio() {
         server.expect(requestTo("http://relatorio.test/manifestos/upload"))
                 .andRespond(withException(new IOException("Sem conexão")));
-        assertThrows(ResourceAccessException.class, () -> client.enviar(file));
+        assertEquals(503, assertThrows(IntegracaoManifestoException.class, () -> client.enviar(file)).getStatus().value());
         server.verify();
     }
 
-    @Test void jsonInvalidoNaoViraSucessoVazio() {
+    @ParameterizedTest
+    @ValueSource(strings = {"json inválido", "null", "", "[null]", "{}"})
+    void jsonInvalidoNaoViraSucessoVazio(String resposta) {
         server.expect(requestTo("http://relatorio.test/manifestos/upload"))
-                .andRespond(withSuccess("json inválido", MediaType.APPLICATION_JSON));
-        assertThrows(RestClientException.class, () -> client.enviar(file));
+                .andRespond(withSuccess(resposta, MediaType.APPLICATION_JSON));
+        assertEquals(502, assertThrows(IntegracaoManifestoException.class, () -> client.enviar(file)).getStatus().value());
         server.verify();
     }
 }

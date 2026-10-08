@@ -8,11 +8,15 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import java.util.Map;
 
 /**
- * Trata os erros do filtro de viagens (GET /viagens) e retorna 400
- * com corpo {"erro": "..."} em vez de propagar como erro 500.
+ * Trata filtros e falhas da integração de manifestos com corpo {"erro": "..."}.
  */
 @RestControllerAdvice
 public class ViagemExceptionHandler {
+
+    @ExceptionHandler(IntegracaoManifestoException.class)
+    public ResponseEntity<Map<String, String>> handleIntegracaoManifesto(IntegracaoManifestoException ex) {
+        return ResponseEntity.status(ex.getStatus()).body(Map.of("erro", ex.getMessage()));
+    }
 
     @ExceptionHandler(FiltroInvalidoException.class)
     public ResponseEntity<Map<String, String>> handleFiltroInvalido(FiltroInvalidoException ex) {
