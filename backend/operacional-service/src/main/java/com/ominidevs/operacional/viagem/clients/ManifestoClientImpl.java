@@ -9,6 +9,11 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestClient;
+import org.springframework.web.client.RestClientException;
+import org.springframework.web.client.RestClientResponseException;
+import org.springframework.web.client.ResourceAccessException;
+import com.ominidevs.operacional.viagem.exceptions.IntegracaoManifestoException;
+import static com.ominidevs.operacional.viagem.exceptions.IntegracaoManifestoException.Falha.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.ominidevs.operacional.viagem.dto.ManifestoDTO;
@@ -28,7 +33,9 @@ public class ManifestoClientImpl implements ManifestoClient {
         MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
         body.add("file", file.getResource());
 
-        List<Map<String, String>> dados = restClient
+        List<Map<String, String>> dados;
+        try {
+            dados = restClient
                 .post()
                 .uri("/manifestos/upload")
                 .contentType(MediaType.MULTIPART_FORM_DATA)
@@ -36,8 +43,26 @@ public class ManifestoClientImpl implements ManifestoClient {
                 .retrieve()
                 .body(new ParameterizedTypeReference<List<Map<String, String>>>() {
                 });
+        } catch (RestClientResponseException ex) {
+            // Classifica a falha sem expor HTML, stack traces ou mensagens internas do relatório.
+            var falha = switch (ex.getStatusCode().value()) {
+                case 400, 415, 422 -> ARQUIVO_INVALIDO;
+                case 413 -> TAMANHO_EXCEDIDO;
+                case 429, 500, 502, 503, 504 -> INDISPONIVEL;
+                default -> RESPOSTA_INVALIDA;
+            };
+            throw new IntegracaoManifestoException(falha, ex);
+        } catch (ResourceAccessException ex) {
+            throw new IntegracaoManifestoException(INDISPONIVEL, ex);
+        } catch (RestClientException ex) {
+            throw new IntegracaoManifestoException(RESPOSTA_INVALIDA, ex);
+        }
 
-        if (dados == null || dados.isEmpty()) {
+        // Lista vazia é válida; corpo ausente ou linha nula viola o contrato do relatório.
+        if (dados == null || dados.stream().anyMatch(java.util.Objects::isNull)) {
+            throw new IntegracaoManifestoException(RESPOSTA_INVALIDA, null);
+        }
+        if (dados.isEmpty()) {
             return List.of();
         }
 

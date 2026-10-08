@@ -11,6 +11,10 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import java.util.List;
+import com.ominidevs.operacional.viagem.exceptions.IntegracaoManifestoException;
+import com.ominidevs.operacional.viagem.exceptions.IntegracaoManifestoException.Falha;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import static org.mockito.Mockito.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
@@ -18,6 +22,22 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @WebMvcTest(ViagemController.class)
 class ImportacaoManifestoControllerTest {
+    @ParameterizedTest
+    @CsvSource({
+        "ARQUIVO_INVALIDO,400,O manifesto é inválido ou está incompleto. Confira o arquivo.",
+        "TAMANHO_EXCEDIDO,413,O arquivo ultrapassa o tamanho permitido de 10 MB.",
+        "INDISPONIVEL,503,O serviço de processamento está indisponível. Tente novamente mais tarde.",
+        "RESPOSTA_INVALIDA,502,Não foi possível interpretar a resposta do serviço de processamento."
+    })
+    void falhaDoRelatorioRetornaStatusEMensagemControlados(Falha falha, int codigo, String mensagem) throws Exception {
+        when(service.importarManifesto(any())).thenThrow(
+                new IntegracaoManifestoException(falha, new RuntimeException("SEGREDO INTERNO")));
+        mvc.perform(multipart("/viagens/importar-manifesto").file(file))
+                .andExpect(status().is(codigo))
+                .andExpect(content().contentTypeCompatibleWith("application/json"))
+                .andExpect(jsonPath("$.erro").value(mensagem))
+                .andExpect(jsonPath("$.length()").value(1));
+    }
     @Autowired private MockMvc mvc;
     @MockitoBean private ViagemService service;
     private final MockMultipartFile file = new MockMultipartFile("file", "manifesto.csv", "text/csv", new byte[]{1});
