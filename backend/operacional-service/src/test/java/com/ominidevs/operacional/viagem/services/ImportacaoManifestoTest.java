@@ -8,7 +8,10 @@ import com.ominidevs.operacional.viagem.mappers.ManifestoMapper;
 import com.ominidevs.operacional.viagem.repositories.ViagemRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.mock.web.MockMultipartFile;
-import org.springframework.web.client.ResourceAccessException;
+import com.ominidevs.operacional.viagem.exceptions.IntegracaoManifestoException;
+import com.ominidevs.operacional.viagem.exceptions.IntegracaoManifestoException.Falha;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
@@ -85,10 +88,12 @@ class ImportacaoManifestoTest {
         verifyNoInteractions(repository);
     }
 
-    @Test void falhaDeComunicacaoNaoGravaViagens() {
-        var erro = new ResourceAccessException("Serviço indisponível");
+    @ParameterizedTest
+    @EnumSource(Falha.class)
+    void falhaDeComunicacaoNaoGravaViagens(Falha falha) {
+        var erro = new IntegracaoManifestoException(falha, null);
         when(client.enviar(file)).thenThrow(erro);
-        assertSame(erro, assertThrows(ResourceAccessException.class, () -> service.importarManifesto(file)));
+        assertSame(erro, assertThrows(IntegracaoManifestoException.class, () -> service.importarManifesto(file)));
         verifyNoInteractions(repository);
     }
 }
