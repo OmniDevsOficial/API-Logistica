@@ -1,42 +1,65 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
+import type { StatusEquipe } from "@entities/motorista";
+import { getEquipeMotoristasData } from "@entities/motorista";
 import { Sidebar } from "@widgets/sidebar";
-import { MotoristasTopbar, MotoristasList } from "@/widgets/motoristas-list";
-import { useMotoristasUtilizacao } from "../model/useMotoristasUtilizacao";
+import { PageHeader } from "@shared/ui";
+import {
+  EquipeStatCards,
+  EquipeFiltros,
+  EquipeTabela,
+} from "@widgets/equipe-motoristas";
 
 export function MotoristasPage() {
-  const [periodo, setPeriodo] = useState("30d");
-  const [ordem, setOrdem] = useState<"asc" | "desc">("desc");
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const { motoristas, carregando, erro } = useMotoristasUtilizacao(
-    periodo,
-    ordem,
-  );
+  const [busca, setBusca] = useState("");
+  const [filtroStatus, setFiltroStatus] = useState<StatusEquipe | null>(null);
+
+  const dados = getEquipeMotoristasData(filtroStatus);
+
+  const motoristasFiltrados = useMemo(() => {
+    const termo = busca.trim().toLowerCase();
+    if (!termo) return dados.motoristas;
+    return dados.motoristas.filter(
+      (m) =>
+        m.nome.toLowerCase().includes(termo) ||
+        m.localizacao.toLowerCase().includes(termo) ||
+        m.veiculo.toLowerCase().includes(termo),
+    );
+  }, [dados.motoristas, busca]);
 
   return (
-    <div className="min-h-screen lg:h-screen lg:overflow-hidden">
+    <div className="min-h-screen">
       <Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
 
-      <main className="min-w-0 px-4 py-6 sm:px-10 sm:py-8 lg:ml-sidebar lg:flex lg:h-full lg:min-h-0 lg:flex-col">
-        <MotoristasTopbar
-          periodo={periodo}
-          ordem={ordem}
-          onPeriodoChange={setPeriodo}
-          onOrdemChange={setOrdem}
-          onMenuClick={() => setSidebarOpen(true)}
-        />
+      <main className="min-w-0 px-4 py-6 sm:px-10 sm:py-8 lg:ml-sidebar">
+        <header className="mb-7 flex flex-col gap-5">
+          <PageHeader
+            title="Dashboard"
+            onMenuClick={() => setSidebarOpen(true)}
+          />
 
-        <div className="lg:min-h-0 lg:flex-1">
-          {erro ? (
-            <p role="alert" className="rounded-md bg-surface p-6 text-center text-sm text-fg-subtle">
-              {erro}
-            </p>
-          ) : carregando ? (
-            <p role="status" className="rounded-md bg-surface p-6 text-center text-sm text-fg-subtle">
-              Carregando motoristas...
-            </p>
-          ) : (
-            <MotoristasList motoristas={motoristas} />
-          )}
+          <EquipeFiltros
+            busca={busca}
+            onBuscaChange={setBusca}
+            filtroAtivo={filtroStatus}
+            onFiltroChange={setFiltroStatus}
+          />
+        </header>
+
+        <div className="flex flex-col gap-6">
+          <EquipeStatCards
+            totalMotoristas={dados.totalMotoristas}
+            disponiveis={dados.disponiveis}
+            emViagem={dados.emViagem}
+            indisponiveis={dados.indisponiveis}
+          />
+
+          <div>
+            <h2 className="mb-4 text-lg font-semibold text-fg">
+              Equipe de motoristas
+            </h2>
+            <EquipeTabela motoristas={motoristasFiltrados} />
+          </div>
         </div>
       </main>
     </div>
