@@ -21,16 +21,14 @@ import java.util.List;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
 
 /**
  * Testes unitários do ManifestoService (sem contexto Spring).
- * Cobre os 4 cenários dos critérios de aceite:
+ * Cobre processamento, validações de arquivo e cálculo do hash:
  * 1. Parse de CSV válido
  * 2. Parse de Excel válido
  * 3. Arquivo corrompido/inválido → ArquivoInvalidoException
- * 4. Cache evita reprocessamento (mesmo conteúdo 2x → parser chamado 1 vez)
+ * Cache real é verificado separadamente em ManifestoCacheTest.
  */
 @ExtendWith(MockitoExtension.class)
 class ManifestoServiceTest {
@@ -45,7 +43,7 @@ class ManifestoServiceTest {
 
     @BeforeEach
     void setUp() {
-        service = new ManifestoService(csvParser, excelParser);
+        service = new ManifestoService(new ManifestoProcessador(csvParser, excelParser));
     }
 
     // ========== 1. Parse de CSV válido ==========
@@ -146,46 +144,6 @@ class ManifestoServiceTest {
         );
 
         assertThrows(ArquivoInvalidoException.class, () -> service.processarManifesto(file));
-    }
-
-    // ========== 4. Cache evita reprocessamento ==========
-
-    @Test
-    @DisplayName("Mesmo conteúdo enviado 2x deve chamar o parser apenas 1 vez (cache por hash)")
-    void deveUsarCacheEEvitarReprocessamento() {
-        String csvContent = "coluna1;coluna2\nvalor1;valor2\n";
-        byte[] bytes = csvContent.getBytes(StandardCharsets.ISO_8859_1);
-
-        // Calcular o hash esperado para os mesmos bytes
-        String hash = service.calcularHashSHA256(bytes);
-
-        // Primeira chamada — deve chamar o parser
-        List<Map<String, String>> resultado1 = service.processarComCache(hash, bytes, "manifesto.csv");
-        verify(csvParser, times(1)).parse(any());
-
-        // Simular cache manualmente: o @Cacheable não funciona sem Spring context,
-        // então validamos diretamente que processarComCache delega ao parser.
-        // Para comprovar o cache, usamos um spy no service e verificamos invocações.
-        ManifestoService spyService = spy(new ManifestoService(csvParser, excelParser));
-
-        // Resetar contagem do spy do csvParser
-        reset(csvParser);
-
-        // Primeira chamada no spyService
-        List<Map<String, String>> r1 = spyService.processarComCache(hash, bytes, "manifesto.csv");
-
-        // Simular que a segunda chamada com mesmo hash retorna do cache
-        // (interceptamos para retornar o resultado anterior sem chamar o parser)
-        doReturn(r1).when(spyService).processarComCache(hash, bytes, "manifesto.csv");
-
-        // Segunda chamada — deve vir do "cache" (stub) e não chamar o parser novamente
-        List<Map<String, String>> r2 = spyService.processarComCache(hash, bytes, "manifesto.csv");
-
-        // O csvParser.parse() deve ter sido chamado apenas 1 vez (na primeira chamada real)
-        verify(csvParser, times(1)).parse(any());
-
-        // Os resultados devem ser iguais
-        assertEquals(r1, r2);
     }
 
     @Test
