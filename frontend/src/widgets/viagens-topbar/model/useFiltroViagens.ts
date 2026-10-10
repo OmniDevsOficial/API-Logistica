@@ -1,16 +1,24 @@
 // Hook que concentra todo o estado do filtro: valores selecionados, chamada
 // à API, loading e erro.
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { filtrarViagensApi } from "../api/filtrarViagens";
 import { filtroVazio, type FiltroViagens } from "./types";
 
 export function useFiltroViagens(
   onFiltroAplicado?: (resultado: any[]) => void,
+  filtroInicial: FiltroViagens = filtroVazio,
 ) {
-  const [filtro, setFiltro] = useState<FiltroViagens>(filtroVazio);
+  const [filtro, setFiltro] = useState<FiltroViagens>(() => ({
+    ...filtroInicial,
+    status: [...filtroInicial.status],
+  }));
   const [carregando, setCarregando] = useState(false);
   const [erro, setErro] = useState<string | null>(null);
+
+  useEffect(() => {
+    setFiltro(filtroInicial);
+  }, [filtroInicial]);
 
   const aplicar = async () => {
     setCarregando(true);

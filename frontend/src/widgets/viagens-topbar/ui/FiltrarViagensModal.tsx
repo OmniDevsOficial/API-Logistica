@@ -1,5 +1,5 @@
 // Modal de filtros do dashboard de viagens.
-// 4 critérios: destino, status, frete (min/max) e mês — todos batendo
+// 4 critérios: destino, status, frete (min/max) — todos batendo
 // com os query params reais do endpoint GET /viagens.
 import { useEffect, useRef } from "react";
 import {
@@ -10,11 +10,14 @@ import {
   AlertCircle,
 } from "lucide-react";
 import { useFiltroViagens } from "../model/useFiltroViagens";
+import { filtroVazio, type FiltroViagens } from "../model/types";
 
 type FiltrarViagensModalProps = {
   onClose: () => void;
   onFiltroAplicado?: (resultado: any[]) => void;
   onFiltroLimpo?: () => void;
+  filtroModal: FiltroViagens;
+  onFiltroModalChange: (filtro: FiltroViagens) => void;
 };
 
 const STATUS_OPCOES = [
@@ -30,9 +33,11 @@ export function FiltrarViagensModal({
   onClose,
   onFiltroAplicado,
   onFiltroLimpo,
+  filtroModal,
+  onFiltroModalChange,
 }: FiltrarViagensModalProps) {
   const { filtro, setFiltro, carregando, erro, aplicar, limpar } =
-    useFiltroViagens(onFiltroAplicado);
+    useFiltroViagens(onFiltroAplicado, filtroModal);
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -52,7 +57,23 @@ export function FiltrarViagensModal({
     onClose();
   };
 
-  const handleLimpar = () => limpar(onFiltroLimpo);
+  const handleLimpar = () => {
+    limpar(() => {
+      onFiltroModalChange({
+        ...filtroVazio,
+        status: [...filtroVazio.status],
+      });
+      onFiltroLimpo?.();
+    });
+  };
+
+  const atualizarFiltro = (
+    atualizador: (filtro: FiltroViagens) => FiltroViagens,
+  ) => {
+    const novoFiltro = atualizador(filtro);
+    setFiltro(novoFiltro);
+    onFiltroModalChange(novoFiltro);
+  };
 
   return (
     <div
@@ -107,7 +128,7 @@ export function FiltrarViagensModal({
                 placeholder="Ex: São Paulo, Curitiba..."
                 value={filtro.destino}
                 onChange={(e) =>
-                  setFiltro((f) => ({ ...f, destino: e.target.value }))
+                  atualizarFiltro((f) => ({ ...f, destino: e.target.value }))
                 }
                 className={`${INPUT_CLASS} pl-9`}
               />
@@ -130,7 +151,7 @@ export function FiltrarViagensModal({
                       const novo = ativo
                         ? filtro.status.filter((s) => s !== opcao.valor)
                         : [...filtro.status, opcao.valor];
-                      setFiltro((f) => ({ ...f, status: novo }));
+                      atualizarFiltro((f) => ({ ...f, status: novo }));
                     }}
                     className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-sm font-medium transition-colors ${
                       ativo
@@ -159,7 +180,7 @@ export function FiltrarViagensModal({
                 value={filtro.freteMin == null ? "" : filtro.freteMin}
                 onChange={(e) => {
                   const valor = e.target.value.replace(/[^\d.]/g, "");
-                  setFiltro((f) => ({
+                  atualizarFiltro((f) => ({
                     ...f,
                     freteMin: valor ? Number(valor) : null,
                   }));
@@ -174,7 +195,7 @@ export function FiltrarViagensModal({
                 value={filtro.freteMax == null ? "" : filtro.freteMax}
                 onChange={(e) => {
                   const valor = e.target.value.replace(/[^\d.]/g, "");
-                  setFiltro((f) => ({
+                  atualizarFiltro((f) => ({
                     ...f,
                     freteMax: valor ? Number(valor) : null,
                   }));
@@ -197,7 +218,7 @@ export function FiltrarViagensModal({
               type="month"
               value={filtro.mes}
               onChange={(e) =>
-                setFiltro((f) => ({ ...f, mes: e.target.value }))
+                atualizarFiltro((f) => ({ ...f, mes: e.target.value }))
               }
               className={INPUT_CLASS}
             />
