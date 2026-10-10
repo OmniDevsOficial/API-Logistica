@@ -50,9 +50,9 @@ export function ViagensPage() {
   }, [viagensBase, search]);
 
   return (
-    <div className="min-h-screen lg:h-screen lg:overflow-hidden">
+    <div className="min-h-screen">
       <Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
-      <main className="min-w-0 px-4 py-6 sm:px-10 sm:py-8 lg:ml-sidebar lg:flex lg:h-full lg:min-h-0 lg:flex-col">
+      <main className="min-w-0 px-4 py-6 sm:px-10 sm:py-8 lg:ml-sidebar lg:flex lg:flex-col">
         <ViagensTopbar
           search={search}
           onSearchChange={setSearch}
@@ -70,7 +70,7 @@ export function ViagensPage() {
           filtroModal={filtroModal}
         />
         {data && (
-          <div className="grid grid-cols-1 gap-6 lg:min-h-0 lg:flex-1 lg:grid-cols-[2fr_1fr]">
+          <div className="grid grid-cols-1 gap-6 items-start lg:grid-cols-[2fr_1fr]">
             <ViagensList viagens={viagensFiltradas} />
             {/* Ranking mostra tudo, não é afetado pelos filtros de cima */}
             <ViagensRanking viagens={data.viagens} />
