@@ -8,14 +8,22 @@ import { Sidebar } from "@widgets/sidebar";
 import { ViagensTopbar } from "@widgets/viagens-topbar";
 import { ViagensList } from "@widgets/viagens-list";
 import { ViagensRanking } from "@widgets/viagens-ranking";
+import type { FiltroViagens } from "@widgets/viagens-topbar";
+import { filtroVazio } from "@/widgets/viagens-topbar/model/types";
 
 export function ViagensPage() {
   const [data, setData] = useState<ViagensData | null>(null);
   const [search, setSearch] = useState("");
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [filtroModal, setFiltroModal] = useState<FiltroViagens>(() => ({
+    ...filtroVazio,
+    status: [...filtroVazio.status],
+  }));
 
   // null = modal ainda não aplicou nenhum filtro -> usa a lista completa da API
-  const [viagensFiltradasPorModal, setViagensFiltradasPorModal] = useState<Viagem[] | null>(null);
+  const [viagensFiltradasPorModal, setViagensFiltradasPorModal] = useState<
+    Viagem[] | null
+  >(null);
 
   useEffect(() => {
     let isCurrent = true;
@@ -51,7 +59,15 @@ export function ViagensPage() {
           periodoLabel={data?.periodoLabel ?? ""}
           onMenuClick={() => setSidebarOpen(true)}
           onFiltroAplicado={setViagensFiltradasPorModal}
-          onFiltroLimpo={() => setViagensFiltradasPorModal(null)}
+          onFiltroLimpo={() => {
+            setViagensFiltradasPorModal(null);
+            setFiltroModal({
+              ...filtroVazio,
+              status: [...filtroVazio.status],
+            });
+          }}
+          onFiltroModalChange={setFiltroModal}
+          filtroModal={filtroModal}
         />
         {data && (
           <div className="grid grid-cols-1 gap-6 lg:min-h-0 lg:flex-1 lg:grid-cols-[2fr_1fr]">
