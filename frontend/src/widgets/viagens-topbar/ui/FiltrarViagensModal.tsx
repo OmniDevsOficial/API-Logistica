@@ -205,25 +205,6 @@ export function FiltrarViagensModal({
             </div>
           </div>
 
-          {/* Mês */}
-          {/* <div>
-            <label
-              htmlFor="mes"
-              className="mb-1.5 block text-sm font-medium text-slate-700"
-            >
-              Mês
-            </label>
-            <input
-              id="mes"
-              type="month"
-              value={filtro.mes}
-              onChange={(e) =>
-                atualizarFiltro((f) => ({ ...f, mes: e.target.value }))
-              }
-              className={INPUT_CLASS}
-            />
-          </div> */}
-
           {erro && (
             <div className="flex items-start gap-2 rounded-lg bg-amber-50 border border-amber-200 px-3 py-2.5">
               <AlertCircle className="h-4 w-4 text-amber-600 mt-0.5 flex-shrink-0" />
