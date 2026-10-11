@@ -1,6 +1,7 @@
 // Chamada pro endpoint de filtro. Só monta a query string com o que
 // o operador de fato preencheu
 
+import { apiFetch } from "@shared/api";
 import type { FiltroViagens } from "../model/types";
 import type { StatusViagem } from "../model/types";
 
@@ -17,7 +18,7 @@ export async function filtrarViagensApi(filtro: FiltroViagens) {
   if (filtro.freteMax !== null) params.set("freteMax", String(filtro.freteMax));
   if (filtro.mes) params.set("mes", filtro.mes);
 
-  const response = await fetch(`/api/operacional/viagens?${params}`);
+  const response = await apiFetch(`/api/operacional/viagens?${params}`);
 
   if (!response.ok) {
     throw new Error(`Erro ao filtrar: ${response.statusText}`);
