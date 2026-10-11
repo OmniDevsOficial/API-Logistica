@@ -1,3 +1,4 @@
+import { apiFetch } from '../../../shared/api/apiFetch.ts';
 import { validarArquivoRelatorio } from '../lib/validarArquivoRelatorio.ts';
 
 // INTEGRAÇÃO REAL: o operacional recebe o arquivo, chama o serviço de
@@ -42,7 +43,7 @@ export async function importarManifesto(arquivo: File): Promise<ResultadoImporta
 
   try {
     // O navegador define Content-Type e boundary do multipart automaticamente.
-    const resposta = await fetch(ENDPOINT, {
+    const resposta = await apiFetch(ENDPOINT, {
       method: 'POST',
       body: formulario,
       signal: controller.signal,
