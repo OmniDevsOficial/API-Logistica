@@ -3,6 +3,7 @@ package com.ominidevs.operacional.viagem.services;
 import com.ominidevs.operacional.motorista.services.MotoristaService;
 import com.ominidevs.operacional.viagem.clients.ManifestoClient;
 import com.ominidevs.operacional.viagem.dto.ManifestoDTO;
+import com.ominidevs.operacional.viagem.dto.ImportacaoManifestoResponse;
 import com.ominidevs.operacional.viagem.entities.StatusViagem;
 import com.ominidevs.operacional.viagem.entities.Viagem;
 import com.ominidevs.operacional.viagem.exceptions.FiltroInvalidoException;
@@ -19,6 +20,8 @@ import java.time.LocalDate;
 import java.time.YearMonth;
 import java.time.format.DateTimeParseException;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class ViagemService {
@@ -40,7 +43,7 @@ public class ViagemService {
         this.motoristaService = motoristaService;
     }
 
-    public List<Viagem> importarManifesto(MultipartFile file) {
+    public ImportacaoManifestoResponse importarManifesto(MultipartFile file) {
 
         validarArquivo(file);
 
@@ -51,11 +54,31 @@ public class ViagemService {
                 .map(manifestoMapper::toEntity)
                 .toList();
 
-        List<Viagem> viagensImportadas = viagemRepository.saveAll(viagens);
+        List<Viagem> registrosExistentes = viagens.isEmpty()
+                ? List.of()
+                : viagemRepository.findByManifestoIn(
+                        viagens.stream().map(Viagem::getManifesto).distinct().toList());
 
+        Set<String> manifestosExistentes = registrosExistentes
+                .stream()
+                .map(Viagem::getManifesto)
+                .collect(Collectors.toSet());
+
+        List<String> manifestosDuplicados = viagens.stream()
+                .map(Viagem::getManifesto)
+                .filter(manifestosExistentes::contains)
+                .distinct()
+                .toList();
+
+        List<Viagem> novasViagens = viagens.stream()
+                .filter(viagem -> !manifestosExistentes.contains(viagem.getManifesto()))
+                .toList();
+
+        List<Viagem> viagensImportadas = viagemRepository.saveAll(novasViagens);
         motoristaService.sincronizarComManifesto(viagensImportadas);
 
-        return viagensImportadas;
+        return new ImportacaoManifestoResponse(
+                viagensImportadas, manifestosDuplicados);
     }
 
     private void validarArquivo(MultipartFile file) {
