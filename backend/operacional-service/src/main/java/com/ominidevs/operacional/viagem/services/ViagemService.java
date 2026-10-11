@@ -1,5 +1,6 @@
 package com.ominidevs.operacional.viagem.services;
 
+import com.ominidevs.operacional.motorista.services.MotoristaService;
 import com.ominidevs.operacional.viagem.clients.ManifestoClient;
 import com.ominidevs.operacional.viagem.dto.ManifestoDTO;
 import com.ominidevs.operacional.viagem.entities.StatusViagem;
@@ -25,15 +26,18 @@ public class ViagemService {
     private final ManifestoClient manifestoClient;
     private final ManifestoMapper manifestoMapper;
     private final ViagemRepository viagemRepository;
+    private final MotoristaService motoristaService;
 
     public ViagemService(
             ManifestoClient manifestoClient,
             ManifestoMapper manifestoMapper,
-            ViagemRepository viagemRepository
+            ViagemRepository viagemRepository,
+            MotoristaService motoristaService
     ) {
         this.manifestoClient = manifestoClient;
         this.manifestoMapper = manifestoMapper;
         this.viagemRepository = viagemRepository;
+        this.motoristaService = motoristaService;
     }
 
     public List<Viagem> importarManifesto(MultipartFile file) {
@@ -47,7 +51,11 @@ public class ViagemService {
                 .map(manifestoMapper::toEntity)
                 .toList();
 
-        return viagemRepository.saveAll(viagens);
+        List<Viagem> viagensImportadas = viagemRepository.saveAll(viagens);
+
+        motoristaService.sincronizarComManifesto(viagensImportadas);
+
+        return viagensImportadas;
     }
 
     private void validarArquivo(MultipartFile file) {
