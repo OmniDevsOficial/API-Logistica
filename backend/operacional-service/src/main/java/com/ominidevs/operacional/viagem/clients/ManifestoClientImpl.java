@@ -49,7 +49,7 @@ public class ManifestoClientImpl implements ManifestoClient {
                         origem = "Não informado";
                     }
 
-                    return new ManifestoDTO(
+                    ManifestoDTO manifesto = new ManifestoDTO(
                             d.get("Manifesto"),
                             d.get("Data"),
                             d.get("Motorista"),
@@ -63,6 +63,11 @@ public class ManifestoClientImpl implements ManifestoClient {
                             d.get("Status"),
                             d.get("Observações operacionais")
                     );
+
+                    manifesto.setTipoVeiculo(d.get("Tipo de veículo"));
+                    manifesto.setPrevisaoChegada(d.get("Previsão de chegada"));
+
+                    return manifesto;
                 })
                 .toList();
     }

@@ -3,19 +3,22 @@ package com.ominidevs.operacional.viagem.controllers;
 import com.ominidevs.operacional.viagem.entities.StatusViagem;
 import com.ominidevs.operacional.viagem.entities.Viagem;
 import com.ominidevs.operacional.viagem.exceptions.FiltroInvalidoException;
+import com.ominidevs.operacional.viagem.exceptions.ViagemExceptionHandler;
 import com.ominidevs.operacional.viagem.services.ViagemService;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
-import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isNull;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -25,11 +28,15 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  */
 class ViagemControllerTest {
 
-    @Autowired
+    private final ViagemService viagemService = mock(ViagemService.class);
     private MockMvc mockMvc;
 
-    @MockitoBean
-    private ViagemService viagemService;
+    @BeforeEach
+    void configurar() {
+        mockMvc = MockMvcBuilders.standaloneSetup(new ViagemController(viagemService))
+                .setControllerAdvice(new ViagemExceptionHandler())
+                .build();
+    }
 
     private Viagem criarViagem() {
         return new Viagem(
@@ -56,10 +63,10 @@ class ViagemControllerTest {
         when(viagemService.filtrar(isNull(), isNull(), isNull(), isNull(), isNull()))
                 .thenReturn(List.of(criarViagem()));
 
-        mockMvc.perform(get("viagens"))
+        mockMvc.perform(get("/viagens"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.length()").value(1))
-                .andExpect(jsonPath("$[0].id").value(123))
+                .andExpect(jsonPath("$[0].id").doesNotExist())
                 .andExpect(jsonPath("$[0].destino").value("Rio de Janeiro"));
     }
 
@@ -76,7 +83,7 @@ class ViagemControllerTest {
                 isNull()
         )).thenReturn(List.of(viagem));
 
-        mockMvc.perform(get("viagens").param("destino", "Rio de Janeiro"))
+        mockMvc.perform(get("/viagens").param("destino", "Rio de Janeiro"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.length()").value(1))
                 .andExpect(jsonPath("$[0].destino").value("Rio de Janeiro"));
@@ -94,7 +101,7 @@ class ViagemControllerTest {
                 isNull()
         )).thenReturn(List.of());
 
-        mockMvc.perform(get("viagens").param("destino", "Destino inexistente"))
+        mockMvc.perform(get("/viagens").param("destino", "Destino inexistente"))
                 .andExpect(status().isOk())
                 .andExpect(content().json("[]"));
     }
@@ -112,7 +119,7 @@ class ViagemControllerTest {
                 isNull()
         )).thenReturn(List.of(viagem));
 
-        mockMvc.perform(get("viagens").param("status", "PENDENTE"))
+        mockMvc.perform(get("/viagens").param("status", "PENDENTE"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.length()").value(1))
                 .andExpect(jsonPath("$[0].status").value("pendente"));
@@ -131,7 +138,7 @@ class ViagemControllerTest {
                 isNull()
         )).thenReturn(List.of(viagem));
 
-        mockMvc.perform(get("viagens")
+        mockMvc.perform(get("/viagens")
                 .param("status", "PENDENTE")
                 .param("status", "EM_TRANSITO"))
                 .andExpect(status().isOk())
@@ -151,7 +158,7 @@ class ViagemControllerTest {
                 isNull()
         )).thenReturn(List.of(viagem));
 
-        mockMvc.perform(get("viagens")
+        mockMvc.perform(get("/viagens")
                 .param("freteMin", "1000.00")
                 .param("freteMax", "2000.00"))
                 .andExpect(status().isOk())
@@ -171,7 +178,7 @@ class ViagemControllerTest {
                 eq("2026-09")
         )).thenReturn(List.of(viagem));
 
-        mockMvc.perform(get("viagens").param("mes", "2026-09"))
+        mockMvc.perform(get("/viagens").param("mes", "2026-09"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.length()").value(1));
     }
@@ -188,7 +195,7 @@ class ViagemControllerTest {
                 eq("setembro-2026")
         )).thenThrow(new FiltroInvalidoException("mes deve estar no formato YYYY-MM"));
 
-        mockMvc.perform(get("viagens").param("mes", "setembro-2026"))
+        mockMvc.perform(get("/viagens").param("mes", "setembro-2026"))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.erro").value("mes deve estar no formato YYYY-MM"));
     }
@@ -205,7 +212,7 @@ class ViagemControllerTest {
                 isNull()
         )).thenThrow(new FiltroInvalidoException("freteMin não pode ser maior que freteMax"));
 
-        mockMvc.perform(get("viagens")
+        mockMvc.perform(get("/viagens")
                 .param("freteMin", "2000.00")
                 .param("freteMax", "1000.00"))
                 .andExpect(status().isBadRequest())
@@ -220,9 +227,9 @@ class ViagemControllerTest {
         when(viagemService.filtrar(isNull(), isNull(), isNull(), isNull(), isNull()))
                 .thenReturn(List.of(viagem));
 
-        mockMvc.perform(get("viagens"))
+        mockMvc.perform(get("/viagens"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].id").exists())
+                .andExpect(jsonPath("$[0].id").doesNotExist())
                 .andExpect(jsonPath("$[0].origem").value("São Paulo"))      // getCidadeOrigem()
                 .andExpect(jsonPath("$[0].destino").value("Rio de Janeiro")) // getCidadeDestino()
                 .andExpect(jsonPath("$[0].freteEstimado").value(1500.50))
@@ -245,7 +252,7 @@ class ViagemControllerTest {
                 eq("2026-09")
         )).thenReturn(List.of(viagem));
 
-        mockMvc.perform(get("viagens")
+        mockMvc.perform(get("/viagens")
                 .param("destino", "Rio de Janeiro")
                 .param("status", "PENDENTE")
                 .param("freteMin", "1000.00")

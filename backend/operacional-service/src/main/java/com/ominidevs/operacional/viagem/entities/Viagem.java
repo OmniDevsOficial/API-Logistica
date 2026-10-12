@@ -35,6 +35,12 @@ public class Viagem {
     @Column(name = "veiculo", nullable = false, length = 50)
     private String veiculo;
 
+    @Column(name = "veiculo_tipo", length = 50)
+    private String veiculoTipo;
+
+    @Column(name = "data_previsao_chegada")
+    private LocalDate dataPrevisaoChegada;
+
     @Column(name = "cidade_origem", length = 255)
     private String cidadeOrigem;
 
@@ -135,6 +141,22 @@ public class Viagem {
 
     public void setVeiculo(String veiculo) {
         this.veiculo = veiculo;
+    }
+
+    public String getVeiculoTipo() {
+        return veiculoTipo;
+    }
+
+    public void setVeiculoTipo(String veiculoTipo) {
+        this.veiculoTipo = veiculoTipo;
+    }
+
+    public LocalDate getDataPrevisaoChegada() {
+        return dataPrevisaoChegada;
+    }
+
+    public void setDataPrevisaoChegada(LocalDate dataPrevisaoChegada) {
+        this.dataPrevisaoChegada = dataPrevisaoChegada;
     }
 
     public String getCidadeOrigem() {

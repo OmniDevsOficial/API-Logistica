@@ -339,4 +339,55 @@ class ManifestoMapperTest {
                 () -> mapper.toEntity(manifesto)
         );
     }
+
+    @Test
+    void deveMapearTipoVeiculoEPrevisaoDeChegada() {
+
+        ManifestoDTO manifesto = new ManifestoDTO(
+                "MAN-001",
+                "20/09/2026",
+                "João da Silva",
+                "12233245124",
+                "ABC1D23",
+                "São Paulo",
+                "Rio de Janeiro",
+                "1500,50",
+                "10000",
+                "10250",
+                "Em trânsito",
+                null
+        );
+
+        manifesto.setTipoVeiculo("  Cavalo Meia  ");
+        manifesto.setPrevisaoChegada("22/09/2026");
+
+        Viagem viagem = mapper.toEntity(manifesto);
+
+        assertEquals("Cavalo Meia", viagem.getVeiculoTipo());
+        assertEquals(LocalDate.of(2026, 9, 22), viagem.getDataPrevisaoChegada());
+    }
+
+    @Test
+    void deveMapearTipoVeiculoEPrevisaoAusentesComoNull() {
+
+        ManifestoDTO manifesto = new ManifestoDTO(
+                "MAN-001",
+                "20/09/2026",
+                "João da Silva",
+                "12233245124",
+                "ABC1D23",
+                "São Paulo",
+                "Rio de Janeiro",
+                "1500,50",
+                "10000",
+                "10250",
+                "PENDENTE",
+                null
+        );
+
+        Viagem viagem = mapper.toEntity(manifesto);
+
+        assertNull(viagem.getVeiculoTipo());
+        assertNull(viagem.getDataPrevisaoChegada());
+    }
 }
