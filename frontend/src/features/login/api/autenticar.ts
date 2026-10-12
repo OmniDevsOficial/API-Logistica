@@ -1,7 +1,7 @@
 import { iniciarSessao } from "@entities/sessao";
 import type { Credenciais } from "../lib/validarCredenciais";
 
-const ENDPOINT = "/api/operacional/auth/login";
+const ENDPOINT = "/api/autenticacao/auth/login";
 
 const CREDENCIAIS_INVALIDAS = "E-mail ou senha inválidos.";
 const SERVICO_INDISPONIVEL =
