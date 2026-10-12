@@ -1,6 +1,7 @@
 package com.ominidevs.operacional.viagem.controllers;
 
 import com.ominidevs.operacional.viagem.entities.Viagem;
+import com.ominidevs.operacional.viagem.dto.ImportacaoManifestoResponse;
 import com.ominidevs.operacional.viagem.services.ViagemService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,12 +47,13 @@ class ImportacaoManifestoControllerTest {
         var viagem = new Viagem();
         ReflectionTestUtils.setField(viagem, "id", 123);
         viagem.setManifesto("M1");
-        when(service.importarManifesto(any())).thenReturn(List.of(viagem));
+        when(service.importarManifesto(any())).thenReturn(new ImportacaoManifestoResponse(List.of(viagem), List.of("M0")));
         mvc.perform(multipart("/viagens/importar-manifesto").file(file))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.length()").value(1))
-                .andExpect(jsonPath("$[0].id").value(123))
-                .andExpect(jsonPath("$[0].manifesto").value("M1"));
+                .andExpect(jsonPath("$.viagensImportadas.length()").value(1))
+                .andExpect(jsonPath("$.viagensImportadas[0].id").value(123))
+                .andExpect(jsonPath("$.viagensImportadas[0].manifesto").value("M1"))
+                .andExpect(jsonPath("$.manifestosDuplicados[0]").value("M0"));
         verify(service).importarManifesto(file);
     }
 
@@ -62,9 +64,11 @@ class ImportacaoManifestoControllerTest {
     }
 
     @Test void relatorioSemLinhasRetornaListaVazia() throws Exception {
-        when(service.importarManifesto(any())).thenReturn(List.of());
+        when(service.importarManifesto(any())).thenReturn(new ImportacaoManifestoResponse(List.of(), List.of()));
         mvc.perform(multipart("/viagens/importar-manifesto").file(file))
-                .andExpect(status().isOk()).andExpect(content().json("[]"));
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.viagensImportadas").isEmpty())
+                .andExpect(jsonPath("$.manifestosDuplicados").isEmpty());
     }
 
     @Test void excessoDeTamanhoRetorna413ComMensagem() throws Exception {

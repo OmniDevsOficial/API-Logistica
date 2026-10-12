@@ -2,6 +2,7 @@ package com.ominidevs.operacional.viagem.services;
 
 import com.ominidevs.operacional.motorista.services.MotoristaService;
 import com.ominidevs.operacional.viagem.clients.ManifestoClient;
+import com.ominidevs.operacional.viagem.dto.ImportacaoManifestoResponse;
 import com.ominidevs.operacional.viagem.dto.ManifestoDTO;
 import com.ominidevs.operacional.viagem.entities.StatusViagem;
 import com.ominidevs.operacional.viagem.entities.Viagem;
@@ -167,11 +168,13 @@ class ViagemServiceTest {
         when(arquivo.isEmpty()).thenReturn(false);
         when(manifestoClient.enviar(arquivo)).thenReturn(List.of(manifesto));
         when(manifestoMapper.toEntity(manifesto)).thenReturn(viagem);
+        when(viagemRepository.findByManifestoIn(List.of("MAN-001"))).thenReturn(List.of());
         when(viagemRepository.saveAll(List.of(viagem))).thenReturn(List.of(viagem));
 
-        List<Viagem> resultado = viagemService.importarManifesto(arquivo);
+        ImportacaoManifestoResponse resultado = viagemService.importarManifesto(arquivo);
 
-        assertEquals(List.of(viagem), resultado);
+        assertEquals(List.of(viagem), resultado.viagensImportadas());
+        assertTrue(resultado.manifestosDuplicados().isEmpty());
         verify(motoristaService).sincronizarComManifesto(List.of(viagem));
     }
 }
