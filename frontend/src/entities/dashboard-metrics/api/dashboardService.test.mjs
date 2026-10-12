@@ -104,3 +104,33 @@ test('erro do servidor vira mensagem em portugues', async () => {
     /Não foi possível carregar os dados do dashboard\./,
   );
 });
+
+test('servico lento vira aviso para tentar de novo', async () => {
+  globalThis.fetch = async () => {
+    throw Object.assign(new Error('The operation was aborted due to timeout'), { name: 'TimeoutError' });
+  };
+  await assert.rejects(
+    buscarDashboard('01/10/2026', '12/10/2026'),
+    /O serviço demorou a responder\./,
+  );
+});
+
+test('falha de conexao nao mostra mensagem tecnica na tela', async () => {
+  globalThis.fetch = async () => { throw new TypeError('fetch failed'); };
+  await assert.rejects(
+    buscarDashboard('01/10/2026', '12/10/2026'),
+    /Verifique sua conexão/,
+  );
+});
+
+test('cancelamento da tela nao vira mensagem de erro', async () => {
+  const controller = new AbortController();
+  globalThis.fetch = async () => {
+    controller.abort();
+    throw Object.assign(new Error('This operation was aborted'), { name: 'AbortError' });
+  };
+  await assert.rejects(
+    buscarDashboard('01/10/2026', '12/10/2026', controller.signal),
+    (erro) => erro.name === 'AbortError',
+  );
+});
