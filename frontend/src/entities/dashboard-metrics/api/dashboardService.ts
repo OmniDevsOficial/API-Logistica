@@ -6,8 +6,13 @@ import type {
 } from "../model/types";
 
 const ENDPOINT = "/api/operacional/dashboard";
+const TEMPO_LIMITE_MS = 30_000;
 const RESPOSTA_INVALIDA = "A resposta do serviço está inválida.";
 const FALHA_NA_CONSULTA = "Não foi possível carregar os dados do dashboard.";
+const SERVICO_DEMOROU =
+  "O serviço demorou a responder. Tente novamente em instantes.";
+const SEM_CONEXAO =
+  "Não foi possível falar com o serviço. Verifique sua conexão e tente novamente.";
 
 function registro(valor: unknown): Record<string, unknown> {
   if (valor === null || typeof valor !== "object" || Array.isArray(valor)) {
@@ -83,15 +88,34 @@ function mapearResposta(dados: unknown): DashboardData {
   };
 }
 
+function sinalDaConsulta(signal?: AbortSignal): AbortSignal {
+  const limite = AbortSignal.timeout(TEMPO_LIMITE_MS);
+  return signal ? AbortSignal.any([signal, limite]) : limite;
+}
+
+async function consultar(url: string, signal?: AbortSignal): Promise<Response> {
+  try {
+    return await fetch(url, { signal: sinalDaConsulta(signal) });
+  } catch (erro) {
+    if (signal?.aborted) throw erro;
+    throw new Error(
+      erro instanceof Error && erro.name === "TimeoutError"
+        ? SERVICO_DEMOROU
+        : SEM_CONEXAO,
+    );
+  }
+}
+
 export async function buscarDashboard(
   dataInicio: string,
   dataFim: string,
   signal?: AbortSignal,
 ): Promise<DashboardData> {
   const parametros = new URLSearchParams({ dataInicio, dataFim });
-  const resposta = await fetch(`${ENDPOINT}?${parametros.toString()}`, {
+  const resposta = await consultar(
+    `${ENDPOINT}?${parametros.toString()}`,
     signal,
-  });
+  );
 
   if (!resposta.ok) {
     throw new Error(FALHA_NA_CONSULTA);
