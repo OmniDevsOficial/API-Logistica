@@ -1,0 +1,26 @@
+server:
+  port: 8083
+
+spring:
+  config:
+    import: optional:file:.env[.properties],optional:file:../.env[.properties],optional:file:../../.env[.properties]
+  application:
+    name: autenticacao-service
+  datasource:
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/${POSTGRES_DB}?currentSchema=autenticacao}
+    username: ${SPRING_DATASOURCE_USERNAME:${POSTGRES_USER}}
+    password: ${SPRING_DATASOURCE_PASSWORD:${POSTGRES_PASSWORD}}
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        default_schema: autenticacao
+  flyway:
+    schemas: autenticacao
+    create-schemas: true
+
+jwt:
+  secret: ${JWT_SECRET}
+  expiracao-minutos: ${JWT_EXPIRACAO_MINUTOS:480}

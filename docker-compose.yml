@@ -52,6 +52,23 @@ services:
       operacional-service:
         condition: service_started
 
+  autenticacao-service:
+    build:
+      context: ./backend
+      dockerfile: autenticacao-service/Dockerfile
+    container_name: logistica-autenticacao
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/${POSTGRES_DB}?currentSchema=autenticacao
+      SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER}
+      SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD}
+      JWT_SECRET: ${JWT_SECRET:?Defina JWT_SECRET no arquivo .env}
+      JWT_EXPIRACAO_MINUTOS: ${JWT_EXPIRACAO_MINUTOS:-480}
+    ports:
+      - "8083:8083"
+    depends_on:
+      postgres:
+        condition: service_healthy
+
   frontend:
     build: ./frontend
     container_name: logistica-frontend
@@ -60,6 +77,7 @@ services:
     depends_on:
       - operacional-service
       - relatorio-service
+      - autenticacao-service
 
 volumes:
   postgres_data:
