@@ -1,15 +1,18 @@
-import type { DashboardData } from "@entities/dashboard-metrics";
+import type { DashboardData, PeriodOption } from "@entities/dashboard-metrics";
 import { ChartCard, StatCard } from "@shared/ui";
 import { formatCurrency, formatPercent } from "@shared/lib";
 import { RentabilidadeViagensChart } from "./RentabilidadeViagensChart";
 import { UtilizacaoFrotaChart } from "./UtilizacaoFrotaChart";
+import { useDisponiveis } from "../model/useDisponiveis";
 
 interface DashboardOverviewProps {
   data: DashboardData;
+  period: PeriodOption;
 }
 
-export function DashboardOverview({ data }: DashboardOverviewProps) {
+export function DashboardOverview({ data, period }: DashboardOverviewProps) {
   const { metrics, rentabilidadeXViagens, utilizacaoMediaFrota } = data;
+  const disponiveis = useDisponiveis(period);
 
   return (
     <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4 lg:auto-rows-[minmax(150px,auto)]">
@@ -35,7 +38,7 @@ export function DashboardOverview({ data }: DashboardOverviewProps) {
       <StatCard
         className="lg:col-start-4 lg:row-start-1"
         title="Disponíveis"
-        value={String(metrics.disponiveis)}
+        value={disponiveis === null ? "-" : String(disponiveis)}
         caption="Em tempo real"
       />
 
@@ -73,7 +76,7 @@ export function DashboardOverview({ data }: DashboardOverviewProps) {
       <StatCard
         className="lg:col-start-2 lg:row-start-4"
         title="Disponíveis"
-        value={String(metrics.disponiveisMedia)}
+        value="-"
         caption="Média"
       />
       <ChartCard

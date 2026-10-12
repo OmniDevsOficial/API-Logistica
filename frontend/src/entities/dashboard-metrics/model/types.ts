@@ -5,12 +5,10 @@ export interface DashboardMetrics {
   rentabilidadeTotalTrendPercent: number;
   rentabilidadeMedia: number;
   viagens: number;
-  disponiveis: number;
   custoTotal: number;
   taxaOcupacao: number;
   tempoAlocacaoMedia: number;
   utilizacaoFrotaMedia: number;
-  disponiveisMedia: number;
   fretesValorTotal: number;
   custoMedio: number;
 }

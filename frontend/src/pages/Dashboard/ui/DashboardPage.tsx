@@ -36,7 +36,7 @@ export function DashboardPage() {
           }
           onMenuClick={() => setSidebarOpen(true)}
         />
-        {data && <DashboardOverview data={data} />}
+        {data && <DashboardOverview data={data} period={period} />}
       </main>
     </div>
   );
