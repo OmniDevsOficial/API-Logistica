@@ -9,6 +9,7 @@ import {
 
 // ALTERAÇÃO: endpoint operacional que salva viagens, sem simulação.
 import { importarManifesto, mensagemErroImportacao } from '../api/importarManifesto';
+import type { ResultadoImportacao } from '../api/importarManifesto';
 import { formatarTamanhoArquivo } from '../lib/formatarTamanhoArquivo';
 import { validarArquivoRelatorio } from '../lib/validarArquivoRelatorio';
 import {
@@ -18,7 +19,7 @@ import {
 
 interface Propriedades {
   onFechar: () => void;
-  onImportado?: () => void;
+  onImportado?: (resultado: ResultadoImportacao) => void;
 }
 
 interface Feedback {
@@ -161,7 +162,7 @@ export function ModalEnviarRelatorio({
           : `${resultado.viagensImportadas} viagens importadas com sucesso!`
       );
 
-      onImportado?.();
+      onImportado?.(resultado);
     } catch (erro) {
       exibirFeedback(
         'erro',

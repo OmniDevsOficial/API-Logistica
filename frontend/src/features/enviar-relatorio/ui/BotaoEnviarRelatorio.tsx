@@ -1,9 +1,10 @@
 import { useState } from "react";
 import { Upload } from "lucide-react";
+import type { ResultadoImportacao } from "../api/importarManifesto";
 import { ModalEnviarRelatorio } from "./ModalEnviarRelatorio";
 
 interface BotaoEnviarRelatorioProps {
-  onImportado?: () => void;
+  onImportado?: (resultado: ResultadoImportacao) => void;
 }
 
 export function BotaoEnviarRelatorio({
