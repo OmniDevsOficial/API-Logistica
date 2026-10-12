@@ -8,14 +8,22 @@ import { Sidebar } from "@widgets/sidebar";
 import { ViagensTopbar } from "@widgets/viagens-topbar";
 import { ViagensList } from "@widgets/viagens-list";
 import { ViagensRanking } from "@widgets/viagens-ranking";
+import type { FiltroViagens } from "@widgets/viagens-topbar";
+import { filtroVazio } from "@/widgets/viagens-topbar/model/types";
 
 export function ViagensPage() {
   const [data, setData] = useState<ViagensData | null>(null);
   const [search, setSearch] = useState("");
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [filtroModal, setFiltroModal] = useState<FiltroViagens>(() => ({
+    ...filtroVazio,
+    status: [...filtroVazio.status],
+  }));
 
   // null = modal ainda não aplicou nenhum filtro -> usa a lista completa da API
-  const [viagensFiltradasPorModal, setViagensFiltradasPorModal] = useState<Viagem[] | null>(null);
+  const [viagensFiltradasPorModal, setViagensFiltradasPorModal] = useState<
+    Viagem[] | null
+  >(null);
 
   useEffect(() => {
     let isCurrent = true;
@@ -42,19 +50,27 @@ export function ViagensPage() {
   }, [viagensBase, search]);
 
   return (
-    <div className="min-h-screen lg:h-screen lg:overflow-hidden">
+    <div className="min-h-screen">
       <Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
-      <main className="min-w-0 px-4 py-6 sm:px-10 sm:py-8 lg:ml-sidebar lg:flex lg:h-full lg:min-h-0 lg:flex-col">
+      <main className="min-w-0 px-4 py-6 sm:px-10 sm:py-8 lg:ml-sidebar lg:flex lg:flex-col">
         <ViagensTopbar
           search={search}
           onSearchChange={setSearch}
           periodoLabel={data?.periodoLabel ?? ""}
           onMenuClick={() => setSidebarOpen(true)}
           onFiltroAplicado={setViagensFiltradasPorModal}
-          onFiltroLimpo={() => setViagensFiltradasPorModal(null)}
+          onFiltroLimpo={() => {
+            setViagensFiltradasPorModal(null);
+            setFiltroModal({
+              ...filtroVazio,
+              status: [...filtroVazio.status],
+            });
+          }}
+          onFiltroModalChange={setFiltroModal}
+          filtroModal={filtroModal}
         />
         {data && (
-          <div className="grid grid-cols-1 gap-6 lg:min-h-0 lg:flex-1 lg:grid-cols-[2fr_1fr]">
+          <div className="grid grid-cols-1 gap-6 items-start lg:grid-cols-[2fr_1fr]">
             <ViagensList viagens={viagensFiltradas} />
             {/* Ranking mostra tudo, não é afetado pelos filtros de cima */}
             <ViagensRanking viagens={data.viagens} />

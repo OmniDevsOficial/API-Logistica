@@ -1,16 +1,21 @@
 import { useState } from "react";
 import { SlidersHorizontal } from "lucide-react";
 import { FiltrarViagensModal } from "./FiltrarViagensModal";
+import type { FiltroViagens } from "../model/types";
 
 type FiltrarViagensButtonProps = {
   onFiltroAplicado?: (resultado: any[]) => void;
   onFiltroLimpo?: () => void;
+  filtroModal: FiltroViagens;
+  onFiltroModalChange: (filtro: FiltroViagens) => void;
   buttonClassName?: string;
 };
 
 export function FiltrarViagensButton({
   onFiltroAplicado,
   onFiltroLimpo,
+  filtroModal,
+  onFiltroModalChange,
   buttonClassName,
 }: FiltrarViagensButtonProps) {
   const [modalAberto, setModalAberto] = useState(false);
@@ -33,6 +38,8 @@ export function FiltrarViagensButton({
           onClose={() => setModalAberto(false)}
           onFiltroAplicado={onFiltroAplicado}
           onFiltroLimpo={onFiltroLimpo}
+          filtroModal={filtroModal}
+          onFiltroModalChange={onFiltroModalChange}
         />
       )}
     </>

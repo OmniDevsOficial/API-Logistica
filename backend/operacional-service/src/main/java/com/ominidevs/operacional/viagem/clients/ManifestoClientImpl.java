@@ -44,7 +44,7 @@ public class ManifestoClientImpl implements ManifestoClient {
         return dados.stream()
                 .map(d -> {
                     // Se tiver "Origem" no CSV, usa; senão usa fallback
-                    String origem = d.get("Origem");
+                    String origem = d.get("Filial");
                     if (origem == null || origem.isBlank()) {
                         origem = "Não informado";
                     }
