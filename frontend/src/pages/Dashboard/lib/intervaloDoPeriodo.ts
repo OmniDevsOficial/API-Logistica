@@ -42,3 +42,25 @@ export function intervaloDoPeriodo(
     dataFim: FORMATADOR.format(fimDoPeriodo(periodo, referencia)),
   };
 }
+
+export function deslocarReferencia(
+  periodo: PeriodOption,
+  referencia: Date,
+  passos: number,
+): Date {
+  const deslocada = semHoras(referencia);
+
+  if (periodo === "dia") deslocada.setDate(deslocada.getDate() + passos);
+  if (periodo === "mes") deslocada.setMonth(deslocada.getMonth() + passos, 1);
+  if (periodo === "ano") deslocada.setFullYear(deslocada.getFullYear() + passos, 0, 1);
+
+  return deslocada;
+}
+
+export function podeAvancarPeriodo(
+  periodo: PeriodOption,
+  referencia: Date,
+  hoje = new Date(),
+): boolean {
+  return fimDoPeriodo(periodo, referencia) < semHoras(hoje);
+}
