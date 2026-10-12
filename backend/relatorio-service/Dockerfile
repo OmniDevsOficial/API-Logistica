@@ -5,6 +5,7 @@ COPY gradlew settings.gradle build.gradle ./
 COPY gradle ./gradle
 COPY operacional-service/build.gradle operacional-service/
 COPY relatorio-service/build.gradle relatorio-service/
+COPY autenticacao-service/build.gradle autenticacao-service/
 COPY relatorio-service/src relatorio-service/src
 
 RUN chmod +x gradlew
