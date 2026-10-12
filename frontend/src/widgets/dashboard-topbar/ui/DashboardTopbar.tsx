@@ -9,6 +9,7 @@ interface DashboardTopbarProps {
   onPeriodChange: (period: PeriodOption) => void;
   dateRangeLabel: string;
   onMenuClick: () => void;
+  onManifestoImportado: () => void;
 }
 
 const DATE_RANGE_CLASS =
@@ -19,6 +20,7 @@ export function DashboardTopbar({
   onPeriodChange,
   dateRangeLabel,
   onMenuClick,
+  onManifestoImportado,
 }: DashboardTopbarProps) {
   return (
     <header className="mb-7 flex flex-col gap-5">
@@ -26,7 +28,7 @@ export function DashboardTopbar({
 
       <div className="flex flex-col gap-4 sm:hidden">
         <div className="flex items-center justify-between gap-3">
-          <BotaoEnviarRelatorio />
+          <BotaoEnviarRelatorio onImportado={onManifestoImportado} />
 
           <PeriodFilter value={period} onChange={onPeriodChange} />
         </div>
@@ -38,7 +40,7 @@ export function DashboardTopbar({
       </div>
 
       <div className="hidden flex-wrap items-center justify-between gap-3 sm:flex">
-        <BotaoEnviarRelatorio />
+        <BotaoEnviarRelatorio onImportado={onManifestoImportado} />
 
         <div className="flex flex-wrap items-center gap-3">
           <PeriodFilter value={period} onChange={onPeriodChange} />

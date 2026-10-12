@@ -12,7 +12,7 @@ const MENSAGEM_CLASS =
 export function DashboardPage() {
   const [period, setPeriod] = useState<PeriodOption>("mes");
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const { dados, carregando, erro } = useDashboard(period);
+  const { dados, carregando, erro, recarregar } = useDashboard(period);
 
   return (
     <div className="min-h-screen">
@@ -25,6 +25,7 @@ export function DashboardPage() {
             dados ? formatDateRange(dados.periodo.inicio, dados.periodo.fim) : ""
           }
           onMenuClick={() => setSidebarOpen(true)}
+          onManifestoImportado={recarregar}
         />
 
         {erro ? (
