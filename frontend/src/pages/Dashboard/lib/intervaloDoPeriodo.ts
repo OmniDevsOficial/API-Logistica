@@ -64,3 +64,11 @@ export function podeAvancarPeriodo(
 ): boolean {
   return fimDoPeriodo(periodo, referencia) < semHoras(hoje);
 }
+
+export function referenciaDaDataIso(dataIso: string): Date | null {
+  const partes = /^(\d{4})-(\d{2})-(\d{2})$/.exec(dataIso);
+  if (!partes) return null;
+
+  const [, ano, mes, dia] = partes;
+  return new Date(Number(ano), Number(mes) - 1, Number(dia));
+}
