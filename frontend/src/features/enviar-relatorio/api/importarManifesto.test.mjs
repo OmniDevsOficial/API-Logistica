@@ -37,7 +37,7 @@ test('envia o arquivo uma vez ao operacional e conta as entidades retornadas', a
     assert.equal(options.headers, undefined);
     return Response.json([{ id: 1, manifesto: '123' }, { id: 2, manifesto: '124' }]);
   };
-  assert.deepEqual(await importarManifesto(arquivo()), { viagensImportadas: 2 });
+  assert.deepEqual(await importarManifesto(arquivo()), { viagensImportadas: 2, dataMaisRecente: null });
   assert.equal(chamadas, 1);
 });
 
@@ -87,4 +87,16 @@ test('timeout encerra a espera sem prometer cancelamento da gravação', async (
 
 test('erro desconhecido nunca expõe detalhes internos', () => {
   assert.match(mensagemErroImportacao(new Error('SQL interno')), /Não foi possível confirmar/);
+});
+
+test('informa a data mais recente do manifesto para a tela achar o periodo', async () => {
+  globalThis.fetch = async () => Response.json([
+    { id: 1, manifesto: '123', data: '2025-03-04' },
+    { id: 2, manifesto: '124', data: '2025-03-28' },
+    { id: 3, manifesto: '125', data: 'sem data' },
+  ]);
+  assert.deepEqual(await importarManifesto(arquivo()), {
+    viagensImportadas: 3,
+    dataMaisRecente: '2025-03-28',
+  });
 });
