@@ -2,7 +2,13 @@ import { useState } from "react";
 import { Upload } from "lucide-react";
 import { ModalEnviarRelatorio } from "./ModalEnviarRelatorio";
 
-export function BotaoEnviarRelatorio() {
+interface BotaoEnviarRelatorioProps {
+  onImportado?: () => void;
+}
+
+export function BotaoEnviarRelatorio({
+  onImportado,
+}: BotaoEnviarRelatorioProps) {
   const [modalAberto, setModalAberto] = useState(false);
 
   return (
@@ -19,6 +25,7 @@ export function BotaoEnviarRelatorio() {
       {modalAberto && (
         <ModalEnviarRelatorio
           onFechar={() => setModalAberto(false)}
+          onImportado={onImportado}
         />
       )}
     </div>

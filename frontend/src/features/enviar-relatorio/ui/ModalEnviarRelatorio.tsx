@@ -18,6 +18,7 @@ import {
 
 interface Propriedades {
   onFechar: () => void;
+  onImportado?: () => void;
 }
 
 interface Feedback {
@@ -30,6 +31,7 @@ const DURACAO_MENSAGEM_MS = 5000;
 
 export function ModalEnviarRelatorio({
   onFechar,
+  onImportado,
 }: Propriedades) {
   const [arrastando, setArrastando] = useState(false);
   const [arquivoSelecionado, setArquivoSelecionado] =
@@ -158,6 +160,8 @@ export function ModalEnviarRelatorio({
           ? '1 viagem importada com sucesso!'
           : `${resultado.viagensImportadas} viagens importadas com sucesso!`
       );
+
+      onImportado?.();
     } catch (erro) {
       exibirFeedback(
         'erro',
