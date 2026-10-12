@@ -2,11 +2,11 @@ import { useCallback, useEffect, useState } from "react";
 import {
   buscarDashboard,
   type DashboardData,
-  type PeriodOption,
 } from "@entities/dashboard-metrics";
-import { intervaloDoPeriodo } from "../lib/intervaloDoPeriodo";
+import type { IntervaloConsulta } from "../lib/intervaloDoPeriodo";
 
-export function useDashboard(periodo: PeriodOption) {
+export function useDashboard(intervalo: IntervaloConsulta) {
+  const { dataInicio, dataFim } = intervalo;
   const [dados, setDados] = useState<DashboardData | null>(null);
   const [carregando, setCarregando] = useState(true);
   const [erro, setErro] = useState<string | null>(null);
@@ -20,7 +20,6 @@ export function useDashboard(periodo: PeriodOption) {
       setErro(null);
 
       try {
-        const { dataInicio, dataFim } = intervaloDoPeriodo(periodo);
         const resultado = await buscarDashboard(
           dataInicio,
           dataFim,
@@ -42,7 +41,7 @@ export function useDashboard(periodo: PeriodOption) {
 
     void carregar();
     return () => controller.abort();
-  }, [periodo, atualizacoes]);
+  }, [dataInicio, dataFim, atualizacoes]);
 
   const recarregar = useCallback(
     () => setAtualizacoes((total) => total + 1),
