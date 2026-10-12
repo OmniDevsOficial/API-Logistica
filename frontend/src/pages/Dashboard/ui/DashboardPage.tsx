@@ -1,28 +1,18 @@
-import { useEffect, useState } from "react";
-import {
-  getDashboardData,
-  type DashboardData,
-  type PeriodOption,
-} from "@entities/dashboard-metrics";
+import { useState } from "react";
+import type { PeriodOption } from "@entities/dashboard-metrics";
 import { Sidebar } from "@widgets/sidebar";
 import { DashboardTopbar } from "@widgets/dashboard-topbar";
 import { DashboardOverview } from "@widgets/dashboard-overview";
 import { formatDateRange } from "@shared/lib";
+import { useDashboard } from "../model/useDashboard";
+
+const MENSAGEM_CLASS =
+  "rounded-md bg-surface p-6 text-center text-sm text-fg-subtle";
 
 export function DashboardPage() {
   const [period, setPeriod] = useState<PeriodOption>("mes");
-  const [data, setData] = useState<DashboardData | null>(null);
   const [sidebarOpen, setSidebarOpen] = useState(false);
-
-  useEffect(() => {
-    let isCurrent = true;
-    getDashboardData(period).then((result) => {
-      if (isCurrent) setData(result);
-    });
-    return () => {
-      isCurrent = false;
-    };
-  }, [period]);
+  const { dados, carregando, erro } = useDashboard(period);
 
   return (
     <div className="min-h-screen">
@@ -32,11 +22,32 @@ export function DashboardPage() {
           period={period}
           onPeriodChange={setPeriod}
           dateRangeLabel={
-            data ? formatDateRange(data.periodo.inicio, data.periodo.fim) : ""
+            dados ? formatDateRange(dados.periodo.inicio, dados.periodo.fim) : ""
           }
           onMenuClick={() => setSidebarOpen(true)}
         />
-        {data && <DashboardOverview data={data} />}
+
+        {erro ? (
+          <p role="alert" className={MENSAGEM_CLASS}>
+            {erro}
+          </p>
+        ) : carregando ? (
+          <p role="status" className={MENSAGEM_CLASS}>
+            Carregando dashboard...
+          </p>
+        ) : (
+          dados && (
+            <div className="flex flex-col gap-6">
+              {dados.status === "SEM_DADOS" && (
+                <p role="status" className={MENSAGEM_CLASS}>
+                  Nenhuma viagem importada no período selecionado.
+                </p>
+              )}
+
+              <DashboardOverview data={dados} />
+            </div>
+          )
+        )}
       </main>
     </div>
   );
