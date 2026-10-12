@@ -1,28 +1,26 @@
 export type PeriodOption = "dia" | "mes" | "ano";
 
+export type DashboardStatus = "COM_DADOS" | "SEM_DADOS";
+
+export interface ViagensPorStatus {
+  pendente: number;
+  emTransito: number;
+  finalizado: number;
+}
+
 export interface DashboardMetrics {
-  rentabilidadeTotal: number;
-  rentabilidadeTotalTrendPercent: number;
-  rentabilidadeMedia: number;
-  viagens: number;
-  disponiveis: number;
-  custoTotal: number;
-  taxaOcupacao: number;
-  tempoAlocacaoMedia: number;
-  utilizacaoFrotaMedia: number;
-  disponiveisMedia: number;
-  fretesValorTotal: number;
-  custoMedio: number;
-}
-
-export interface RentabilidadeViagensPoint {
-  viagensLabel: string;
-  rentabilidade: number;
-}
-
-export interface UtilizacaoFrotaCategoria {
-  categoria: string;
-  utilizacao: number;
+  totalViagens: number;
+  freteTotal: number | null;
+  freteMedio: number | null;
+  kmTotal: number | null;
+  motoristasAtivos: number;
+  veiculosUtilizados: number;
+  viagensPorStatus: ViagensPorStatus;
+  custoTotal: number | null;
+  custoMedio: number | null;
+  rentabilidadeTotal: number | null;
+  rentabilidadeMedia: number | null;
+  taxaOcupacao: number | null;
 }
 
 export interface DashboardData {
@@ -30,7 +28,6 @@ export interface DashboardData {
     inicio: string;
     fim: string;
   };
+  status: DashboardStatus;
   metrics: DashboardMetrics;
-  rentabilidadeXViagens: RentabilidadeViagensPoint[];
-  utilizacaoMediaFrota: UtilizacaoFrotaCategoria[];
 }
