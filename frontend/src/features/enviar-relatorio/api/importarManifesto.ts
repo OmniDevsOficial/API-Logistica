@@ -9,10 +9,12 @@ const RESULTADO_INCERTO = 'Não foi possível confirmar a importação. Confira 
 interface ViagemImportada {
   id: number;
   manifesto: string;
+  data?: unknown;
 }
 
 export interface ResultadoImportacao {
   viagensImportadas: number;
+  dataMaisRecente: string | null;
 }
 
 // Apenas mensagens controladas pelo frontend são apresentadas ao operador.
@@ -29,6 +31,14 @@ function validarResposta(dados: unknown): dados is ViagemImportada[] {
     && Number.isInteger(item.id) && item.id > 0
     && typeof item.manifesto === 'string' && item.manifesto.trim() !== '',
   );
+}
+
+function dataMaisRecente(viagens: ViagemImportada[]): string | null {
+  const datas = viagens
+    .map((viagem) => viagem.data)
+    .filter((data): data is string => typeof data === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(data));
+
+  return datas.length === 0 ? null : datas.reduce((maior, data) => (data > maior ? data : maior));
 }
 
 export async function importarManifesto(arquivo: File): Promise<ResultadoImportacao> {
@@ -80,7 +90,7 @@ export async function importarManifesto(arquivo: File): Promise<ResultadoImporta
     }
 
     // Conta as entidades retornadas pela gravação, não as linhas do arquivo original.
-    return { viagensImportadas: dados.length };
+    return { viagensImportadas: dados.length, dataMaisRecente: dataMaisRecente(dados) };
   } catch (erro) {
     if (erro instanceof ErroImportacao) throw erro;
     if (controller.signal.aborted) {
