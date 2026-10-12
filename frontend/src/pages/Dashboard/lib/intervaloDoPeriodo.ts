@@ -11,17 +11,34 @@ const FORMATADOR = new Intl.DateTimeFormat("pt-BR", {
   year: "numeric",
 });
 
-export function intervaloDoPeriodo(
-  periodo: PeriodOption,
-  hoje = new Date(),
-): IntervaloConsulta {
-  const inicio = new Date(hoje);
+function semHoras(data: Date): Date {
+  return new Date(data.getFullYear(), data.getMonth(), data.getDate());
+}
+
+function inicioDoPeriodo(periodo: PeriodOption, referencia: Date): Date {
+  const inicio = semHoras(referencia);
 
   if (periodo === "mes") inicio.setDate(1);
   if (periodo === "ano") inicio.setMonth(0, 1);
 
+  return inicio;
+}
+
+function fimDoPeriodo(periodo: PeriodOption, referencia: Date): Date {
+  const fim = semHoras(referencia);
+
+  if (periodo === "mes") fim.setMonth(fim.getMonth() + 1, 0);
+  if (periodo === "ano") fim.setMonth(11, 31);
+
+  return fim;
+}
+
+export function intervaloDoPeriodo(
+  periodo: PeriodOption,
+  referencia = new Date(),
+): IntervaloConsulta {
   return {
-    dataInicio: FORMATADOR.format(inicio),
-    dataFim: FORMATADOR.format(hoje),
+    dataInicio: FORMATADOR.format(inicioDoPeriodo(periodo, referencia)),
+    dataFim: FORMATADOR.format(fimDoPeriodo(periodo, referencia)),
   };
 }
