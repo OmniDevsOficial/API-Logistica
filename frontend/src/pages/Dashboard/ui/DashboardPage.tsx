@@ -1,9 +1,16 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import type { PeriodOption } from "@entities/dashboard-metrics";
+import type { ResultadoImportacao } from "@features/enviar-relatorio/api/importarManifesto";
 import { Sidebar } from "@widgets/sidebar";
 import { DashboardTopbar } from "@widgets/dashboard-topbar";
 import { DashboardOverview } from "@widgets/dashboard-overview";
 import { formatDateRange } from "@shared/lib";
+import {
+  deslocarReferencia,
+  intervaloDoPeriodo,
+  podeAvancarPeriodo,
+  referenciaDaDataIso,
+} from "../lib/intervaloDoPeriodo";
 import { useDashboard } from "../model/useDashboard";
 
 const MENSAGEM_CLASS =
@@ -11,8 +18,27 @@ const MENSAGEM_CLASS =
 
 export function DashboardPage() {
   const [period, setPeriod] = useState<PeriodOption>("mes");
+  const [referencia, setReferencia] = useState(() => new Date());
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const { dados, carregando, erro, recarregar } = useDashboard(period);
+
+  const intervalo = useMemo(
+    () => intervaloDoPeriodo(period, referencia),
+    [period, referencia],
+  );
+  const { dados, carregando, erro, recarregar } = useDashboard(intervalo);
+
+  function aoImportarManifesto(resultado: ResultadoImportacao) {
+    const referenciaImportada = resultado.dataMaisRecente
+      ? referenciaDaDataIso(resultado.dataMaisRecente)
+      : null;
+
+    if (referenciaImportada) {
+      setPeriod("mes");
+      setReferencia(referenciaImportada);
+    }
+
+    recarregar();
+  }
 
   return (
     <div className="min-h-screen">
@@ -21,11 +47,19 @@ export function DashboardPage() {
         <DashboardTopbar
           period={period}
           onPeriodChange={setPeriod}
-          dateRangeLabel={
-            dados ? formatDateRange(dados.periodo.inicio, dados.periodo.fim) : ""
+          dateRangeLabel={formatDateRange(
+            intervalo.dataInicio,
+            intervalo.dataFim,
+          )}
+          podeAvancar={podeAvancarPeriodo(period, referencia)}
+          onPeriodoAnterior={() =>
+            setReferencia(deslocarReferencia(period, referencia, -1))
+          }
+          onPeriodoSeguinte={() =>
+            setReferencia(deslocarReferencia(period, referencia, 1))
           }
           onMenuClick={() => setSidebarOpen(true)}
-          onManifestoImportado={recarregar}
+          onManifestoImportado={aoImportarManifesto}
         />
 
         {erro ? (
