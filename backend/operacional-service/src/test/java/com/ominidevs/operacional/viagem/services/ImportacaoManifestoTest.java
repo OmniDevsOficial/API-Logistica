@@ -1,7 +1,9 @@
 package com.ominidevs.operacional.viagem.services;
 
+import com.ominidevs.operacional.motorista.services.MotoristaService;
 import com.ominidevs.operacional.viagem.clients.ManifestoClient;
 import com.ominidevs.operacional.viagem.dto.ManifestoDTO;
+import com.ominidevs.operacional.viagem.dto.ImportacaoManifestoResponse;
 import com.ominidevs.operacional.viagem.entities.Viagem;
 import com.ominidevs.operacional.viagem.entities.StatusViagem;
 import com.ominidevs.operacional.viagem.mappers.ManifestoMapper;
@@ -22,8 +24,9 @@ import static org.mockito.ArgumentMatchers.*;
 class ImportacaoManifestoTest {
     private final ManifestoClient client = mock(ManifestoClient.class);
     private final ViagemRepository repository = mock(ViagemRepository.class);
+    private final MotoristaService motoristaService = mock(MotoristaService.class);
     // Mapper real: verifica a conversão dos dados enviados à persistência.
-    private final ViagemService service = new ViagemService(client, new ManifestoMapper(), repository);
+    private final ViagemService service = new ViagemService(client, new ManifestoMapper(), repository, motoristaService);
     private final MockMultipartFile file = new MockMultipartFile("file", "manifesto.csv", "text/csv", new byte[]{1});
 
     private ManifestoDTO manifesto(String numero) {
@@ -33,9 +36,12 @@ class ImportacaoManifestoTest {
 
     @Test void converteTodosOsManifestosESalvaValoresCorretos() {
         when(client.enviar(file)).thenReturn(List.of(manifesto("M1"), manifesto("M2")));
+        when(repository.findByManifestoIn(List.of("M1", "M2"))).thenReturn(List.of());
         when(repository.saveAll(anyList())).thenAnswer(invocation -> invocation.getArgument(0));
-        var viagens = service.importarManifesto(file);
+        var resultado = service.importarManifesto(file);
+        var viagens = resultado.viagensImportadas();
         assertEquals(2, viagens.size());
+        assertTrue(resultado.manifestosDuplicados().isEmpty());
         assertEquals(List.of("M1", "M2"), viagens.stream().map(Viagem::getManifesto).toList());
         for (var viagem : viagens) {
             assertEquals(LocalDate.of(2026, 10, 1), viagem.getData());
@@ -53,13 +59,32 @@ class ImportacaoManifestoTest {
         }
         verify(client).enviar(file);
         verify(repository).saveAll(viagens);
+        verify(motoristaService).sincronizarComManifesto(viagens);
     }
 
     @Test void retornaResultadoDaPersistencia() {
         when(client.enviar(file)).thenReturn(List.of(manifesto("M1")));
+        when(repository.findByManifestoIn(List.of("M1"))).thenReturn(List.of());
         var salvas = List.of(mock(Viagem.class));
         when(repository.saveAll(anyList())).thenReturn(salvas);
-        assertSame(salvas, service.importarManifesto(file));
+        var resultado = service.importarManifesto(file);
+        assertSame(salvas, resultado.viagensImportadas());
+        assertTrue(resultado.manifestosDuplicados().isEmpty());
+    }
+
+    @Test void ignoraManifestoJaExistenteEInformaDuplicidade() {
+        when(client.enviar(file)).thenReturn(List.of(manifesto("M1")));
+        var existente = mock(Viagem.class);
+        when(existente.getManifesto()).thenReturn("M1");
+        when(repository.findByManifestoIn(List.of("M1"))).thenReturn(List.of(existente));
+        when(repository.saveAll(List.<Viagem>of())).thenReturn(List.of());
+
+        var resultado = service.importarManifesto(file);
+
+        assertTrue(resultado.viagensImportadas().isEmpty());
+        assertEquals(List.of("M1"), resultado.manifestosDuplicados());
+        verify(repository).saveAll(List.<Viagem>of());
+        verify(motoristaService).sincronizarComManifesto(List.of());
     }
 
     @Test void rejeitaArquivoAusente() {
@@ -77,7 +102,9 @@ class ImportacaoManifestoTest {
     @Test void respostaSemLinhasRetornaListaVazia() {
         when(client.enviar(file)).thenReturn(List.of());
         when(repository.saveAll(List.<Viagem>of())).thenReturn(List.of());
-        assertTrue(service.importarManifesto(file).isEmpty());
+        var resultado = service.importarManifesto(file);
+        assertTrue(resultado.viagensImportadas().isEmpty());
+        assertTrue(resultado.manifestosDuplicados().isEmpty());
         verify(repository).saveAll(List.<Viagem>of());
     }
 

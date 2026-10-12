@@ -41,7 +41,7 @@ class ManifestoClientImplTest {
                 .andExpect(content().string(containsString("M1;01/10/2026")))
                 .andRespond(withSuccess("""
                         [{"Manifesto":"M1","Data":"01/10/2026","Motorista":"Ana","CPF":"00123456789",
-                        "Veículo":"ABC1D23","Origem":"São Paulo","Destino":"Campinas","Valor Frete":"1.500,50",
+                        "Veículo":"ABC1D23","Filial":"São Paulo","Destino":"Campinas","Valor Frete":"1.500,50",
                         "Km saída":"100","Km chegada":"250","Status":"Finalizado","Observações operacionais":"Teste"}]
                         """, MediaType.APPLICATION_JSON));
         var dados = client.enviar(file);
@@ -63,7 +63,7 @@ class ManifestoClientImplTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = {"[{}]", "[{\"Origem\":\"\"}]", "[{\"Origem\":\"   \"}]"})
+    @ValueSource(strings = {"[{}]", "[{\"Filial\":\"\"}]", "[{\"Filial\":\"   \"}]"})
     void aplicaFallbackQuandoOrigemNaoInformada(String json) {
         server.expect(requestTo("http://relatorio.test/manifestos/upload"))
                 .andRespond(withSuccess(json, MediaType.APPLICATION_JSON));
