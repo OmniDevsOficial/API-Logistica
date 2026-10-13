@@ -5,6 +5,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.client.RestClient;
 
+import com.ominidevs.operacional.seguranca.RepasseTokenInterceptor;
+
 @Configuration
 public class RestClientConfig {
 
@@ -14,6 +16,7 @@ public class RestClientConfig {
     ) {
         return RestClient.builder()
                 .baseUrl(baseUrl)
+                .requestInterceptor(new RepasseTokenInterceptor())
                 .build();
     }
 }
