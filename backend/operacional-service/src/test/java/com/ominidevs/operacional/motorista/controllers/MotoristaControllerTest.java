@@ -17,6 +17,8 @@ import java.time.LocalDate;
 import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.http.MediaType;
@@ -31,15 +33,14 @@ import com.ominidevs.operacional.motorista.exceptions.MotoristaExceptionHandler;
 import com.ominidevs.operacional.motorista.exceptions.MotoristaNaoEncontradoException;
 import com.ominidevs.operacional.motorista.services.MotoristaService;
 
-import org.junit.jupiter.api.Test;
-
 class MotoristaControllerTest {
 
     private final MotoristaService service = mock(MotoristaService.class);
     private MockMvc mvc;
 
     private MotoristaResponseDTO motorista(StatusMotorista status) {
-        return new MotoristaResponseDTO(1, "Ana", "Caminhão", "ABC1D23", status.name(),
+        return new MotoristaResponseDTO(
+                1, "Ana", "Caminhão", "ABC1D23", status.name(),
                 "Curitiba", LocalDate.of(2026, 9, 10), null, 3);
     }
 
@@ -48,6 +49,15 @@ class MotoristaControllerTest {
         mvc = MockMvcBuilders.standaloneSetup(new MotoristaController(service))
                 .setControllerAdvice(new MotoristaExceptionHandler())
                 .build();
+    }
+
+    @Test
+    @DisplayName("GET /motoristas/ping retorna 200 e informa que o serviço está ativo")
+    void deveRetornarStatusDoServico() throws Exception {
+        mvc.perform(get("/motoristas/ping"))
+                .andExpect(status().isOk())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.TEXT_PLAIN))
+                .andExpect(content().string("operacional-service ativo"));
     }
 
     @Test

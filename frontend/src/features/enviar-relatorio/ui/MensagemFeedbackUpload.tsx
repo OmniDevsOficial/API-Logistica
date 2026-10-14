@@ -2,7 +2,7 @@
 import { useEffect, useState } from 'react';
 import { AlertCircle, CheckCircle2, X } from 'lucide-react';
 
-export type TipoMensagemUpload = 'erro' | 'sucesso';
+export type TipoMensagemUpload = 'erro' | 'sucesso' | 'aviso';
 
 interface Propriedades {
   tipo: TipoMensagemUpload;
@@ -21,6 +21,11 @@ const estilos = {
     conteudo: 'text-green-700',
     barra: 'bg-green-500',
   },
+  aviso: {
+    container: 'border-amber-300 bg-amber-50',
+    conteudo: 'text-amber-800',
+    barra: 'bg-amber-500',
+  },
 } as const;
 
 export function MensagemFeedbackUpload({
@@ -31,11 +36,11 @@ export function MensagemFeedbackUpload({
   const [barraReduzida, setBarraReduzida] = useState(false);
 
   const estilo = estilos[tipo];
-  const Icone = tipo === 'erro' ? AlertCircle : CheckCircle2;
+  const Icone = tipo === 'sucesso' ? CheckCircle2 : AlertCircle;
 
   useEffect(() => {
     // ALTERAÇÃO: erros não expiram; somente sucessos têm contagem regressiva.
-    if (tipo === 'erro') return;
+    if (tipo !== 'sucesso') return;
     let segundoFrame: number | undefined;
 
     const primeiroFrame = requestAnimationFrame(() => {
@@ -60,8 +65,8 @@ export function MensagemFeedbackUpload({
         rounded-[10px] border
         ${estilo.container}
       `}
-      role={tipo === 'erro' ? 'alert' : 'status'}
-      aria-live={tipo === 'erro' ? 'assertive' : 'polite'}
+      role={tipo === 'sucesso' ? 'status' : 'alert'}
+      aria-live={tipo === 'sucesso' ? 'polite' : 'assertive'}
     >
       <div
         className={`
