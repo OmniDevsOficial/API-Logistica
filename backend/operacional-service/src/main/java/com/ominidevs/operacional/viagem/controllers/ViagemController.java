@@ -13,11 +13,12 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.ominidevs.operacional.viagem.dto.ViagemResponseDTO;
+import com.ominidevs.operacional.viagem.dto.ImportacaoManifestoResponse;
 import com.ominidevs.operacional.viagem.entities.StatusViagem;
 import com.ominidevs.operacional.viagem.entities.Viagem;
 import com.ominidevs.operacional.viagem.services.ViagemService;
 
-@CrossOrigin(origins = "http://localhost:5173")
+@CrossOrigin(origins = { "http://localhost:5173", "http://localhost:3000" })
 @RestController
 @RequestMapping("/viagens")
 public class ViagemController {
@@ -29,14 +30,10 @@ public class ViagemController {
     }
 
     @PostMapping("/importar-manifesto")
-    public ResponseEntity<List<Viagem>> importarManifesto(
-            @RequestParam("file") MultipartFile file
-    ) {
+    public ResponseEntity<ImportacaoManifestoResponse> importarManifesto(
+            @RequestParam("file") MultipartFile file) {
 
-        List<Viagem> viagens
-                = viagemService.importarManifesto(file);
-
-        return ResponseEntity.ok(viagens);
+        return ResponseEntity.ok(viagemService.importarManifesto(file));
     }
 
     /**
@@ -49,10 +46,8 @@ public class ViagemController {
             @RequestParam(required = false) List<StatusViagem> status,
             @RequestParam(required = false) BigDecimal freteMin,
             @RequestParam(required = false) BigDecimal freteMax,
-            @RequestParam(required = false) String mes
-    ) {
-        List<Viagem> viagens
-                = viagemService.filtrar(destino, status, freteMin, freteMax, mes);
+            @RequestParam(required = false) String mes) {
+        List<Viagem> viagens = viagemService.filtrar(destino, status, freteMin, freteMax, mes);
 
         List<ViagemResponseDTO> response = viagens.stream()
                 .map(this::toResponseDTO)
@@ -81,8 +76,7 @@ public class ViagemController {
                 viagem.getVeiculo(),
                 distanciaKm,
                 viagem.getEstimativaDias(),
-                converterStatusParaFrontend(viagem.getStatus())
-        );
+                converterStatusParaFrontend(viagem.getStatus()));
     }
 
     private String converterStatusParaFrontend(StatusViagem status) {

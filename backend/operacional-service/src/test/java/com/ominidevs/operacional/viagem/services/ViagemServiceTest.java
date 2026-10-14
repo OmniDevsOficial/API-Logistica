@@ -1,6 +1,9 @@
 package com.ominidevs.operacional.viagem.services;
 
+import com.ominidevs.operacional.motorista.services.MotoristaService;
 import com.ominidevs.operacional.viagem.clients.ManifestoClient;
+import com.ominidevs.operacional.viagem.dto.ImportacaoManifestoResponse;
+import com.ominidevs.operacional.viagem.dto.ManifestoDTO;
 import com.ominidevs.operacional.viagem.entities.StatusViagem;
 import com.ominidevs.operacional.viagem.entities.Viagem;
 import com.ominidevs.operacional.viagem.exceptions.FiltroInvalidoException;
@@ -14,6 +17,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -41,6 +45,9 @@ class ViagemServiceTest {
 
     @Mock
     private ViagemRepository viagemRepository;
+
+    @Mock
+    private MotoristaService motoristaService;
 
     @InjectMocks
     private ViagemService viagemService;
@@ -135,5 +142,39 @@ class ViagemServiceTest {
 
         assertEquals("freteMin não pode ser maior que freteMax", exception.getMessage());
         verifyNoInteractions(viagemRepository);
+    }
+
+    @Test
+    @DisplayName("Deve sincronizar os motoristas a partir das viagens importadas")
+    void deveSincronizarMotoristasAoImportarManifesto() {
+
+        MultipartFile arquivo = mock(MultipartFile.class);
+        ManifestoDTO manifesto = new ManifestoDTO(
+                "MAN-001",
+                "10/09/2026",
+                "João da Silva",
+                "12233245124",
+                "ABC1D23",
+                "São Paulo",
+                "Curitiba",
+                "1500,50",
+                null,
+                null,
+                "PENDENTE",
+                null
+        );
+
+        Viagem viagem = criarViagem();
+        when(arquivo.isEmpty()).thenReturn(false);
+        when(manifestoClient.enviar(arquivo)).thenReturn(List.of(manifesto));
+        when(manifestoMapper.toEntity(manifesto)).thenReturn(viagem);
+        when(viagemRepository.findByManifestoIn(List.of("MAN-001"))).thenReturn(List.of());
+        when(viagemRepository.saveAll(List.of(viagem))).thenReturn(List.of(viagem));
+
+        ImportacaoManifestoResponse resultado = viagemService.importarManifesto(arquivo);
+
+        assertEquals(List.of(viagem), resultado.viagensImportadas());
+        assertTrue(resultado.manifestosDuplicados().isEmpty());
+        verify(motoristaService).sincronizarComManifesto(List.of(viagem));
     }
 }
