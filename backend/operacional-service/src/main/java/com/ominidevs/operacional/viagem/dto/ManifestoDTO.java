@@ -14,6 +14,8 @@ public class ManifestoDTO {
     private String kmChegada;
     private String status;
     private String observacoes;
+    private String tipoVeiculo;
+    private String previsaoChegada;
 
     public ManifestoDTO() {
     }
@@ -92,5 +94,21 @@ public class ManifestoDTO {
 
     public String getObservacoes() {
         return observacoes;
+    }
+
+    public String getTipoVeiculo() {
+        return tipoVeiculo;
+    }
+
+    public void setTipoVeiculo(String tipoVeiculo) {
+        this.tipoVeiculo = tipoVeiculo;
+    }
+
+    public String getPrevisaoChegada() {
+        return previsaoChegada;
+    }
+
+    public void setPrevisaoChegada(String previsaoChegada) {
+        this.previsaoChegada = previsaoChegada;
     }
 }

@@ -2,6 +2,7 @@ import { Calendar, Search } from "lucide-react";
 import { PageHeader } from "@shared/ui";
 import { FiltrarViagensButton } from "./FiltrarViagensButton";
 import type { Viagem } from "@/entities/viagem";
+import type { FiltroViagens } from "../model/types";
 
 interface ViagensTopbarProps {
   search: string;
@@ -10,6 +11,8 @@ interface ViagensTopbarProps {
   onMenuClick: () => void;
   onFiltroAplicado: (viagens: Viagem[]) => void;
   onFiltroLimpo: () => void;
+  filtroModal: FiltroViagens;
+  onFiltroModalChange: (filtro: FiltroViagens) => void;
 }
 
 const PILL_CLASS =
@@ -22,6 +25,8 @@ export function ViagensTopbar({
   onMenuClick,
   onFiltroAplicado,
   onFiltroLimpo,
+  filtroModal,
+  onFiltroModalChange,
 }: ViagensTopbarProps) {
   return (
     <header className="mb-7 flex flex-col gap-5">
@@ -42,10 +47,12 @@ export function ViagensTopbar({
           />
         </div>
 
-        {/* Botão de filtro com dropdown */}
+        {/* Botão de filtro */}
         <FiltrarViagensButton
           onFiltroAplicado={onFiltroAplicado}
           onFiltroLimpo={onFiltroLimpo}
+          filtroModal={filtroModal}
+          onFiltroModalChange={onFiltroModalChange}
           buttonClassName={PILL_CLASS}
         />
 
