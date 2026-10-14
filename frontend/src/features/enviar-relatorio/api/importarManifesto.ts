@@ -9,11 +9,13 @@ const RESULTADO_INCERTO = 'Não foi possível confirmar a importação. Confira 
 interface ViagemImportada {
   id: number;
   manifesto: string;
+  data?: unknown;
 }
 
 export interface ResultadoImportacao {
   viagensImportadas: number;
   manifestosDuplicados: string[];
+  dataMaisRecente: string | null;
 }
 
 // Apenas mensagens controladas pelo frontend são apresentadas ao operador.
@@ -37,6 +39,14 @@ function validarResposta(dados: unknown): dados is {
   ) && Array.isArray(resposta.manifestosDuplicados) && resposta.manifestosDuplicados.every((manifesto) =>
     typeof manifesto === 'string' && manifesto.trim() !== '',
   );
+}
+
+function dataMaisRecente(viagens: ViagemImportada[]): string | null {
+  const datas = viagens
+    .map((viagem) => viagem.data)
+    .filter((data): data is string => typeof data === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(data));
+
+  return datas.length === 0 ? null : datas.reduce((maior, data) => (data > maior ? data : maior));
 }
 
 export async function importarManifesto(arquivo: File): Promise<ResultadoImportacao> {
@@ -87,9 +97,11 @@ export async function importarManifesto(arquivo: File): Promise<ResultadoImporta
       throw new ErroImportacao('Nenhuma viagem foi importada. Verifique se o manifesto contém linhas de dados.');
     }
 
+    // Conta as entidades retornadas pela gravação, não as linhas do arquivo original.
     return {
       viagensImportadas: dados.viagensImportadas.length,
       manifestosDuplicados: dados.manifestosDuplicados,
+      dataMaisRecente: dataMaisRecente(dados.viagensImportadas),
     };
   } catch (erro) {
     if (erro instanceof ErroImportacao) throw erro;

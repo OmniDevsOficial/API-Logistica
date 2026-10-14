@@ -1,8 +1,8 @@
 export type {
   DashboardData,
   DashboardMetrics,
+  DashboardStatus,
   PeriodOption,
-  RentabilidadeViagensPoint,
-  UtilizacaoFrotaCategoria,
+  ViagensPorStatus,
 } from "./model/types";
-export { getDashboardData } from "./api/dashboardMetricsService";
+export { buscarDashboard } from "./api/dashboardService";
