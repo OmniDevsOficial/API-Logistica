@@ -155,11 +155,17 @@ export function ModalEnviarRelatorio({
 
       removerArquivo();
 
+      const mensagemImportadas = resultado.viagensImportadas === 1
+        ? '1 viagem importada com sucesso.'
+        : `${resultado.viagensImportadas} viagens importadas com sucesso.`;
+      const duplicadas = resultado.manifestosDuplicados;
+      const mensagemDuplicadas = duplicadas.length > 0
+        ? ` ${duplicadas.length} ${duplicadas.length === 1 ? 'manifesto já existia' : 'manifestos já existiam'} no banco: ${duplicadas.join(', ')}. Essas viagens não foram importadas novamente.`
+        : '';
+
       exibirFeedback(
-        'sucesso',
-        resultado.viagensImportadas === 1
-          ? '1 viagem importada com sucesso!'
-          : `${resultado.viagensImportadas} viagens importadas com sucesso!`
+        duplicadas.length > 0 ? 'aviso' : 'sucesso',
+        `${mensagemImportadas}${mensagemDuplicadas}`
       );
 
       onImportado?.(resultado);

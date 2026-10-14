@@ -17,14 +17,14 @@ public class ManifestoMapper {
 
         validarManifesto(manifesto);
 
-        return new Viagem(
+        Viagem viagem = new Viagem(
                 manifesto.getManifesto(),
                 converterData(manifesto.getData()),
                 manifesto.getMotorista(),
                 manifesto.getCPF(),
                 manifesto.getVeiculo(),
-                converterOrigem(manifesto.getOrigem()),
-                converterDestino(manifesto.getDestino()),
+                converterTexto(manifesto.getOrigem()),
+                converterTexto(manifesto.getDestino()),
                 converterValor(manifesto.getValorFrete()),
                 converterInteiro(manifesto.getKmSaida()),
                 converterInteiro(manifesto.getKmChegada()),
@@ -32,6 +32,11 @@ public class ManifestoMapper {
                 manifesto.getObservacoes(),
                 null
         );
+
+        viagem.setVeiculoTipo(converterTexto(manifesto.getTipoVeiculo()));
+        viagem.setDataPrevisaoChegada(converterDataOpcional(manifesto.getPrevisaoChegada()));
+
+        return viagem;
     }
 
     private void validarManifesto(ManifestoDTO manifesto) {
@@ -85,22 +90,22 @@ public class ManifestoMapper {
         return Integer.valueOf(valor.trim());
     }
 
-    private String converterOrigem(String origem) {
+    private String converterTexto(String valor) {
 
-        if (estaVazio(origem)) {
+        if (estaVazio(valor)) {
             return null;
         }
 
-        return origem.trim();
+        return valor.trim();
     }
 
-    private String converterDestino(String destino) {
+    private LocalDate converterDataOpcional(String valor) {
 
-        if (estaVazio(destino)) {
+        if (estaVazio(valor)) {
             return null;
         }
 
-        return destino.trim();
+        return converterData(valor);
     }
 
     private StatusViagem converterStatus(String status) {
