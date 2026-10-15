@@ -1,10 +1,12 @@
-import type { DashboardData } from "@entities/dashboard-metrics";
+import type { DashboardData, PeriodOption } from "@entities/dashboard-metrics";
 import { ChartCard, StatCard } from "@shared/ui";
 import { formatCurrencyBRL, formatPercent } from "@shared/lib";
 import { GraficoSemDados } from "./GraficoSemDados";
+import { useDisponiveis } from "../model/useDisponiveis";
 
 interface DashboardOverviewProps {
   data: DashboardData;
+  period: PeriodOption;
 }
 
 const SEM_DADO = "-";
@@ -21,8 +23,9 @@ function quantidade(valor: number | null): string {
   return valor === null ? SEM_DADO : String(valor);
 }
 
-export function DashboardOverview({ data }: DashboardOverviewProps) {
+export function DashboardOverview({ data, period }: DashboardOverviewProps) {
   const { metrics } = data;
+  const disponiveis = useDisponiveis(period);
 
   return (
     <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4 lg:auto-rows-[minmax(150px,auto)]">
@@ -48,7 +51,7 @@ export function DashboardOverview({ data }: DashboardOverviewProps) {
       <StatCard
         className="lg:col-start-4 lg:row-start-1"
         title="Disponíveis"
-        value={SEM_DADO}
+        value={quantidade(disponiveis)}
         caption="Em tempo real"
       />
 

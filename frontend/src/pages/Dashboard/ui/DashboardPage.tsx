@@ -79,7 +79,7 @@ export function DashboardPage() {
                 </p>
               )}
 
-              <DashboardOverview data={dados} />
+              <DashboardOverview data={dados} period={period} />
             </div>
           )
         )}
