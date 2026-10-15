@@ -34,10 +34,16 @@ export function EquipeTabela({ motoristas }: EquipeTabelaProps) {
           <tbody className="divide-y divide-border">
             {motoristas.map((motorista) => (
               <tr key={motorista.id}>
+                {/* Motorista — nome + telefone */}
                 <td className="py-4 pl-6">
-                  <span className="text-sm font-medium text-fg">
-                    {motorista.nome}
-                  </span>
+                  <div className="flex flex-col">
+                    <span className="text-sm font-medium text-fg">
+                      {motorista.nome}
+                    </span>
+                    <span className="text-xs text-fg-muted">
+                      {motorista.telefone}
+                    </span>
+                  </div>
                 </td>
 
                 {/* Veículo/Placa */}
