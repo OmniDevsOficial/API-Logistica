@@ -33,11 +33,11 @@ const MESES_PT_BR = [
   "Dezembro",
 ];
 
-function formatIsoDate(isoDate: string): string {
-  const [year, month, day] = isoDate.split("-").map(Number);
+function formatBrDate(brDate: string): string {
+  const [day, month, year] = brDate.split("/").map(Number);
   return `${day} ${MESES_PT_BR[month - 1]} ${year}`;
 }
 
-export function formatDateRange(inicioIso: string, fimIso: string): string {
-  return `${formatIsoDate(inicioIso)} - ${formatIsoDate(fimIso)}`;
+export function formatDateRange(inicio: string, fim: string): string {
+  return `${formatBrDate(inicio)} - ${formatBrDate(fim)}`;
 }

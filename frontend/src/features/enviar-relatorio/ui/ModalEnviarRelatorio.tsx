@@ -9,6 +9,7 @@ import {
 
 // ALTERAÇÃO: endpoint operacional que salva viagens, sem simulação.
 import { importarManifesto, mensagemErroImportacao } from '../api/importarManifesto';
+import type { ResultadoImportacao } from '../api/importarManifesto';
 import { formatarTamanhoArquivo } from '../lib/formatarTamanhoArquivo';
 import { validarArquivoRelatorio } from '../lib/validarArquivoRelatorio';
 import {
@@ -18,6 +19,7 @@ import {
 
 interface Propriedades {
   onFechar: () => void;
+  onImportado?: (resultado: ResultadoImportacao) => void;
 }
 
 interface Feedback {
@@ -30,6 +32,7 @@ const DURACAO_MENSAGEM_MS = 5000;
 
 export function ModalEnviarRelatorio({
   onFechar,
+  onImportado,
 }: Propriedades) {
   const [arrastando, setArrastando] = useState(false);
   const [arquivoSelecionado, setArquivoSelecionado] =
@@ -164,6 +167,8 @@ export function ModalEnviarRelatorio({
         duplicadas.length > 0 ? 'aviso' : 'sucesso',
         `${mensagemImportadas}${mensagemDuplicadas}`
       );
+
+      onImportado?.(resultado);
     } catch (erro) {
       exibirFeedback(
         'erro',
