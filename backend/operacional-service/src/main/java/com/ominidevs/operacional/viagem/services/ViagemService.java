@@ -5,6 +5,7 @@ import com.ominidevs.operacional.viagem.clients.ManifestoClient;
 import com.ominidevs.operacional.viagem.dto.ManifestoDTO;
 import com.ominidevs.operacional.viagem.dto.ImportacaoManifestoResponse;
 import com.ominidevs.operacional.viagem.dto.ErroLinhaImportacao;
+import com.ominidevs.operacional.viagem.dto.RankingDestinoResponse;
 import com.ominidevs.operacional.viagem.entities.StatusViagem;
 import com.ominidevs.operacional.viagem.entities.Viagem;
 import com.ominidevs.operacional.viagem.exceptions.FiltroInvalidoException;
@@ -152,6 +153,24 @@ public class ViagemService {
                 viagem.getCidadeOrigem(), viagem.getCidadeDestino(), viagem.getReceitaFrete(),
                 viagem.getCustoFrete(), viagem.getPedagio(),
                 RentabilidadeService.calcular(viagem.getReceitaFrete(), viagem.getCustoFrete(), viagem.getPedagio()));
+    }
+
+    /**
+     * TOP 10 destinos por rentabilidade média no mês (YYYY-MM).
+     * Agregação, desempate e limite são feitos no banco.
+     */
+    public List<RankingDestinoResponse> rankingDestinosPorRentabilidade(String mes) {
+
+        if (mes == null || mes.isBlank()) {
+            throw new FiltroInvalidoException(
+                    "mes é obrigatório no formato YYYY-MM"
+            );
+        }
+
+        YearMonth periodo = converterMes(mes.trim());
+
+        return viagemRepository.rankingDestinosPorRentabilidade(
+                periodo.atDay(1), periodo.atEndOfMonth());
     }
 
     private void validarFaixaFrete(BigDecimal freteMin, BigDecimal freteMax) {
