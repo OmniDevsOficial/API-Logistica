@@ -192,12 +192,29 @@ public class Viagem {
         this.valorFrete = valorFrete;
     }
 
-    public BigDecimal getReceitaFrete() { return receitaFrete; }
-    public void setReceitaFrete(BigDecimal receitaFrete) { this.receitaFrete = receitaFrete; }
-    public BigDecimal getCustoFrete() { return custoFrete; }
-    public void setCustoFrete(BigDecimal custoFrete) { this.custoFrete = custoFrete; }
-    public BigDecimal getPedagio() { return pedagio; }
-    public void setPedagio(BigDecimal pedagio) { this.pedagio = pedagio; }
+    public BigDecimal getReceitaFrete() {
+        return receitaFrete;
+    }
+
+    public void setReceitaFrete(BigDecimal receitaFrete) {
+        this.receitaFrete = receitaFrete;
+    }
+
+    public BigDecimal getCustoFrete() {
+        return custoFrete;
+    }
+
+    public void setCustoFrete(BigDecimal custoFrete) {
+        this.custoFrete = custoFrete;
+    }
+
+    public BigDecimal getPedagio() {
+        return pedagio;
+    }
+
+    public void setPedagio(BigDecimal pedagio) {
+        this.pedagio = pedagio;
+    }
 
     public Integer getKmSaida() {
         return kmSaida;
