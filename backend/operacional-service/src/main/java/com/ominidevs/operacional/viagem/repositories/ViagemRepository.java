@@ -8,4 +8,5 @@ import java.util.List;
 
 public interface ViagemRepository extends JpaRepository<Viagem, Integer>, JpaSpecificationExecutor<Viagem> {
     List<Viagem> findByManifestoIn(Collection<String> manifestos);
+    java.util.Optional<Viagem> findByManifesto(String manifesto);
 }

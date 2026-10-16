@@ -29,6 +29,16 @@ public class ViagemController {
         this.viagemService = viagemService;
     }
 
+    @GetMapping("/{manifesto}/rentabilidade")
+    public ResponseEntity<com.ominidevs.operacional.viagem.dto.RentabilidadeViagemResponse> rentabilidade(
+            @org.springframework.web.bind.annotation.PathVariable String manifesto) {
+        try {
+            return ResponseEntity.ok(viagemService.consultarRentabilidade(manifesto));
+        } catch (java.util.NoSuchElementException ex) {
+            throw new org.springframework.web.server.ResponseStatusException(org.springframework.http.HttpStatus.NOT_FOUND);
+        }
+    }
+
     @PostMapping("/importar-manifesto")
     public ResponseEntity<ImportacaoManifestoResponse> importarManifesto(
             @RequestParam("file") MultipartFile file) {

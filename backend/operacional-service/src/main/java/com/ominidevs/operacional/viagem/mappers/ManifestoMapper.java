@@ -33,6 +33,9 @@ public class ManifestoMapper {
                 null
         );
 
+        viagem.setReceitaFrete(converterValor(manifesto.getValorFretes()));
+        viagem.setCustoFrete(converterValor(manifesto.getValorFrete()));
+        viagem.setPedagio(converterValor(manifesto.getPedagio()));
         viagem.setVeiculoTipo(converterTexto(manifesto.getTipoVeiculo()));
         viagem.setDataPrevisaoChegada(converterDataOpcional(manifesto.getPrevisaoChegada()));
 
@@ -43,8 +46,7 @@ public class ManifestoMapper {
 
         if (manifesto == null
                 || estaVazio(manifesto.getManifesto())
-                || estaVazio(manifesto.getData())
-                || estaVazio(manifesto.getValorFrete())) {
+                || estaVazio(manifesto.getData())) {
 
             throw new IllegalArgumentException(
                     "Manifesto inválido ou incompleto."
@@ -73,12 +75,21 @@ public class ManifestoMapper {
             return null;
         }
 
-        String valorNormalizado = valor
-                .trim()
-                .replace(".", "")
-                .replace(",", ".");
-
-        return new BigDecimal(valorNormalizado);
+        String normalizado = valor.trim().replace("R$", "").replace(" ", "");
+        if (normalizado.matches("[-+]?\\d{1,3}(\\.\\d{3})+(,\\d{1,2})?")) {
+            normalizado = normalizado.replace(".", "").replace(',', '.');
+        } else if (normalizado.matches("[-+]?\\d+(,\\d{1,2})?")) {
+            normalizado = normalizado.replace(',', '.');
+        } else if (normalizado.matches("[-+]?\\d+\\.\\d{1,2}")) {
+            // Excel pode entregar decimais com ponto conforme a configuração regional.
+        } else {
+            throw new IllegalArgumentException("Valor monetário inválido: " + valor);
+        }
+        try {
+            return new BigDecimal(normalizado).setScale(2);
+        } catch (NumberFormatException ex) {
+            throw new IllegalArgumentException("Valor monetário inválido: " + valor, ex);
+        }
     }
 
     private Integer converterInteiro(String valor) {
