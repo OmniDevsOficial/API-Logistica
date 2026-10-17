@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test;
 
 import com.ominidevs.operacional.dashboard.projections.PontoSerie;
 import com.ominidevs.operacional.dashboard.projections.ResumoViagens;
+import com.ominidevs.operacional.dashboard.projections.ValoresFinanceirosViagem;
 import com.ominidevs.operacional.dashboard.repositories.DashboardRepository;
 import com.ominidevs.operacional.indicadores.dto.UtilizacaoMotoristaResponse;
 import com.ominidevs.operacional.indicadores.dto.UtilizacaoPeriodoResponse;
@@ -90,6 +91,19 @@ class DashboardServiceTest {
         assertNull(metricas.rentabilidadeTotal());
         assertNull(metricas.rentabilidadeMedia());
         assertNull(metricas.taxaOcupacao());
+    }
+
+    @Test
+    void calculaRentabilidadeDoDashboardComValoresFinanceiros() {
+        when(repository.consultarValoresFinanceiros(periodo)).thenReturn(List.of(
+                new ValoresFinanceirosViagem(new BigDecimal("3855.60"), new BigDecimal("2169.73"), new BigDecimal("69.47")),
+                new ValoresFinanceirosViagem(new BigDecimal("2120.58"), new BigDecimal("2129.70"), new BigDecimal("165.87"))));
+
+        var metricas = service.consultar(periodo).metricas();
+
+        assertEquals(new BigDecimal("4534.77"), metricas.custoTotal());
+        assertEquals(new BigDecimal("1441.41"), metricas.rentabilidadeTotal());
+        assertEquals(new BigDecimal("720.71"), metricas.rentabilidadeMedia());
     }
 
     @Test

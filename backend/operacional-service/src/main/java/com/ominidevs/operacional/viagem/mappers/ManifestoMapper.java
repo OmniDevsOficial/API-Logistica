@@ -3,6 +3,7 @@ package com.ominidevs.operacional.viagem.mappers;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.time.DateTimeException;
 
 import org.springframework.stereotype.Component;
 
@@ -63,10 +64,11 @@ public class ManifestoMapper {
         DateTimeFormatter formatter =
                 DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
-        return LocalDate.parse(
-                valor.trim(),
-                formatter
-        );
+        try {
+            return LocalDate.parse(valor.trim(), formatter);
+        } catch (DateTimeException ex) {
+            throw new IllegalArgumentException("Data inválida: " + valor, ex);
+        }
     }
 
     private BigDecimal converterValor(String valor) {

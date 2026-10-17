@@ -267,7 +267,7 @@ class ManifestoMapperTest {
     }
 
     @Test
-    void deveRejeitarManifestoSemValorFrete() {
+    void aceitaManifestoSemValorFrete() {
 
         ManifestoDTO manifesto = new ManifestoDTO(
                 "MAN-001",
@@ -284,12 +284,35 @@ class ManifestoMapperTest {
                 null
         );
 
-        IllegalArgumentException exception = assertThrows(
-                IllegalArgumentException.class,
-                () -> mapper.toEntity(manifesto)
-        );
+        assertNull(mapper.toEntity(manifesto).getValorFrete());
+    }
 
-        assertEquals("Manifesto inválido ou incompleto.", exception.getMessage());
+    @Test
+    void dataInvalidaViraErroDeValidacaoDaLinha() {
+        ManifestoDTO manifesto = new ManifestoDTO("MAN-001", "32/13/2026", "João", "123", "ABC1D23",
+                "São Paulo", "Santos", "100,00", "", "", "Pendente", null);
+        var erro = assertThrows(IllegalArgumentException.class, () -> mapper.toEntity(manifesto));
+        assertTrue(erro.getMessage().startsWith("Data inválida:"));
+    }
+
+    @Test
+    void converteValorMonetarioBrasileiroEVazio() {
+        ManifestoDTO manifesto = new ManifestoDTO("MAN-001", "20/09/2026", "João", "123", "ABC1D23",
+                "São Paulo", "Santos", "2.715,57", "", "", "Pendente", null);
+        manifesto.setValorFretes("R$ 2.715,57");
+        manifesto.setPedagio("");
+        var viagem = mapper.toEntity(manifesto);
+        assertEquals(new BigDecimal("2715.57"), viagem.getReceitaFrete());
+        assertNull(viagem.getPedagio());
+    }
+
+    @Test
+    void rejeitaValorMonetarioInvalido() {
+        ManifestoDTO manifesto = new ManifestoDTO("MAN-001", "20/09/2026", "João", "123", "ABC1D23",
+                "São Paulo", "Santos", "100,00", "", "", "Pendente", null);
+        manifesto.setValorFretes("abc");
+        var erro = assertThrows(IllegalArgumentException.class, () -> mapper.toEntity(manifesto));
+        assertTrue(erro.getMessage().contains("abc"));
     }
 
     @Test

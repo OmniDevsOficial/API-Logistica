@@ -19,6 +19,7 @@ import java.util.List;
 
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.doThrow;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -33,6 +34,14 @@ class ViagemControllerTest {
 
     @MockitoBean
     private ViagemService viagemService;
+
+    @Test
+    void rentabilidadeDeManifestoInexistenteRetorna404() throws Exception {
+        doThrow(new java.util.NoSuchElementException("ausente"))
+                .when(viagemService).consultarRentabilidade("NAOEXISTE");
+        mockMvc.perform(get("/viagens/NAOEXISTE/rentabilidade"))
+                .andExpect(status().isNotFound());
+    }
 
     private Viagem criarViagem() {
         Viagem viagem = new Viagem(

@@ -97,9 +97,11 @@ public class ViagemService {
             }
         }
 
-        List<Viagem> viagensImportadas = viagemRepository.saveAll(novasViagens);
-        viagensImportadas = new java.util.ArrayList<>(viagensImportadas);
-        viagensImportadas.addAll(viagemRepository.saveAll(atualizadas));
+        List<Viagem> paraSalvar = new java.util.ArrayList<>(novasViagens);
+        paraSalvar.addAll(atualizadas);
+        List<Viagem> viagensImportadas = paraSalvar.isEmpty()
+                ? List.of()
+                : viagemRepository.saveAll(paraSalvar);
         motoristaService.sincronizarComManifesto(viagensImportadas);
 
         return new ImportacaoManifestoResponse(
