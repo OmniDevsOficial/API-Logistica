@@ -8,6 +8,7 @@ import org.springframework.stereotype.Repository;
 
 import com.ominidevs.operacional.dashboard.projections.PontoSerie;
 import com.ominidevs.operacional.dashboard.projections.ResumoViagens;
+import com.ominidevs.operacional.dashboard.projections.ValoresFinanceirosViagem;
 import com.ominidevs.operacional.indicadores.model.PeriodoConsulta;
 
 @Repository
@@ -76,6 +77,16 @@ public class DashboardRepository {
 
     public List<PontoSerie> consultarSeriePorVeiculo(PeriodoConsulta periodo) {
         return jdbc.query(SQL_SERIE_POR_VEICULO, pontoSerie(),
+                Date.valueOf(periodo.inicio()), Date.valueOf(periodo.fim()));
+    }
+
+    public List<ValoresFinanceirosViagem> consultarValoresFinanceiros(PeriodoConsulta periodo) {
+        return jdbc.query("""
+                SELECT receita_frete, custo_frete, pedagio
+                FROM operacional.viagem
+                WHERE data BETWEEN ? AND ?
+                """, (rs, row) -> new ValoresFinanceirosViagem(
+                    rs.getBigDecimal("receita_frete"), rs.getBigDecimal("custo_frete"), rs.getBigDecimal("pedagio")),
                 Date.valueOf(periodo.inicio()), Date.valueOf(periodo.fim()));
     }
 

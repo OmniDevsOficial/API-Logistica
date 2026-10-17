@@ -66,8 +66,9 @@ public class ManifestoClientImpl implements ManifestoClient {
             return List.of();
         }
 
-        return dados.stream()
-                .map(d -> {
+        return java.util.stream.IntStream.range(0, dados.size())
+                .mapToObj(i -> {
+                    var d = dados.get(i);
                     // Se tiver "Origem" no CSV, usa; senão usa fallback
                     String origem = d.get("Filial");
                     if (origem == null || origem.isBlank()) {
@@ -91,6 +92,9 @@ public class ManifestoClientImpl implements ManifestoClient {
 
                     manifesto.setTipoVeiculo(d.get("Tipo de veículo"));
                     manifesto.setPrevisaoChegada(d.get("Previsão de chegada"));
+                    manifesto.setValorFretes(d.get("Valor Fretes"));
+                    manifesto.setPedagio(d.getOrDefault("Pedágio", d.get("Pedagio")));
+                    manifesto.setNumeroLinha(i + 2);
 
                     return manifesto;
                 })

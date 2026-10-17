@@ -4,6 +4,7 @@ import com.ominidevs.relatorio.manifesto.exception.ArquivoInvalidoException;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.DataFormatter;
+import java.util.Locale;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -23,7 +24,7 @@ import java.util.Map;
 @Component
 public class ExcelParser implements ArquivoParser {
 
-    private final DataFormatter dataFormatter = new DataFormatter();
+    private final DataFormatter dataFormatter = new DataFormatter(Locale.forLanguageTag("pt-BR"));
 
     @Override
     public List<Map<String, String>> parse(InputStream inputStream) {

@@ -4,6 +4,7 @@ import com.ominidevs.operacional.motorista.services.MotoristaService;
 import com.ominidevs.operacional.viagem.clients.ManifestoClient;
 import com.ominidevs.operacional.viagem.dto.ManifestoDTO;
 import com.ominidevs.operacional.viagem.dto.ImportacaoManifestoResponse;
+import com.ominidevs.operacional.viagem.dto.ErroLinhaImportacao;
 import com.ominidevs.operacional.viagem.entities.StatusViagem;
 import com.ominidevs.operacional.viagem.entities.Viagem;
 import com.ominidevs.operacional.viagem.exceptions.FiltroInvalidoException;
@@ -22,6 +23,7 @@ import java.time.format.DateTimeParseException;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+import com.ominidevs.operacional.viagem.dto.RentabilidadeViagemResponse;
 
 @Service
 public class ViagemService {
@@ -50,9 +52,17 @@ public class ViagemService {
         List<ManifestoDTO> manifestos =
                 manifestoClient.enviar(file);
 
-        List<Viagem> viagens = manifestos.stream()
-                .map(manifestoMapper::toEntity)
-                .toList();
+        java.util.Map<String, Viagem> viagensPorManifesto = new java.util.LinkedHashMap<>();
+        List<ErroLinhaImportacao> erros = new java.util.ArrayList<>();
+        for (ManifestoDTO manifesto : manifestos) {
+            try {
+                Viagem viagem = manifestoMapper.toEntity(manifesto);
+                viagensPorManifesto.put(viagem.getManifesto(), viagem);
+            } catch (IllegalArgumentException ex) {
+                erros.add(new ErroLinhaImportacao(manifesto.getNumeroLinha(), manifesto.getManifesto(), ex.getMessage()));
+            }
+        }
+        List<Viagem> viagens = new java.util.ArrayList<>(viagensPorManifesto.values());
 
         List<Viagem> registrosExistentes = viagens.isEmpty()
                 ? List.of()
@@ -70,15 +80,32 @@ public class ViagemService {
                 .distinct()
                 .toList();
 
-        List<Viagem> novasViagens = viagens.stream()
-                .filter(viagem -> !manifestosExistentes.contains(viagem.getManifesto()))
-                .toList();
+        java.util.Map<String, Viagem> existentesPorManifesto = registrosExistentes.stream()
+                .collect(Collectors.toMap(Viagem::getManifesto, v -> v, (a, b) -> a));
+        List<Viagem> novasViagens = new java.util.ArrayList<>();
+        List<Viagem> atualizadas = new java.util.ArrayList<>();
+        for (Viagem viagem : viagens) {
+            Viagem existente = existentesPorManifesto.get(viagem.getManifesto());
+            if (existente == null) {
+                novasViagens.add(viagem);
+            } else {
+                existente.setReceitaFrete(viagem.getReceitaFrete());
+                existente.setCustoFrete(viagem.getCustoFrete());
+                existente.setPedagio(viagem.getPedagio());
+                existente.setValorFrete(viagem.getValorFrete());
+                atualizadas.add(existente);
+            }
+        }
 
-        List<Viagem> viagensImportadas = viagemRepository.saveAll(novasViagens);
+        List<Viagem> paraSalvar = new java.util.ArrayList<>(novasViagens);
+        paraSalvar.addAll(atualizadas);
+        List<Viagem> viagensImportadas = paraSalvar.isEmpty()
+                ? List.of()
+                : viagemRepository.saveAll(paraSalvar);
         motoristaService.sincronizarComManifesto(viagensImportadas);
 
         return new ImportacaoManifestoResponse(
-                viagensImportadas, manifestosDuplicados);
+                viagensImportadas, manifestosDuplicados, erros);
     }
 
     private void validarArquivo(MultipartFile file) {
@@ -116,6 +143,15 @@ public class ViagemService {
                 .and(ViagemSpecifications.dataNoMes(inicioMes, fimMes));
 
         return viagemRepository.findAll(filtro);
+    }
+
+    public RentabilidadeViagemResponse consultarRentabilidade(String manifesto) {
+        Viagem viagem = viagemRepository.findByManifesto(manifesto)
+                .orElseThrow(() -> new java.util.NoSuchElementException("Viagem não encontrada: " + manifesto));
+        return new RentabilidadeViagemResponse(viagem.getManifesto(), viagem.getMotorista(),
+                viagem.getCidadeOrigem(), viagem.getCidadeDestino(), viagem.getReceitaFrete(),
+                viagem.getCustoFrete(), viagem.getPedagio(),
+                RentabilidadeService.calcular(viagem.getReceitaFrete(), viagem.getCustoFrete(), viagem.getPedagio()));
     }
 
     private void validarFaixaFrete(BigDecimal freteMin, BigDecimal freteMax) {
