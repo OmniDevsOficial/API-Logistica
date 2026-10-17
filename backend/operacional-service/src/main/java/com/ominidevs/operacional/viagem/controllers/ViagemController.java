@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.ominidevs.operacional.viagem.dto.RankingDestinoResponse;
 import com.ominidevs.operacional.viagem.dto.ViagemResponseDTO;
 import com.ominidevs.operacional.viagem.dto.ImportacaoManifestoResponse;
 import com.ominidevs.operacional.viagem.entities.StatusViagem;
@@ -42,6 +43,17 @@ public class ViagemController {
             @RequestParam("file") MultipartFile file) {
 
         return ResponseEntity.ok(viagemService.importarManifesto(file));
+    }
+
+    /**
+     * TOP 10 destinos por rentabilidade média no mês. Exemplo de requisição:
+     * GET /api/operacional/viagens/ranking-destinos?mes=2026-09
+     */
+    @GetMapping("/ranking-destinos")
+    public ResponseEntity<List<RankingDestinoResponse>> rankingDestinos(
+            @RequestParam(required = false) String mes) {
+
+        return ResponseEntity.ok(viagemService.rankingDestinosPorRentabilidade(mes));
     }
 
     /**
