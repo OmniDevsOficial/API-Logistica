@@ -13,6 +13,7 @@ import { filtroVazio } from "@/widgets/viagens-topbar/model/types";
 
 export function ViagensPage() {
   const [data, setData] = useState<ViagensData | null>(null);
+  const [erro, setErro] = useState(false);
   const [search, setSearch] = useState("");
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [filtroModal, setFiltroModal] = useState<FiltroViagens>(() => ({
@@ -29,7 +30,7 @@ export function ViagensPage() {
     let isCurrent = true;
     getViagensData().then((result) => {
       if (isCurrent) setData(result);
-    });
+    }).catch(() => { if (isCurrent) setErro(true); });
     return () => {
       isCurrent = false;
     };
@@ -69,6 +70,8 @@ export function ViagensPage() {
           onFiltroModalChange={setFiltroModal}
           filtroModal={filtroModal}
         />
+        {!data && !erro && <p className="py-8 text-center text-sm text-fg-subtle">Carregando viagens…</p>}
+        {erro && <p className="py-8 text-center text-sm text-red-600">Não foi possível carregar as viagens.</p>}
         {data && (
           <div className="grid grid-cols-1 gap-6 items-start lg:grid-cols-[2fr_1fr]">
             <ViagensList viagens={viagensFiltradas} />
