@@ -146,9 +146,10 @@ public class MotoristaService {
     }
 
     private IdentidadeMotorista identidade(Viagem viagem) {
+        String cpf = normalizarCpf(viagem.getCPF());
         return new IdentidadeMotorista(
-                normalizarCpf(viagem.getCPF()),
-                normalizarNome(viagem.getMotorista())
+                cpf,
+                cpf == null ? normalizarNome(viagem.getMotorista()) : null
         );
     }
 
