@@ -1,3 +1,4 @@
+import { apiFetch } from "../../../shared/api/apiFetch.ts";
 import type {
   DashboardData,
   DashboardMetrics,
@@ -95,7 +96,7 @@ function sinalDaConsulta(signal?: AbortSignal): AbortSignal {
 
 async function consultar(url: string, signal?: AbortSignal): Promise<Response> {
   try {
-    return await fetch(url, { signal: sinalDaConsulta(signal) });
+    return await apiFetch(url, { signal: sinalDaConsulta(signal) });
   } catch (erro) {
     if (signal?.aborted) throw erro;
     throw new Error(

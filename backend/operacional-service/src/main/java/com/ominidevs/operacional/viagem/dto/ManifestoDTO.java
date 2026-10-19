@@ -16,6 +16,9 @@ public class ManifestoDTO {
     private String observacoes;
     private String tipoVeiculo;
     private String previsaoChegada;
+    private String valorFretes;
+    private String pedagio;
+    private int numeroLinha;
 
     public ManifestoDTO() {
     }
@@ -107,6 +110,13 @@ public class ManifestoDTO {
     public String getPrevisaoChegada() {
         return previsaoChegada;
     }
+
+    public String getValorFretes() { return valorFretes; }
+    public void setValorFretes(String valorFretes) { this.valorFretes = valorFretes; }
+    public String getPedagio() { return pedagio; }
+    public void setPedagio(String pedagio) { this.pedagio = pedagio; }
+    public int getNumeroLinha() { return numeroLinha; }
+    public void setNumeroLinha(int numeroLinha) { this.numeroLinha = numeroLinha; }
 
     public void setPrevisaoChegada(String previsaoChegada) {
         this.previsaoChegada = previsaoChegada;

@@ -13,6 +13,7 @@ import com.ominidevs.operacional.dashboard.dto.SeriesDashboardResponse;
 import com.ominidevs.operacional.dashboard.dto.ViagensPorStatusResponse;
 import com.ominidevs.operacional.dashboard.projections.PontoSerie;
 import com.ominidevs.operacional.dashboard.projections.ResumoViagens;
+import com.ominidevs.operacional.viagem.services.RentabilidadeService;
 import com.ominidevs.operacional.dashboard.repositories.DashboardRepository;
 import com.ominidevs.operacional.indicadores.dto.UtilizacaoMotoristaResponse;
 import com.ominidevs.operacional.indicadores.model.OrdenacaoUtilizacao;
@@ -48,12 +49,25 @@ public class DashboardService {
                 periodo.inicio().format(PeriodoConsulta.FORMATO),
                 periodo.fim().format(PeriodoConsulta.FORMATO),
                 resumo.totalViagens() == 0 ? SEM_DADOS : COM_DADOS,
-                converterMetricas(resumo),
+                converterMetricas(resumo, periodo),
                 series,
                 utilizacao);
     }
 
-    private MetricasDashboardResponse converterMetricas(ResumoViagens resumo) {
+    private MetricasDashboardResponse converterMetricas(ResumoViagens resumo, PeriodoConsulta periodo) {
+        var valores = repository.consultarValoresFinanceiros(periodo);
+        if (valores == null) valores = List.of();
+        BigDecimal custoTotal = BigDecimal.ZERO;
+        BigDecimal lucroTotal = BigDecimal.ZERO;
+        long viagensCalculaveis = 0;
+        for (var v : valores) {
+            BigDecimal lucro = RentabilidadeService.calcular(v.receita(), v.custoFrete(), v.pedagio());
+            if (lucro != null) {
+                custoTotal = custoTotal.add(v.custoFrete()).add(v.pedagio());
+                lucroTotal = lucroTotal.add(lucro);
+                viagensCalculaveis++;
+            }
+        }
         return new MetricasDashboardResponse(
                 resumo.totalViagens(),
                 arredondar(resumo.freteTotal()),
@@ -65,10 +79,10 @@ public class DashboardService {
                         resumo.viagensPendentes(),
                         resumo.viagensEmTransito(),
                         resumo.viagensFinalizadas()),
-                SEM_FONTE_NO_BANCO,
-                SEM_FONTE_NO_BANCO,
-                SEM_FONTE_NO_BANCO,
-                SEM_FONTE_NO_BANCO,
+                viagensCalculaveis == 0 ? null : arredondar(custoTotal),
+                viagensCalculaveis == 0 ? null : arredondar(custoTotal.divide(BigDecimal.valueOf(viagensCalculaveis), 2, RoundingMode.HALF_UP)),
+                viagensCalculaveis == 0 ? null : arredondar(lucroTotal),
+                viagensCalculaveis == 0 ? null : arredondar(lucroTotal.divide(BigDecimal.valueOf(viagensCalculaveis), 2, RoundingMode.HALF_UP)),
                 SEM_FONTE_NO_BANCO);
     }
 

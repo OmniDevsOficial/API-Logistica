@@ -68,23 +68,22 @@ class ImportacaoManifestoTest {
         var salvas = List.of(mock(Viagem.class));
         when(repository.saveAll(anyList())).thenReturn(salvas);
         var resultado = service.importarManifesto(file);
-        assertSame(salvas, resultado.viagensImportadas());
+        assertEquals(salvas, resultado.viagensImportadas());
         assertTrue(resultado.manifestosDuplicados().isEmpty());
     }
 
-    @Test void ignoraManifestoJaExistenteEInformaDuplicidade() {
+    @Test void reimportaManifestoExistenteAtualizandoORegistro() {
         when(client.enviar(file)).thenReturn(List.of(manifesto("M1")));
         var existente = mock(Viagem.class);
         when(existente.getManifesto()).thenReturn("M1");
         when(repository.findByManifestoIn(List.of("M1"))).thenReturn(List.of(existente));
-        when(repository.saveAll(List.<Viagem>of())).thenReturn(List.of());
-
+        when(repository.saveAll(anyList())).thenAnswer(invocation -> invocation.getArgument(0));
         var resultado = service.importarManifesto(file);
 
-        assertTrue(resultado.viagensImportadas().isEmpty());
+        assertEquals(List.of(existente), resultado.viagensImportadas());
         assertEquals(List.of("M1"), resultado.manifestosDuplicados());
-        verify(repository).saveAll(List.<Viagem>of());
-        verify(motoristaService).sincronizarComManifesto(List.of());
+        verify(repository).saveAll(List.of(existente));
+        verify(motoristaService).sincronizarComManifesto(List.of(existente));
     }
 
     @Test void rejeitaArquivoAusente() {
@@ -101,18 +100,71 @@ class ImportacaoManifestoTest {
 
     @Test void respostaSemLinhasRetornaListaVazia() {
         when(client.enviar(file)).thenReturn(List.of());
-        when(repository.saveAll(List.<Viagem>of())).thenReturn(List.of());
         var resultado = service.importarManifesto(file);
         assertTrue(resultado.viagensImportadas().isEmpty());
         assertTrue(resultado.manifestosDuplicados().isEmpty());
-        verify(repository).saveAll(List.<Viagem>of());
+        verify(repository, never()).saveAll(anyList());
     }
 
-    @Test void manifestoInvalidoImpedeSalvarTodoOLote() {
+    @Test void manifestoInvalidoGeraErroPorLinhaESalvaAsLinhasValidas() {
         when(client.enviar(file)).thenReturn(List.of(manifesto("M1"), manifesto("")));
-        var erro = assertThrows(IllegalArgumentException.class, () -> service.importarManifesto(file));
-        assertEquals("Manifesto inválido ou incompleto.", erro.getMessage());
-        verifyNoInteractions(repository);
+        when(repository.findByManifestoIn(List.of("M1"))).thenReturn(List.of());
+        when(repository.saveAll(anyList())).thenAnswer(invocation -> invocation.getArgument(0));
+        var resultado = service.importarManifesto(file);
+        assertEquals(List.of("M1"), resultado.viagensImportadas().stream().map(Viagem::getManifesto).toList());
+        assertEquals(1, resultado.erros().size());
+        assertEquals("Manifesto inválido ou incompleto.", resultado.erros().get(0).mensagem());
+    }
+
+    @Test void dataInvalidaGeraErroPorLinhaSemAbortarImportacao() {
+        var linhaValida = manifesto("9010");
+        linhaValida.setNumeroLinha(2);
+        var linhaComDataInvalida = new ManifestoDTO("9011", "32/13/2026", "Motorista Teste", "00123456789",
+                "ABC1D23", "São Paulo", "Campinas", "1.500,50", "100", "250", "Finalizado", "Teste");
+        linhaComDataInvalida.setNumeroLinha(3);
+        when(client.enviar(file)).thenReturn(List.of(linhaValida, linhaComDataInvalida));
+        when(repository.findByManifestoIn(List.of("9010"))).thenReturn(List.of());
+        when(repository.saveAll(anyList())).thenAnswer(invocation -> invocation.getArgument(0));
+
+        var resultado = service.importarManifesto(file);
+
+        assertEquals(List.of("9010"), resultado.viagensImportadas().stream().map(Viagem::getManifesto).toList());
+        assertEquals(1, resultado.erros().size());
+        assertEquals(3, resultado.erros().get(0).linha());
+        assertEquals("9011", resultado.erros().get(0).manifesto());
+        assertTrue(resultado.erros().get(0).mensagem().startsWith("Data inválida:"));
+        verify(repository).saveAll(resultado.viagensImportadas());
+    }
+
+    @Test void ultimaOcorrenciaDoManifestoVence() {
+        var primeira = manifesto("M1");
+        var ultima = new ManifestoDTO("M1", "01/10/2026", "Motorista Teste", "00123456789", "ABC1D23",
+                "São Paulo", "Campinas", "1.500,50", "200", "250", "Finalizado", "Teste");
+        when(client.enviar(file)).thenReturn(List.of(primeira, ultima));
+        when(repository.findByManifestoIn(List.of("M1"))).thenReturn(List.of());
+        when(repository.saveAll(anyList())).thenAnswer(invocation -> invocation.getArgument(0));
+        var resultado = service.importarManifesto(file);
+        assertEquals(1, resultado.viagensImportadas().size());
+        assertEquals(200, resultado.viagensImportadas().get(0).getKmSaida());
+    }
+
+    @Test void reimportacaoAtualizaValorFinanceiroQueEstavaNull() {
+        var entrada = new ManifestoDTO("M1", "01/10/2026", "Motorista Teste", "00123456789", "ABC1D23",
+                "São Paulo", "Campinas", "800,00", "100", "250", "Finalizado", "Teste");
+        entrada.setValorFretes("1.200,00");
+        entrada.setPedagio("35,50");
+        when(client.enviar(file)).thenReturn(List.of(entrada));
+        var existente = new Viagem("M1", LocalDate.of(2026, 10, 1), "Motorista Teste", "00123456789", "ABC1D23",
+                "São Paulo", "Campinas", new BigDecimal("1500.50"), 100, 250, StatusViagem.FINALIZADO, "Teste", null);
+        existente.setReceitaFrete(null);
+        existente.setCustoFrete(null);
+        existente.setPedagio(null);
+        when(repository.findByManifestoIn(List.of("M1"))).thenReturn(List.of(existente));
+        when(repository.saveAll(anyList())).thenAnswer(invocation -> invocation.getArgument(0));
+        var resultado = service.importarManifesto(file);
+        assertEquals(new BigDecimal("800.00"), resultado.viagensImportadas().get(0).getCustoFrete());
+        assertEquals(new BigDecimal("1200.00"), resultado.viagensImportadas().get(0).getReceitaFrete());
+        assertEquals(new BigDecimal("35.50"), resultado.viagensImportadas().get(0).getPedagio());
     }
 
     @ParameterizedTest

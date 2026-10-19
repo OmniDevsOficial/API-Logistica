@@ -7,6 +7,7 @@ import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Workbook;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.util.Locale;
 import static org.junit.jupiter.api.Assertions.*;
 
 class ExcelParserTest {
@@ -60,6 +61,24 @@ class ExcelParserTest {
             style.setDataFormat(workbook.createDataFormat().getFormat("00000000000"));
             cell.setCellStyle(style);
             assertEquals("00123456789", parser.parse(bytes(workbook)).getFirst().get("CPF"));
+        }
+    }
+    @Test void formatoMonetarioUsaLocalePtBrMesmoComLocaleDaJvmAmericano() throws Exception {
+        Locale original = Locale.getDefault();
+        try {
+            Locale.setDefault(Locale.US);
+            try (var workbook = new XSSFWorkbook()) {
+                var sheet = workbook.createSheet();
+                sheet.createRow(0).createCell(0).setCellValue("valor");
+                var cell = sheet.createRow(1).createCell(0);
+                cell.setCellValue(2715.57);
+                var style = workbook.createCellStyle();
+                style.setDataFormat(workbook.createDataFormat().getFormat("#,##0.00"));
+                cell.setCellStyle(style);
+                assertEquals("2.715,57", parser.parse(bytes(workbook)).getFirst().get("valor"));
+            }
+        } finally {
+            Locale.setDefault(original);
         }
     }
     @Test void formatoXlsExistenteContinuaSuportado() throws Exception {

@@ -4,6 +4,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
 
+import com.ominidevs.relatorio.seguranca.RepasseTokenInterceptor;
+
 // Aqui o relatorio-service busca dado do operacional-service.
 // Nunca acessar o schema "operacional" direto do banco a partir daqui -
 // é essa chamada HTTP que substitui o JOIN/FK que existiria se fosse tudo
@@ -14,7 +16,10 @@ public class OperacionalClient {
     private final RestClient restClient;
 
     public OperacionalClient(@Value("${operacional.service.url}") String baseUrl) {
-        this.restClient = RestClient.create(baseUrl);
+        this.restClient = RestClient.builder()
+                .baseUrl(baseUrl)
+                .requestInterceptor(new RepasseTokenInterceptor())
+                .build();
     }
 
     public String ping() {

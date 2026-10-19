@@ -4,7 +4,6 @@ import java.math.BigDecimal;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -12,13 +11,13 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.ominidevs.operacional.viagem.dto.RankingDestinoResponse;
 import com.ominidevs.operacional.viagem.dto.ViagemResponseDTO;
 import com.ominidevs.operacional.viagem.dto.ImportacaoManifestoResponse;
 import com.ominidevs.operacional.viagem.entities.StatusViagem;
 import com.ominidevs.operacional.viagem.entities.Viagem;
 import com.ominidevs.operacional.viagem.services.ViagemService;
 
-@CrossOrigin(origins = { "http://localhost:5173", "http://localhost:3000" })
 @RestController
 @RequestMapping("/viagens")
 public class ViagemController {
@@ -29,11 +28,32 @@ public class ViagemController {
         this.viagemService = viagemService;
     }
 
+    @GetMapping("/{manifesto}/rentabilidade")
+    public ResponseEntity<com.ominidevs.operacional.viagem.dto.RentabilidadeViagemResponse> rentabilidade(
+            @org.springframework.web.bind.annotation.PathVariable String manifesto) {
+        try {
+            return ResponseEntity.ok(viagemService.consultarRentabilidade(manifesto));
+        } catch (java.util.NoSuchElementException ex) {
+            throw new org.springframework.web.server.ResponseStatusException(org.springframework.http.HttpStatus.NOT_FOUND);
+        }
+    }
+
     @PostMapping("/importar-manifesto")
     public ResponseEntity<ImportacaoManifestoResponse> importarManifesto(
             @RequestParam("file") MultipartFile file) {
 
         return ResponseEntity.ok(viagemService.importarManifesto(file));
+    }
+
+    /**
+     * TOP 10 destinos por rentabilidade média no mês. Exemplo de requisição:
+     * GET /api/operacional/viagens/ranking-destinos?mes=2026-09
+     */
+    @GetMapping("/ranking-destinos")
+    public ResponseEntity<List<RankingDestinoResponse>> rankingDestinos(
+            @RequestParam(required = false) String mes) {
+
+        return ResponseEntity.ok(viagemService.rankingDestinosPorRentabilidade(mes));
     }
 
     /**
