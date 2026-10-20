@@ -1,7 +1,4 @@
-# File Tree: API-Logistica
-
-**Generated:** 24/09/2026, 20:14:00
-**Root Path:** `c:\Users\Gustavo.DESKTOP-BRCVQUD\Desktop\API-Logistica`
+# Estrutura do Projeto: Plataforma de Controle de Motoristas Agregados
 
 ```
 ├── 📁 .github
@@ -17,7 +14,6 @@
 │   │   │   │   ├── ⚙️ executionHistory.bin
 │   │   │   │   └── 📄 executionHistory.lock
 │   │   │   ├── 📁 expanded
-│   │   │   │   └── 📄 expanded.lock
 │   │   │   ├── 📁 fileChanges
 │   │   │   │   └── ⚙️ last-build.bin
 │   │   │   ├── 📁 fileHashes
@@ -30,8 +26,68 @@
 │   │   │   ├── 📄 buildOutputCleanup.lock
 │   │   │   ├── 📄 cache.properties
 │   │   │   └── ⚙️ outputFiles.bin
+│   │   ├── 📁 nb-cache
+│   │   │   ├── 📁 autenticacao-service-1065423257
+│   │   │   │   └── 📄 project-info.ser
+│   │   │   ├── 📁 backend-1076882930
+│   │   │   │   └── 📄 project-info.ser
+│   │   │   ├── 📁 operacional-service-438172863
+│   │   │   │   └── 📄 project-info.ser
+│   │   │   ├── 📁 relatorio-service-1377396819
+│   │   │   │   └── 📄 project-info.ser
+│   │   │   ├── 📁 trust
+│   │   │   │   └── 📄 D2CDF108C90DD36FA418B95A258DBD40613DE8A3F1455FE669BC2E1D105C9451
+│   │   │   └── 📄 subprojects.ser
 │   │   └── 📁 vcs-1
 │   │       └── 📄 gc.properties
+│   ├── 📁 autenticacao-service
+│   │   ├── 📁 src
+│   │   │   ├── 📁 main
+│   │   │   │   ├── 📁 java
+│   │   │   │   │   └── 📁 com
+│   │   │   │   │       └── 📁 ominidevs
+│   │   │   │   │           └── 📁 autenticacao
+│   │   │   │   │               ├── 📁 auth
+│   │   │   │   │               │   ├── 📁 configs
+│   │   │   │   │               │   │   ├── ☕ AuthConfig.java
+│   │   │   │   │               │   │   └── ☕ CorsConfig.java
+│   │   │   │   │               │   ├── 📁 controllers
+│   │   │   │   │               │   │   └── ☕ AuthController.java
+│   │   │   │   │               │   ├── 📁 dto
+│   │   │   │   │               │   │   ├── ☕ LoginRequest.java
+│   │   │   │   │               │   │   ├── ☕ LoginResponse.java
+│   │   │   │   │               │   │   └── ☕ UsuarioAutenticadoResponse.java
+│   │   │   │   │               │   ├── 📁 entities
+│   │   │   │   │               │   │   ├── ☕ Perfil.java
+│   │   │   │   │               │   │   └── ☕ Usuario.java
+│   │   │   │   │               │   ├── 📁 exceptions
+│   │   │   │   │               │   │   ├── ☕ AuthExceptionHandler.java
+│   │   │   │   │               │   │   ├── ☕ CredenciaisInvalidasException.java
+│   │   │   │   │               │   │   └── ☕ TokenInvalidoException.java
+│   │   │   │   │               │   ├── 📁 repositories
+│   │   │   │   │               │   │   └── ☕ UsuarioRepository.java
+│   │   │   │   │               │   └── 📁 services
+│   │   │   │   │               │       ├── ☕ AuthService.java
+│   │   │   │   │               │       └── ☕ TokenService.java
+│   │   │   │   │               └── ☕ AutenticacaoApplication.java
+│   │   │   │   └── 📁 resources
+│   │   │   │       ├── 📁 db
+│   │   │   │       │   └── 📁 migration
+│   │   │   │       │       ├── 📄 V1__create_usuario_table.sql
+│   │   │   │       │       └── 📄 V2__insert_usuarios_iniciais.sql
+│   │   │   │       └── ⚙️ application.yml
+│   │   │   └── 📁 test
+│   │   │       └── 📁 java
+│   │   │           └── 📁 com
+│   │   │               └── 📁 ominidevs
+│   │   │                   └── 📁 autenticacao
+│   │   │                       └── 📁 auth
+│   │   │                           ├── 📁 controllers
+│   │   │                           │   └── ☕ AuthControllerTest.java
+│   │   │                           └── 📁 services
+│   │   │                               └── ☕ TokenServiceTest.java
+│   │   ├── 🐳 Dockerfile
+│   │   └── 📄 build.gradle
 │   ├── 📁 gradle
 │   │   └── 📁 wrapper
 │   │       ├── 📄 gradle-wrapper.jar
@@ -43,15 +99,71 @@
 │   │   │   │   │   └── 📁 com
 │   │   │   │   │       └── 📁 ominidevs
 │   │   │   │   │           └── 📁 operacional
+│   │   │   │   │               ├── 📁 dashboard
+│   │   │   │   │               │   ├── 📁 controllers
+│   │   │   │   │               │   │   └── ☕ DashboardController.java
+│   │   │   │   │               │   ├── 📁 dto
+│   │   │   │   │               │   │   ├── ☕ DashboardResponse.java
+│   │   │   │   │               │   │   ├── ☕ MetricasDashboardResponse.java
+│   │   │   │   │               │   │   ├── ☕ PontoSerieResponse.java
+│   │   │   │   │               │   │   ├── ☕ SeriesDashboardResponse.java
+│   │   │   │   │               │   │   └── ☕ ViagensPorStatusResponse.java
+│   │   │   │   │               │   ├── 📁 exceptions
+│   │   │   │   │               │   │   └── ☕ DashboardExceptionHandler.java
+│   │   │   │   │               │   ├── 📁 projections
+│   │   │   │   │               │   │   ├── ☕ PontoSerie.java
+│   │   │   │   │               │   │   ├── ☕ ResumoViagens.java
+│   │   │   │   │               │   │   └── ☕ ValoresFinanceirosViagem.java
+│   │   │   │   │               │   ├── 📁 repositories
+│   │   │   │   │               │   │   └── ☕ DashboardRepository.java
+│   │   │   │   │               │   └── 📁 services
+│   │   │   │   │               │       └── ☕ DashboardService.java
+│   │   │   │   │               ├── 📁 indicadores
+│   │   │   │   │               │   ├── 📁 controllers
+│   │   │   │   │               │   │   └── ☕ UtilizacaoController.java
+│   │   │   │   │               │   ├── 📁 dto
+│   │   │   │   │               │   │   ├── ☕ UtilizacaoMotoristaResponse.java
+│   │   │   │   │               │   │   └── ☕ UtilizacaoPeriodoResponse.java
+│   │   │   │   │               │   ├── 📁 exceptions
+│   │   │   │   │               │   │   ├── ☕ IndicadorExceptionHandler.java
+│   │   │   │   │               │   │   └── ☕ IndicadorInvalidoException.java
+│   │   │   │   │               │   ├── 📁 model
+│   │   │   │   │               │   │   ├── ☕ OrdenacaoUtilizacao.java
+│   │   │   │   │               │   │   └── ☕ PeriodoConsulta.java
+│   │   │   │   │               │   ├── 📁 projections
+│   │   │   │   │               │   │   └── ☕ MotoristaQuantidadeViagens.java
+│   │   │   │   │               │   ├── 📁 repositories
+│   │   │   │   │               │   │   └── ☕ UtilizacaoRepository.java
+│   │   │   │   │               │   └── 📁 services
+│   │   │   │   │               │       └── ☕ UtilizacaoService.java
 │   │   │   │   │               ├── 📁 motorista
 │   │   │   │   │               │   ├── 📁 controllers
 │   │   │   │   │               │   │   └── ☕ MotoristaController.java
+│   │   │   │   │               │   ├── 📁 dto
+│   │   │   │   │               │   │   ├── ☕ MotoristaResponseDTO.java
+│   │   │   │   │               │   │   ├── ☕ MotoristaResumoResponse.java
+│   │   │   │   │               │   │   └── ☕ StatusMotoristaRequest.java
 │   │   │   │   │               │   ├── 📁 entities
-│   │   │   │   │               │   │   └── ⚙️ .gitkeep
+│   │   │   │   │               │   │   ├── ⚙️ .gitkeep
+│   │   │   │   │               │   │   ├── ☕ Motorista.java
+│   │   │   │   │               │   │   └── ☕ StatusMotorista.java
+│   │   │   │   │               │   ├── 📁 exceptions
+│   │   │   │   │               │   │   ├── ☕ MotoristaExceptionHandler.java
+│   │   │   │   │               │   │   ├── ☕ MotoristaNaoEncontradoException.java
+│   │   │   │   │               │   │   └── ☕ StatusInvalidoException.java
+│   │   │   │   │               │   ├── 📁 projections
+│   │   │   │   │               │   │   ├── ☕ MotoristaListagem.java
+│   │   │   │   │               │   │   └── ☕ MotoristaStatusContagem.java
 │   │   │   │   │               │   ├── 📁 repositories
-│   │   │   │   │               │   │   └── ⚙️ .gitkeep
+│   │   │   │   │               │   │   ├── ⚙️ .gitkeep
+│   │   │   │   │               │   │   ├── ☕ MotoristaConsultaRepository.java
+│   │   │   │   │               │   │   └── ☕ MotoristaRepository.java
 │   │   │   │   │               │   └── 📁 services
-│   │   │   │   │               │       └── ⚙️ .gitkeep
+│   │   │   │   │               │       ├── ⚙️ .gitkeep
+│   │   │   │   │               │       └── ☕ MotoristaService.java
+│   │   │   │   │               ├── 📁 seguranca
+│   │   │   │   │               │   ├── ☕ RepasseTokenInterceptor.java
+│   │   │   │   │               │   └── ☕ SegurancaConfig.java
 │   │   │   │   │               ├── 📁 veiculo
 │   │   │   │   │               │   ├── 📁 controllers
 │   │   │   │   │               │   │   └── ⚙️ .gitkeep
@@ -70,19 +182,28 @@
 │   │   │   │   │               │   ├── 📁 controllers
 │   │   │   │   │               │   │   └── ☕ ViagemController.java
 │   │   │   │   │               │   ├── 📁 dto
-│   │   │   │   │               │   │   └── ☕ ManifestoDTO.java
+│   │   │   │   │               │   │   ├── ☕ ErroLinhaImportacao.java
+│   │   │   │   │               │   │   ├── ☕ ImportacaoManifestoResponse.java
+│   │   │   │   │               │   │   ├── ☕ ManifestoDTO.java
+│   │   │   │   │               │   │   ├── ☕ RankingDestinoResponse.java
+│   │   │   │   │               │   │   ├── ☕ RentabilidadeViagemResponse.java
+│   │   │   │   │               │   │   └── ☕ ViagemResponseDTO.java
 │   │   │   │   │               │   ├── 📁 entities
 │   │   │   │   │               │   │   ├── ☕ StatusViagem.java
 │   │   │   │   │               │   │   └── ☕ Viagem.java
 │   │   │   │   │               │   ├── 📁 exceptions
 │   │   │   │   │               │   │   ├── ☕ FileUploadException.java
 │   │   │   │   │               │   │   ├── ☕ FiltroInvalidoException.java
+│   │   │   │   │               │   │   ├── ☕ IntegracaoManifestoException.java
 │   │   │   │   │               │   │   └── ☕ ViagemExceptionHandler.java
 │   │   │   │   │               │   ├── 📁 mappers
 │   │   │   │   │               │   │   └── ☕ ManifestoMapper.java
 │   │   │   │   │               │   ├── 📁 repositories
+│   │   │   │   │               │   │   ├── ☕ RankingDestinoRepository.java
+│   │   │   │   │               │   │   ├── ☕ RankingDestinoRepositoryImpl.java
 │   │   │   │   │               │   │   └── ☕ ViagemRepository.java
 │   │   │   │   │               │   ├── 📁 services
+│   │   │   │   │               │   │   ├── ☕ RentabilidadeService.java
 │   │   │   │   │               │   │   └── ☕ ViagemService.java
 │   │   │   │   │               │   └── 📁 specifications
 │   │   │   │   │               │       └── ☕ ViagemSpecifications.java
@@ -93,19 +214,58 @@
 │   │   │   │       │       ├── 📄 V1__create_motorista_table.sql
 │   │   │   │       │       ├── 📄 V2__create_veiculo_table.sql
 │   │   │   │       │       ├── 📄 V3__create_viagem_table.sql
-│   │   │   │       │       └── 📄 V4__update_viagem_table.sql
+│   │   │   │       │       ├── 📄 V4__update_viagem_table.sql
+│   │   │   │       │       ├── 📄 V5__update_adiciona_dados_exibicao_viagem.sql
+│   │   │   │       │       ├── 📄 V6__update_motorista_status_disponibilidade.sql
+│   │   │   │       │       ├── 📄 V7__update_viagem_dados_veiculo_previsao.sql
+│   │   │   │       │       └── 📄 V8__add_viagem_financial_values.sql
 │   │   │   │       └── ⚙️ application.yml
 │   │   │   └── 📁 test
 │   │   │       └── 📁 java
 │   │   │           └── 📁 com
 │   │   │               └── 📁 ominidevs
 │   │   │                   └── 📁 operacional
+│   │   │                       ├── 📁 dashboard
+│   │   │                       │   ├── 📁 controllers
+│   │   │                       │   │   └── ☕ DashboardControllerTest.java
+│   │   │                       │   ├── 📁 repositories
+│   │   │                       │   │   └── ☕ DashboardRepositoryTest.java
+│   │   │                       │   └── 📁 services
+│   │   │                       │       └── ☕ DashboardServiceTest.java
+│   │   │                       ├── 📁 indicadores
+│   │   │                       │   ├── 📁 controllers
+│   │   │                       │   │   └── ☕ UtilizacaoControllerTest.java
+│   │   │                       │   ├── 📁 model
+│   │   │                       │   │   └── ☕ PeriodoConsultaTest.java
+│   │   │                       │   ├── 📁 repositories
+│   │   │                       │   │   └── ☕ UtilizacaoRepositoryTest.java
+│   │   │                       │   └── 📁 services
+│   │   │                       │       └── ☕ UtilizacaoServiceTest.java
+│   │   │                       ├── 📁 motorista
+│   │   │                       │   ├── 📁 controllers
+│   │   │                       │   │   └── ☕ MotoristaControllerTest.java
+│   │   │                       │   └── 📁 services
+│   │   │                       │       └── ☕ MotoristaServiceTest.java
+│   │   │                       ├── 📁 seguranca
+│   │   │                       │   ├── ☕ RepasseTokenInterceptorTest.java
+│   │   │                       │   ├── ☕ SegurancaTest.java
+│   │   │                       │   └── ☕ TokensDeTeste.java
 │   │   │                       └── 📁 viagem
+│   │   │                           ├── 📁 clients
+│   │   │                           │   └── ☕ ManifestoClientImplTest.java
 │   │   │                           ├── 📁 controllers
+│   │   │                           │   ├── ☕ ImportacaoManifestoControllerTest.java
+│   │   │                           │   ├── ☕ RankingDestinosControllerTest.java
 │   │   │                           │   └── ☕ ViagemControllerTest.java
 │   │   │                           ├── 📁 mappers
 │   │   │                           │   └── ☕ ManifestoMapperTest.java
+│   │   │                           ├── 📁 repositories
+│   │   │                           │   ├── ☕ RankingDestinosIntegrationTest.java
+│   │   │                           │   └── ☕ ViagemFiltrosIntegrationTest.java
 │   │   │                           └── 📁 services
+│   │   │                               ├── ☕ ImportacaoManifestoTest.java
+│   │   │                               ├── ☕ RankingDestinosServiceTest.java
+│   │   │                               ├── ☕ RentabilidadeServiceTest.java
 │   │   │                               └── ☕ ViagemServiceTest.java
 │   │   ├── 🐳 Dockerfile
 │   │   └── 📄 build.gradle
@@ -128,7 +288,11 @@
 │   │   │   │   │               │   │   ├── ☕ CsvParser.java
 │   │   │   │   │               │   │   └── ☕ ExcelParser.java
 │   │   │   │   │               │   ├── ☕ ManifestoController.java
+│   │   │   │   │               │   ├── ☕ ManifestoProcessador.java
 │   │   │   │   │               │   └── ☕ ManifestoService.java
+│   │   │   │   │               ├── 📁 seguranca
+│   │   │   │   │               │   ├── ☕ RepasseTokenInterceptor.java
+│   │   │   │   │               │   └── ☕ SegurancaConfig.java
 │   │   │   │   │               └── ☕ RelatorioApplication.java
 │   │   │   │   └── 📁 resources
 │   │   │   │       ├── 📁 db
@@ -140,8 +304,19 @@
 │   │   │           └── 📁 com
 │   │   │               └── 📁 ominidevs
 │   │   │                   └── 📁 relatorio
-│   │   │                       └── 📁 manifesto
-│   │   │                           └── ☕ ManifestoServiceTest.java
+│   │   │                       ├── 📁 client
+│   │   │                       │   └── ☕ OperacionalClientTest.java
+│   │   │                       ├── 📁 manifesto
+│   │   │                       │   ├── 📁 parser
+│   │   │                       │   │   ├── ☕ CsvParserTest.java
+│   │   │                       │   │   └── ☕ ExcelParserTest.java
+│   │   │                       │   ├── ☕ ManifestoCacheTest.java
+│   │   │                       │   ├── ☕ ManifestoControllerTest.java
+│   │   │                       │   └── ☕ ManifestoServiceTest.java
+│   │   │                       └── 📁 seguranca
+│   │   │                           ├── ☕ RepasseTokenInterceptorTest.java
+│   │   │                           ├── ☕ SegurancaTest.java
+│   │   │                           └── ☕ TokensDeTeste.java
 │   │   ├── 🐳 Dockerfile
 │   │   └── 📄 build.gradle
 │   ├── ⚙️ .dockerignore
@@ -150,19 +325,31 @@
 │   ├── 📄 build.gradle
 │   ├── 📄 gradlew
 │   ├── 📄 gradlew.bat
+│   ├── ⚙️ package-lock.json
 │   └── 📄 settings.gradle
 ├── 📁 database
 │   ├── 📁 init
 │   │   └── 📄 01-schemas.sql
 │   └── 🐳 Dockerfile
 ├── 📁 docs
-│   └── 📁 documentacao
-│       ├── 📕 Backlog.pdf
-│       ├── 📕 Cenarios_sprint1.pdf
-│       └── 📕 DoR_e_DoD_sprint1.pdf
+│   ├── 📁 documentacao
+│   │   ├── 📕 Backlog.pdf
+│   │   ├── 📕 Cenarios_sprint1.pdf
+│   │   ├── 📕 DoR_e_DoD_sprint1.pdf
+│   │   └── 📝 file_tree.md
+│   ├── 📁 manuais
+│   │   ├── 📝 manual-instalacao.md
+│   │   └── 📝 manual-usuario.md
+│   └── 📁 sprints
+│       ├── 📝 sprint-1.md
+│       ├── 📝 sprint-2.md
+│       └── 📝 sprint-3.md
+├── 📁 e2e
+│   └── 📄 permissoes.e2e.test.mjs
 ├── 📁 frontend
 │   ├── 📁 public
 │   │   ├── 🖼️ favicon.svg
+│   │   ├── 🖼️ login-ilustracao.png
 │   │   └── 🖼️ logo.png
 │   ├── 📁 src
 │   │   ├── 📁 app
@@ -170,6 +357,8 @@
 │   │   │   │   └── ⚙️ .gitkeep
 │   │   │   ├── 📁 router
 │   │   │   │   ├── 📄 AppRouter.tsx
+│   │   │   │   ├── 📄 RotaProtegida.tsx
+│   │   │   │   ├── 📄 RotaPublica.tsx
 │   │   │   │   └── 📄 index.ts
 │   │   │   ├── 📁 styles
 │   │   │   │   └── 🎨 index.css
@@ -177,13 +366,31 @@
 │   │   ├── 📁 entities
 │   │   │   ├── 📁 dashboard-metrics
 │   │   │   │   ├── 📁 api
-│   │   │   │   │   └── 📄 dashboardMetricsService.ts
+│   │   │   │   │   ├── 📄 dashboardService.test.mjs
+│   │   │   │   │   └── 📄 dashboardService.ts
 │   │   │   │   ├── 📁 model
 │   │   │   │   │   └── 📄 types.ts
+│   │   │   │   └── 📄 index.ts
+│   │   │   ├── 📁 motorista
+│   │   │   │   ├── 📁 api
+│   │   │   │   │   ├── 📄 equipeService.ts
+│   │   │   │   │   └── 📄 utilizacaoService.ts
+│   │   │   │   ├── 📁 model
+│   │   │   │   │   └── 📄 types.ts
+│   │   │   │   ├── 📁 ui
+│   │   │   │   │   └── 📄 StatusMotoristaBadge.tsx
 │   │   │   │   └── 📄 index.ts
 │   │   │   ├── 📁 relatorio
 │   │   │   │   └── 📁 api
 │   │   │   │       └── 📄 enviarRelatorio.ts
+│   │   │   ├── 📁 sessao
+│   │   │   │   ├── 📁 lib
+│   │   │   │   │   └── 📄 lerUsuarioDoToken.ts
+│   │   │   │   ├── 📁 model
+│   │   │   │   │   ├── 📄 permissoes.ts
+│   │   │   │   │   ├── 📄 sessao.ts
+│   │   │   │   │   └── 📄 types.ts
+│   │   │   │   └── 📄 index.ts
 │   │   │   └── 📁 viagem
 │   │   │       ├── 📁 api
 │   │   │       │   └── 📄 viagemService.ts
@@ -196,21 +403,53 @@
 │   │   │       └── 📄 index.ts
 │   │   ├── 📁 features
 │   │   │   ├── 📁 enviar-relatorio
+│   │   │   │   ├── 📁 api
+│   │   │   │   │   ├── 📄 importarManifesto.test.mjs
+│   │   │   │   │   └── 📄 importarManifesto.ts
 │   │   │   │   ├── 📁 lib
 │   │   │   │   │   ├── 📄 formatarTamanhoArquivo.ts
 │   │   │   │   │   └── 📄 validarArquivoRelatorio.ts
+│   │   │   │   ├── 📁 test-data
+│   │   │   │   │   └── 📄 manifesto-teste.csv
 │   │   │   │   └── 📁 ui
 │   │   │   │       ├── 📄 BotaoEnviarRelatorio.tsx
 │   │   │   │       ├── 📄 MensagemFeedbackUpload.tsx
 │   │   │   │       └── 📄 ModalEnviarRelatorio.tsx
+│   │   │   ├── 📁 login
+│   │   │   │   ├── 📁 api
+│   │   │   │   │   └── 📄 autenticar.ts
+│   │   │   │   ├── 📁 lib
+│   │   │   │   │   └── 📄 validarCredenciais.ts
+│   │   │   │   ├── 📁 ui
+│   │   │   │   │   ├── 📄 CampoLogin.tsx
+│   │   │   │   │   └── 📄 FormularioLogin.tsx
+│   │   │   │   └── 📄 index.ts
 │   │   │   └── 📁 period-filter
 │   │   │       ├── 📁 ui
 │   │   │       │   └── 📄 PeriodFilter.tsx
 │   │   │       └── 📄 index.ts
 │   │   ├── 📁 pages
 │   │   │   ├── 📁 Dashboard
+│   │   │   │   ├── 📁 lib
+│   │   │   │   │   ├── 📄 intervaloDoPeriodo.test.mjs
+│   │   │   │   │   └── 📄 intervaloDoPeriodo.ts
+│   │   │   │   ├── 📁 model
+│   │   │   │   │   └── 📄 useDashboard.ts
 │   │   │   │   ├── 📁 ui
 │   │   │   │   │   └── 📄 DashboardPage.tsx
+│   │   │   │   └── 📄 index.ts
+│   │   │   ├── 📁 Login
+│   │   │   │   ├── 📁 ui
+│   │   │   │   │   └── 📄 LoginPage.tsx
+│   │   │   │   └── 📄 index.ts
+│   │   │   ├── 📁 Motoristas
+│   │   │   │   ├── 📁 lib
+│   │   │   │   │   └── 📄 intervaloDoPeriodo.ts
+│   │   │   │   ├── 📁 model
+│   │   │   │   │   └── 📄 useMotoristasUtilizacao.ts
+│   │   │   │   ├── 📁 ui
+│   │   │   │   │   ├── 📄 MotoristasPage.tsx
+│   │   │   │   │   └── 📄 UtilizacaoMotoristasPage.tsx
 │   │   │   │   └── 📄 index.ts
 │   │   │   └── 📁 Viagens
 │   │   │       ├── 📁 ui
@@ -218,7 +457,10 @@
 │   │   │       └── 📄 index.ts
 │   │   ├── 📁 shared
 │   │   │   ├── 📁 api
-│   │   │   │   └── ⚙️ .gitkeep
+│   │   │   │   ├── ⚙️ .gitkeep
+│   │   │   │   ├── 📄 apiFetch.ts
+│   │   │   │   ├── 📄 index.ts
+│   │   │   │   └── 📄 tokenSessao.ts
 │   │   │   ├── 📁 config
 │   │   │   │   └── ⚙️ .gitkeep
 │   │   │   ├── 📁 lib
@@ -238,12 +480,22 @@
 │   │   │   ├── 📁 dashboard-overview
 │   │   │   │   ├── 📁 ui
 │   │   │   │   │   ├── 📄 DashboardOverview.tsx
-│   │   │   │   │   ├── 📄 RentabilidadeViagensChart.tsx
-│   │   │   │   │   └── 📄 UtilizacaoFrotaChart.tsx
+│   │   │   │   │   └── 📄 GraficoSemDados.tsx
 │   │   │   │   └── 📄 index.ts
 │   │   │   ├── 📁 dashboard-topbar
 │   │   │   │   ├── 📁 ui
 │   │   │   │   │   └── 📄 DashboardTopbar.tsx
+│   │   │   │   └── 📄 index.ts
+│   │   │   ├── 📁 equipe-motoristas
+│   │   │   │   ├── 📁 ui
+│   │   │   │   │   ├── 📄 EquipeFiltros.tsx
+│   │   │   │   │   ├── 📄 EquipeStatCards.tsx
+│   │   │   │   │   └── 📄 EquipeTabela.tsx
+│   │   │   │   └── 📄 index.ts
+│   │   │   ├── 📁 motoristas-list
+│   │   │   │   ├── 📁 ui
+│   │   │   │   │   ├── 📄 MotoristasList.tsx
+│   │   │   │   │   └── 📄 MotoristasTopbar.tsx
 │   │   │   │   └── 📄 index.ts
 │   │   │   ├── 📁 sidebar
 │   │   │   │   ├── 📁 ui
@@ -258,7 +510,14 @@
 │   │   │   │   │   └── 📄 ViagensRanking.tsx
 │   │   │   │   └── 📄 index.ts
 │   │   │   └── 📁 viagens-topbar
+│   │   │       ├── 📁 api
+│   │   │       │   └── 📄 filtrarViagens.ts
+│   │   │       ├── 📁 model
+│   │   │       │   ├── 📄 types.ts
+│   │   │       │   └── 📄 useFiltroViagens.ts
 │   │   │       ├── 📁 ui
+│   │   │       │   ├── 📄 FiltrarViagensButton.tsx
+│   │   │       │   ├── 📄 FiltrarViagensModal.tsx
 │   │   │       │   └── 📄 ViagensTopbar.tsx
 │   │   │       └── 📄 index.ts
 │   │   └── 📄 main.tsx
@@ -278,5 +537,6 @@
 ├── ⚙️ .env.example
 ├── ⚙️ .gitignore
 ├── 📝 README.md
-└── ⚙️ docker-compose.yml
+├── ⚙️ docker-compose.yml
+└── ⚙️ package-lock.json
 ```
