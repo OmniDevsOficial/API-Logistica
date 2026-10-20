@@ -3,6 +3,7 @@ import type {
   DashboardData,
   DashboardMetrics,
   DashboardStatus,
+  DestinoMaisRentavel,
   ViagensPorStatus,
 } from "../model/types";
 
@@ -57,6 +58,20 @@ function mapearViagensPorStatus(dados: unknown): ViagensPorStatus {
   };
 }
 
+function mapearDestinoMaisRentavel(dados: unknown): DestinoMaisRentavel | null {
+  if (dados === null || dados === undefined) {
+    return null;
+  }
+
+  const destino = registro(dados);
+
+  return {
+    destino: texto(destino.destino),
+    viagens: numero(destino.viagens),
+    rentabilidadeTotal: numero(destino.rentabilidadeTotal),
+  };
+}
+
 function mapearMetricas(dados: unknown): DashboardMetrics {
   const metricas = registro(dados);
 
@@ -74,6 +89,7 @@ function mapearMetricas(dados: unknown): DashboardMetrics {
     rentabilidadeTotal: numeroOuNulo(metricas.rentabilidadeTotal),
     rentabilidadeMedia: numeroOuNulo(metricas.rentabilidadeMedia),
     margem: numeroOuNulo(metricas.margem),
+    destinoMaisRentavel: mapearDestinoMaisRentavel(metricas.destinoMaisRentavel),
     taxaOcupacao: numeroOuNulo(metricas.taxaOcupacao),
   };
 }

@@ -6,6 +6,7 @@ import java.util.List;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
+import com.ominidevs.operacional.dashboard.projections.DestinoRentavel;
 import com.ominidevs.operacional.dashboard.projections.PontoSerie;
 import com.ominidevs.operacional.dashboard.projections.ResumoViagens;
 import com.ominidevs.operacional.dashboard.projections.ValoresFinanceirosViagem;
@@ -48,6 +49,19 @@ public class DashboardRepository {
             ORDER BY COUNT(*) DESC, 1
             """;
 
+    private static final String SQL_DESTINO_MAIS_RENTAVEL = """
+            SELECT MIN(TRIM(cidade_destino)) AS destino,
+                   COUNT(*) AS viagens,
+                   SUM(COALESCE(receita_frete, 0) - COALESCE(custo_frete, 0) - COALESCE(pedagio, 0)) AS rentabilidade_total
+            FROM operacional.viagem
+            WHERE data BETWEEN ? AND ?
+              AND NULLIF(TRIM(cidade_destino), '') IS NOT NULL
+            GROUP BY UPPER(TRIM(cidade_destino))
+            HAVING COUNT(receita_frete) + COUNT(custo_frete) + COUNT(pedagio) > 0
+            ORDER BY rentabilidade_total DESC, viagens DESC, UPPER(TRIM(cidade_destino))
+            LIMIT 1
+            """;
+
     private final JdbcTemplate jdbc;
 
     public DashboardRepository(JdbcTemplate jdbc) {
@@ -86,6 +100,14 @@ public class DashboardRepository {
                 """, (rs, row) -> new ValoresFinanceirosViagem(
                     rs.getBigDecimal("receita_frete"), rs.getBigDecimal("custo_frete"), rs.getBigDecimal("pedagio")),
                 Date.valueOf(periodo.inicio()), Date.valueOf(periodo.fim()));
+    }
+
+    public DestinoRentavel consultarDestinoMaisRentavel(PeriodoConsulta periodo) {
+        return jdbc.query(SQL_DESTINO_MAIS_RENTAVEL,
+                (rs, row) -> new DestinoRentavel(
+                        rs.getString("destino"), rs.getLong("viagens"), rs.getBigDecimal("rentabilidade_total")),
+                Date.valueOf(periodo.inicio()), Date.valueOf(periodo.fim()))
+                .stream().findFirst().orElse(null);
     }
 
     private org.springframework.jdbc.core.RowMapper<PontoSerie> pontoSerie() {

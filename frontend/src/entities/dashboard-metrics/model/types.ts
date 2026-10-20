@@ -8,6 +8,12 @@ export interface ViagensPorStatus {
   finalizado: number;
 }
 
+export interface DestinoMaisRentavel {
+  destino: string;
+  viagens: number;
+  rentabilidadeTotal: number;
+}
+
 export interface DashboardMetrics {
   totalViagens: number;
   freteTotal: number | null;
@@ -22,6 +28,7 @@ export interface DashboardMetrics {
   rentabilidadeTotal: number | null;
   rentabilidadeMedia: number | null;
   margem: number | null;
+  destinoMaisRentavel: DestinoMaisRentavel | null;
   taxaOcupacao: number | null;
 }
 

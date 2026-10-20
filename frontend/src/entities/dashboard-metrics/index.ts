@@ -2,6 +2,7 @@ export type {
   DashboardData,
   DashboardMetrics,
   DashboardStatus,
+  DestinoMaisRentavel,
   PeriodOption,
   ViagensPorStatus,
 } from "./model/types";
