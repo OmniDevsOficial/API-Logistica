@@ -17,7 +17,6 @@ public class DashboardRepository {
 
     private static final String SQL_RESUMO = """
             SELECT COUNT(*) AS total_viagens,
-                   AVG(valor_frete) AS frete_medio,
                    SUM(CASE WHEN km_saida IS NOT NULL AND km_chegada IS NOT NULL
                             THEN km_chegada - km_saida END) AS km_total,
                    COUNT(DISTINCT NULLIF(regexp_replace(cpf_motorista, '[^0-9]', '', 'g'), '')) AS motoristas_ativos,
@@ -72,7 +71,6 @@ public class DashboardRepository {
         return jdbc.queryForObject(SQL_RESUMO,
                 (rs, row) -> new ResumoViagens(
                         rs.getLong("total_viagens"),
-                        rs.getBigDecimal("frete_medio"),
                         rs.getObject("km_total", Long.class),
                         rs.getLong("motoristas_ativos"),
                         rs.getLong("veiculos_utilizados"),

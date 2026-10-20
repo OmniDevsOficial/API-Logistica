@@ -36,7 +36,7 @@ class DashboardControllerTest {
     @BeforeEach
     void configurar() {
         when(repository.consultarResumo(any()))
-                .thenReturn(new ResumoViagens(0, null, null, 0, 0, 0, 0, 0));
+                .thenReturn(new ResumoViagens(0, null, 0, 0, 0, 0, 0));
         when(repository.consultarSerieMensal(any())).thenReturn(List.of());
         when(repository.consultarSeriePorVeiculo(any())).thenReturn(List.of());
         when(utilizacaoRepository.consultar(any())).thenReturn(List.of());
@@ -57,8 +57,7 @@ class DashboardControllerTest {
     @Test
     void retornaOContratoCompletoComDadosDoBanco() throws Exception {
         when(repository.consultarResumo(any())).thenReturn(new ResumoViagens(
-                4, new BigDecimal("500.000000000000"),
-                550L, 2, 1, 2, 1, 1));
+                4, 550L, 2, 1, 2, 1, 1));
         when(repository.consultarValoresFinanceiros(any())).thenReturn(List.of(
                 new ValoresFinanceirosViagem(new BigDecimal("2000.00"), null, null)));
         when(repository.consultarSerieMensal(any())).thenReturn(List.of(
