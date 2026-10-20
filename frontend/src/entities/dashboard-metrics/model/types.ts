@@ -14,6 +14,7 @@ export interface DashboardMetrics {
   freteMedio: number | null;
   kmTotal: number | null;
   motoristasAtivos: number;
+  viagensPorMotorista: number | null;
   veiculosUtilizados: number;
   viagensPorStatus: ViagensPorStatus;
   custoTotal: number | null;

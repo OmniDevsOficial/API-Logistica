@@ -66,6 +66,7 @@ function mapearMetricas(dados: unknown): DashboardMetrics {
     freteMedio: numeroOuNulo(metricas.freteMedio),
     kmTotal: numeroOuNulo(metricas.kmTotal),
     motoristasAtivos: numero(metricas.motoristasAtivos),
+    viagensPorMotorista: numeroOuNulo(metricas.viagensPorMotorista),
     veiculosUtilizados: numero(metricas.veiculosUtilizados),
     viagensPorStatus: mapearViagensPorStatus(metricas.viagensPorStatus),
     custoTotal: numeroOuNulo(metricas.custoTotal),

@@ -21,6 +21,15 @@ function quantidade(valor: number | null): string {
   return valor === null ? SEM_DADO : String(valor);
 }
 
+function decimal(valor: number | null): string {
+  return valor === null
+    ? SEM_DADO
+    : valor.toLocaleString("pt-BR", {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      });
+}
+
 export function DashboardOverview({ data }: DashboardOverviewProps) {
   const { metrics } = data;
 
@@ -106,6 +115,12 @@ export function DashboardOverview({ data }: DashboardOverviewProps) {
         title="Custo médio"
         value={moeda(metrics.custoMedio)}
         caption="Por viagem"
+      />
+      <StatCard
+        className="lg:col-start-1 lg:row-start-6"
+        title="Viagens por motorista"
+        value={decimal(metrics.viagensPorMotorista)}
+        caption="Média no período"
       />
     </div>
   );
