@@ -20,6 +20,7 @@ export interface DashboardMetrics {
   custoMedio: number | null;
   rentabilidadeTotal: number | null;
   rentabilidadeMedia: number | null;
+  margem: number | null;
   taxaOcupacao: number | null;
 }
 
