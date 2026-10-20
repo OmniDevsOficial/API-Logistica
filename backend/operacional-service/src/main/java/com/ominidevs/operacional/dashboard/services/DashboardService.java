@@ -7,10 +7,12 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 
 import com.ominidevs.operacional.dashboard.dto.DashboardResponse;
+import com.ominidevs.operacional.dashboard.dto.DestinoMaisRentavelResponse;
 import com.ominidevs.operacional.dashboard.dto.MetricasDashboardResponse;
 import com.ominidevs.operacional.dashboard.dto.PontoSerieResponse;
 import com.ominidevs.operacional.dashboard.dto.SeriesDashboardResponse;
 import com.ominidevs.operacional.dashboard.dto.ViagensPorStatusResponse;
+import com.ominidevs.operacional.dashboard.projections.DestinoRentavel;
 import com.ominidevs.operacional.dashboard.projections.PontoSerie;
 import com.ominidevs.operacional.dashboard.projections.ResumoViagens;
 import com.ominidevs.operacional.dashboard.projections.ValoresFinanceirosViagem;
@@ -77,6 +79,7 @@ public class DashboardService {
                 arredondar(rentabilidadeTotal),
                 mediaPorViagem(rentabilidadeTotal, resumo.totalViagens()),
                 margem(rentabilidadeTotal, receitaTotal),
+                converterDestino(repository.consultarDestinoMaisRentavel(periodo)),
                 SEM_FONTE_NO_BANCO);
     }
 
@@ -102,6 +105,12 @@ public class DashboardService {
     private BigDecimal rentabilidade(BigDecimal receitaTotal, BigDecimal custoTotal) {
         if (receitaTotal == null && custoTotal == null) return null;
         return zeroSeNulo(receitaTotal).subtract(zeroSeNulo(custoTotal));
+    }
+
+    private DestinoMaisRentavelResponse converterDestino(DestinoRentavel destino) {
+        if (destino == null) return null;
+        return new DestinoMaisRentavelResponse(
+                destino.destino(), destino.viagens(), arredondar(destino.rentabilidadeTotal()));
     }
 
     private BigDecimal viagensPorMotorista(long totalViagens, long motoristasAtivos) {

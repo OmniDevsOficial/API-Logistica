@@ -1,4 +1,7 @@
-import type { DashboardData } from "@entities/dashboard-metrics";
+import type {
+  DashboardData,
+  DestinoMaisRentavel,
+} from "@entities/dashboard-metrics";
 import { ChartCard, StatCard } from "@shared/ui";
 import { formatCurrencyBRL, formatPercent } from "@shared/lib";
 import { GraficoSemDados } from "./GraficoSemDados";
@@ -19,6 +22,12 @@ function porcentagem(valor: number | null): string {
 
 function quantidade(valor: number | null): string {
   return valor === null ? SEM_DADO : String(valor);
+}
+
+function legendaDestino(destino: DestinoMaisRentavel | null): string {
+  if (destino === null) return "No período";
+  const viagens = destino.viagens === 1 ? "1 viagem" : `${destino.viagens} viagens`;
+  return `${moeda(destino.rentabilidadeTotal)} em ${viagens}`;
 }
 
 function decimal(valor: number | null): string {
@@ -121,6 +130,12 @@ export function DashboardOverview({ data }: DashboardOverviewProps) {
         title="Viagens por motorista"
         value={decimal(metrics.viagensPorMotorista)}
         caption="Média no período"
+      />
+      <StatCard
+        className="sm:col-span-2 lg:col-start-2 lg:col-span-2 lg:row-start-6"
+        title="Destino mais rentável"
+        value={metrics.destinoMaisRentavel?.destino ?? SEM_DADO}
+        caption={legendaDestino(metrics.destinoMaisRentavel)}
       />
     </div>
   );
