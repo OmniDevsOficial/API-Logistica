@@ -12,11 +12,13 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.ominidevs.operacional.viagem.dto.RankingDestinoResponse;
+import com.ominidevs.operacional.viagem.dto.RentabilidadeMotoristaResponse;
 import com.ominidevs.operacional.viagem.dto.ViagemResponseDTO;
 import com.ominidevs.operacional.viagem.dto.ImportacaoManifestoResponse;
 import com.ominidevs.operacional.viagem.entities.StatusViagem;
 import com.ominidevs.operacional.viagem.entities.Viagem;
 import com.ominidevs.operacional.viagem.services.ViagemService;
+import com.ominidevs.operacional.indicadores.model.PeriodoConsulta;
 
 @RestController
 @RequestMapping("/viagens")
@@ -36,6 +38,14 @@ public class ViagemController {
         } catch (java.util.NoSuchElementException ex) {
             throw new org.springframework.web.server.ResponseStatusException(org.springframework.http.HttpStatus.NOT_FOUND);
         }
+    }
+
+    @GetMapping("/rentabilidade/motoristas")
+    public ResponseEntity<List<RentabilidadeMotoristaResponse>> rentabilidadePorMotorista(
+            @RequestParam("dataInicio") String dataInicio,
+            @RequestParam("dataFim") String dataFim) {
+        PeriodoConsulta periodo = PeriodoConsulta.parse(dataInicio, dataFim);
+        return ResponseEntity.ok(viagemService.rentabilidadeMediaPorMotorista(periodo.inicio(), periodo.fim()));
     }
 
     @PostMapping("/importar-manifesto")

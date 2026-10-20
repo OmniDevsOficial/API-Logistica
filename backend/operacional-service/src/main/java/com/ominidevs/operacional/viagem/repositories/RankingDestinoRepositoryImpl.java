@@ -7,6 +7,7 @@ import java.util.List;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 import com.ominidevs.operacional.viagem.dto.RankingDestinoResponse;
+import com.ominidevs.operacional.viagem.dto.RentabilidadeMotoristaResponse;
 import com.ominidevs.operacional.viagem.services.RentabilidadeService;
 
 public class RankingDestinoRepositoryImpl implements RankingDestinoRepository {
@@ -30,6 +31,19 @@ public class RankingDestinoRepositoryImpl implements RankingDestinoRepository {
             LIMIT 10
             """.formatted(RentabilidadeService.EXPRESSAO_SQL);
 
+    private static final String SQL_RENTABILIDADE_MOTORISTA = """
+            SELECT MIN(TRIM(motorista)) AS motorista,
+                   COUNT(*) FILTER (WHERE receita_frete IS NOT NULL
+                                      AND custo_frete IS NOT NULL
+                                      AND pedagio IS NOT NULL) AS quantidade_viagens,
+                   ROUND(AVG(%s), 2) AS rentabilidade_media
+            FROM operacional.viagem
+            WHERE data BETWEEN ? AND ?
+              AND NULLIF(TRIM(motorista), '') IS NOT NULL
+            GROUP BY UPPER(TRIM(motorista))
+            ORDER BY UPPER(TRIM(motorista))
+            """.formatted(RentabilidadeService.EXPRESSAO_SQL);
+
     private final JdbcTemplate jdbc;
 
     public RankingDestinoRepositoryImpl(JdbcTemplate jdbc) {
@@ -43,6 +57,16 @@ public class RankingDestinoRepositoryImpl implements RankingDestinoRepository {
                         rs.getString("destino"),
                         rs.getLong("quantidade_viagens"),
                         rs.getBigDecimal("rentabilidade_media")),
+                Date.valueOf(inicio), Date.valueOf(fim));
+    }
+
+    @Override
+    public List<RentabilidadeMotoristaResponse> rentabilidadeMediaPorMotorista(LocalDate inicio, LocalDate fim) {
+        return jdbc.query(SQL_RENTABILIDADE_MOTORISTA,
+                (rs, row) -> new RentabilidadeMotoristaResponse(
+                        rs.getString("motorista"),
+                        rs.getBigDecimal("rentabilidade_media"),
+                        rs.getLong("quantidade_viagens")),
                 Date.valueOf(inicio), Date.valueOf(fim));
     }
 }
