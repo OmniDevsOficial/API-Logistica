@@ -59,6 +59,7 @@ public class DashboardService {
         var valores = repository.consultarValoresFinanceiros(periodo);
         if (valores == null) valores = List.of();
         BigDecimal custoTotal = somarCustos(valores);
+        BigDecimal rentabilidadeTotal = rentabilidade(somarReceitas(valores), custoTotal);
         BigDecimal lucroTotal = BigDecimal.ZERO;
         long viagensCalculaveis = 0;
         for (var v : valores) {
@@ -81,7 +82,7 @@ public class DashboardService {
                         resumo.viagensFinalizadas()),
                 arredondar(custoTotal),
                 mediaPorViagem(custoTotal, resumo.totalViagens()),
-                viagensCalculaveis == 0 ? null : arredondar(lucroTotal),
+                arredondar(rentabilidadeTotal),
                 viagensCalculaveis == 0 ? null : arredondar(lucroTotal.divide(BigDecimal.valueOf(viagensCalculaveis), 2, RoundingMode.HALF_UP)),
                 SEM_FONTE_NO_BANCO);
     }
@@ -94,6 +95,20 @@ public class DashboardService {
             total = base.add(zeroSeNulo(v.custoFrete())).add(zeroSeNulo(v.pedagio()));
         }
         return total;
+    }
+
+    private BigDecimal somarReceitas(List<ValoresFinanceirosViagem> valores) {
+        BigDecimal total = null;
+        for (var v : valores) {
+            if (v.receita() == null) continue;
+            total = (total == null ? BigDecimal.ZERO : total).add(v.receita());
+        }
+        return total;
+    }
+
+    private BigDecimal rentabilidade(BigDecimal receitaTotal, BigDecimal custoTotal) {
+        if (receitaTotal == null && custoTotal == null) return null;
+        return zeroSeNulo(receitaTotal).subtract(zeroSeNulo(custoTotal));
     }
 
     private BigDecimal mediaPorViagem(BigDecimal total, long totalViagens) {
