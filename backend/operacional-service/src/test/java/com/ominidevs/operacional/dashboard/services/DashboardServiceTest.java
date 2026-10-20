@@ -95,6 +95,8 @@ class DashboardServiceTest {
 
     @Test
     void calculaRentabilidadeDoDashboardComValoresFinanceiros() {
+        when(repository.consultarResumo(periodo)).thenReturn(new ResumoViagens(
+                2, null, null, null, 2, 0, 0, 0, 2));
         when(repository.consultarValoresFinanceiros(periodo)).thenReturn(List.of(
                 new ValoresFinanceirosViagem(new BigDecimal("3855.60"), new BigDecimal("2169.73"), new BigDecimal("69.47")),
                 new ValoresFinanceirosViagem(new BigDecimal("2120.58"), new BigDecimal("2129.70"), new BigDecimal("165.87"))));
@@ -154,6 +156,21 @@ class DashboardServiceTest {
         var metricas = service.consultar(periodo).metricas();
 
         assertEquals(new BigDecimal("-250.00"), metricas.rentabilidadeTotal());
+    }
+
+    @Test
+    void rentabilidadeMediaDivideARentabilidadeTotalPeloTotalDeViagensDoPeriodo() {
+        when(repository.consultarResumo(periodo)).thenReturn(new ResumoViagens(
+                3, null, null, null, 2, 0, 0, 0, 3));
+        when(repository.consultarValoresFinanceiros(periodo)).thenReturn(List.of(
+                new ValoresFinanceirosViagem(new BigDecimal("1000.00"), new BigDecimal("600.00"), new BigDecimal("40.00")),
+                new ValoresFinanceirosViagem(null, new BigDecimal("300.00"), null),
+                new ValoresFinanceirosViagem(new BigDecimal("400.00"), null, null)));
+
+        var metricas = service.consultar(periodo).metricas();
+
+        assertEquals(new BigDecimal("460.00"), metricas.rentabilidadeTotal());
+        assertEquals(new BigDecimal("153.33"), metricas.rentabilidadeMedia());
     }
 
     @Test
