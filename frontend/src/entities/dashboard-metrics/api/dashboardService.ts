@@ -103,6 +103,7 @@ async function consultar(url: string, signal?: AbortSignal): Promise<Response> {
       erro instanceof Error && erro.name === "TimeoutError"
         ? SERVICO_DEMOROU
         : SEM_CONEXAO,
+      { cause: erro },
     );
   }
 }
