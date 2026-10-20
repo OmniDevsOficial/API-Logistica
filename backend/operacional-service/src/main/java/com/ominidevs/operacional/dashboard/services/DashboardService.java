@@ -58,10 +58,11 @@ public class DashboardService {
         var valores = repository.consultarValoresFinanceiros(periodo);
         if (valores == null) valores = List.of();
         BigDecimal custoTotal = somarCustos(valores);
-        BigDecimal rentabilidadeTotal = rentabilidade(somarReceitas(valores), custoTotal);
+        BigDecimal receitaTotal = somarReceitas(valores);
+        BigDecimal rentabilidadeTotal = rentabilidade(receitaTotal, custoTotal);
         return new MetricasDashboardResponse(
                 resumo.totalViagens(),
-                arredondar(resumo.freteTotal()),
+                arredondar(receitaTotal),
                 arredondar(resumo.freteMedio()),
                 resumo.kmTotal(),
                 resumo.motoristasAtivos(),
