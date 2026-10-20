@@ -45,6 +45,12 @@ export function DashboardOverview({ data }: DashboardOverviewProps) {
         value={quantidade(metrics.totalViagens)}
         caption="No período"
       />
+      <StatCard
+        className="lg:col-start-4 lg:row-start-1"
+        title="Motoristas em operação"
+        value={quantidade(metrics.motoristasAtivos)}
+        caption="No período"
+      />
 
       <ChartCard
         title="Rentabilidade x Viagens"
