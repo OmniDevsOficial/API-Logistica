@@ -1,3 +1,4 @@
+import { apiFetch } from "../../../shared/api/apiFetch.ts";
 import type { MotoristaResumo } from "../model/types";
 
 const ENDPOINT = "/api/operacional/motoristas/resumo";
@@ -17,7 +18,7 @@ function validarResposta(dados: unknown): dados is MotoristaResumo {
 export async function buscarResumoMotoristas(
   signal?: AbortSignal,
 ): Promise<MotoristaResumo> {
-  const resposta = await fetch(ENDPOINT, { signal });
+  const resposta = await apiFetch(ENDPOINT, { signal });
 
   if (!resposta.ok) {
     throw new Error("Não foi possível carregar os indicadores dos motoristas.");
