@@ -7,12 +7,18 @@ export interface MotoristaUtilizacao {
   status: MotoristaStatus;
 }
 
+export interface MotoristaResumo {
+  disponiveis: number;
+  emOperacao: number;
+  indisponiveis: number;
+  total: number;
+}
+
 export type StatusEquipe = "disponivel" | "em_viagem" | "indisponivel";
 
 export interface MotoristaEquipe {
-  id: number | string;
+  id: number;
   nome: string;
-  telefone: string;
   veiculo: string;
   placa: string;
   operacao: string;
@@ -20,4 +26,12 @@ export interface MotoristaEquipe {
   localizacao: string;
   viagens: number;
   status: StatusEquipe;
+}
+
+export interface EquipeMotoristasData {
+  totalMotoristas: number;
+  disponiveis: number;
+  emViagem: number;
+  indisponiveis: number;
+  motoristas: MotoristaEquipe[];
 }
