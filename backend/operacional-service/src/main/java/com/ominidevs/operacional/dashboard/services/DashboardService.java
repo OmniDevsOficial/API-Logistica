@@ -13,6 +13,7 @@ import com.ominidevs.operacional.dashboard.dto.SeriesDashboardResponse;
 import com.ominidevs.operacional.dashboard.dto.ViagensPorStatusResponse;
 import com.ominidevs.operacional.dashboard.projections.PontoSerie;
 import com.ominidevs.operacional.dashboard.projections.ResumoViagens;
+import com.ominidevs.operacional.dashboard.projections.ValoresFinanceirosViagem;
 import com.ominidevs.operacional.viagem.services.RentabilidadeService;
 import com.ominidevs.operacional.dashboard.repositories.DashboardRepository;
 import com.ominidevs.operacional.indicadores.dto.UtilizacaoMotoristaResponse;
@@ -57,13 +58,13 @@ public class DashboardService {
     private MetricasDashboardResponse converterMetricas(ResumoViagens resumo, PeriodoConsulta periodo) {
         var valores = repository.consultarValoresFinanceiros(periodo);
         if (valores == null) valores = List.of();
-        BigDecimal custoTotal = BigDecimal.ZERO;
+        BigDecimal custoCalculavel = BigDecimal.ZERO;
         BigDecimal lucroTotal = BigDecimal.ZERO;
         long viagensCalculaveis = 0;
         for (var v : valores) {
             BigDecimal lucro = RentabilidadeService.calcular(v.receita(), v.custoFrete(), v.pedagio());
             if (lucro != null) {
-                custoTotal = custoTotal.add(v.custoFrete()).add(v.pedagio());
+                custoCalculavel = custoCalculavel.add(v.custoFrete()).add(v.pedagio());
                 lucroTotal = lucroTotal.add(lucro);
                 viagensCalculaveis++;
             }
@@ -79,11 +80,25 @@ public class DashboardService {
                         resumo.viagensPendentes(),
                         resumo.viagensEmTransito(),
                         resumo.viagensFinalizadas()),
-                viagensCalculaveis == 0 ? null : arredondar(custoTotal),
-                viagensCalculaveis == 0 ? null : arredondar(custoTotal.divide(BigDecimal.valueOf(viagensCalculaveis), 2, RoundingMode.HALF_UP)),
+                arredondar(somarCustos(valores)),
+                viagensCalculaveis == 0 ? null : arredondar(custoCalculavel.divide(BigDecimal.valueOf(viagensCalculaveis), 2, RoundingMode.HALF_UP)),
                 viagensCalculaveis == 0 ? null : arredondar(lucroTotal),
                 viagensCalculaveis == 0 ? null : arredondar(lucroTotal.divide(BigDecimal.valueOf(viagensCalculaveis), 2, RoundingMode.HALF_UP)),
                 SEM_FONTE_NO_BANCO);
+    }
+
+    private BigDecimal somarCustos(List<ValoresFinanceirosViagem> valores) {
+        BigDecimal total = null;
+        for (var v : valores) {
+            if (v.custoFrete() == null && v.pedagio() == null) continue;
+            BigDecimal base = total == null ? BigDecimal.ZERO : total;
+            total = base.add(zeroSeNulo(v.custoFrete())).add(zeroSeNulo(v.pedagio()));
+        }
+        return total;
+    }
+
+    private BigDecimal zeroSeNulo(BigDecimal valor) {
+        return valor == null ? BigDecimal.ZERO : valor;
     }
 
     private List<PontoSerieResponse> converterSerie(List<PontoSerie> pontos) {
