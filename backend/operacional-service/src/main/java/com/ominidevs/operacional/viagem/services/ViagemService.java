@@ -6,6 +6,7 @@ import com.ominidevs.operacional.viagem.dto.ManifestoDTO;
 import com.ominidevs.operacional.viagem.dto.ImportacaoManifestoResponse;
 import com.ominidevs.operacional.viagem.dto.ErroLinhaImportacao;
 import com.ominidevs.operacional.viagem.dto.RankingDestinoResponse;
+import com.ominidevs.operacional.viagem.dto.RentabilidadeMotoristaResponse;
 import com.ominidevs.operacional.viagem.entities.StatusViagem;
 import com.ominidevs.operacional.viagem.entities.Viagem;
 import com.ominidevs.operacional.viagem.exceptions.FiltroInvalidoException;
@@ -153,6 +154,10 @@ public class ViagemService {
                 viagem.getCidadeOrigem(), viagem.getCidadeDestino(), viagem.getReceitaFrete(),
                 viagem.getCustoFrete(), viagem.getPedagio(),
                 RentabilidadeService.calcular(viagem.getReceitaFrete(), viagem.getCustoFrete(), viagem.getPedagio()));
+    }
+
+    public List<RentabilidadeMotoristaResponse> rentabilidadeMediaPorMotorista(LocalDate inicio, LocalDate fim) {
+        return viagemRepository.rentabilidadeMediaPorMotorista(inicio, fim);
     }
 
     /**

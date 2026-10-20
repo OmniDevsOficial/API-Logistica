@@ -57,6 +57,7 @@ public class SegurancaConfig {
                 .authorizeHttpRequests(regras -> regras
                         .dispatcherTypeMatchers(DispatcherType.ERROR).permitAll()
                         .requestMatchers("/dashboard/**", "/indicadores/**", "/motoristas/**").hasRole(GESTOR)
+                        .requestMatchers("/viagens/rentabilidade/motoristas").hasRole(GESTOR)
                         .requestMatchers("/viagens/**").hasAnyRole(GESTOR, OPERADOR)
                         .anyRequest().authenticated())
                 .oauth2ResourceServer(oauth2 -> oauth2
