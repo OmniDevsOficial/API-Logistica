@@ -13,6 +13,7 @@ import org.springframework.jdbc.datasource.SingleConnectionDataSource;
 
 import com.ominidevs.operacional.dashboard.projections.PontoSerie;
 import com.ominidevs.operacional.dashboard.projections.ResumoViagens;
+import com.ominidevs.operacional.dashboard.projections.ValoresFinanceirosViagem;
 import com.ominidevs.operacional.indicadores.model.PeriodoConsulta;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -24,18 +25,20 @@ class DashboardRepositoryTest {
     private final PeriodoConsulta setembro = PeriodoConsulta.parse("01/09/2026", "30/09/2026");
 
     private Connection connection;
+    private JdbcTemplate jdbc;
     private DashboardRepository repository;
 
     @BeforeEach
     void preparar() throws Exception {
         connection = DriverManager.getConnection("jdbc:tc:postgresql:17-alpine:///dashboard");
         connection.setAutoCommit(false);
-        var jdbc = new JdbcTemplate(new SingleConnectionDataSource(connection, true));
+        jdbc = new JdbcTemplate(new SingleConnectionDataSource(connection, true));
         jdbc.execute("CREATE SCHEMA operacional");
         jdbc.execute("""
                 CREATE TABLE operacional.viagem (
                     data DATE, motorista TEXT, cpf_motorista TEXT, veiculo TEXT,
-                    valor_frete NUMERIC(10,2), km_saida INT, km_chegada INT, status TEXT)
+                    valor_frete NUMERIC(10,2), km_saida INT, km_chegada INT, status TEXT,
+                    receita_frete NUMERIC(12,2), custo_frete NUMERIC(12,2), pedagio NUMERIC(12,2))
                 """);
         jdbc.execute("""
                 INSERT INTO operacional.viagem VALUES
@@ -104,6 +107,23 @@ class DashboardRepositoryTest {
         assertEquals(2, serie.size());
         assertEquals(2L, viagensDe(serie, "Truck"));
         assertEquals(2L, viagensDe(serie, "SEM_VEICULO"));
+    }
+
+    @Test
+    void valoresFinanceirosTrazemSomenteViagensDoPeriodoMantendoCamposVazios() {
+        jdbc.update("""
+                UPDATE operacional.viagem SET receita_frete = 1500.00, custo_frete = 900.00, pedagio = 50.00
+                WHERE data IN ('2026-09-01', '2026-08-31')
+                """);
+
+        List<ValoresFinanceirosViagem> valores = repository.consultarValoresFinanceiros(setembro);
+
+        assertEquals(4, valores.size());
+        assertTrue(valores.contains(new ValoresFinanceirosViagem(
+                new BigDecimal("1500.00"), new BigDecimal("900.00"), new BigDecimal("50.00"))));
+        assertEquals(3, valores.stream()
+                .filter(v -> v.receita() == null && v.custoFrete() == null && v.pedagio() == null)
+                .count());
     }
 
     private long viagensDe(List<PontoSerie> serie, String rotulo) {
