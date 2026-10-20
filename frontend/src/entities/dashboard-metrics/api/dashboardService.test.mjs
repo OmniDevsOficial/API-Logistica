@@ -15,6 +15,7 @@ const respostaCompleta = {
     freteMedio: 1763.67,
     kmTotal: 4200,
     motoristasAtivos: 3,
+    viagensPorMotorista: 2.33,
     veiculosUtilizados: 2,
     viagensPorStatus: { pendente: 1, emTransito: 2, finalizado: 4 },
     custoTotal: null,
@@ -45,6 +46,7 @@ test('envia o periodo na consulta e mapeia as metricas do contrato', async () =>
   assert.equal(dados.status, 'COM_DADOS');
   assert.equal(dados.metrics.totalViagens, 7);
   assert.equal(dados.metrics.motoristasAtivos, 3);
+  assert.equal(dados.metrics.viagensPorMotorista, 2.33);
   assert.equal(dados.metrics.freteTotal, 12345.67);
   assert.equal(dados.metrics.margem, 55.38);
   assert.deepEqual(dados.metrics.viagensPorStatus, { pendente: 1, emTransito: 2, finalizado: 4 });
@@ -76,6 +78,7 @@ test('periodo sem viagens volta como SEM_DADOS com os totais zerados', async () 
       margem: null,
       kmTotal: null,
       motoristasAtivos: 0,
+      viagensPorMotorista: null,
       veiculosUtilizados: 0,
       viagensPorStatus: { pendente: 0, emTransito: 0, finalizado: 0 },
     },
@@ -86,6 +89,7 @@ test('periodo sem viagens volta como SEM_DADOS com os totais zerados', async () 
   assert.equal(dados.status, 'SEM_DADOS');
   assert.equal(dados.metrics.totalViagens, 0);
   assert.equal(dados.metrics.motoristasAtivos, 0);
+  assert.equal(dados.metrics.viagensPorMotorista, null);
   assert.equal(dados.metrics.freteTotal, null);
   assert.equal(dados.metrics.margem, null);
 });

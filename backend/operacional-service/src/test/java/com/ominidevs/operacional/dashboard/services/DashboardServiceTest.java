@@ -231,6 +231,23 @@ class DashboardServiceTest {
     }
 
     @Test
+    void viagensPorMotoristaDivideOTotalDeViagensPelosMotoristasEmOperacao() {
+        when(repository.consultarResumo(periodo)).thenReturn(new ResumoViagens(
+                629, null, null, 113, 0, 0, 0, 629));
+
+        var metricas = service.consultar(periodo).metricas();
+
+        assertEquals(new BigDecimal("5.57"), metricas.viagensPorMotorista());
+    }
+
+    @Test
+    void viagensPorMotoristaFicaNuloSemMotoristasNoPeriodo() {
+        var metricas = service.consultar(periodo).metricas();
+
+        assertNull(metricas.viagensPorMotorista());
+    }
+
+    @Test
     void periodoSemViagensRetornaSemDadosENaoZeraOsValores() {
         var resultado = service.consultar(periodo);
 
