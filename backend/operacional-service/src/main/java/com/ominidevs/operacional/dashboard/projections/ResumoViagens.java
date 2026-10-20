@@ -1,10 +1,7 @@
 package com.ominidevs.operacional.dashboard.projections;
 
-import java.math.BigDecimal;
-
 public record ResumoViagens(
         long totalViagens,
-        BigDecimal freteMedio,
         Long kmTotal,
         long motoristasAtivos,
         long veiculosUtilizados,

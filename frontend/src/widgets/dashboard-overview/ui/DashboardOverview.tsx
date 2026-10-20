@@ -137,6 +137,12 @@ export function DashboardOverview({ data }: DashboardOverviewProps) {
         value={metrics.destinoMaisRentavel?.destino ?? SEM_DADO}
         caption={legendaDestino(metrics.destinoMaisRentavel)}
       />
+      <StatCard
+        className="lg:col-start-4 lg:row-start-6"
+        title="Ticket médio do frete"
+        value={moeda(metrics.freteMedio)}
+        caption="Por viagem"
+      />
     </div>
   );
 }

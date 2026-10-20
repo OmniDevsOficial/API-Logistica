@@ -65,7 +65,7 @@ public class DashboardService {
         return new MetricasDashboardResponse(
                 resumo.totalViagens(),
                 arredondar(receitaTotal),
-                arredondar(resumo.freteMedio()),
+                mediaPorViagem(receitaTotal, resumo.totalViagens()),
                 resumo.kmTotal(),
                 resumo.motoristasAtivos(),
                 viagensPorMotorista(resumo.totalViagens(), resumo.motoristasAtivos()),
