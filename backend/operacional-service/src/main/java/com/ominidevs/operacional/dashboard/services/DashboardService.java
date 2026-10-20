@@ -14,7 +14,6 @@ import com.ominidevs.operacional.dashboard.dto.ViagensPorStatusResponse;
 import com.ominidevs.operacional.dashboard.projections.PontoSerie;
 import com.ominidevs.operacional.dashboard.projections.ResumoViagens;
 import com.ominidevs.operacional.dashboard.projections.ValoresFinanceirosViagem;
-import com.ominidevs.operacional.viagem.services.RentabilidadeService;
 import com.ominidevs.operacional.dashboard.repositories.DashboardRepository;
 import com.ominidevs.operacional.indicadores.dto.UtilizacaoMotoristaResponse;
 import com.ominidevs.operacional.indicadores.model.OrdenacaoUtilizacao;
@@ -60,15 +59,6 @@ public class DashboardService {
         if (valores == null) valores = List.of();
         BigDecimal custoTotal = somarCustos(valores);
         BigDecimal rentabilidadeTotal = rentabilidade(somarReceitas(valores), custoTotal);
-        BigDecimal lucroTotal = BigDecimal.ZERO;
-        long viagensCalculaveis = 0;
-        for (var v : valores) {
-            BigDecimal lucro = RentabilidadeService.calcular(v.receita(), v.custoFrete(), v.pedagio());
-            if (lucro != null) {
-                lucroTotal = lucroTotal.add(lucro);
-                viagensCalculaveis++;
-            }
-        }
         return new MetricasDashboardResponse(
                 resumo.totalViagens(),
                 arredondar(resumo.freteTotal()),
@@ -83,7 +73,7 @@ public class DashboardService {
                 arredondar(custoTotal),
                 mediaPorViagem(custoTotal, resumo.totalViagens()),
                 arredondar(rentabilidadeTotal),
-                viagensCalculaveis == 0 ? null : arredondar(lucroTotal.divide(BigDecimal.valueOf(viagensCalculaveis), 2, RoundingMode.HALF_UP)),
+                mediaPorViagem(rentabilidadeTotal, resumo.totalViagens()),
                 SEM_FONTE_NO_BANCO);
     }
 
