@@ -23,6 +23,7 @@ const respostaCompleta = {
     rentabilidadeTotal: null,
     rentabilidadeMedia: null,
     margem: 55.38,
+    destinoMaisRentavel: { destino: 'São Paulo', viagens: 266, rentabilidadeTotal: 440844.49 },
     taxaOcupacao: null,
   },
   series: { porMes: [], porVeiculo: [] },
@@ -49,6 +50,11 @@ test('envia o periodo na consulta e mapeia as metricas do contrato', async () =>
   assert.equal(dados.metrics.viagensPorMotorista, 2.33);
   assert.equal(dados.metrics.freteTotal, 12345.67);
   assert.equal(dados.metrics.margem, 55.38);
+  assert.deepEqual(dados.metrics.destinoMaisRentavel, {
+    destino: 'São Paulo',
+    viagens: 266,
+    rentabilidadeTotal: 440844.49,
+  });
   assert.deepEqual(dados.metrics.viagensPorStatus, { pendente: 1, emTransito: 2, finalizado: 4 });
 });
 
@@ -76,6 +82,7 @@ test('periodo sem viagens volta como SEM_DADOS com os totais zerados', async () 
       freteTotal: null,
       freteMedio: null,
       margem: null,
+      destinoMaisRentavel: null,
       kmTotal: null,
       motoristasAtivos: 0,
       viagensPorMotorista: null,
@@ -92,6 +99,7 @@ test('periodo sem viagens volta como SEM_DADOS com os totais zerados', async () 
   assert.equal(dados.metrics.viagensPorMotorista, null);
   assert.equal(dados.metrics.freteTotal, null);
   assert.equal(dados.metrics.margem, null);
+  assert.equal(dados.metrics.destinoMaisRentavel, null);
 });
 
 test('resposta fora do contrato nao chega na tela', async () => {

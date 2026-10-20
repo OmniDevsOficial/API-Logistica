@@ -6,6 +6,7 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import com.ominidevs.operacional.dashboard.projections.DestinoRentavel;
 import com.ominidevs.operacional.dashboard.projections.PontoSerie;
 import com.ominidevs.operacional.dashboard.projections.ResumoViagens;
 import com.ominidevs.operacional.dashboard.projections.ValoresFinanceirosViagem;
@@ -245,6 +246,23 @@ class DashboardServiceTest {
         var metricas = service.consultar(periodo).metricas();
 
         assertNull(metricas.viagensPorMotorista());
+    }
+
+    @Test
+    void destinoMaisRentavelRepassaODestinoDoBancoComORendimentoArredondado() {
+        when(repository.consultarDestinoMaisRentavel(periodo)).thenReturn(
+                new DestinoRentavel("São Paulo", 266, new BigDecimal("440844.4900")));
+
+        var destino = service.consultar(periodo).metricas().destinoMaisRentavel();
+
+        assertEquals("São Paulo", destino.destino());
+        assertEquals(266, destino.viagens());
+        assertEquals(new BigDecimal("440844.49"), destino.rentabilidadeTotal());
+    }
+
+    @Test
+    void destinoMaisRentavelFicaNuloQuandoOBancoNaoEncontraDestino() {
+        assertNull(service.consultar(periodo).metricas().destinoMaisRentavel());
     }
 
     @Test

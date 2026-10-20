@@ -11,6 +11,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.SingleConnectionDataSource;
 
+import com.ominidevs.operacional.dashboard.projections.DestinoRentavel;
 import com.ominidevs.operacional.dashboard.projections.PontoSerie;
 import com.ominidevs.operacional.dashboard.projections.ResumoViagens;
 import com.ominidevs.operacional.dashboard.projections.ValoresFinanceirosViagem;
@@ -38,7 +39,8 @@ class DashboardRepositoryTest {
                 CREATE TABLE operacional.viagem (
                     data DATE, motorista TEXT, cpf_motorista TEXT, veiculo TEXT,
                     valor_frete NUMERIC(10,2), km_saida INT, km_chegada INT, status TEXT,
-                    receita_frete NUMERIC(12,2), custo_frete NUMERIC(12,2), pedagio NUMERIC(12,2))
+                    receita_frete NUMERIC(12,2), custo_frete NUMERIC(12,2), pedagio NUMERIC(12,2),
+                    cidade_destino TEXT)
                 """);
         jdbc.execute("""
                 INSERT INTO operacional.viagem VALUES
@@ -122,6 +124,33 @@ class DashboardRepositoryTest {
         assertEquals(3, valores.stream()
                 .filter(v -> v.receita() == null && v.custoFrete() == null && v.pedagio() == null)
                 .count());
+    }
+
+    @Test
+    void destinoMaisRentavelEOQueSomaMaisRentabilidadeNoPeriodoENaoOQueTemMaiorMedia() {
+        jdbc.update("""
+                INSERT INTO operacional.viagem (data, cidade_destino, receita_frete, custo_frete, pedagio) VALUES
+                ('2026-09-02', 'São Paulo', 1000.00, 650.00, 50.00),
+                ('2026-09-03', ' São Paulo ', 800.00, 500.00, NULL),
+                ('2026-09-04', 'Belém', 2000.00, 1450.00, 50.00),
+                ('2026-08-31', 'Manaus', 9000.00, 100.00, 0.00),
+                ('2026-09-05', '   ', 9000.00, 100.00, 0.00)
+                """);
+
+        DestinoRentavel destino = repository.consultarDestinoMaisRentavel(setembro);
+
+        assertEquals("São Paulo", destino.destino());
+        assertEquals(2, destino.viagens());
+        assertEquals(new BigDecimal("600.00"), destino.rentabilidadeTotal());
+    }
+
+    @Test
+    void destinoMaisRentavelFicaNuloQuandoNenhumDestinoTemValorFinanceiro() {
+        jdbc.update("""
+                INSERT INTO operacional.viagem (data, cidade_destino) VALUES ('2026-09-06', 'Recife')
+                """);
+
+        assertNull(repository.consultarDestinoMaisRentavel(setembro));
     }
 
     private long viagensDe(List<PontoSerie> serie, String rotulo) {
