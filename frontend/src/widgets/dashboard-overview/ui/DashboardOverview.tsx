@@ -91,9 +91,9 @@ export function DashboardOverview({ data }: DashboardOverviewProps) {
       </ChartCard>
       <StatCard
         className="lg:col-start-1 lg:row-start-5"
-        title="Fretes"
+        title="Valor dos fretes"
         value={moeda(metrics.freteTotal)}
-        caption="Valor total"
+        caption="No período"
       />
       <StatCard
         className="lg:col-start-2 lg:row-start-5"

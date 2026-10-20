@@ -32,7 +32,7 @@ class DashboardServiceTest {
     private final PeriodoConsulta periodo = PeriodoConsulta.parse("01/09/2026", "30/09/2026");
 
     private static final ResumoViagens RESUMO_VAZIO =
-            new ResumoViagens(0, null, null, null, 0, 0, 0, 0, 0);
+            new ResumoViagens(0, null, null, 0, 0, 0, 0, 0);
 
     @BeforeEach
     void configurar() {
@@ -51,8 +51,10 @@ class DashboardServiceTest {
     @Test
     void montaContratoComResumoSeriesEUtilizacao() {
         when(repository.consultarResumo(periodo)).thenReturn(new ResumoViagens(
-                10, new BigDecimal("2000.00"), new BigDecimal("200.000000000000"),
+                10, new BigDecimal("200.000000000000"),
                 550L, 3, 2, 4, 3, 3));
+        when(repository.consultarValoresFinanceiros(periodo)).thenReturn(List.of(
+                new ValoresFinanceirosViagem(new BigDecimal("2000.00"), null, null)));
         when(repository.consultarSerieMensal(periodo)).thenReturn(List.of(
                 new PontoSerie("09/2026", 10, new BigDecimal("2000.00"))));
         when(repository.consultarSeriePorVeiculo(periodo)).thenReturn(List.of(
@@ -96,7 +98,7 @@ class DashboardServiceTest {
     @Test
     void calculaRentabilidadeDoDashboardComValoresFinanceiros() {
         when(repository.consultarResumo(periodo)).thenReturn(new ResumoViagens(
-                2, null, null, null, 2, 0, 0, 0, 2));
+                2, null, null, 2, 0, 0, 0, 2));
         when(repository.consultarValoresFinanceiros(periodo)).thenReturn(List.of(
                 new ValoresFinanceirosViagem(new BigDecimal("3855.60"), new BigDecimal("2169.73"), new BigDecimal("69.47")),
                 new ValoresFinanceirosViagem(new BigDecimal("2120.58"), new BigDecimal("2129.70"), new BigDecimal("165.87"))));
@@ -124,7 +126,7 @@ class DashboardServiceTest {
     @Test
     void custoMedioDivideOCustoTotalPeloTotalDeViagensDoPeriodo() {
         when(repository.consultarResumo(periodo)).thenReturn(new ResumoViagens(
-                3, null, null, null, 2, 0, 0, 0, 3));
+                3, null, null, 2, 0, 0, 0, 3));
         when(repository.consultarValoresFinanceiros(periodo)).thenReturn(List.of(
                 new ValoresFinanceirosViagem(new BigDecimal("1000.00"), new BigDecimal("600.00"), new BigDecimal("40.00")),
                 new ValoresFinanceirosViagem(null, new BigDecimal("300.00"), null),
@@ -161,7 +163,7 @@ class DashboardServiceTest {
     @Test
     void rentabilidadeMediaDivideARentabilidadeTotalPeloTotalDeViagensDoPeriodo() {
         when(repository.consultarResumo(periodo)).thenReturn(new ResumoViagens(
-                3, null, null, null, 2, 0, 0, 0, 3));
+                3, null, null, 2, 0, 0, 0, 3));
         when(repository.consultarValoresFinanceiros(periodo)).thenReturn(List.of(
                 new ValoresFinanceirosViagem(new BigDecimal("1000.00"), new BigDecimal("600.00"), new BigDecimal("40.00")),
                 new ValoresFinanceirosViagem(null, new BigDecimal("300.00"), null),

@@ -65,7 +65,6 @@ class DashboardRepositoryTest {
         ResumoViagens resumo = repository.consultarResumo(setembro);
 
         assertEquals(4, resumo.totalViagens());
-        assertEquals(new BigDecimal("2000.00"), resumo.freteTotal());
         assertEquals(0, new BigDecimal("500.00").compareTo(resumo.freteMedio()));
         assertEquals(550L, resumo.kmTotal());
         assertEquals(2, resumo.motoristasAtivos());
@@ -81,7 +80,6 @@ class DashboardRepositoryTest {
                 PeriodoConsulta.parse("01/07/2026", "31/07/2026"));
 
         assertEquals(0, resumo.totalViagens());
-        assertNull(resumo.freteTotal());
         assertNull(resumo.freteMedio());
         assertNull(resumo.kmTotal());
         assertEquals(0, resumo.motoristasAtivos());
