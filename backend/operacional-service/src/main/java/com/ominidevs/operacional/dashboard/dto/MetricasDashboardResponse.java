@@ -8,6 +8,7 @@ public record MetricasDashboardResponse(
         BigDecimal freteMedio,
         Long kmTotal,
         long motoristasAtivos,
+        BigDecimal viagensPorMotorista,
         long veiculosUtilizados,
         ViagensPorStatusResponse viagensPorStatus,
         BigDecimal custoTotal,

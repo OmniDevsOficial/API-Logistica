@@ -66,6 +66,7 @@ public class DashboardService {
                 arredondar(resumo.freteMedio()),
                 resumo.kmTotal(),
                 resumo.motoristasAtivos(),
+                viagensPorMotorista(resumo.totalViagens(), resumo.motoristasAtivos()),
                 resumo.veiculosUtilizados(),
                 new ViagensPorStatusResponse(
                         resumo.viagensPendentes(),
@@ -101,6 +102,11 @@ public class DashboardService {
     private BigDecimal rentabilidade(BigDecimal receitaTotal, BigDecimal custoTotal) {
         if (receitaTotal == null && custoTotal == null) return null;
         return zeroSeNulo(receitaTotal).subtract(zeroSeNulo(custoTotal));
+    }
+
+    private BigDecimal viagensPorMotorista(long totalViagens, long motoristasAtivos) {
+        if (motoristasAtivos == 0) return null;
+        return BigDecimal.valueOf(totalViagens).divide(BigDecimal.valueOf(motoristasAtivos), 2, RoundingMode.HALF_UP);
     }
 
     private BigDecimal margem(BigDecimal rentabilidadeTotal, BigDecimal receitaTotal) {
