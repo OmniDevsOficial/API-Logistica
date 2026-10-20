@@ -120,6 +120,21 @@ class DashboardServiceTest {
     }
 
     @Test
+    void custoMedioDivideOCustoTotalPeloTotalDeViagensDoPeriodo() {
+        when(repository.consultarResumo(periodo)).thenReturn(new ResumoViagens(
+                3, null, null, null, 2, 0, 0, 0, 3));
+        when(repository.consultarValoresFinanceiros(periodo)).thenReturn(List.of(
+                new ValoresFinanceirosViagem(new BigDecimal("1000.00"), new BigDecimal("600.00"), new BigDecimal("40.00")),
+                new ValoresFinanceirosViagem(null, new BigDecimal("300.00"), null),
+                new ValoresFinanceirosViagem(new BigDecimal("400.00"), null, null)));
+
+        var metricas = service.consultar(periodo).metricas();
+
+        assertEquals(new BigDecimal("940.00"), metricas.custoTotal());
+        assertEquals(new BigDecimal("313.33"), metricas.custoMedio());
+    }
+
+    @Test
     void periodoSemViagensRetornaSemDadosENaoZeraOsValores() {
         var resultado = service.consultar(periodo);
 
