@@ -75,6 +75,7 @@ public class DashboardService {
                 mediaPorViagem(custoTotal, resumo.totalViagens()),
                 arredondar(rentabilidadeTotal),
                 mediaPorViagem(rentabilidadeTotal, resumo.totalViagens()),
+                margem(rentabilidadeTotal, receitaTotal),
                 SEM_FONTE_NO_BANCO);
     }
 
@@ -100,6 +101,11 @@ public class DashboardService {
     private BigDecimal rentabilidade(BigDecimal receitaTotal, BigDecimal custoTotal) {
         if (receitaTotal == null && custoTotal == null) return null;
         return zeroSeNulo(receitaTotal).subtract(zeroSeNulo(custoTotal));
+    }
+
+    private BigDecimal margem(BigDecimal rentabilidadeTotal, BigDecimal receitaTotal) {
+        if (rentabilidadeTotal == null || receitaTotal == null || receitaTotal.signum() == 0) return null;
+        return rentabilidadeTotal.multiply(BigDecimal.valueOf(100)).divide(receitaTotal, 2, RoundingMode.HALF_UP);
     }
 
     private BigDecimal mediaPorViagem(BigDecimal total, long totalViagens) {

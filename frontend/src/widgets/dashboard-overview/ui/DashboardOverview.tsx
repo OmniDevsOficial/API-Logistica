@@ -83,6 +83,12 @@ export function DashboardOverview({ data }: DashboardOverviewProps) {
         value={SEM_DADO}
         caption="Média"
       />
+      <StatCard
+        className="lg:col-start-2 lg:row-start-4"
+        title="Margem"
+        value={porcentagem(metrics.margem)}
+        caption="Rentabilidade sobre o valor dos fretes"
+      />
       <ChartCard
         title="Utilização média da frota"
         className="sm:col-span-2 lg:col-start-3 lg:col-span-2 lg:row-start-4 lg:row-span-2"

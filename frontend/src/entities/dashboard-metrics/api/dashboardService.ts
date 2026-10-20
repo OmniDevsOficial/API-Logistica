@@ -72,6 +72,7 @@ function mapearMetricas(dados: unknown): DashboardMetrics {
     custoMedio: numeroOuNulo(metricas.custoMedio),
     rentabilidadeTotal: numeroOuNulo(metricas.rentabilidadeTotal),
     rentabilidadeMedia: numeroOuNulo(metricas.rentabilidadeMedia),
+    margem: numeroOuNulo(metricas.margem),
     taxaOcupacao: numeroOuNulo(metricas.taxaOcupacao),
   };
 }

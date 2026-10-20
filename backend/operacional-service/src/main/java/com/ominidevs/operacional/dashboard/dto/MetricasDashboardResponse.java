@@ -14,4 +14,5 @@ public record MetricasDashboardResponse(
         BigDecimal custoMedio,
         BigDecimal rentabilidadeTotal,
         BigDecimal rentabilidadeMedia,
+        BigDecimal margem,
         BigDecimal taxaOcupacao) {}
