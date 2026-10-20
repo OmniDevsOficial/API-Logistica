@@ -21,6 +21,7 @@ const respostaCompleta = {
     custoMedio: null,
     rentabilidadeTotal: null,
     rentabilidadeMedia: null,
+    margem: 55.38,
     taxaOcupacao: null,
   },
   series: { porMes: [], porVeiculo: [] },
@@ -45,6 +46,7 @@ test('envia o periodo na consulta e mapeia as metricas do contrato', async () =>
   assert.equal(dados.metrics.totalViagens, 7);
   assert.equal(dados.metrics.motoristasAtivos, 3);
   assert.equal(dados.metrics.freteTotal, 12345.67);
+  assert.equal(dados.metrics.margem, 55.38);
   assert.deepEqual(dados.metrics.viagensPorStatus, { pendente: 1, emTransito: 2, finalizado: 4 });
 });
 
@@ -71,6 +73,7 @@ test('periodo sem viagens volta como SEM_DADOS com os totais zerados', async () 
       totalViagens: 0,
       freteTotal: null,
       freteMedio: null,
+      margem: null,
       kmTotal: null,
       motoristasAtivos: 0,
       veiculosUtilizados: 0,
@@ -84,6 +87,7 @@ test('periodo sem viagens volta como SEM_DADOS com os totais zerados', async () 
   assert.equal(dados.metrics.totalViagens, 0);
   assert.equal(dados.metrics.motoristasAtivos, 0);
   assert.equal(dados.metrics.freteTotal, null);
+  assert.equal(dados.metrics.margem, null);
 });
 
 test('resposta fora do contrato nao chega na tela', async () => {
