@@ -7,9 +7,16 @@
   Sistema para consumir dados e visualizar informações, proporcionando uma análise objetiva e apoiando a tomada de decisões.
 </div>
 <div align="center">
-                                                                                                                                                                                                                               
-
-<a href="#problema">Problema</a> • <a href="#solucao">Solução</a> • <a href="#backlog">Backlog</a> • <a href="#cronograma">Cronograma de Sprints</a> • <a href="#definition-of-ready-dor">DoR</a> • <a href="#definition-of-done-dod">DoD</a> • <a href="#tecnologias">Tecnologias</a> • <a href="#estrutura-do-projeto">Estrutura do projeto</a> • <a href="#fluxo-de-trabalho">Fluxo de Trabalho</a> • <a href="#manual-de-instalacao">Manual de instalação</a> • <a href="#equipe">Equipe</a>
+<a 
+href="#problema">Problema</a> • <a 
+href="#solucao">Solução</a> • <a 
+href="#backlog">Backlog</a> • <a 
+href="#cronograma">Cronograma de Sprints</a> • <a 
+href="#definition-of-ready-dor">DoR</a> • <a href="#definition-of-done-dod">DoD</a> • <a 
+href="#tecnologias">Tecnologias</a> • <a 
+href="#estrutura-do-projeto">Estrutura do projeto</a> • <a href="#fluxo-de-trabalho">Fluxo de Trabalho</a> • <a 
+href="#manuais">Manuais</a> • <a 
+href="#equipe">Equipe</a>
 </div>
 
 
@@ -49,8 +56,8 @@ Parceiro: Newelog
 
 | Sprint | Período | Documentação | Status | Vídeo |
 |:---:|:---:|:---:|:---:|:---:|
-| **SPRINT 1** | 07/09 - 27/09 | [Sprint 1 docs](docs/sprints/sprint-1.md) | 🟡 Em andamento | [🎥 Assistir](https://youtu.be/VLJHqNIcwLM) |
-| **SPRINT 2** | 05/10 - 25/10 | [Sprint 2 docs](docs/sprints/sprint-2.md) | ⚪ Não iniciada | |
+| **SPRINT 1** | 07/09 - 27/09 | [Sprint 1 docs](docs/sprints/sprint-1.md) | 🟢 Concluído | [🎥 Assistir](https://youtu.be/VLJHqNIcwLM) |
+| **SPRINT 2** | 05/10 - 25/10 | [Sprint 2 docs](docs/sprints/sprint-2.md) | 🟡 Em andamento | |
 | **SPRINT 3** | 02/11 - 22/11 | [Sprint 3 docs](docs/sprints/sprint-3.md) | ⚪ Não iniciada | |
 
 ### 📋Definition of Ready (DoR) <a id="definition-of-ready-dor"></a>
@@ -127,79 +134,22 @@ Parceiro: Newelog
           2 desenvolva e faça commits
 ```
 
-## ⚙️ Manual de Instalação <a id="manual-de-instalacao"></a>
+## 📚 Manuais <a id="manuais"></a>
+Documentação do produto destinada ao cliente.
+- [Manual de Instalação](docs/manuais/manual-instalacao.md):
+  instruções para configurar o ambiente e executar a aplicação.
 
-### 📌 Pré-requisitos
-
-| Ferramenta | Versão mínima | Descrição |
-| :--- | :---: | :--- |
-| **Git** | 2.x | Clonar o repositório |
-| **Docker** | 24.x | Rodar os containers |
-| **Docker Compose** | 2.x | Orquestrar os serviços |
-
-
-### 1️⃣ Clonar o repositório
-
-```bash
-git clone https://github.com/OmniDevsOficial/API-Logistica.git
-cd API-Logistica
-```
-
-### 2️⃣ Configurar variáveis de ambiente
-
-```bash
-# Linux / macOS
-cp .env.example .env
-```
-
-```powershell
-# Windows (PowerShell)
-Copy-Item .env.example .env
-```
-
-Edite o arquivo `.env` gerado com os valores desejados, por exemplo:
-
-```env
-POSTGRES_DB=newelog_db
-POSTGRES_USER=newelog_app
-POSTGRES_PASSWORD=newelog_app
-```
-
-### 3️⃣ Subir os containers
-
-```bash
-docker compose up --build
-```
-
-### 4️⃣ Acessar os serviços
-
-Após todos os containers estarem rodando, acesse:
-
-| Serviço | URL | Descrição |
-| :--- | :--- | :--- |
-| Frontend | http://localhost:3000 | Interface web (React + Vite) |
-| Operacional API | http://localhost:8081 | Microsserviço operacional (Spring Boot) |
-| Relatório API | http://localhost:8082 | Microsserviço de relatórios (Spring Boot) |
-| PostgreSQL | localhost:5433 | Banco de dados (acesso via pgAdmin, DBeaver, etc.) |
-
-### 5️⃣ Parar os containers
-
-```bash
-# Parar os containers (mantém os dados do banco)
-docker compose down
-
-# Parar e remover os volumes (apaga os dados do banco)
-docker compose down -v
-```
-
+- [Manual do Usuário](docs/manuais/manual-usuario.md):
+  instruções para utilizar as funcionalidades da plataforma.
+  
 ## 👥 **Equipe** <a id="equipe"></a>
 
 | Foto | Nome | Função | GitHub |
 | :---: | :--- | :--- | :---: |
 | <img src="https://github.com/Marcio-gustavoI.png" width=50px alt="Foto do Márcio"> | **Márcio Inocêncio** | Product Owner | <a href="https://github.com/Marcio-gustavoI"><img src="https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white"></a> |
-| <img src="https://github.com/Viniciuss-Moreira.png" width=50px alt="Foto do Vinicius"> | **Vinicius Moreira** | Scrum Master | <a href="https://github.com/Viniciuss-Moreira"><img src="https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white"></a> |
+| <img src="https://github.com/DeveloperCorsair.png" width=50px alt="Foto do Henrique"> | **Henrique Martins** | Scrum Master | <a href="https://github.com/DeveloperCorsair"><img src="https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white"></a> |
+| <img src="https://github.com/Viniciuss-Moreira.png" width=50px alt="Foto do Vinicius"> | **Vinicius Moreira** | Desenvolvedor | <a href="https://github.com/Viniciuss-Moreira"><img src="https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white"></a> |
 | <img src="https://github.com/hiGuigo.png" width=50px alt="Foto do Guilherme"> | **Guilherme Alvarenga** | Desenvolvedor | <a href="https://github.com/hiGuigo"><img src="https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white"></a> |
-| <img src="https://github.com/DeveloperCorsair.png" width=50px alt="Foto do Henrique"> | **Henrique Martins** | Desenvolvedor | <a href="https://github.com/DeveloperCorsair"><img src="https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white"></a> |
 | <img src="https://github.com/pedrodevroot.png" width=50px alt="Foto do Pedro"> | **Pedro Lucas** | Desenvolvedor | <a href="https://github.com/pedrodevroot"><img src="https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white"></a> |
 | <img src="https://github.com/ThOMaZMe11o.png" width=50px alt="Foto do Thomaz"> | **Thomaz De Mello** | Desenvolvedor | <a href="https://github.com/ThOMaZMe11o"><img src="https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white"></a> |
 | <img src="https://github.com/Yuri-Dev-OH.png" width=50px alt="Foto do Yuri"> | **Yuri Gonçalves** | Desenvolvedor | <a href="https://github.com/Yuri-Dev-OH"><img src="https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white"></a> |
