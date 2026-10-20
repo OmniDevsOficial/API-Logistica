@@ -1,4 +1,4 @@
-<h1 align="center"> Documentação da Sprint 2 </h1>
+<h1 align="center"> Documentação do Produto da Sprint 2 </h1>
 
 <div align="center">
    <img src="https://i.imgur.com/VbBN3Tk.jpeg" width="170x" height="170x" style="border-radius:20%;">
@@ -6,8 +6,9 @@
 
 <p align="center">|
   <a href="#sprint-2-meta"> Metas Sprint 2 </a> |
-  <a href="#sprint-2"> Sprint 2 </a> |
+  <a href="#backlog-sprint-2"> Backlog da Sprint 2 </a> |
   <a href="#documentos"> Documentos </a> |
+  <a href="#link-do-Video"> Link do Vídeo </a> |
   <a href="#equipe"> Equipe </a> |
 </p>
 
@@ -17,29 +18,35 @@
 | :---------: | :---------: |
 | 05/10 - 25/10 | 🟡 Em andamento |
 
-### 🎯 Metas da Sprint 2 <a id="sprint-2-meta"></a>
+## 🎯 Metas da Sprint 2 <a id="sprint-2-meta"></a>
 
 | Foco | User Story Meta |
 | :---: | :--- |
-| 🥇 | **US8:** Como gestor, quero registrar frete e custos de cada viagem, para calcular a rentabilidade. |
-| 🥈 | **US9:** Como gestor, quero visualizar a rentabilidade média por viagem de cada motorista, para comparar desempenho. |
+| 🥇 | **US08:** Como gestor, quero registrar frete e custos de cada viagem, para calcular a rentabilidade. |
+| 🥈 | **US09:** Como gestor, quero visualizar a rentabilidade média por viagem de cada motorista, para comparar desempenho. |
 
-<br>
 
-## Sprint 2 <a id="sprint-2"></a>
+## 📋 Backlog da Sprint 2 <a id="backlog-sprint-2"></a>
 
 | Rank | ID | Prioridade | User Story | Estimativa |
 | :---: | :---: | :---: | :--- | :---: |
-| 🎗 1 | US8 | Média | Como gestor, quero registrar frete e custos de cada viagem, para calcular a rentabilidade. | 5 |
-| 🎗 2 | US9 | Média | Como gestor, quero visualizar a rentabilidade média por viagem de cada motorista, para comparar desempenho. | 4 |
-| 🎗 3 | US5 | Média | Como operador, quero ver em uma tela única quais motoristas estão disponíveis, para direcionar novas viagens rapidamente. | 4 |
-| 🎗 4 | US7 | Média | Como gestor, quero receber um alerta de motoristas com baixa utilização no mês, para agir sobre ociosidade. | 5 |
-| 🎗 5 | US10 | Média | Como gestor, quero ver quanto cada motorista recebeu no mês, para controle de pagamento. | 3 |
+| 🎗 1 | US08 | Média | Como gestor, quero registrar frete e custos de cada viagem, para calcular a rentabilidade. | 5 |
+| 🎗 2 | US09 | Média | Como gestor, quero visualizar a rentabilidade média por viagem de cada motorista, para comparar desempenho. | 4 |
+| 🎗 3 | US05 | Média | Como operador, quero ver em uma tela única quais motoristas estão disponíveis, para direcionar novas viagens rapidamente. | 4 |
+| 🎗 4 | US15 | Média | Como gestor, quero realizar login seguro na plataforma, para garantir a segurança dos dados no sistema. | 3 |
+| 🎗 5 | US16 | Média | Como gestor, quero ver na tela dashboard apenas os dados considerados essências, para garantir uma visão clara e objetiva. | 3 |
+| 🎗 6 | US07 | Média | Como gestor, quero receber um alerta de motoristas com baixa utilização no mês, para agir sobre ociosidade. | 5 |
+| 🎗 7 | US14 | Baixa | Como gestor, quero identificar as rotas mais concorridas do mês, para criar campanhas de engajamento de motoristas. | 4 |
 
 ## 📂 Documentos e anexos <a id="documentos"></a>
 
-- [Cenários de User Stories](../documentacao/Cenarios_sprint1.pdf)
-- [Backlog completo](../documentacao/Backlog.pdf)
+- [Cenários de User Stories](../documentacao-produto/Cenarios_sprint1.pdf)
+- [Backlog completo](../documentacao-produto/Backlog.pdf)
+
+## 🎥 Link do Vídeo <a id="link-do-Video"></a>
+Neste vídeo é mostrado todo o desenvolvimento da <strong>*Plataforma de Controle de Motoristas Agregados*</strong>, feito pela equipe <strong>*OmniDevs*</strong> ao decorrer do ciclo da 2°(primeira) Sprint.
+
+<a href="#"><img src="https://img.shields.io/badge/YouTube-FF0000?style=for-the-badge&logo=youtube&logoColor=white"/></a> 
 
 ## 👥 **Equipe** <a id="equipe"></a>
 
