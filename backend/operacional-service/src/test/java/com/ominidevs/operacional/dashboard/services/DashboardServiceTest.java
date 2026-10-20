@@ -198,6 +198,39 @@ class DashboardServiceTest {
     }
 
     @Test
+    void margemDivideARentabilidadeTotalPeloValorDosFretesEmPorcentagem() {
+        when(repository.consultarValoresFinanceiros(periodo)).thenReturn(List.of(
+                new ValoresFinanceirosViagem(new BigDecimal("1000.00"), new BigDecimal("600.00"), new BigDecimal("40.00")),
+                new ValoresFinanceirosViagem(null, new BigDecimal("300.00"), null),
+                new ValoresFinanceirosViagem(new BigDecimal("400.00"), null, null)));
+
+        var metricas = service.consultar(periodo).metricas();
+
+        assertEquals(new BigDecimal("32.86"), metricas.margem());
+    }
+
+    @Test
+    void margemFicaNegativaQuandoOCustoPassaAReceita() {
+        when(repository.consultarValoresFinanceiros(periodo)).thenReturn(List.of(
+                new ValoresFinanceirosViagem(new BigDecimal("500.00"), new BigDecimal("700.00"), new BigDecimal("50.00"))));
+
+        var metricas = service.consultar(periodo).metricas();
+
+        assertEquals(new BigDecimal("-50.00"), metricas.margem());
+    }
+
+    @Test
+    void margemFicaNulaSemValorDosFretesParaDividir() {
+        when(repository.consultarValoresFinanceiros(periodo)).thenReturn(List.of(
+                new ValoresFinanceirosViagem(null, new BigDecimal("300.00"), new BigDecimal("10.00")),
+                new ValoresFinanceirosViagem(new BigDecimal("0.00"), new BigDecimal("100.00"), null)));
+
+        var metricas = service.consultar(periodo).metricas();
+
+        assertNull(metricas.margem());
+    }
+
+    @Test
     void periodoSemViagensRetornaSemDadosENaoZeraOsValores() {
         var resultado = service.consultar(periodo);
 
