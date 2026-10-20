@@ -1,4 +1,4 @@
-<h1 align="center"> Documentação da Sprint 3 </h1>
+<h1 align="center"> Documentação do Produto da Sprint 3 </h1>
 
 <div align="center">
     <img src="https://i.imgur.com/VbBN3Tk.jpeg" width="170x" height="170x" style="border-radius:20%;">
@@ -6,8 +6,9 @@
 
 <p align="center">|
   <a href="#sprint-3-meta"> Metas Sprint 3 </a> |
-  <a href="#sprint-3"> Sprint 3 </a> |
+  <a href="#backlog-sprint-3"> Backlog da Sprint 3 </a> |
   <a href="#documentos"> Documentos </a> |
+  <a href="#link-do-Video"> Link do Vídeo </a> |
   <a href="#equipe"> Equipe </a> |
 </p>
 
@@ -17,28 +18,31 @@
 | :---------: | :---------: |
 | 02/11 - 22/11 | ⚪ Não iniciada |
 
-### 🎯 Metas da Sprint 3 <a id="sprint-3-meta"></a>
+## 🎯 Metas da Sprint 3 <a id="sprint-3-meta"></a>
 
 | Foco | User Story Meta |
 | :---: | :--- |
 | 🥇 | **US13:** Como gestor, quero um ranking mensal de motoristas, para identificar os melhores resultados. |
 | 🥈 | **US14:** Como gestor, quero identificar as rotas mais concorridas do mês, para criar campanhas de engajamento de motoristas. |
 
-<br>
-
-## Sprint 3 <a id="sprint-3"></a>
+## 📋 Backlog da Sprint 3 <a id="backlog-sprint-3"></a>
 
 | Rank | ID | Prioridade | User Story | Estimativa |
 | :---: | :---: | :---: | :--- | :---: |
-| 🎗 1 | US11 | Média | Como gestor, quero comparar a rentabilidade entre tipos de veículo, para decisões estratégicas de frota. | 3 |
-| 🎗 2 | US13 | Baixa | Como gestor, quero um ranking mensal de motoristas, para identificar os melhores resultados. | 4 |
-| 🎗 3 | US14 | Baixa | Como gestor, quero identificar as rotas mais concorridas do mês, para criar campanhas de engajamento de motoristas. | 3 |
+| 🎗 1 | US11 | Média | Como gestor, quero comparar a rentabilidade entre tipos de veículo, para decisões estratégicas de frota. | 5 |
+| 🎗 2 | US10 | Média | Como gestor, quero ver quanto cada motorista recebeu no mês, para controle de pagamento. | 3 |
+| 🎗 3 | US13 | Baixa | Como gestor, quero um ranking mensal de motoristas, para identificar os melhores resultados. | 4 |
 | 🎗 4 | US12 | Baixa | Como gestor, quero segmentar indicadores por gênero do motorista, para análise de diversidade da frota. | 3|
 
 ## 📂 Documentos e anexos <a id="documentos"></a>
 
 - [Cenários de User Stories](../documentacao/Cenarios_sprint1.pdf)
 - [Backlog completo](../documentacao/Backlog.pdf)
+
+## 🎥 Link do Vídeo <a id="link-do-Video"></a>
+Neste vídeo é mostrado todo o desenvolvimento da <strong>*Plataforma de Controle de Motoristas Agregados*</strong>, feito pela equipe <strong>*OmniDevs*</strong> ao decorrer do ciclo da 3°(primeira) Sprint.
+
+<a href="#"><img src="https://img.shields.io/badge/YouTube-FF0000?style=for-the-badge&logo=youtube&logoColor=white"/></a> 
 
 ## 👥 **Equipe** <a id="equipe"></a>
 
