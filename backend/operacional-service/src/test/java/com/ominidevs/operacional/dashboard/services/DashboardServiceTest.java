@@ -135,6 +135,28 @@ class DashboardServiceTest {
     }
 
     @Test
+    void rentabilidadeTotalSubtraiOCustoTotalDaReceitaDeTodasAsViagensContandoCampoVazioComoZero() {
+        when(repository.consultarValoresFinanceiros(periodo)).thenReturn(List.of(
+                new ValoresFinanceirosViagem(new BigDecimal("1000.00"), new BigDecimal("600.00"), new BigDecimal("40.00")),
+                new ValoresFinanceirosViagem(null, new BigDecimal("300.00"), null),
+                new ValoresFinanceirosViagem(new BigDecimal("400.00"), null, null)));
+
+        var metricas = service.consultar(periodo).metricas();
+
+        assertEquals(new BigDecimal("460.00"), metricas.rentabilidadeTotal());
+    }
+
+    @Test
+    void rentabilidadeTotalPodeSerNegativaQuandoOCustoPassaAReceita() {
+        when(repository.consultarValoresFinanceiros(periodo)).thenReturn(List.of(
+                new ValoresFinanceirosViagem(new BigDecimal("500.00"), new BigDecimal("700.00"), new BigDecimal("50.00"))));
+
+        var metricas = service.consultar(periodo).metricas();
+
+        assertEquals(new BigDecimal("-250.00"), metricas.rentabilidadeTotal());
+    }
+
+    @Test
     void periodoSemViagensRetornaSemDadosENaoZeraOsValores() {
         var resultado = service.consultar(periodo);
 
