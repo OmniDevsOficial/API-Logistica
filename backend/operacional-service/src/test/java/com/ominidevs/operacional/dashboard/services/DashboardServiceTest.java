@@ -265,6 +265,30 @@ class DashboardServiceTest {
     }
 
     @Test
+    void ticketMedioDivideOValorDosFretesPeloTotalDeViagensContandoReceitaVaziaComoZero() {
+        when(repository.consultarResumo(periodo)).thenReturn(new ResumoViagens(
+                3, null, 2, 0, 0, 0, 3));
+        when(repository.consultarValoresFinanceiros(periodo)).thenReturn(List.of(
+                new ValoresFinanceirosViagem(new BigDecimal("1000.00"), new BigDecimal("600.00"), new BigDecimal("40.00")),
+                new ValoresFinanceirosViagem(null, new BigDecimal("300.00"), null),
+                new ValoresFinanceirosViagem(new BigDecimal("400.00"), null, null)));
+
+        var metricas = service.consultar(periodo).metricas();
+
+        assertEquals(new BigDecimal("466.67"), metricas.freteMedio());
+    }
+
+    @Test
+    void ticketMedioFicaNuloQuandoNenhumaViagemTemReceita() {
+        when(repository.consultarResumo(periodo)).thenReturn(new ResumoViagens(
+                1, null, 1, 0, 0, 0, 1));
+        when(repository.consultarValoresFinanceiros(periodo)).thenReturn(List.of(
+                new ValoresFinanceirosViagem(null, new BigDecimal("300.00"), new BigDecimal("10.00"))));
+
+        assertNull(service.consultar(periodo).metricas().freteMedio());
+    }
+
+    @Test
     void periodoSemViagensRetornaSemDadosENaoZeraOsValores() {
         var resultado = service.consultar(periodo);
 
