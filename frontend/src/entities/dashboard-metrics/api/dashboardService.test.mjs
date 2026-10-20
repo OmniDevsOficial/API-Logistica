@@ -49,6 +49,7 @@ test('envia o periodo na consulta e mapeia as metricas do contrato', async () =>
   assert.equal(dados.metrics.motoristasAtivos, 3);
   assert.equal(dados.metrics.viagensPorMotorista, 2.33);
   assert.equal(dados.metrics.freteTotal, 12345.67);
+  assert.equal(dados.metrics.freteMedio, 1763.67);
   assert.equal(dados.metrics.margem, 55.38);
   assert.deepEqual(dados.metrics.destinoMaisRentavel, {
     destino: 'São Paulo',
@@ -98,6 +99,7 @@ test('periodo sem viagens volta como SEM_DADOS com os totais zerados', async () 
   assert.equal(dados.metrics.motoristasAtivos, 0);
   assert.equal(dados.metrics.viagensPorMotorista, null);
   assert.equal(dados.metrics.freteTotal, null);
+  assert.equal(dados.metrics.freteMedio, null);
   assert.equal(dados.metrics.margem, null);
   assert.equal(dados.metrics.destinoMaisRentavel, null);
 });
