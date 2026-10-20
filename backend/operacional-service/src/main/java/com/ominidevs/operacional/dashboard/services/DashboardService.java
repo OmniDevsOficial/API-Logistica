@@ -58,13 +58,12 @@ public class DashboardService {
     private MetricasDashboardResponse converterMetricas(ResumoViagens resumo, PeriodoConsulta periodo) {
         var valores = repository.consultarValoresFinanceiros(periodo);
         if (valores == null) valores = List.of();
-        BigDecimal custoCalculavel = BigDecimal.ZERO;
+        BigDecimal custoTotal = somarCustos(valores);
         BigDecimal lucroTotal = BigDecimal.ZERO;
         long viagensCalculaveis = 0;
         for (var v : valores) {
             BigDecimal lucro = RentabilidadeService.calcular(v.receita(), v.custoFrete(), v.pedagio());
             if (lucro != null) {
-                custoCalculavel = custoCalculavel.add(v.custoFrete()).add(v.pedagio());
                 lucroTotal = lucroTotal.add(lucro);
                 viagensCalculaveis++;
             }
@@ -80,8 +79,8 @@ public class DashboardService {
                         resumo.viagensPendentes(),
                         resumo.viagensEmTransito(),
                         resumo.viagensFinalizadas()),
-                arredondar(somarCustos(valores)),
-                viagensCalculaveis == 0 ? null : arredondar(custoCalculavel.divide(BigDecimal.valueOf(viagensCalculaveis), 2, RoundingMode.HALF_UP)),
+                arredondar(custoTotal),
+                mediaPorViagem(custoTotal, resumo.totalViagens()),
                 viagensCalculaveis == 0 ? null : arredondar(lucroTotal),
                 viagensCalculaveis == 0 ? null : arredondar(lucroTotal.divide(BigDecimal.valueOf(viagensCalculaveis), 2, RoundingMode.HALF_UP)),
                 SEM_FONTE_NO_BANCO);
@@ -95,6 +94,11 @@ public class DashboardService {
             total = base.add(zeroSeNulo(v.custoFrete())).add(zeroSeNulo(v.pedagio()));
         }
         return total;
+    }
+
+    private BigDecimal mediaPorViagem(BigDecimal total, long totalViagens) {
+        if (total == null || totalViagens == 0) return null;
+        return total.divide(BigDecimal.valueOf(totalViagens), 2, RoundingMode.HALF_UP);
     }
 
     private BigDecimal zeroSeNulo(BigDecimal valor) {
