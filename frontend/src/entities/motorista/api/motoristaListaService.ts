@@ -1,3 +1,4 @@
+import { apiFetch } from "../../../shared/api/apiFetch.ts";
 import type { MotoristaEquipe, StatusEquipe } from "../model/types";
 
 const ENDPOINT = "/api/operacional/motoristas";
@@ -93,7 +94,7 @@ export async function buscarMotoristas(
   signal?: AbortSignal,
 ): Promise<MotoristaEquipe[]> {
   const query = filtro ? `?status=${STATUS_BACKEND[filtro]}` : "";
-  const resposta = await fetch(`${ENDPOINT}${query}`, { signal });
+  const resposta = await apiFetch(`${ENDPOINT}${query}`, { signal });
 
   if (!resposta.ok) {
     throw new Error("Não foi possível carregar os motoristas.");
