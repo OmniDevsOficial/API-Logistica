@@ -8,7 +8,6 @@ import java.util.List;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.condition.EnabledIfEnvironmentVariable;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.SingleConnectionDataSource;
 
@@ -20,7 +19,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@EnabledIfEnvironmentVariable(named = "INDICADORES_TEST_URL", matches = ".+")
 class DashboardRepositoryTest {
 
     private final PeriodoConsulta setembro = PeriodoConsulta.parse("01/09/2026", "30/09/2026");
@@ -30,8 +28,7 @@ class DashboardRepositoryTest {
 
     @BeforeEach
     void preparar() throws Exception {
-        connection = DriverManager.getConnection(System.getenv("INDICADORES_TEST_URL"),
-                System.getenv("INDICADORES_TEST_USER"), System.getenv("INDICADORES_TEST_PASSWORD"));
+        connection = DriverManager.getConnection("jdbc:tc:postgresql:17-alpine:///dashboard");
         connection.setAutoCommit(false);
         var jdbc = new JdbcTemplate(new SingleConnectionDataSource(connection, true));
         jdbc.execute("CREATE SCHEMA operacional");
