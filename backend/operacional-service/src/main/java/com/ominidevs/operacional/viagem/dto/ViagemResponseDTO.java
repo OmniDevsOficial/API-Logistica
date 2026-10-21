@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 
 public record ViagemResponseDTO(
         Integer id,
+        String manifesto,
         String origem,
         String destino,
         BigDecimal freteEstimado,
