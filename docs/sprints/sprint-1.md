@@ -5,390 +5,146 @@
 </div>
 
 <p align="center">|
-  <a href="#visao geral"> Visão Geral </a> |
-  <a href="#sprint-1-meta"> Metas Sprint 1 </a> |
-  <a href="#backlog-sprint-1"> Backlog da Sprint 1 </a> |
+  <a href="#visao-geral"> Visão Geral </a> |
+  <a href="#sprint-1-meta"> Metas </a> |
+  <a href="#backlog-sprint-1"> Backlog </a> |
+  <a href="#desenvolvimento"> Desenvolvimento </a> |
+  <a href="#retrospectiva"> Retrospectiva </a> |
   <a href="#documentos"> Documentos </a> |
-  <a href="#link-do-Video"> Link do Vídeo </a> |
+  <a href="#link-do-Video"> Vídeo </a> |
   <a href="#equipe"> Equipe </a> |
 </p>
 
 ## Visão geral <a id="visao-geral"></a>
 
-A Sprint 1 concentrou-se em conectar as funcionalidades operacionais do
-sistema logístico ao dashboard: importação de manifestos, consulta e
-filtragem de viagens, indicadores por motorista e integração do
-dashboard com o backend.
-
-<!-- As subtarefas listadas neste relatório aparecem como **Concluído** no
-Jira. O material fornecido contém os objetivos e critérios de aceite das
-issues, mas não inclui logs de execução, resultados individuais dos
-testes automatizados, capturas de tela ou links para pull requests. Por
-isso, o status registrado no Jira é apresentado como situação da tarefa;
-não se afirma que evidências técnicas não fornecidas tenham sido
-verificadas independentemente. -->
-
+A Sprint 1 concentrou-se em conectar as funcionalidades operacionais do sistema logístico ao dashboard: importação de manifestos, consulta e filtragem de viagens, indicadores por motorista e integração do dashboard com o backend.
 
 ## 📅 Cronograma da Sprint
 
 | Período | Status |
 | :---------: | :---------: |
-| 07/09 - 27/09 | 🟢 Concluído |
+| 07/09 - 27/09 | 🟢 Encerrada (com pendências, ver [Retrospectiva](#retrospectiva)) |
 
 ## 🎯 Metas da Sprint 1 <a id="sprint-1-meta"></a>
 
 | Foco | User Story Meta |
 | :---: | :--- |
-| 🥇 | **US01:**  Como operador, quero exportar a planilha da análise obtida e importá-la no sistema, para não perder o fluxo já usado. |
+| 🥇 | **US01:** Como operador, quero exportar a planilha da análise obtida e importá-la no sistema, para não perder o fluxo já usado. |
 | 🥈 | **US02:** Como operador, quero importar o relatório de manifesto para popular viagens automaticamente. |
 
 ## 📋 Backlog da Sprint 1 <a id="backlog-sprint-1"></a>
 
-| Rank | ID | Prioridade | User Story | Estimativa |
-| :---: | :---: | :---: | :--- | :---: |
-| 🎗 1 | US01 | Alta | Como operador, quero exportar a planilha da análise obtida e importá-la no sistema, para não perder o fluxo já usado. | 4 |
-| 🎗 2 | US02 | Alta | Como operador, quero importar o relatório de manifesto para popular viagens automaticamente. | 4 |
-| 🎗 3 | US04 | Alta |  Como operador, quero filtrar viagens por destino/região, para entender a demanda por rota. | 4 |
-| 🎗 4 | US06 | Alta | Como operador, quero ver a % de utilização de cada motorista, para evitar a desocupação de frotas. | 3 |
-| 🎗 5 | US03 | Alta | Como gestor, quero visualizar quantas viagens cada motorista fez no mês, para medir a frequência de contratação. | 4 |
+| Rank | ID | Prioridade | User Story | Estimativa | Situação |
+| :---: | :---: | :---: | :--- | :---: | :---: |
+| 🎗 1 | US01 | Alta | Como operador, quero exportar a planilha da análise obtida e importá-la no sistema, para não perder o fluxo já usado. | 4 | 🟢 Entregue |
+| 🎗 2 | US02 | Alta | Como operador, quero importar o relatório de manifesto para popular viagens automaticamente. | 4 | 🟢 Entregue |
+| 🎗 3 | US04 | Alta | Como operador, quero filtrar viagens por destino/região, para entender a demanda por rota. | 4 | 🟡 Parcial |
+| 🎗 4 | US06 | Alta | Como operador, quero ver a % de utilização de cada motorista, para evitar a desocupação de frotas. | 3 | 🟢 Entregue |
+| 🎗 5 | US03 | Alta | Como gestor, quero visualizar quantas viagens cada motorista fez no mês, para medir a frequência de contratação. | 4 | 🟡 Parcial |
 
+## 🛠️ Desenvolvimento da Sprint <a id="desenvolvimento"></a>
+
+Resumo de tudo o que foi feito na sprint, por User Story. O detalhamento completo de cada task (contexto, objetivo e critérios de aceite) está no Jira, no link de cada issue.
+
+### Visão geral das tasks
+
+| US | Issue | Tipo | O que foi feito | Status | Jira |
+| :---: | :---: | :---: | :--- | :---: | :---: |
+| US01 | OM-67 | Back | Microsserviço para converter o arquivo upado pelo operador (excel ou csv) | 🟢 Concluída | [OM-67](https://vinnismoreira-1787621786306.atlassian.net/browse/OM-67) |
+| US01 | OM-68 | Front | Botão na tela de dashboard para o gestor fazer o upload do arquivo/relatório.| 🟢 Concluída | [OM-68](https://vinnismoreira-1787621786306.atlassian.net/browse/OM-68) |
+| US01 | OM-82 | Front | Interface do dashboard para visualizar os dados mais importantes, para agilizar na escolha de um motorista | 🟢 Concluída | [OM-82](https://vinnismoreira-1787621786306.atlassian.net/browse/OM-82) |
+| US01 | OM-83 | BD | Modelagem e criação do schema inicial de motorista, veículo e viagem no PostgreSQL | 🟢 Concluída | [OM-83](https://vinnismoreira-1787621786306.atlassian.net/browse/OM-83) |
+| US01 | OM-87 | Back | Construção da estrutura inicial da aplicação em Spring Boot com gradle, seguindo arquitetura MVC | 🟢 Concluída | [OM-87](https://vinnismoreira-1787621786306.atlassian.net/browse/OM-87) |
+| US01 | OM-88 | Front | Estrutura inicial do projeto com React, seguindo arquitetura FSD(Feature-Sliced Design ) | 🟢 Concluída | [OM-88](https://vinnismoreira-1787621786306.atlassian.net/browse/OM-88) |
+| US02 | OM-72 | Back | Endpoint `POST /viagens/importar-manifesto`, mapeamento para a tabela de viagens, validações e limite de 10 MB | 🟢 Concluída | [OM-72](https://vinnismoreira-1787621786306.atlassian.net/browse/OM-72) |
+| US02 | OM-73 | Front | Upload de `.xlsx`/`.csv` (seleção ou arrastar e soltar), confirmação e tratamento de erros | 🟢 Concluída | [OM-73](https://vinnismoreira-1787621786306.atlassian.net/browse/OM-73) |
+| US03 | OM-74 | Back | Endpoint de total de viagens por motorista no período, incluindo motoristas com total zero | 🟢 Concluída | [OM-74](https://vinnismoreira-1787621786306.atlassian.net/browse/OM-74) |
+| US03 | OM-75 | Front | Lista por motorista, seletor de período e detalhamento das viagens | 🟢 Concluída | [OM-75](https://vinnismoreira-1787621786306.atlassian.net/browse/OM-75) |
+| US03 | OM-98 | Integração | Conexão dos quadrantes do dashboard a dados reais e filtro de datas | 🟡 Parcial | [OM-98](https://vinnismoreira-1787621786306.atlassian.net/browse/OM-98) |
+| US04 | OM-76 | Back | Consulta de viagens com filtros combinados (destino, região, mês) | 🟢 Concluída | [OM-76](https://vinnismoreira-1787621786306.atlassian.net/browse/OM-76) |
+| US04 | OM-77 | Front | Modal de filtros na tela de viagens com atualização assíncrona | 🟡 Parcial | [OM-77](https://vinnismoreira-1787621786306.atlassian.net/browse/OM-77) |
+| US06 | OM-78 | Back | Cálculo do % de utilização, ordenação e tratamento de casos extremos | 🟢 Concluída | [OM-78](https://vinnismoreira-1787621786306.atlassian.net/browse/OM-78) |
+| US06 | OM-79 | Front | Visualização do % de utilização com seletor de período e ordenação | 🟢 Concluída | [OM-79](https://vinnismoreira-1787621786306.atlassian.net/browse/OM-79) |
+
+### US01 - Exportação e reimportação de planilha de análise (story OM-1)
+
+...
+
+### US02 — Importação de manifesto (story OM-71)
+
+Permite ao operador importar um relatório de manifesto e cadastrar viagens em lote, sem preenchimento manual.
+
+- **Back:** validação dos campos obrigatórios (manifesto, CPF, data e valor do frete), com erro `manifesto inválido ou incompleto`; veículo e destino opcionais (gravados como `null`); limite de 10 MB.
+- **Front:** upload restrito a `.xlsx` e `.csv`, confirmação com a quantidade de viagens importadas e mensagens de erro claras.
+
+### US03 — Viagens por motorista no mês (story OM-3)
+
+Exibe o total de viagens de cada motorista no período escolhido e permite abrir as viagens que compõem o total.
+
+- **Back:** contagem por período, recalculada a cada mudança, com motoristas sem viagens retornando `0`.
+- **Front:** lista com seletor de período (sem recarregar a página) e detalhamento ao clicar no total.
+- **Integração (OM-98):** substituição dos dados mockados do dashboard por dados reais; ver pendências na [Retrospectiva](#retrospectiva).
+
+### US04 — Filtro de viagens por destino/região (story OM-4)
+
+Permite filtrar as viagens por destino ou região e ver a lista atualizada sem recarregar a página.
+
+- **Back:** filtros combinados, e lista vazia (sem erro) quando nada corresponde.
+- **Front:** modal de filtros integrado aos filtros existentes, com mensagem quando não há resultados.
+
+### US06 — % de utilização por motorista (story OM-6)
+
+Calcula e exibe o percentual de utilização de cada motorista no período, com ordenação crescente e decrescente.
+
+> **Regra:** utilização (%) = dias em operação ÷ dias disponíveis no período × 100.
+> Dias em operação = dias distintos com viagem registrada. Dias disponíveis = valor do cadastro do motorista.
+
+- **Back:** recálculo por período, ordenação, motorista sem viagens com 0% e dias disponíveis igual a zero tratado como "sem dados" (sem divisão por zero).
+- **Front:** lista com percentuais, seletor de período, ordenação e mensagens para ausência de viagens ou de dados de disponibilidade.
+
+<!-- ### Evidências
+
+| US | Evidência | Link |
+| :---: | :--- | :---: |
+| US02 | Print/GIF do upload do manifesto | _a preencher_ |
+| US03 | Print da lista de viagens por motorista | _a preencher_ |
+| US04 | Print do modal de filtros | _a preencher_ |
+| US06 | Print do % de utilização | _a preencher_ |
+| Todas | Quadro da sprint no Jira (início e fim) | _a preencher_ |
+| Todas | Pull requests da sprint | _a preencher_ | -->
+
+## 🔍 Retrospectiva <a id="retrospectiva"></a>
+
+**O que deu certo**
+
+- Importação do manifesto funcionando de ponta a ponta (back e front).
+- Cálculo de utilização do motorista implementado e testado com casos extremos.
+
+**O que não deu certo**
+
+- A integração do dashboard (OM-98) e parte do front do filtro de viagens (OM-77) não foram finalizadas na sprint.
+- O dashboard ainda não possui backend próprio: os quadrantes continuam parcialmente mockados.
+- A sprint ficou abaixo do esperado em organização e acompanhamento das tasks.
+
+**O que muda na Sprint 2**
+
+- Revisão completa do projeto e das tasks antes de começar novas US.
+- Tasks quebradas em tamanhos menores (front e back por US), com um responsável por US.
+- Padronização de commits, branches e PRs, com aprovação obrigatória de pelo menos 1 revisor.
+- Documentação passa a fazer parte do DoD.
 
 ## 📂 Documentos e anexos <a id="documentos"></a>
- 
+
 - [Cenários de User Stories](../documentacao-produto/Cenarios_sprint1.pdf)
 - [Backlog completo](../documentacao-produto/Backlog.pdf)
 - [DoR e DoD da Sprint](../documentacao-produto/DoR_e_DoD_sprint1.pdf)
 
 ## 🎥 Link do Vídeo <a id="link-do-Video"></a>
-Neste vídeo é mostrado todo o desenvolvimento da <strong>*Plataforma de Controle de Motoristas Agregados*</strong>, feito pela equipe <strong>*OmniDevs*</strong> ao decorrer do ciclo da 1°(primeira) Sprint.
 
-<a href="https://www.youtube.com/watch?v=BLwNPkoQqVA"><img src="https://img.shields.io/badge/YouTube-FF0000?style=for-the-badge&logo=youtube&logoColor=white"/></a> 
+Neste vídeo é mostrado todo o desenvolvimento da <strong>*Plataforma de Controle de Motoristas Agregados*</strong>, feito pela equipe <strong>*OmniDevs*</strong> ao decorrer do ciclo da 1ª (primeira) Sprint.
 
-## 2. Funcionalidades entregues
+<a href="https://www.youtube.com/watch?v=BLwNPkoQqVA"><img src="https://img.shields.io/badge/YouTube-FF0000?style=for-the-badge&logo=youtube&logoColor=white"/></a>
 
-### 2.1. Importação de manifesto
-
-**Story relacionada:** OM-71\
-**Subtarefas:** OM-72 (backend) e OM-73 (frontend)
-
-**Objetivo**
-
-Permitir que o operador importe um relatório de manifesto para cadastrar
-viagens em lote, evitando o preenchimento manual de cada viagem.
-
-**Escopo do backend --- OM-72**
-
--   Criar o endpoint `POST /viagens/importar-manifesto`.
--   Receber os dados JSON retornados pelo microserviço de processamento
-    do manifesto.
--   Mapear os dados recebidos para os campos existentes na tabela de
-    viagens.
--   Validar os campos obrigatórios: manifesto, CPF, data e valor do
-    frete.
--   Retornar erro com a mensagem `manifesto inválido ou incompleto`
-    quando os dados obrigatórios estiverem ausentes.
--   Tratar veículo e destino como opcionais: quando não houver veículo
-    correspondente no cadastro, a placa deve ser gravada como `null`;
-    destino vazio também deve ser gravado como `null`.
--   Limitar o arquivo enviado a 10 MB.
--   Desconsiderar o campo de origem no mapeamento previsto pela tarefa.
-
-**Escopo do frontend --- OM-73**
-
--   Disponibilizar upload do manifesto no dashboard, por seleção de
-    arquivo ou arrastar e soltar.
--   Aceitar arquivos `.xlsx` e `.csv`, validando a extensão antes do
-    envio.
--   Integrar o envio ao backend.
--   Exibir confirmação com a quantidade de viagens importadas.
--   Apresentar mensagens compreensíveis para erros de arquivo,
-    indisponibilidade do backend e outras falhas de importação.
-
-**Critérios de aceite registrados**
-
--   Testes unitários para garantir consistência do mapeamento entre
-    entrada e saída.
--   Validação dos campos obrigatórios e tratamento dos campos opcionais.
--   Limite de upload de 10 MB.
--   Upload restrito a `.xlsx` e `.csv`, feedback de sucesso e tratamento
-    amigável de erros.
-
-**Situação no Jira:** OM-72 e OM-73 --- **Concluído**.
-
-**Evidências técnicas:** não foram incluídos no material os resultados
-dos testes, exemplos de requisição/resposta ou capturas do fluxo de
-upload.
-
-### 2.2. Total de viagens por motorista
-
-**Story relacionada:** OM-3\
-**Subtarefas:** OM-74 (backend) e OM-75 (frontend)
-
-**Objetivo**
-
-Exibir a quantidade de viagens de cada motorista em um período
-selecionado e permitir consultar as viagens que compõem o total.
-
-**Escopo do backend --- OM-74**
-
--   Criar um endpoint de listagem, previsto como
-    `GET /indicadores/viagens-por-motorista?periodo=`.
--   Calcular o total de viagens por motorista no período informado.
--   Recalcular os totais quando o período mudar.
--   Incluir motoristas sem viagens no período, retornando total igual a
-    `0`, em vez de removê-los da resposta.
--   Garantir a consistência da contagem por meio de testes unitários.
-
-**Escopo do frontend --- OM-75**
-
--   Exibir a lista de motoristas e o total de viagens no período.
--   Disponibilizar seletor de período e atualizar a lista por nova
-    chamada ao endpoint, sem recarregar a página.
--   Permitir clicar no total de um motorista para abrir o detalhamento
-    das viagens individuais.
--   Exibir normalmente motoristas com total igual a zero.
--   Integrar a listagem aos endpoints de viagens existentes.
-
-**Critérios de aceite registrados**
-
--   Contagem consistente para o mesmo conjunto de dados.
--   Atualização dos resultados ao alterar o período.
--   Inclusão de motoristas sem viagens.
--   Abertura do detalhamento das viagens de um motorista a partir do
-    total exibido.
-
-**Situação no Jira:** OM-74 e OM-75 --- **Concluído**.
-
-**Evidências técnicas:** o material não contém payloads de exemplo,
-resultados de testes ou capturas da tela de detalhamento.
-
-### 2.3. Filtro de viagens por destino/região
-
-**Story relacionada:** OM-4\
-**Subtarefas:** OM-76 (backend) e OM-77 (frontend)
-
-**Objetivo**
-
-Permitir que o operador filtre as viagens por destino ou região e
-visualize a lista atualizada sem recarregar a página.
-
-**Escopo do backend --- OM-76**
-
--   Incluir os campos de origem e destino na estrutura de viagem,
-    conforme descrito na tarefa.
--   Disponibilizar consulta de viagens com filtros, com exemplo de
-    endpoint `GET /viagens?destino=&regiao=&mes=`.
--   Permitir combinar filtros, como destino e período.
--   Retornar uma lista vazia sem erro quando não houver
-    correspondências.
--   Criar testes unitários.
-
-**Escopo do frontend --- OM-77**
-
--   Criar um componente de filtro, preferencialmente em modal, na tela
-    de viagens.
--   Consumir o endpoint de filtragem.
--   Atualizar a lista ou gráfico de forma assíncrona, sem recarregar a
-    página.
--   Exibir mensagem clara quando nenhum resultado for encontrado.
--   Fazer o filtro funcionar em conjunto com os demais filtros
-    existentes na tela.
-
-**Critérios de aceite registrados**
-
--   Suporte a filtros combinados.
--   Resposta vazia tratada sem erro quando não houver resultados.
--   Testes unitários no backend.
--   Atualização assíncrona da interface e mensagem de ausência de
-    resultados no frontend.
-
-**Situação no Jira:** OM-76 e OM-77 --- **Concluído**.
-
-**Evidências técnicas:** não foram fornecidos exemplos de chamadas com
-filtros combinados, resultados de testes ou capturas da interface.
-
-### 2.4. Percentual de utilização por motorista
-
-**Story relacionada:** OM-6\
-**Subtarefas:** OM-78 (backend) e OM-79 (frontend)
-
-**Objetivo**
-
-Calcular e apresentar a porcentagem de utilização de cada motorista em
-um período, com opção de ordenar os resultados.
-
-**Regra de cálculo definida na tarefa**
-
--   **Dias em operação:** quantidade de dias distintos com viagem
-    registrada no período.
--   **Dias disponíveis:** valor obtido do cadastro do motorista para o
-    período.
--   **Percentual de utilização:** dias em operação ÷ dias disponíveis no
-    período × 100.
-
-**Escopo do backend --- OM-78**
-
--   Criar endpoint previsto como
-    `GET /indicadores/utilizacao?periodo=&ordenacao=`.
--   Recalcular os indicadores conforme o período recebido, sem
-    reutilizar indevidamente o resultado de outro período.
--   Permitir ordenação crescente e decrescente pelo percentual.
--   Criar testes unitários.
--   Tratar motorista sem viagens com utilização de `0%`.
--   Tratar dias disponíveis iguais a zero como situação sem dados, sem
-    provocar divisão por zero.
-
-**Escopo do frontend --- OM-79**
-
--   Exibir a lista de motoristas e seus percentuais de utilização.
--   Disponibilizar seletor de período e atualizar os dados sem
-    recarregar a página.
--   Permitir ordenar do maior para o menor percentual e vice-versa.
--   Exibir mensagens claras para casos como ausência de viagens no
-    período ou falta de dados de disponibilidade.
-
-**Critérios de aceite registrados**
-
--   Testes unitários.
--   Recálculo correto ao mudar o período.
--   Ordenação crescente e decrescente.
--   Tratamento dos casos sem viagens e sem dados de disponibilidade.
-
-**Situação no Jira:** OM-78 e OM-79 --- **Concluído**.
-
-**Evidências técnicas:** o material não contém valores de exemplo,
-resultados de testes ou capturas do componente gráfico.
-
-### 2.5. Integração do dashboard com o backend
-
-**Subtarefa:** OM-98\
-**Story relacionada no Jira:** OM-3
-
-**Objetivo**
-
-Substituir os dados simulados da tela principal por dados reais do
-backend, conectando os quadrantes do dashboard aos endpoints
-correspondentes.
-
-**Escopo e critérios de aceite registrados**
-
--   Conectar os quadrantes disponíveis do dashboard aos endpoints e
-    parâmetros correspondentes.
--   Verificar no banco de dados os campos monetários para garantir que
-    sejam tratados como valores decimais ou inteiros, e não como `float`
-    ou `double`.
--   Para indicadores ainda sem endpoint ou função de backend, exibir `-`
-    ou deixar o campo em branco.
--   Garantir que o filtro de datas retorne dados correspondentes ao
-    período selecionado.
-
-**Situação no Jira:** OM-98 --- **Concluído**.
-
-**Evidências técnicas:** não foram fornecidos mapeamento dos quadrantes
-para os endpoints, exemplos de respostas ou resultados de validação dos
-valores monetários.
-
-## 3. Resumo das issues
-
-  -------------------------------------------------------------------------
-  Issue             Responsabilidade   Resultado/escopo   Status no Jira
-                                       registrado         
-  ----------------- ------------------ ------------------ -----------------
-  OM-72             Backend ---        Endpoint,          Concluído
-                    importação de      mapeamento,        
-                    manifesto          validações e       
-                                       limite de arquivo  
-
-  OM-73             Frontend ---       Upload,            Concluído
-                    importação de      integração,        
-                    manifesto          feedback de        
-                                       sucesso e erros    
-
-  OM-74             Backend ---        Contagem por       Concluído
-                    viagens por        período, incluindo 
-                    motorista          total zero         
-
-  OM-75             Frontend ---       Lista, seletor de  Concluído
-                    viagens por        período e          
-                    motorista          detalhamento       
-
-  OM-76             Backend --- filtro Consulta por       Concluído
-                    de viagens         destino/região e   
-                                       filtros combinados 
-
-  OM-77             Frontend ---       Modal, atualização Concluído
-                    filtro de viagens  assíncrona e       
-                                       estado sem         
-                                       resultados         
-
-  OM-78             Backend ---        Cálculo            Concluído
-                    utilização de      percentual,        
-                    motoristas         ordenação e casos  
-                                       extremos           
-
-  OM-79             Frontend ---       Lista, período,    Concluído
-                    utilização de      ordenação e        
-                    motoristas         mensagens de       
-                                       estado             
-
-  OM-98             Integração do      Conexão dos        Concluído
-                    dashboard          quadrantes a dados 
-                                       reais e filtro de  
-                                       datas              
-  -------------------------------------------------------------------------
-
-## 4. Resultado consolidado
-
-De acordo com o status do Jira, as subtarefas fornecidas para a Sprint 1
-foram concluídas. O escopo registrado abrange:
-
--   Importação de manifestos para cadastro de viagens.
--   Consulta de total de viagens por motorista e detalhamento.
--   Filtragem de viagens por destino/região e combinação de parâmetros.
--   Cálculo e visualização do percentual de utilização dos motoristas.
--   Integração do dashboard com o backend e tratamento de valores
-    monetários e períodos.
-
-## 5. Pendências de evidência para uma prestação de contas técnica
-
-O Jira fornecido registra as tarefas como concluídas, mas não contém
-evidências suficientes para afirmar, de forma independente, que cada
-critério foi validado em execução. Para fechar a documentação técnica
-com rastreabilidade, anexar ou referenciar, quando disponíveis:
-
-1.  Resultado da execução dos testes unitários e de integração.
-2.  Exemplos de requisições e respostas dos endpoints.
-3.  Capturas das telas de upload, filtros, lista por motorista e
-    utilização.
-4.  Pull requests ou commits associados às issues.
-5.  Evidência de validação do filtro de datas e dos tipos numéricos
-    usados nos valores monetários.
-
-Esses itens são recomendações de documentação e **não** indicam que as
-funcionalidades estejam necessariamente pendentes; apenas não constam no
-material recebido para este relatório.
-
-## 6. Referências Jira
-
--   [OM-72 --- Backend: importação de
-    manifesto](https://vinnismoreira-1787621786306.atlassian.net/browse/OM-72)
--   [OM-73 --- Frontend: importação de manifesto no
-    dashboard](https://vinnismoreira-1787621786306.atlassian.net/browse/OM-73)
--   [OM-74 --- Total de viagens por motorista no
-    período](https://vinnismoreira-1787621786306.atlassian.net/browse/OM-74)
--   [OM-75 --- Lista de viagens por
-    motorista](https://vinnismoreira-1787621786306.atlassian.net/browse/OM-75)
--   [OM-76 --- Backend: filtro na tabela de
-    viagens](https://vinnismoreira-1787621786306.atlassian.net/browse/OM-76)
--   [OM-77 --- Frontend: modal com filtros na tela de
-    viagens](https://vinnismoreira-1787621786306.atlassian.net/browse/OM-77)
--   [OM-78 --- Cálculo de utilização por
-    motorista](https://vinnismoreira-1787621786306.atlassian.net/browse/OM-78)
--   [OM-79 --- Visualização gráfica da utilização de
-    motoristas](https://vinnismoreira-1787621786306.atlassian.net/browse/OM-79)
--   [OM-98 --- Integração do dashboard com o
-    backend](https://vinnismoreira-1787621786306.atlassian.net/browse/OM-98)
-    
 ## 👥 **Equipe** <a id="equipe"></a>
 
 | Foto | Nome | Função | GitHub |
