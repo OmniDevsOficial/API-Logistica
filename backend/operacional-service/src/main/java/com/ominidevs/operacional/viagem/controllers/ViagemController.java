@@ -90,6 +90,7 @@ public class ViagemController {
 
         return new ViagemResponseDTO(
                 viagem.getId(),
+                viagem.getManifesto(),
                 viagem.getCidadeOrigem(),
                 viagem.getCidadeDestino(),
                 viagem.getValorFrete(),
