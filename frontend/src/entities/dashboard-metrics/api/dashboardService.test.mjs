@@ -109,8 +109,8 @@ test('mapeia a serie de rentabilidade e viagens com o agrupamento do periodo', a
       rentabilidadePorPeriodo: {
         agrupamento: 'MES',
         pontos: [
-          { rotulo: '07/2026', viagens: 629, rentabilidade: 882523.67 },
-          { rotulo: '08/2026', viagens: 694, rentabilidade: -302.31 },
+          { rotulo: '07/2026', viagens: 629, custo: 711053.81, rentabilidade: 882523.67 },
+          { rotulo: '08/2026', viagens: 694, custo: 12684.13, rentabilidade: -302.31 },
         ],
       },
       porVeiculo: [],
@@ -122,8 +122,8 @@ test('mapeia a serie de rentabilidade e viagens com o agrupamento do periodo', a
   assert.deepEqual(serieRentabilidade, {
     agrupamento: 'MES',
     pontos: [
-      { rotulo: '07/2026', viagens: 629, rentabilidade: 882523.67 },
-      { rotulo: '08/2026', viagens: 694, rentabilidade: -302.31 },
+      { rotulo: '07/2026', viagens: 629, custo: 711053.81, rentabilidade: 882523.67 },
+      { rotulo: '08/2026', viagens: 694, custo: 12684.13, rentabilidade: -302.31 },
     ],
   });
 });
