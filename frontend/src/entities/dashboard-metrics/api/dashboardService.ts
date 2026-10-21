@@ -122,6 +122,7 @@ function mapearSerieRentabilidade(dados: unknown): SerieRentabilidade {
       return {
         rotulo: texto(ponto.rotulo),
         viagens: numero(ponto.viagens),
+        custo: numero(ponto.custo),
         rentabilidade: numero(ponto.rentabilidade),
       };
     }),

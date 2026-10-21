@@ -20,15 +20,20 @@ interface GraficoRentabilidadeViagensProps {
   serie: SerieRentabilidade;
 }
 
-const SINCRONIA = "rentabilidade-viagens";
-const COR_BARRA = "var(--color-primary)";
+const COR_CUSTO = "var(--color-grafico-forte)";
+const COR_RENTABILIDADE = "var(--color-grafico-claro)";
+const COR_SUPERFICIE = "var(--color-surface)";
 const COR_GRADE = "var(--color-border)";
 const COR_EIXO = "var(--color-fg-muted)";
 const COR_ZERO = "var(--color-fg-subtle)";
 const COR_CURSOR = "var(--color-background)";
-const LARGURA_EIXO_Y = 72;
 const TEXTO_EIXO = { fontSize: 12, fill: COR_EIXO };
-const MARGEM = { top: 8, right: 0, bottom: 8, left: 0 };
+const MARGEM = { top: 8, right: 0, bottom: 0, left: 0 };
+
+const LEGENDA = [
+  { nome: "Custo", cor: COR_CUSTO },
+  { nome: "Rentabilidade", cor: COR_RENTABILIDADE },
+];
 
 function moedaCompacta(valor: number): string {
   return valor.toLocaleString("pt-BR", {
@@ -41,6 +46,26 @@ function moedaCompacta(valor: number): string {
 
 function viagensPorExtenso(viagens: number): string {
   return viagens === 1 ? "1 viagem" : `${viagens} viagens`;
+}
+
+interface LinhaTooltipProps {
+  cor?: string;
+  nome: string;
+  valor: string;
+}
+
+function LinhaTooltip({ cor, nome, valor }: LinhaTooltipProps) {
+  return (
+    <div className="flex items-center gap-2">
+      {cor ? (
+        <span className="h-0.5 w-3 rounded-full" style={{ backgroundColor: cor }} />
+      ) : (
+        <span className="w-3" />
+      )}
+      <span className="font-semibold text-fg">{valor}</span>
+      <span className="text-fg-muted">{nome}</span>
+    </div>
+  );
 }
 
 interface ConteudoTooltipProps {
@@ -56,8 +81,17 @@ function ConteudoTooltip({ active, payload, agrupamento }: ConteudoTooltipProps)
   return (
     <div className="flex flex-col gap-1 rounded-md border border-border bg-surface px-3 py-2 text-[13px] shadow-sm">
       <span className="text-fg-muted">{rotuloDoTooltip(ponto.rotulo, agrupamento)}</span>
-      <span className="font-semibold text-fg">{formatCurrencyBRL(ponto.rentabilidade, 2)}</span>
-      <span className="text-fg-muted">{viagensPorExtenso(ponto.viagens)}</span>
+      <LinhaTooltip
+        nome="Valor dos fretes"
+        valor={formatCurrencyBRL(ponto.custo + ponto.rentabilidade, 2)}
+      />
+      <LinhaTooltip cor={COR_CUSTO} nome="Custo" valor={formatCurrencyBRL(ponto.custo, 2)} />
+      <LinhaTooltip
+        cor={COR_RENTABILIDADE}
+        nome="Rentabilidade"
+        valor={formatCurrencyBRL(ponto.rentabilidade, 2)}
+      />
+      <span className="pl-5 text-fg-muted">{viagensPorExtenso(ponto.viagens)}</span>
     </div>
   );
 }
@@ -78,41 +112,27 @@ export function GraficoRentabilidadeViagens({ serie }: GraficoRentabilidadeViage
     );
   }
 
-  const tooltip = <ConteudoTooltip agrupamento={agrupamento} />;
-  const rentabilidades = pontos.map((ponto) => ponto.rentabilidade);
-  const marcacoesRentabilidade = marcacoes(Math.max(...rentabilidades), false);
-  const menorRentabilidade = Math.min(0, ...rentabilidades);
-  const marcacoesViagens = marcacoes(Math.max(...pontos.map((ponto) => ponto.viagens)), true);
+  const maiorBarra = Math.max(
+    ...pontos.map((ponto) => ponto.custo + Math.max(ponto.rentabilidade, 0)),
+  );
+  const menorBarra = Math.min(0, ...pontos.map((ponto) => ponto.rentabilidade));
+  const marcacoesEixo = marcacoes(maiorBarra, false);
+  const tetoEixo = marcacoesEixo[marcacoesEixo.length - 1];
 
   return (
-    <div className="flex h-full min-h-[260px] flex-col gap-2">
-      <span className="text-xs font-medium text-fg-muted">Rentabilidade</span>
-      <div className="min-h-[110px] flex-1">
-        <ResponsiveContainer width="100%" height="100%">
-          <BarChart data={pontos} syncId={SINCRONIA} margin={MARGEM}>
-            <CartesianGrid vertical={false} stroke={COR_GRADE} />
-            <XAxis dataKey="rotulo" hide />
-            <YAxis
-              width={LARGURA_EIXO_Y}
-              tickFormatter={moedaCompacta}
-              ticks={marcacoesRentabilidade}
-              domain={[menorRentabilidade, marcacoesRentabilidade[marcacoesRentabilidade.length - 1]]}
-              interval={0}
-              tick={TEXTO_EIXO}
-              axisLine={false}
-              tickLine={false}
-            />
-            <ReferenceLine y={0} stroke={COR_ZERO} />
-            <Tooltip content={tooltip} cursor={{ fill: COR_CURSOR }} />
-            <Bar dataKey="rentabilidade" fill={COR_BARRA} maxBarSize={24} radius={[4, 4, 0, 0]} isAnimationActive={false} />
-          </BarChart>
-        </ResponsiveContainer>
-      </div>
+    <div className="flex h-full min-h-[260px] flex-col gap-3">
+      <ul className="flex justify-end gap-4 text-xs text-fg-muted">
+        {LEGENDA.map(({ nome, cor }) => (
+          <li key={nome} className="flex items-center gap-1.5">
+            <span className="h-2.5 w-2.5 rounded-[3px]" style={{ backgroundColor: cor }} />
+            {nome}
+          </li>
+        ))}
+      </ul>
 
-      <span className="text-xs font-medium text-fg-muted">Viagens</span>
-      <div className="min-h-[110px] flex-1">
+      <div className="min-h-[220px] flex-1">
         <ResponsiveContainer width="100%" height="100%">
-          <BarChart data={pontos} syncId={SINCRONIA} margin={MARGEM}>
+          <BarChart data={pontos} margin={MARGEM}>
             <CartesianGrid vertical={false} stroke={COR_GRADE} />
             <XAxis
               dataKey="rotulo"
@@ -124,25 +144,49 @@ export function GraficoRentabilidadeViagens({ serie }: GraficoRentabilidadeViage
               minTickGap={8}
             />
             <YAxis
-              width={LARGURA_EIXO_Y}
-              ticks={marcacoesViagens}
-              domain={[0, marcacoesViagens[marcacoesViagens.length - 1]]}
+              width={72}
+              tickFormatter={moedaCompacta}
+              ticks={marcacoesEixo}
+              domain={[menorBarra, tetoEixo]}
               interval={0}
               tick={TEXTO_EIXO}
               axisLine={false}
               tickLine={false}
             />
-            <Tooltip content={() => null} cursor={{ fill: COR_CURSOR }} />
-            <Bar dataKey="viagens" fill={COR_BARRA} maxBarSize={24} radius={[4, 4, 0, 0]} isAnimationActive={false} />
+            {menorBarra < 0 && <ReferenceLine y={0} stroke={COR_ZERO} />}
+            <Tooltip
+              content={<ConteudoTooltip agrupamento={agrupamento} />}
+              cursor={{ fill: COR_CURSOR }}
+            />
+            <Bar
+              dataKey="custo"
+              stackId="valor"
+              fill={COR_CUSTO}
+              stroke={COR_SUPERFICIE}
+              strokeWidth={1}
+              maxBarSize={24}
+              isAnimationActive={false}
+            />
+            <Bar
+              dataKey="rentabilidade"
+              stackId="valor"
+              fill={COR_RENTABILIDADE}
+              stroke={COR_SUPERFICIE}
+              strokeWidth={1}
+              maxBarSize={24}
+              radius={[4, 4, 0, 0]}
+              isAnimationActive={false}
+            />
           </BarChart>
         </ResponsiveContainer>
       </div>
 
       <table className="sr-only">
-        <caption>Rentabilidade e viagens por {agrupamento === "DIA" ? "dia" : "mês"}</caption>
+        <caption>Custo e rentabilidade por {agrupamento === "DIA" ? "dia" : "mês"}</caption>
         <thead>
           <tr>
             <th scope="col">{agrupamento === "DIA" ? "Dia" : "Mês"}</th>
+            <th scope="col">Custo</th>
             <th scope="col">Rentabilidade</th>
             <th scope="col">Viagens</th>
           </tr>
@@ -151,6 +195,7 @@ export function GraficoRentabilidadeViagens({ serie }: GraficoRentabilidadeViage
           {pontos.map((ponto) => (
             <tr key={ponto.rotulo}>
               <th scope="row">{rotuloDoTooltip(ponto.rotulo, agrupamento)}</th>
+              <td>{formatCurrencyBRL(ponto.custo, 2)}</td>
               <td>{formatCurrencyBRL(ponto.rentabilidade, 2)}</td>
               <td>{ponto.viagens}</td>
             </tr>

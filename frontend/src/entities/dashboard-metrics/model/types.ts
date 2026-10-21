@@ -44,6 +44,7 @@ export interface DashboardData {
 export interface PontoRentabilidade {
   rotulo: string;
   viagens: number;
+  custo: number;
   rentabilidade: number;
 }
 
