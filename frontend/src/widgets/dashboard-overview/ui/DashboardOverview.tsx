@@ -77,52 +77,53 @@ export function DashboardOverview({ data }: DashboardOverviewProps) {
         <GraficoSemDados />
       </ChartCard>
       <StatCard
-        className="sm:col-span-2 lg:col-start-3 lg:col-span-2 lg:row-start-2"
-        title="Custo total"
-        value={moeda(metrics.custoTotal)}
-        caption="No período"
-      />
-      <StatCard
-        className="lg:col-start-2 lg:row-start-4"
-        title="Margem"
-        value={porcentagem(metrics.margem)}
-        caption="Rentabilidade sobre o valor dos fretes"
-      />
-      <ChartCard
-        title="Utilização média da frota"
-        className="sm:col-span-2 lg:col-start-3 lg:col-span-2 lg:row-start-4 lg:row-span-2"
-      >
-        <GraficoSemDados />
-      </ChartCard>
-      <StatCard
-        className="lg:col-start-1 lg:row-start-5"
+        className="lg:col-start-3 lg:row-start-2"
         title="Valor dos fretes"
         value={moeda(metrics.freteTotal)}
         caption="No período"
       />
       <StatCard
-        className="lg:col-start-2 lg:row-start-5"
+        className="lg:col-start-4 lg:row-start-2"
+        title="Ticket médio do frete"
+        value={moeda(metrics.freteMedio)}
+        caption="Por viagem"
+      />
+      <StatCard
+        className="lg:col-start-3 lg:row-start-3"
+        title="Custo total"
+        value={moeda(metrics.custoTotal)}
+        caption="No período"
+      />
+      <StatCard
+        className="lg:col-start-4 lg:row-start-3"
         title="Custo médio"
         value={moeda(metrics.custoMedio)}
         caption="Por viagem"
       />
+
       <StatCard
-        className="lg:col-start-1 lg:row-start-6"
+        className="lg:col-start-1 lg:row-start-4"
+        title="Margem"
+        value={porcentagem(metrics.margem)}
+        caption="Rentabilidade sobre o valor dos fretes"
+      />
+      <StatCard
+        className="lg:col-start-2 lg:row-start-4"
         title="Viagens por motorista"
         value={decimal(metrics.viagensPorMotorista)}
         caption="Média no período"
       />
+      <ChartCard
+        title="Rentabilidade por tipo de veículo"
+        className="sm:col-span-2 lg:col-start-3 lg:col-span-2 lg:row-start-4 lg:row-span-2"
+      >
+        <GraficoSemDados />
+      </ChartCard>
       <StatCard
-        className="sm:col-span-2 lg:col-start-2 lg:col-span-2 lg:row-start-6"
+        className="sm:col-span-2 lg:col-start-1 lg:col-span-2 lg:row-start-5"
         title="Destino mais rentável"
         value={metrics.destinoMaisRentavel?.destino ?? SEM_DADO}
         caption={legendaDestino(metrics.destinoMaisRentavel)}
-      />
-      <StatCard
-        className="lg:col-start-4 lg:row-start-6"
-        title="Ticket médio do frete"
-        value={moeda(metrics.freteMedio)}
-        caption="Por viagem"
       />
     </div>
   );
