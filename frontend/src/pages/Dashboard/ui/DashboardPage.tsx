@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import type { PeriodOption } from "@entities/dashboard-metrics";
 import type { ResultadoImportacao } from "@features/enviar-relatorio/api/importarManifesto";
 import { Sidebar } from "@widgets/sidebar";
@@ -11,15 +11,25 @@ import {
   podeAvancarPeriodo,
   referenciaDaDataIso,
 } from "../lib/intervaloDoPeriodo";
+import { lerFiltroSalvo, salvarFiltro } from "../lib/filtroSalvo";
 import { useDashboard } from "../model/useDashboard";
 
 const MENSAGEM_CLASS =
   "rounded-md bg-surface p-6 text-center text-sm text-fg-subtle";
 
 export function DashboardPage() {
-  const [period, setPeriod] = useState<PeriodOption>("mes");
-  const [referencia, setReferencia] = useState(() => new Date());
+  const [filtroSalvo] = useState(() => lerFiltroSalvo());
+  const [period, setPeriod] = useState<PeriodOption>(
+    filtroSalvo?.periodo ?? "mes",
+  );
+  const [referencia, setReferencia] = useState(
+    () => filtroSalvo?.referencia ?? new Date(),
+  );
   const [sidebarOpen, setSidebarOpen] = useState(false);
+
+  useEffect(() => {
+    salvarFiltro({ periodo: period, referencia });
+  }, [period, referencia]);
 
   const intervalo = useMemo(
     () => intervaloDoPeriodo(period, referencia),
