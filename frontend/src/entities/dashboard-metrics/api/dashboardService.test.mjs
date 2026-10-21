@@ -102,6 +102,44 @@ test('periodo sem viagens volta como SEM_DADOS com os totais zerados', async () 
   assert.equal(dados.metrics.destinoMaisRentavel, null);
 });
 
+test('mapeia a serie de rentabilidade e viagens com o agrupamento do periodo', async () => {
+  globalThis.fetch = async () => Response.json({
+    ...respostaCompleta,
+    series: {
+      rentabilidadePorPeriodo: {
+        agrupamento: 'MES',
+        pontos: [
+          { rotulo: '07/2026', viagens: 629, rentabilidade: 882523.67 },
+          { rotulo: '08/2026', viagens: 694, rentabilidade: -302.31 },
+        ],
+      },
+      porVeiculo: [],
+    },
+  });
+
+  const { serieRentabilidade } = await buscarDashboard('01/01/2026', '31/12/2026');
+
+  assert.deepEqual(serieRentabilidade, {
+    agrupamento: 'MES',
+    pontos: [
+      { rotulo: '07/2026', viagens: 629, rentabilidade: 882523.67 },
+      { rotulo: '08/2026', viagens: 694, rentabilidade: -302.31 },
+    ],
+  });
+});
+
+test('serie de rentabilidade fora do contrato nao chega na tela', async () => {
+  for (const series of [
+    undefined,
+    { porVeiculo: [] },
+    { rentabilidadePorPeriodo: { agrupamento: 'DIA' } },
+    { rentabilidadePorPeriodo: { agrupamento: 'DIA', pontos: [{ rotulo: '01/08', viagens: 'dez', rentabilidade: 1 }] } },
+  ]) {
+    globalThis.fetch = async () => Response.json({ ...respostaCompleta, series });
+    await assert.rejects(buscarDashboard('01/08/2026', '31/08/2026'), /resposta do servi/);
+  }
+});
+
 test('resposta fora do contrato nao chega na tela', async () => {
   for (const corpo of [
     null,
