@@ -1,4 +1,6 @@
-import { Calendar, Search } from "lucide-react";
+import { Search } from "lucide-react";
+import type { PeriodOption } from "@entities/dashboard-metrics";
+import { NavegacaoPeriodo, PeriodFilter } from "@features/period-filter";
 import { PageHeader } from "@shared/ui";
 import { FiltrarViagensButton } from "./FiltrarViagensButton";
 import type { Viagem } from "@/entities/viagem";
@@ -7,7 +9,12 @@ import type { FiltroViagens } from "../model/types";
 interface ViagensTopbarProps {
   search: string;
   onSearchChange: (value: string) => void;
-  periodoLabel: string;
+  period: PeriodOption;
+  onPeriodChange: (period: PeriodOption) => void;
+  dateRangeLabel: string;
+  podeAvancar: boolean;
+  onPeriodoAnterior: () => void;
+  onPeriodoSeguinte: () => void;
   onMenuClick: () => void;
   onFiltroAplicado: (viagens: Viagem[]) => void;
   onFiltroLimpo: () => void;
@@ -21,7 +28,12 @@ const PILL_CLASS =
 export function ViagensTopbar({
   search,
   onSearchChange,
-  periodoLabel,
+  period,
+  onPeriodChange,
+  dateRangeLabel,
+  podeAvancar,
+  onPeriodoAnterior,
+  onPeriodoSeguinte,
   onMenuClick,
   onFiltroAplicado,
   onFiltroLimpo,
@@ -32,33 +44,35 @@ export function ViagensTopbar({
     <header className="mb-7 flex flex-col gap-5">
       <PageHeader title="Viagens" onMenuClick={onMenuClick} />
 
-      <div className="flex flex-wrap items-center gap-3">
-        <div className="relative min-w-[220px] flex-1">
-          <Search
-            size={16}
-            className="pointer-events-none absolute top-1/2 left-4 -translate-y-1/2 text-fg-subtle"
-          />
+      <div className="flex flex-col gap-4 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between">
+        <div className="flex items-center gap-2 rounded-md bg-surface px-4 py-2.5">
+          <Search size={16} className="shrink-0 text-fg-muted" />
           <input
             type="text"
             value={search}
             onChange={(event) => onSearchChange(event.target.value)}
             placeholder="Pesquisar"
-            className="w-full rounded-md bg-surface py-2.5 pr-4 pl-11 text-sm text-fg placeholder:text-fg-subtle focus:outline-none"
+            className="w-full bg-transparent text-sm text-fg placeholder-fg-subtle outline-none sm:w-56"
           />
         </div>
 
-        {/* Botão de filtro */}
-        <FiltrarViagensButton
-          onFiltroAplicado={onFiltroAplicado}
-          onFiltroLimpo={onFiltroLimpo}
-          filtroModal={filtroModal}
-          onFiltroModalChange={onFiltroModalChange}
-          buttonClassName={PILL_CLASS}
-        />
+        <div className="flex flex-wrap items-center gap-3">
+          <FiltrarViagensButton
+            onFiltroAplicado={onFiltroAplicado}
+            onFiltroLimpo={onFiltroLimpo}
+            filtroModal={filtroModal}
+            onFiltroModalChange={onFiltroModalChange}
+            buttonClassName={PILL_CLASS}
+          />
 
-        <div className={PILL_CLASS}>
-          <Calendar size={16} />
-          {periodoLabel}
+          <PeriodFilter value={period} onChange={onPeriodChange} />
+
+          <NavegacaoPeriodo
+            label={dateRangeLabel}
+            podeAvancar={podeAvancar}
+            onAnterior={onPeriodoAnterior}
+            onSeguinte={onPeriodoSeguinte}
+          />
         </div>
       </div>
     </header>

@@ -1,6 +1,7 @@
 export interface Viagem {
   id: number;
   manifesto: string;
+  data: string;
   origem: string;
   destino: string;
   freteEstimado: number;

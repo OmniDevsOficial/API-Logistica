@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import type { PeriodOption } from "@entities/dashboard-metrics";
 import {
   getViagensData,
   type ViagensData,
@@ -10,12 +11,25 @@ import { ViagensList } from "@widgets/viagens-list";
 import { ViagensRanking } from "@widgets/viagens-ranking";
 import type { FiltroViagens } from "@widgets/viagens-topbar";
 import { filtroVazio } from "@/widgets/viagens-topbar/model/types";
+import {
+  deslocarReferencia,
+  intervaloDoPeriodo,
+  podeAvancarPeriodo,
+} from "@features/period-filter";
+import { formatDateRange } from "@shared/lib";
+import { viagensNoPeriodo } from "../lib/viagensNoPeriodo";
 
 export function ViagensPage() {
   const [data, setData] = useState<ViagensData | null>(null);
   const [erro, setErro] = useState(false);
   const [search, setSearch] = useState("");
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [period, setPeriod] = useState<PeriodOption>("mes");
+  const [referencia, setReferencia] = useState(() => new Date());
+  const intervalo = useMemo(
+    () => intervaloDoPeriodo(period, referencia),
+    [period, referencia],
+  );
   const [filtroModal, setFiltroModal] = useState<FiltroViagens>(() => ({
     ...filtroVazio,
     status: [...filtroVazio.status],
@@ -37,7 +51,14 @@ export function ViagensPage() {
   }, []);
 
   // Resultado do modal
-  const viagensBase = viagensFiltradasPorModal ?? data?.viagens ?? [];
+  const viagensBase = useMemo(
+    () => viagensNoPeriodo(viagensFiltradasPorModal ?? data?.viagens ?? [], intervalo),
+    [viagensFiltradasPorModal, data, intervalo],
+  );
+  const viagensDoPeriodo = useMemo(
+    () => viagensNoPeriodo(data?.viagens ?? [], intervalo),
+    [data, intervalo],
+  );
 
   // Aqui é a Busca por texto do filtro
   const viagensFiltradas = useMemo(() => {
@@ -57,7 +78,12 @@ export function ViagensPage() {
         <ViagensTopbar
           search={search}
           onSearchChange={setSearch}
-          periodoLabel={data?.periodoLabel ?? ""}
+          period={period}
+          onPeriodChange={setPeriod}
+          dateRangeLabel={formatDateRange(intervalo.dataInicio, intervalo.dataFim)}
+          podeAvancar={podeAvancarPeriodo(period, referencia)}
+          onPeriodoAnterior={() => setReferencia(deslocarReferencia(period, referencia, -1))}
+          onPeriodoSeguinte={() => setReferencia(deslocarReferencia(period, referencia, 1))}
           onMenuClick={() => setSidebarOpen(true)}
           onFiltroAplicado={setViagensFiltradasPorModal}
           onFiltroLimpo={() => {
@@ -76,7 +102,7 @@ export function ViagensPage() {
           <div className="grid grid-cols-1 gap-6 items-start lg:grid-cols-[2fr_1fr]">
             <ViagensList viagens={viagensFiltradas} />
             {/* Ranking mostra tudo, não é afetado pelos filtros de cima */}
-            <ViagensRanking viagens={data.viagens} />
+            <ViagensRanking viagens={viagensDoPeriodo} />
           </div>
         )}
       </main>
