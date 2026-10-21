@@ -6,7 +6,9 @@ import java.util.List;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
+import com.ominidevs.operacional.dashboard.model.AgrupamentoSerie;
 import com.ominidevs.operacional.dashboard.projections.DestinoRentavel;
+import com.ominidevs.operacional.dashboard.projections.PontoRentabilidade;
 import com.ominidevs.operacional.dashboard.projections.PontoSerie;
 import com.ominidevs.operacional.dashboard.projections.ResumoViagens;
 import com.ominidevs.operacional.dashboard.projections.ValoresFinanceirosViagem;
@@ -28,14 +30,16 @@ public class DashboardRepository {
             WHERE data BETWEEN ? AND ?
             """;
 
-    private static final String SQL_SERIE_MENSAL = """
-            SELECT to_char(date_trunc('month', data), 'MM/YYYY') AS rotulo,
-                   COUNT(*) AS viagens,
-                   SUM(valor_frete) AS frete_total
-            FROM operacional.viagem
-            WHERE data BETWEEN ? AND ?
-            GROUP BY date_trunc('month', data)
-            ORDER BY date_trunc('month', data)
+    private static final String SQL_SERIE_RENTABILIDADE = """
+            SELECT to_char(p.inicio, '%2$s') AS rotulo,
+                   COUNT(v.data) AS viagens,
+                   COALESCE(SUM(COALESCE(v.receita_frete, 0) - COALESCE(v.custo_frete, 0) - COALESCE(v.pedagio, 0)), 0) AS rentabilidade
+            FROM generate_series(date_trunc('%1$s', CAST(? AS date)), CAST(? AS date), INTERVAL '1 %1$s') AS p(inicio)
+            LEFT JOIN operacional.viagem v
+                   ON v.data >= p.inicio AND v.data < p.inicio + INTERVAL '1 %1$s'
+                  AND v.data BETWEEN ? AND ?
+            GROUP BY p.inicio
+            ORDER BY p.inicio
             """;
 
     private static final String SQL_SERIE_POR_VEICULO = """
@@ -80,9 +84,13 @@ public class DashboardRepository {
                 Date.valueOf(periodo.inicio()), Date.valueOf(periodo.fim()));
     }
 
-    public List<PontoSerie> consultarSerieMensal(PeriodoConsulta periodo) {
-        return jdbc.query(SQL_SERIE_MENSAL, pontoSerie(),
-                Date.valueOf(periodo.inicio()), Date.valueOf(periodo.fim()));
+    public List<PontoRentabilidade> consultarSerieRentabilidade(PeriodoConsulta periodo, AgrupamentoSerie agrupamento) {
+        Date inicio = Date.valueOf(periodo.inicio());
+        Date fim = Date.valueOf(periodo.fim());
+        return jdbc.query(SQL_SERIE_RENTABILIDADE.formatted(agrupamento.unidadeSql(), agrupamento.formatoRotulo()),
+                (rs, row) -> new PontoRentabilidade(
+                        rs.getString("rotulo"), rs.getLong("viagens"), rs.getBigDecimal("rentabilidade")),
+                inicio, fim, inicio, fim);
     }
 
     public List<PontoSerie> consultarSeriePorVeiculo(PeriodoConsulta periodo) {

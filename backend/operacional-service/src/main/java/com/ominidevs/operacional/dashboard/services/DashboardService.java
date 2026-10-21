@@ -9,10 +9,14 @@ import org.springframework.stereotype.Service;
 import com.ominidevs.operacional.dashboard.dto.DashboardResponse;
 import com.ominidevs.operacional.dashboard.dto.DestinoMaisRentavelResponse;
 import com.ominidevs.operacional.dashboard.dto.MetricasDashboardResponse;
+import com.ominidevs.operacional.dashboard.dto.PontoRentabilidadeResponse;
 import com.ominidevs.operacional.dashboard.dto.PontoSerieResponse;
+import com.ominidevs.operacional.dashboard.dto.SerieRentabilidadeResponse;
 import com.ominidevs.operacional.dashboard.dto.SeriesDashboardResponse;
 import com.ominidevs.operacional.dashboard.dto.ViagensPorStatusResponse;
+import com.ominidevs.operacional.dashboard.model.AgrupamentoSerie;
 import com.ominidevs.operacional.dashboard.projections.DestinoRentavel;
+import com.ominidevs.operacional.dashboard.projections.PontoRentabilidade;
 import com.ominidevs.operacional.dashboard.projections.PontoSerie;
 import com.ominidevs.operacional.dashboard.projections.ResumoViagens;
 import com.ominidevs.operacional.dashboard.projections.ValoresFinanceirosViagem;
@@ -40,7 +44,7 @@ public class DashboardService {
         ResumoViagens resumo = repository.consultarResumo(periodo);
 
         SeriesDashboardResponse series = new SeriesDashboardResponse(
-                converterSerie(repository.consultarSerieMensal(periodo)),
+                consultarSerieRentabilidade(periodo),
                 converterSerie(repository.consultarSeriePorVeiculo(periodo)));
 
         List<UtilizacaoMotoristaResponse> utilizacao =
@@ -128,6 +132,16 @@ public class DashboardService {
 
     private BigDecimal zeroSeNulo(BigDecimal valor) {
         return valor == null ? BigDecimal.ZERO : valor;
+    }
+
+    private SerieRentabilidadeResponse consultarSerieRentabilidade(PeriodoConsulta periodo) {
+        AgrupamentoSerie agrupamento = AgrupamentoSerie.para(periodo);
+        List<PontoRentabilidade> pontos = repository.consultarSerieRentabilidade(periodo, agrupamento);
+        if (pontos == null) pontos = List.of();
+        return new SerieRentabilidadeResponse(agrupamento.name(), pontos.stream()
+                .map(ponto -> new PontoRentabilidadeResponse(
+                        ponto.rotulo(), ponto.viagens(), arredondar(ponto.rentabilidade())))
+                .toList());
     }
 
     private List<PontoSerieResponse> converterSerie(List<PontoSerie> pontos) {

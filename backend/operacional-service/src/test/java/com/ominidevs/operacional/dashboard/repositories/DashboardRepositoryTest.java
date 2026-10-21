@@ -83,19 +83,6 @@ class DashboardRepositoryTest {
         assertEquals(0, resumo.totalViagens());
         assertNull(resumo.kmTotal());
         assertEquals(0, resumo.motoristasAtivos());
-        assertTrue(repository.consultarSerieMensal(
-                PeriodoConsulta.parse("01/07/2026", "31/07/2026")).isEmpty());
-    }
-
-    @Test
-    void serieMensalAgrupaPorMesEmOrdemCrescente() {
-        List<PontoSerie> serie = repository.consultarSerieMensal(
-                PeriodoConsulta.parse("01/08/2026", "31/10/2026"));
-
-        assertEquals(List.of("08/2026", "09/2026", "10/2026"),
-                serie.stream().map(PontoSerie::rotulo).toList());
-        assertEquals(List.of(1L, 4L, 1L), serie.stream().map(PontoSerie::viagens).toList());
-        assertEquals(new BigDecimal("2000.00"), serie.get(1).freteTotal());
     }
 
     @Test

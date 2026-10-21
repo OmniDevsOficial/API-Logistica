@@ -10,6 +10,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import com.ominidevs.operacional.dashboard.exceptions.DashboardExceptionHandler;
+import com.ominidevs.operacional.dashboard.projections.PontoRentabilidade;
 import com.ominidevs.operacional.dashboard.projections.PontoSerie;
 import com.ominidevs.operacional.dashboard.projections.ResumoViagens;
 import com.ominidevs.operacional.dashboard.projections.ValoresFinanceirosViagem;
@@ -37,7 +38,7 @@ class DashboardControllerTest {
     void configurar() {
         when(repository.consultarResumo(any()))
                 .thenReturn(new ResumoViagens(0, null, 0, 0, 0, 0, 0));
-        when(repository.consultarSerieMensal(any())).thenReturn(List.of());
+        when(repository.consultarSerieRentabilidade(any(), any())).thenReturn(List.of());
         when(repository.consultarSeriePorVeiculo(any())).thenReturn(List.of());
         when(utilizacaoRepository.consultar(any())).thenReturn(List.of());
 
@@ -60,8 +61,8 @@ class DashboardControllerTest {
                 4, 550L, 2, 1, 2, 1, 1));
         when(repository.consultarValoresFinanceiros(any())).thenReturn(List.of(
                 new ValoresFinanceirosViagem(new BigDecimal("2000.00"), null, null)));
-        when(repository.consultarSerieMensal(any())).thenReturn(List.of(
-                new PontoSerie("09/2026", 4, new BigDecimal("2000.00"))));
+        when(repository.consultarSerieRentabilidade(any(), any())).thenReturn(List.of(
+                new PontoRentabilidade("09/2026", 4, new BigDecimal("2000.00"))));
         when(repository.consultarSeriePorVeiculo(any())).thenReturn(List.of(
                 new PontoSerie("Truck", 4, new BigDecimal("2000.00"))));
         when(utilizacaoRepository.consultar(any())).thenReturn(List.of(
@@ -81,8 +82,8 @@ class DashboardControllerTest {
                 .andExpect(jsonPath("$.metricas.viagensPorStatus.pendente").value(2))
                 .andExpect(jsonPath("$.metricas.viagensPorStatus.emTransito").value(1))
                 .andExpect(jsonPath("$.metricas.viagensPorStatus.finalizado").value(1))
-                .andExpect(jsonPath("$.series.porMes[0].rotulo").value("09/2026"))
-                .andExpect(jsonPath("$.series.porMes[0].viagens").value(4))
+                .andExpect(jsonPath("$.series.rentabilidadePorPeriodo.pontos[0].rotulo").value("09/2026"))
+                .andExpect(jsonPath("$.series.rentabilidadePorPeriodo.pontos[0].viagens").value(4))
                 .andExpect(jsonPath("$.series.porVeiculo[0].rotulo").value("Truck"))
                 .andExpect(jsonPath("$.utilizacaoMotoristas[0].nome").value("Ana"))
                 .andExpect(jsonPath("$.utilizacaoMotoristas[0].porcentagem").value(100));
@@ -105,7 +106,7 @@ class DashboardControllerTest {
                 .andExpect(jsonPath("$.status").value("SEM_DADOS"))
                 .andExpect(jsonPath("$.metricas.totalViagens").value(0))
                 .andExpect(jsonPath("$.metricas.freteTotal").value(nullValue()))
-                .andExpect(jsonPath("$.series.porMes").isEmpty());
+                .andExpect(jsonPath("$.series.rentabilidadePorPeriodo.pontos").isEmpty());
     }
 
     @Test
