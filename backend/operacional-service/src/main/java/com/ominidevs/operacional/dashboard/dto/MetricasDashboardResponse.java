@@ -16,5 +16,4 @@ public record MetricasDashboardResponse(
         BigDecimal rentabilidadeTotal,
         BigDecimal rentabilidadeMedia,
         BigDecimal margem,
-        DestinoMaisRentavelResponse destinoMaisRentavel,
-        BigDecimal taxaOcupacao) {}
+        DestinoMaisRentavelResponse destinoMaisRentavel) {}

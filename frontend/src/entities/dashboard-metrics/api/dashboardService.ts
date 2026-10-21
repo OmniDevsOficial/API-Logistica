@@ -90,7 +90,6 @@ function mapearMetricas(dados: unknown): DashboardMetrics {
     rentabilidadeMedia: numeroOuNulo(metricas.rentabilidadeMedia),
     margem: numeroOuNulo(metricas.margem),
     destinoMaisRentavel: mapearDestinoMaisRentavel(metricas.destinoMaisRentavel),
-    taxaOcupacao: numeroOuNulo(metricas.taxaOcupacao),
   };
 }
 

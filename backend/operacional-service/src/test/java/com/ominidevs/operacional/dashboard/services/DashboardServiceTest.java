@@ -92,7 +92,6 @@ class DashboardServiceTest {
         assertNull(metricas.custoMedio());
         assertNull(metricas.rentabilidadeTotal());
         assertNull(metricas.rentabilidadeMedia());
-        assertNull(metricas.taxaOcupacao());
     }
 
     @Test
