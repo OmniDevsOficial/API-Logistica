@@ -7,6 +7,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import com.ominidevs.operacional.dashboard.projections.DestinoRentavel;
+import com.ominidevs.operacional.dashboard.model.AgrupamentoSerie;
+import com.ominidevs.operacional.dashboard.projections.PontoRentabilidade;
 import com.ominidevs.operacional.dashboard.projections.PontoSerie;
 import com.ominidevs.operacional.dashboard.projections.ResumoViagens;
 import com.ominidevs.operacional.dashboard.projections.ValoresFinanceirosViagem;
@@ -38,7 +40,7 @@ class DashboardServiceTest {
     @BeforeEach
     void configurar() {
         when(repository.consultarResumo(any())).thenReturn(RESUMO_VAZIO);
-        when(repository.consultarSerieMensal(any())).thenReturn(List.of());
+        when(repository.consultarSerieRentabilidade(any(), any())).thenReturn(List.of());
         when(repository.consultarSeriePorVeiculo(any())).thenReturn(List.of());
         when(utilizacaoService.consultar(any(), any())).thenReturn(utilizacao(List.of()));
     }
@@ -55,8 +57,8 @@ class DashboardServiceTest {
                 10, 550L, 3, 2, 4, 3, 3));
         when(repository.consultarValoresFinanceiros(periodo)).thenReturn(List.of(
                 new ValoresFinanceirosViagem(new BigDecimal("2000.00"), null, null)));
-        when(repository.consultarSerieMensal(periodo)).thenReturn(List.of(
-                new PontoSerie("09/2026", 10, new BigDecimal("2000.00"))));
+        when(repository.consultarSerieRentabilidade(periodo, AgrupamentoSerie.DIA)).thenReturn(List.of(
+                new PontoRentabilidade("01/09", 10, new BigDecimal("2000.00"))));
         when(repository.consultarSeriePorVeiculo(periodo)).thenReturn(List.of(
                 new PontoSerie("Truck", 6, new BigDecimal("1200.00")),
                 new PontoSerie("SEM_VEICULO", 4, new BigDecimal("800.00"))));
@@ -78,7 +80,7 @@ class DashboardServiceTest {
         assertEquals(4, resultado.metricas().viagensPorStatus().pendente());
         assertEquals(3, resultado.metricas().viagensPorStatus().emTransito());
         assertEquals(3, resultado.metricas().viagensPorStatus().finalizado());
-        assertEquals(List.of("09/2026"), resultado.series().porMes().stream().map(p -> p.rotulo()).toList());
+        assertEquals(List.of("01/09"), resultado.series().rentabilidadePorPeriodo().pontos().stream().map(p -> p.rotulo()).toList());
         assertEquals(List.of("Truck", "SEM_VEICULO"),
                 resultado.series().porVeiculo().stream().map(p -> p.rotulo()).toList());
         assertEquals(List.of("Ana"), resultado.utilizacaoMotoristas().stream().map(m -> m.nome()).toList());
@@ -296,7 +298,7 @@ class DashboardServiceTest {
         assertNull(resultado.metricas().freteTotal());
         assertNull(resultado.metricas().freteMedio());
         assertNull(resultado.metricas().kmTotal());
-        assertTrue(resultado.series().porMes().isEmpty());
+        assertTrue(resultado.series().rentabilidadePorPeriodo().pontos().isEmpty());
         assertTrue(resultado.series().porVeiculo().isEmpty());
         assertTrue(resultado.utilizacaoMotoristas().isEmpty());
     }
@@ -306,7 +308,7 @@ class DashboardServiceTest {
         service.consultar(periodo);
 
         verify(repository).consultarResumo(periodo);
-        verify(repository).consultarSerieMensal(periodo);
+        verify(repository).consultarSerieRentabilidade(periodo, AgrupamentoSerie.DIA);
         verify(repository).consultarSeriePorVeiculo(periodo);
         verify(utilizacaoService).consultar(periodo, OrdenacaoUtilizacao.DESC);
     }
