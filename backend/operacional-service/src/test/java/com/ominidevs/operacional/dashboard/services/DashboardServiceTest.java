@@ -290,6 +290,26 @@ class DashboardServiceTest {
     }
 
     @Test
+    void serieDeRentabilidadeDoAnoVemPorMesComValorArredondado() {
+        PeriodoConsulta ano = PeriodoConsulta.parse("01/01/2026", "31/12/2026");
+        when(repository.consultarSerieRentabilidade(ano, AgrupamentoSerie.MES)).thenReturn(List.of(
+                new PontoRentabilidade("07/2026", 629, new BigDecimal("882523.6700")),
+                new PontoRentabilidade("08/2026", 694, new BigDecimal("889035.3300"))));
+
+        var serie = service.consultar(ano).series().rentabilidadePorPeriodo();
+
+        assertEquals("MES", serie.agrupamento());
+        assertEquals(List.of("07/2026", "08/2026"), serie.pontos().stream().map(p -> p.rotulo()).toList());
+        assertEquals(629, serie.pontos().get(0).viagens());
+        assertEquals(new BigDecimal("882523.67"), serie.pontos().get(0).rentabilidade());
+    }
+
+    @Test
+    void serieDeRentabilidadeDoMesVemPorDia() {
+        assertEquals("DIA", service.consultar(periodo).series().rentabilidadePorPeriodo().agrupamento());
+    }
+
+    @Test
     void periodoSemViagensRetornaSemDadosENaoZeraOsValores() {
         var resultado = service.consultar(periodo);
 
