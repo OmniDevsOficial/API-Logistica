@@ -140,7 +140,7 @@ public class DashboardService {
         if (pontos == null) pontos = List.of();
         return new SerieRentabilidadeResponse(agrupamento.name(), pontos.stream()
                 .map(ponto -> new PontoRentabilidadeResponse(
-                        ponto.rotulo(), ponto.viagens(), arredondar(ponto.rentabilidade())))
+                        ponto.rotulo(), ponto.viagens(), arredondar(ponto.custo()), arredondar(ponto.rentabilidade())))
                 .toList());
     }
 

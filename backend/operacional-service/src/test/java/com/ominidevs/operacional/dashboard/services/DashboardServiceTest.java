@@ -58,7 +58,7 @@ class DashboardServiceTest {
         when(repository.consultarValoresFinanceiros(periodo)).thenReturn(List.of(
                 new ValoresFinanceirosViagem(new BigDecimal("2000.00"), null, null)));
         when(repository.consultarSerieRentabilidade(periodo, AgrupamentoSerie.DIA)).thenReturn(List.of(
-                new PontoRentabilidade("01/09", 10, new BigDecimal("2000.00"))));
+                new PontoRentabilidade("01/09", 10, BigDecimal.ZERO, new BigDecimal("2000.00"))));
         when(repository.consultarSeriePorVeiculo(periodo)).thenReturn(List.of(
                 new PontoSerie("Truck", 6, new BigDecimal("1200.00")),
                 new PontoSerie("SEM_VEICULO", 4, new BigDecimal("800.00"))));
@@ -293,8 +293,8 @@ class DashboardServiceTest {
     void serieDeRentabilidadeDoAnoVemPorMesComValorArredondado() {
         PeriodoConsulta ano = PeriodoConsulta.parse("01/01/2026", "31/12/2026");
         when(repository.consultarSerieRentabilidade(ano, AgrupamentoSerie.MES)).thenReturn(List.of(
-                new PontoRentabilidade("07/2026", 629, new BigDecimal("882523.6700")),
-                new PontoRentabilidade("08/2026", 694, new BigDecimal("889035.3300"))));
+                new PontoRentabilidade("07/2026", 629, new BigDecimal("711053.8100"), new BigDecimal("882523.6700")),
+                new PontoRentabilidade("08/2026", 694, new BigDecimal("1027913.7600"), new BigDecimal("889035.3300"))));
 
         var serie = service.consultar(ano).series().rentabilidadePorPeriodo();
 
