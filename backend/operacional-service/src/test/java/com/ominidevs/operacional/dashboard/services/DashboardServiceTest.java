@@ -302,6 +302,7 @@ class DashboardServiceTest {
         assertEquals(List.of("07/2026", "08/2026"), serie.pontos().stream().map(p -> p.rotulo()).toList());
         assertEquals(629, serie.pontos().get(0).viagens());
         assertEquals(new BigDecimal("882523.67"), serie.pontos().get(0).rentabilidade());
+        assertEquals(new BigDecimal("711053.81"), serie.pontos().get(0).custo());
     }
 
     @Test
