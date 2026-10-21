@@ -94,7 +94,10 @@ export async function buscarMotoristas(
   signal?: AbortSignal,
 ): Promise<MotoristaEquipe[]> {
   const query = filtro ? `?status=${STATUS_BACKEND[filtro]}` : "";
-  const resposta = await apiFetch(`${ENDPOINT}${query}`, { signal });
+  const resposta = await apiFetch(`${ENDPOINT}${query}`, {
+    signal,
+    cache: "no-store",
+  });
 
   if (!resposta.ok) {
     throw new Error("Não foi possível carregar os motoristas.");

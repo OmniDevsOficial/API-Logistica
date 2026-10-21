@@ -3,11 +3,21 @@ import { StatusMotoristaBadge } from "@entities/motorista/ui/StatusMotoristaBadg
 
 interface EquipeTabelaProps {
   motoristas: MotoristaEquipe[];
+  rentabilidades: Map<string, number | null>;
+  chaveNomeMotorista: (nome: string) => string;
 }
 
 const HEADER_CELL = "text-left text-xs font-semibold text-fg-muted";
+const FORMATADOR_MOEDA = new Intl.NumberFormat("pt-BR", {
+  style: "currency",
+  currency: "BRL",
+});
 
-export function EquipeTabela({ motoristas }: EquipeTabelaProps) {
+export function EquipeTabela({
+  motoristas,
+  rentabilidades,
+  chaveNomeMotorista,
+}: EquipeTabelaProps) {
   if (motoristas.length === 0) {
     return (
       <p className="rounded-md bg-surface p-6 text-center text-sm text-fg-subtle">
@@ -19,7 +29,16 @@ export function EquipeTabela({ motoristas }: EquipeTabelaProps) {
   return (
     <div className="rounded-md bg-surface">
       <div className="overflow-x-auto">
-        <table className="w-full min-w-[800px]">
+        <table className="w-full min-w-[1020px] table-fixed">
+          <colgroup>
+            <col className="w-[16%]" />
+            <col className="w-[14%]" />
+            <col className="w-[17%]" />
+            <col className="w-[16%]" />
+            <col className="w-[9%]" />
+            <col className="w-[16%]" />
+            <col className="w-[12%]" />
+          </colgroup>
           <thead>
             <tr className="border-b border-border">
               <th className={`${HEADER_CELL} py-4 pl-6`}>Motorista</th>
@@ -27,6 +46,7 @@ export function EquipeTabela({ motoristas }: EquipeTabelaProps) {
               <th className={`${HEADER_CELL} py-4`}>Operação</th>
               <th className={`${HEADER_CELL} py-4`}>Localização</th>
               <th className={`${HEADER_CELL} py-4`}>Viagens</th>
+              <th className={`${HEADER_CELL} py-4`}>Rentabilidade média</th>
               <th className={`${HEADER_CELL} py-4 pr-6`}>Status</th>
             </tr>
           </thead>
@@ -74,6 +94,22 @@ export function EquipeTabela({ motoristas }: EquipeTabelaProps) {
                 {/* Viagens */}
                 <td className="py-4">
                   <span className="text-sm text-fg">{motorista.viagens}</span>
+                </td>
+
+                {/* Rentabilidade média */}
+                <td className="py-4">
+                  {(() => {
+                    const valor = rentabilidades.get(
+                      chaveNomeMotorista(motorista.nome),
+                    );
+                    return (
+                      <span
+                        className={`whitespace-nowrap text-sm font-medium ${valor != null && valor < 0 ? "text-red-600" : "text-fg"}`}
+                      >
+                        {valor == null ? "-" : FORMATADOR_MOEDA.format(valor)}
+                      </span>
+                    );
+                  })()}
                 </td>
 
                 {/* Status */}
