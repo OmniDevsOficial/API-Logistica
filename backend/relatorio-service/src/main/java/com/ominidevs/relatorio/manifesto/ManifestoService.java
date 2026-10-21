@@ -1,14 +1,10 @@
 package com.ominidevs.relatorio.manifesto;
 
 import com.ominidevs.relatorio.manifesto.exception.ArquivoInvalidoException;
-import com.ominidevs.relatorio.manifesto.parser.ArquivoParser;
-import com.ominidevs.relatorio.manifesto.parser.CsvParser;
-import com.ominidevs.relatorio.manifesto.parser.ExcelParser;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.ByteArrayInputStream;
+import java.util.Locale;
 import java.io.IOException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -24,54 +20,39 @@ import java.util.Map;
 @Service
 public class ManifestoService {
 
-    private final CsvParser csvParser;
-    private final ExcelParser excelParser;
+    private final ManifestoProcessador processador;
 
-    public ManifestoService(CsvParser csvParser, ExcelParser excelParser) {
-        this.csvParser = csvParser;
-        this.excelParser = excelParser;
+    public ManifestoService(ManifestoProcessador processador) {
+        this.processador = processador;
     }
 
     /**
      * Processa o arquivo de manifesto enviado via upload.
-     * O resultado é cacheado pela chave SHA-256 do conteúdo dos bytes.
+     * O resultado é cacheado pelo formato e pelo SHA-256 do conteúdo dos bytes.
      *
      * @param file arquivo MultipartFile recebido no upload
      * @return dados tabulares em formato List<Map<String, String>>
      */
     public List<Map<String, String>> processarManifesto(MultipartFile file) {
+        if (file == null) throw new ArquivoInvalidoException("esse arquivo é inválido");
+        // Validar antes do cache impede reutilizar CSV renomeado para um formato inválido.
+        String formato = formatoValido(file.getOriginalFilename());
         try {
             byte[] bytes = file.getBytes();
             String hash = calcularHashSHA256(bytes);
-            return processarComCache(hash, bytes, file.getOriginalFilename());
+            return processador.processarComCache(hash, bytes, formato);
         } catch (IOException e) {
             throw new ArquivoInvalidoException("esse arquivo é inválido", e);
         }
     }
 
-    /**
-     * Método cacheável separado — a chave é o hash SHA-256 (String),
-     * nunca o MultipartFile (que não é serializável).
-     */
-    @Cacheable(value = "manifestos", key = "#hash")
-    public List<Map<String, String>> processarComCache(String hash, byte[] bytes, String filename) {
-        ArquivoParser parser = resolverParser(filename);
-        return parser.parse(new ByteArrayInputStream(bytes));
-    }
-
-    /**
-     * Resolve qual parser usar com base na extensão do nome do arquivo.
-     */
-    ArquivoParser resolverParser(String filename) {
+    private String formatoValido(String filename) {
         if (filename == null || !filename.contains(".")) {
             throw new ArquivoInvalidoException("esse arquivo é inválido");
         }
-
-        String extensao = filename.substring(filename.lastIndexOf('.') + 1).toLowerCase();
-
-        return switch (extensao) {
-            case "csv" -> csvParser;
-            case "xlsx", "xls" -> excelParser;
+        String formato = filename.substring(filename.lastIndexOf('.') + 1).toLowerCase(Locale.ROOT);
+        return switch (formato) {
+            case "csv", "xlsx", "xls" -> formato;
             default -> throw new ArquivoInvalidoException("esse arquivo é inválido");
         };
     }

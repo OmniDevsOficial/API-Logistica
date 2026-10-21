@@ -1,28 +1,34 @@
 export type PeriodOption = "dia" | "mes" | "ano";
 
-export interface DashboardMetrics {
-  rentabilidadeTotal: number;
-  rentabilidadeTotalTrendPercent: number;
-  rentabilidadeMedia: number;
+export type DashboardStatus = "COM_DADOS" | "SEM_DADOS";
+
+export interface ViagensPorStatus {
+  pendente: number;
+  emTransito: number;
+  finalizado: number;
+}
+
+export interface DestinoMaisRentavel {
+  destino: string;
   viagens: number;
-  disponiveis: number;
-  custoTotal: number;
-  taxaOcupacao: number;
-  tempoAlocacaoMedia: number;
-  utilizacaoFrotaMedia: number;
-  disponiveisMedia: number;
-  fretesValorTotal: number;
-  custoMedio: number;
+  rentabilidadeTotal: number;
 }
 
-export interface RentabilidadeViagensPoint {
-  viagensLabel: string;
-  rentabilidade: number;
-}
-
-export interface UtilizacaoFrotaCategoria {
-  categoria: string;
-  utilizacao: number;
+export interface DashboardMetrics {
+  totalViagens: number;
+  freteTotal: number | null;
+  freteMedio: number | null;
+  kmTotal: number | null;
+  motoristasAtivos: number;
+  viagensPorMotorista: number | null;
+  veiculosUtilizados: number;
+  viagensPorStatus: ViagensPorStatus;
+  custoTotal: number | null;
+  custoMedio: number | null;
+  rentabilidadeTotal: number | null;
+  rentabilidadeMedia: number | null;
+  margem: number | null;
+  destinoMaisRentavel: DestinoMaisRentavel | null;
 }
 
 export interface DashboardData {
@@ -30,7 +36,19 @@ export interface DashboardData {
     inicio: string;
     fim: string;
   };
+  status: DashboardStatus;
   metrics: DashboardMetrics;
-  rentabilidadeXViagens: RentabilidadeViagensPoint[];
-  utilizacaoMediaFrota: UtilizacaoFrotaCategoria[];
+  serieRentabilidade: SerieRentabilidade;
+}
+
+export interface PontoRentabilidade {
+  rotulo: string;
+  viagens: number;
+  custo: number;
+  rentabilidade: number;
+}
+
+export interface SerieRentabilidade {
+  agrupamento: "DIA" | "MES";
+  pontos: PontoRentabilidade[];
 }

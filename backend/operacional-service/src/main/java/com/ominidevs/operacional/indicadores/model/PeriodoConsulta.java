@@ -22,4 +22,9 @@ public record PeriodoConsulta(LocalDate inicio, LocalDate fim) {
             throw new IndicadorInvalidoException("Informe datas válidas no formato dd/MM/aaaa.");
         }
     }
+
+    public static PeriodoConsulta mesCorrente() {
+        LocalDate hoje = LocalDate.now();
+        return new PeriodoConsulta(hoje.withDayOfMonth(1), hoje);
+    }
 }

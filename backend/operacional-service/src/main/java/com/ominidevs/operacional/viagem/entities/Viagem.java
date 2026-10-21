@@ -35,14 +35,29 @@ public class Viagem {
     @Column(name = "veiculo", nullable = false, length = 50)
     private String veiculo;
 
+    @Column(name = "veiculo_tipo", length = 50)
+    private String veiculoTipo;
+
+    @Column(name = "data_previsao_chegada")
+    private LocalDate dataPrevisaoChegada;
+
     @Column(name = "cidade_origem", length = 255)
     private String cidadeOrigem;
 
     @Column(name = "cidade_destino", length = 255)
     private String cidadeDestino;
 
-    @Column(name = "valor_frete", precision = 8, scale = 2)
+    @Column(name = "valor_frete", precision = 12, scale = 2)
     private BigDecimal valorFrete;
+
+    @Column(name = "receita_frete", precision = 12, scale = 2)
+    private BigDecimal receitaFrete;
+
+    @Column(name = "custo_frete", precision = 12, scale = 2)
+    private BigDecimal custoFrete;
+
+    @Column(name = "pedagio", precision = 12, scale = 2)
+    private BigDecimal pedagio;
 
     @Column(name = "km_saida")
     private Integer kmSaida;
@@ -137,6 +152,22 @@ public class Viagem {
         this.veiculo = veiculo;
     }
 
+    public String getVeiculoTipo() {
+        return veiculoTipo;
+    }
+
+    public void setVeiculoTipo(String veiculoTipo) {
+        this.veiculoTipo = veiculoTipo;
+    }
+
+    public LocalDate getDataPrevisaoChegada() {
+        return dataPrevisaoChegada;
+    }
+
+    public void setDataPrevisaoChegada(LocalDate dataPrevisaoChegada) {
+        this.dataPrevisaoChegada = dataPrevisaoChegada;
+    }
+
     public String getCidadeOrigem() {
         return cidadeOrigem;
     }
@@ -159,6 +190,30 @@ public class Viagem {
 
     public void setValorFrete(BigDecimal valorFrete) {
         this.valorFrete = valorFrete;
+    }
+
+    public BigDecimal getReceitaFrete() {
+        return receitaFrete;
+    }
+
+    public void setReceitaFrete(BigDecimal receitaFrete) {
+        this.receitaFrete = receitaFrete;
+    }
+
+    public BigDecimal getCustoFrete() {
+        return custoFrete;
+    }
+
+    public void setCustoFrete(BigDecimal custoFrete) {
+        this.custoFrete = custoFrete;
+    }
+
+    public BigDecimal getPedagio() {
+        return pedagio;
+    }
+
+    public void setPedagio(BigDecimal pedagio) {
+        this.pedagio = pedagio;
     }
 
     public Integer getKmSaida() {

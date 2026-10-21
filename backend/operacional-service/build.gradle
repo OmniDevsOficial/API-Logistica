@@ -8,6 +8,8 @@ dependencies {
 
     implementation 'org.reactivestreams:reactive-streams'
 
+    implementation 'org.springframework.boot:spring-boot-starter-security-oauth2-resource-server'
+
     // Flyway
     implementation 'org.springframework.boot:spring-boot-starter-flyway'
     implementation 'org.flywaydb:flyway-core:12.9.0'
@@ -19,6 +21,8 @@ dependencies {
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
 
     testImplementation 'org.springframework.boot:spring-boot-starter-webmvc-test'
+    // PostgreSQL descartável para testar consultas reais, usando a versão gerenciada pelo Spring Boot.
+    testImplementation 'org.testcontainers:testcontainers-postgresql'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 

@@ -10,6 +10,7 @@ import {
   LogOut,
   X,
 } from "lucide-react";
+import { encerrarSessao, podeAcessar, useSessao } from "@entities/sessao";
 
 interface NavItem {
   label: string;
@@ -37,6 +38,12 @@ interface SidebarProps {
 }
 
 export function Sidebar({ open, onClose }: SidebarProps) {
+  const { usuario } = useSessao();
+  const itensVisiveis = MAIN_NAV_ITEMS.filter(
+    ({ path }) =>
+      !path || (usuario !== null && podeAcessar(usuario.perfil, path)),
+  );
+
   return (
     <>
       <div
@@ -73,7 +80,7 @@ export function Sidebar({ open, onClose }: SidebarProps) {
         </div>
 
         <nav className="flex flex-1 flex-col gap-1">
-          {MAIN_NAV_ITEMS.map(({ label, icon: Icon, path }) =>
+          {itensVisiveis.map(({ label, icon: Icon, path }) =>
             path ? (
               <NavLink
                 key={label}
@@ -101,10 +108,14 @@ export function Sidebar({ open, onClose }: SidebarProps) {
             <Settings size={18} strokeWidth={2} />
             <span>Settings</span>
           </div>
-          <div className={NAV_ITEM_INACTIVE_CLASS}>
+          <button
+            type="button"
+            onClick={encerrarSessao}
+            className={`${NAV_ITEM_INACTIVE_CLASS} w-full cursor-pointer text-left`}
+          >
             <LogOut size={18} strokeWidth={2} />
             <span>Log out</span>
-          </div>
+          </button>
         </div>
       </aside>
     </>

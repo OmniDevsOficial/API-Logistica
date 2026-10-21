@@ -1,7 +1,11 @@
 package com.ominidevs.operacional.viagem.services;
 
+import com.ominidevs.operacional.motorista.services.MotoristaService;
 import com.ominidevs.operacional.viagem.clients.ManifestoClient;
 import com.ominidevs.operacional.viagem.dto.ManifestoDTO;
+import com.ominidevs.operacional.viagem.dto.ImportacaoManifestoResponse;
+import com.ominidevs.operacional.viagem.dto.ErroLinhaImportacao;
+import com.ominidevs.operacional.viagem.dto.RankingDestinoResponse;
 import com.ominidevs.operacional.viagem.entities.StatusViagem;
 import com.ominidevs.operacional.viagem.entities.Viagem;
 import com.ominidevs.operacional.viagem.exceptions.FiltroInvalidoException;
@@ -18,6 +22,9 @@ import java.time.LocalDate;
 import java.time.YearMonth;
 import java.time.format.DateTimeParseException;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+import com.ominidevs.operacional.viagem.dto.RentabilidadeViagemResponse;
 
 @Service
 public class ViagemService {
@@ -25,29 +32,81 @@ public class ViagemService {
     private final ManifestoClient manifestoClient;
     private final ManifestoMapper manifestoMapper;
     private final ViagemRepository viagemRepository;
+    private final MotoristaService motoristaService;
 
     public ViagemService(
             ManifestoClient manifestoClient,
             ManifestoMapper manifestoMapper,
-            ViagemRepository viagemRepository
+            ViagemRepository viagemRepository,
+            MotoristaService motoristaService
     ) {
         this.manifestoClient = manifestoClient;
         this.manifestoMapper = manifestoMapper;
         this.viagemRepository = viagemRepository;
+        this.motoristaService = motoristaService;
     }
 
-    public List<Viagem> importarManifesto(MultipartFile file) {
+    public ImportacaoManifestoResponse importarManifesto(MultipartFile file) {
 
         validarArquivo(file);
 
         List<ManifestoDTO> manifestos =
                 manifestoClient.enviar(file);
 
-        List<Viagem> viagens = manifestos.stream()
-                .map(manifestoMapper::toEntity)
+        java.util.Map<String, Viagem> viagensPorManifesto = new java.util.LinkedHashMap<>();
+        List<ErroLinhaImportacao> erros = new java.util.ArrayList<>();
+        for (ManifestoDTO manifesto : manifestos) {
+            try {
+                Viagem viagem = manifestoMapper.toEntity(manifesto);
+                viagensPorManifesto.put(viagem.getManifesto(), viagem);
+            } catch (IllegalArgumentException ex) {
+                erros.add(new ErroLinhaImportacao(manifesto.getNumeroLinha(), manifesto.getManifesto(), ex.getMessage()));
+            }
+        }
+        List<Viagem> viagens = new java.util.ArrayList<>(viagensPorManifesto.values());
+
+        List<Viagem> registrosExistentes = viagens.isEmpty()
+                ? List.of()
+                : viagemRepository.findByManifestoIn(
+                        viagens.stream().map(Viagem::getManifesto).distinct().toList());
+
+        Set<String> manifestosExistentes = registrosExistentes
+                .stream()
+                .map(Viagem::getManifesto)
+                .collect(Collectors.toSet());
+
+        List<String> manifestosDuplicados = viagens.stream()
+                .map(Viagem::getManifesto)
+                .filter(manifestosExistentes::contains)
+                .distinct()
                 .toList();
 
-        return viagemRepository.saveAll(viagens);
+        java.util.Map<String, Viagem> existentesPorManifesto = registrosExistentes.stream()
+                .collect(Collectors.toMap(Viagem::getManifesto, v -> v, (a, b) -> a));
+        List<Viagem> novasViagens = new java.util.ArrayList<>();
+        List<Viagem> atualizadas = new java.util.ArrayList<>();
+        for (Viagem viagem : viagens) {
+            Viagem existente = existentesPorManifesto.get(viagem.getManifesto());
+            if (existente == null) {
+                novasViagens.add(viagem);
+            } else {
+                existente.setReceitaFrete(viagem.getReceitaFrete());
+                existente.setCustoFrete(viagem.getCustoFrete());
+                existente.setPedagio(viagem.getPedagio());
+                existente.setValorFrete(viagem.getValorFrete());
+                atualizadas.add(existente);
+            }
+        }
+
+        List<Viagem> paraSalvar = new java.util.ArrayList<>(novasViagens);
+        paraSalvar.addAll(atualizadas);
+        List<Viagem> viagensImportadas = paraSalvar.isEmpty()
+                ? List.of()
+                : viagemRepository.saveAll(paraSalvar);
+        motoristaService.sincronizarComManifesto(viagensImportadas);
+
+        return new ImportacaoManifestoResponse(
+                viagensImportadas, manifestosDuplicados, erros);
     }
 
     private void validarArquivo(MultipartFile file) {
@@ -85,6 +144,33 @@ public class ViagemService {
                 .and(ViagemSpecifications.dataNoMes(inicioMes, fimMes));
 
         return viagemRepository.findAll(filtro);
+    }
+
+    public RentabilidadeViagemResponse consultarRentabilidade(String manifesto) {
+        Viagem viagem = viagemRepository.findByManifesto(manifesto)
+                .orElseThrow(() -> new java.util.NoSuchElementException("Viagem não encontrada: " + manifesto));
+        return new RentabilidadeViagemResponse(viagem.getManifesto(), viagem.getMotorista(),
+                viagem.getCidadeOrigem(), viagem.getCidadeDestino(), viagem.getReceitaFrete(),
+                viagem.getCustoFrete(), viagem.getPedagio(),
+                RentabilidadeService.calcular(viagem.getReceitaFrete(), viagem.getCustoFrete(), viagem.getPedagio()));
+    }
+
+    /**
+     * TOP 10 destinos por rentabilidade média no mês (YYYY-MM).
+     * Agregação, desempate e limite são feitos no banco.
+     */
+    public List<RankingDestinoResponse> rankingDestinosPorRentabilidade(String mes) {
+
+        if (mes == null || mes.isBlank()) {
+            throw new FiltroInvalidoException(
+                    "mes é obrigatório no formato YYYY-MM"
+            );
+        }
+
+        YearMonth periodo = converterMes(mes.trim());
+
+        return viagemRepository.rankingDestinosPorRentabilidade(
+                periodo.atDay(1), periodo.atEndOfMonth());
     }
 
     private void validarFaixaFrete(BigDecimal freteMin, BigDecimal freteMax) {

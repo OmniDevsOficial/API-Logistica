@@ -17,6 +17,8 @@ services:
       interval: 5s
       timeout: 5s
       retries: 10
+    networks:
+      - logistica-net
 
   operacional-service:
     build:
@@ -28,11 +30,15 @@ services:
       SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER}
       SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD}
       RELATORIO_SERVICE_URL: http://relatorio-service:8082
+      JWT_SECRET: ${JWT_SECRET:?Defina JWT_SECRET no arquivo .env}
+      CORS_ALLOWED_ORIGINS: ${CORS_ALLOWED_ORIGINS:-http://localhost:5173,http://localhost:3000}
     ports:
       - "8081:8081"
     depends_on:
       postgres:
         condition: service_healthy
+    networks:
+      - logistica-net
 
   relatorio-service:
     build:
@@ -44,6 +50,8 @@ services:
       SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER}
       SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD}
       OPERACIONAL_SERVICE_URL: http://operacional-service:8081
+      JWT_SECRET: ${JWT_SECRET:?Defina JWT_SECRET no arquivo .env}
+      CORS_ALLOWED_ORIGINS: ${CORS_ALLOWED_ORIGINS:-http://localhost:5173,http://localhost:3000}
     ports:
       - "8082:8082"
     depends_on:
@@ -51,6 +59,28 @@ services:
         condition: service_healthy
       operacional-service:
         condition: service_started
+    networks:
+      - logistica-net
+
+  autenticacao-service:
+    build:
+      context: ./backend
+      dockerfile: autenticacao-service/Dockerfile
+    container_name: logistica-autenticacao
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/${POSTGRES_DB}?currentSchema=autenticacao
+      SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER}
+      SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD}
+      JWT_SECRET: ${JWT_SECRET:?Defina JWT_SECRET no arquivo .env}
+      JWT_EXPIRACAO_MINUTOS: ${JWT_EXPIRACAO_MINUTOS:-480}
+      CORS_ALLOWED_ORIGINS: ${CORS_ALLOWED_ORIGINS:-http://localhost:5173,http://localhost:3000}
+    ports:
+      - "8083:8083"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - logistica-net
 
   frontend:
     build: ./frontend
@@ -60,6 +90,13 @@ services:
     depends_on:
       - operacional-service
       - relatorio-service
+      - autenticacao-service
+    networks:
+      - logistica-net
 
 volumes:
   postgres_data:
+
+networks:
+  logistica-net:
+    driver: bridge

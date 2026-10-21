@@ -1,3 +1,4 @@
+import { apiFetch } from "@shared/api";
 import type { MotoristaUtilizacao } from "../model/types";
 
 interface UtilizacaoMotoristaResponse {
@@ -37,7 +38,7 @@ export async function buscarUtilizacaoMotoristas(
   signal?: AbortSignal,
 ): Promise<MotoristaUtilizacao[]> {
   const parametros = new URLSearchParams({ dataInicio, dataFim, ordenacao });
-  const resposta = await fetch(
+  const resposta = await apiFetch(
     `/api/operacional/indicadores/utilizacao?${parametros.toString()}`,
     { signal },
   );
