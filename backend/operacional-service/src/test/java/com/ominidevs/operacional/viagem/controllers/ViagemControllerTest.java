@@ -76,6 +76,7 @@ class ViagemControllerTest {
                 .andExpect(jsonPath("$.length()").value(1))
                 .andExpect(jsonPath("$[0].id").value(123))
                 .andExpect(jsonPath("$[0].manifesto").value("MAN-001"))
+                .andExpect(jsonPath("$[0].data").value("2026-09-10"))
                 .andExpect(jsonPath("$[0].destino").value("Rio de Janeiro"));
     }
 
