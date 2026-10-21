@@ -11,7 +11,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.SingleConnectionDataSource;
 
+import com.ominidevs.operacional.dashboard.model.AgrupamentoSerie;
 import com.ominidevs.operacional.dashboard.projections.DestinoRentavel;
+import com.ominidevs.operacional.dashboard.projections.PontoRentabilidade;
 import com.ominidevs.operacional.dashboard.projections.PontoSerie;
 import com.ominidevs.operacional.dashboard.projections.ResumoViagens;
 import com.ominidevs.operacional.dashboard.projections.ValoresFinanceirosViagem;
@@ -83,6 +85,42 @@ class DashboardRepositoryTest {
         assertEquals(0, resumo.totalViagens());
         assertNull(resumo.kmTotal());
         assertEquals(0, resumo.motoristasAtivos());
+    }
+
+    @Test
+    void serieDeRentabilidadePorDiaTrazTodosOsDiasDoPeriodoComDiaSemViagemZerado() {
+        jdbc.update("""
+                INSERT INTO operacional.viagem (data, receita_frete, custo_frete, pedagio) VALUES
+                ('2026-09-10', 1000.00, 600.00, 50.00),
+                ('2026-09-30', 300.00, 500.00, NULL)
+                """);
+
+        List<PontoRentabilidade> serie = repository.consultarSerieRentabilidade(setembro, AgrupamentoSerie.DIA);
+
+        assertEquals(30, serie.size());
+        assertEquals("01/09", serie.get(0).rotulo());
+        assertEquals("30/09", serie.get(29).rotulo());
+        assertEquals(3, serie.get(9).viagens());
+        assertEquals(0, new BigDecimal("350.00").compareTo(serie.get(9).rentabilidade()));
+        assertEquals(0, serie.get(1).viagens());
+        assertEquals(0, BigDecimal.ZERO.compareTo(serie.get(1).rentabilidade()));
+        assertEquals(0, new BigDecimal("-200.00").compareTo(serie.get(29).rentabilidade()));
+    }
+
+    @Test
+    void serieDeRentabilidadePorMesAgrupaOsMesesDoPeriodoEmOrdem() {
+        jdbc.update("""
+                INSERT INTO operacional.viagem (data, receita_frete, custo_frete, pedagio) VALUES
+                ('2026-09-15', 1000.00, 600.00, 50.00)
+                """);
+
+        List<PontoRentabilidade> serie = repository.consultarSerieRentabilidade(
+                PeriodoConsulta.parse("01/08/2026", "31/10/2026"), AgrupamentoSerie.MES);
+
+        assertEquals(List.of("08/2026", "09/2026", "10/2026"),
+                serie.stream().map(PontoRentabilidade::rotulo).toList());
+        assertEquals(List.of(1L, 5L, 1L), serie.stream().map(PontoRentabilidade::viagens).toList());
+        assertEquals(0, new BigDecimal("350.00").compareTo(serie.get(1).rentabilidade()));
     }
 
     @Test
