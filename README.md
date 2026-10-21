@@ -3,7 +3,7 @@
   <img src="https://i.imgur.com/VbBN3Tk.jpeg" width="170x" height="170x" style="border-radius:20%;">
 </p>
 <div align="center">
-  <strong>OMNIDEVS LOG</strong><br>
+  <strong>OMNIDEVS</strong><br>
   Sistema para consumir dados e visualizar informações, proporcionando uma análise objetiva e apoiando a tomada de decisões.
 </div>
 <div align="center">
@@ -47,7 +47,7 @@ Parceiro: <strong>Newelog</strong>
 | 6 | US08 | Média | Como gestor, quero registrar frete e custos de cada viagem, para calcular a rentabilidade. | 4 | 2 |
 | 7 | US09 | Média | Como gestor, quero visualizar a rentabilidade média por viagem de cada motorista, para comparar desempenho. | 4 | 2 |
 | 8 | US05 | Média | Como operador, quero ver em uma tela única quais motoristas estão disponíveis, para direcionar novas viagens rapidamente. | 4 | 2 |
-| 9 | US14 | Baixa | Como gestor, quero identificar as rotas mais concorridas do mês, para criar campanhas de engajamento de motoristas. | 3 | 2 |
+| 9 | US14 | Média | Como gestor, quero identificar as rotas mais concorridas do mês, para criar campanhas de engajamento de motoristas. | 3 | 2 |
 | 10 | US15 | Média | Como gestor, quero realizar login seguro na plataforma, para garantir a segurança dos dados no sistema. | 3 | 2 |
 | 11 | US16 | Média | Como gestor, quero ver na tela dashboard apenas os dados considerados essências, para garantir uma visão clara e objetiva. | 3 | 2 |
 | 12 | US07 | Média | Como gestor, quero receber um alerta de motoristas com baixa utilização no mês, para agir sobre ociosidade. | 5 | 2 |
