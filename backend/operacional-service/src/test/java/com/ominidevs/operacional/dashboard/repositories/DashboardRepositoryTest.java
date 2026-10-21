@@ -102,7 +102,10 @@ class DashboardRepositoryTest {
         assertEquals("30/09", serie.get(29).rotulo());
         assertEquals(3, serie.get(9).viagens());
         assertEquals(0, new BigDecimal("350.00").compareTo(serie.get(9).rentabilidade()));
+        assertEquals(0, new BigDecimal("650.00").compareTo(serie.get(9).custo()));
+        assertEquals(0, new BigDecimal("500.00").compareTo(serie.get(29).custo()));
         assertEquals(0, serie.get(1).viagens());
+        assertEquals(0, BigDecimal.ZERO.compareTo(serie.get(1).custo()));
         assertEquals(0, BigDecimal.ZERO.compareTo(serie.get(1).rentabilidade()));
         assertEquals(0, new BigDecimal("-200.00").compareTo(serie.get(29).rentabilidade()));
     }
