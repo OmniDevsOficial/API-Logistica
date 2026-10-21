@@ -29,7 +29,6 @@ export interface DashboardMetrics {
   rentabilidadeMedia: number | null;
   margem: number | null;
   destinoMaisRentavel: DestinoMaisRentavel | null;
-  taxaOcupacao: number | null;
 }
 
 export interface DashboardData {

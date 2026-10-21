@@ -25,7 +25,6 @@ import com.ominidevs.operacional.indicadores.services.UtilizacaoService;
 @Service
 public class DashboardService {
 
-    private static final BigDecimal SEM_FONTE_NO_BANCO = null;
     private static final String COM_DADOS = "COM_DADOS";
     private static final String SEM_DADOS = "SEM_DADOS";
 
@@ -79,8 +78,7 @@ public class DashboardService {
                 arredondar(rentabilidadeTotal),
                 mediaPorViagem(rentabilidadeTotal, resumo.totalViagens()),
                 margem(rentabilidadeTotal, receitaTotal),
-                converterDestino(repository.consultarDestinoMaisRentavel(periodo)),
-                SEM_FONTE_NO_BANCO);
+                converterDestino(repository.consultarDestinoMaisRentavel(periodo)));
     }
 
     private BigDecimal somarCustos(List<ValoresFinanceirosViagem> valores) {

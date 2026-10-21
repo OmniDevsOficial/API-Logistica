@@ -24,7 +24,6 @@ const respostaCompleta = {
     rentabilidadeMedia: null,
     margem: 55.38,
     destinoMaisRentavel: { destino: 'São Paulo', viagens: 266, rentabilidadeTotal: 440844.49 },
-    taxaOcupacao: null,
   },
   series: { porMes: [], porVeiculo: [] },
   utilizacaoMotoristas: [],
@@ -69,7 +68,6 @@ test('mantem nulo o indicador sem fonte no banco, para a tela exibir traco', asy
     metrics.custoMedio,
     metrics.rentabilidadeTotal,
     metrics.rentabilidadeMedia,
-    metrics.taxaOcupacao,
   ]) assert.equal(valor, null);
 });
 

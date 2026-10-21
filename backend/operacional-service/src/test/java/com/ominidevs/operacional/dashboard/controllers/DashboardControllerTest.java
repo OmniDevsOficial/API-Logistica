@@ -95,8 +95,7 @@ class DashboardControllerTest {
                 .andExpect(jsonPath("$.metricas.custoTotal").value(nullValue()))
                 .andExpect(jsonPath("$.metricas.custoMedio").value(nullValue()))
                 .andExpect(jsonPath("$.metricas.rentabilidadeTotal").value(nullValue()))
-                .andExpect(jsonPath("$.metricas.rentabilidadeMedia").value(nullValue()))
-                .andExpect(jsonPath("$.metricas.taxaOcupacao").value(nullValue()));
+                .andExpect(jsonPath("$.metricas.rentabilidadeMedia").value(nullValue()));
     }
 
     @Test

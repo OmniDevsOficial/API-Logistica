@@ -83,25 +83,6 @@ export function DashboardOverview({ data }: DashboardOverviewProps) {
         caption="No período"
       />
       <StatCard
-        className="lg:col-start-3 lg:row-start-3"
-        title="Taxa de ocupação"
-        value={porcentagem(metrics.taxaOcupacao)}
-        caption="Frota"
-      />
-      <StatCard
-        className="lg:col-start-4 lg:row-start-3"
-        title="Tempo de alocação"
-        value={SEM_DADO}
-        caption="Média"
-      />
-
-      <StatCard
-        className="lg:col-start-1 lg:row-start-4"
-        title="Utilização da frota"
-        value={SEM_DADO}
-        caption="Média"
-      />
-      <StatCard
         className="lg:col-start-2 lg:row-start-4"
         title="Margem"
         value={porcentagem(metrics.margem)}
