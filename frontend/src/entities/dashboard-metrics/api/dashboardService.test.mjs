@@ -133,7 +133,8 @@ test('serie de rentabilidade fora do contrato nao chega na tela', async () => {
     undefined,
     { porVeiculo: [] },
     { rentabilidadePorPeriodo: { agrupamento: 'DIA' } },
-    { rentabilidadePorPeriodo: { agrupamento: 'DIA', pontos: [{ rotulo: '01/08', viagens: 'dez', rentabilidade: 1 }] } },
+    { rentabilidadePorPeriodo: { agrupamento: 'DIA', pontos: [{ rotulo: '01/08', viagens: 'dez', custo: 1, rentabilidade: 1 }] } },
+    { rentabilidadePorPeriodo: { agrupamento: 'DIA', pontos: [{ rotulo: '01/08', viagens: 10, rentabilidade: 1 }] } },
   ]) {
     globalThis.fetch = async () => Response.json({ ...respostaCompleta, series });
     await assert.rejects(buscarDashboard('01/08/2026', '31/08/2026'), /resposta do servi/);
