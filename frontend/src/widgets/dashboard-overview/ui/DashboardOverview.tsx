@@ -4,6 +4,7 @@ import type {
 } from "@entities/dashboard-metrics";
 import { ChartCard, StatCard } from "@shared/ui";
 import { formatCurrencyBRL, formatPercent } from "@shared/lib";
+import { GraficoRentabilidadeViagens } from "./GraficoRentabilidadeViagens";
 import { GraficoSemDados } from "./GraficoSemDados";
 
 interface DashboardOverviewProps {
@@ -74,7 +75,7 @@ export function DashboardOverview({ data }: DashboardOverviewProps) {
         title="Rentabilidade x Viagens"
         className="sm:col-span-2 lg:col-start-1 lg:col-span-2 lg:row-start-2 lg:row-span-2"
       >
-        <GraficoSemDados />
+        <GraficoRentabilidadeViagens serie={data.serieRentabilidade} />
       </ChartCard>
       <StatCard
         className="lg:col-start-3 lg:row-start-2"

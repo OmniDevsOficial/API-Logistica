@@ -38,4 +38,16 @@ export interface DashboardData {
   };
   status: DashboardStatus;
   metrics: DashboardMetrics;
+  serieRentabilidade: SerieRentabilidade;
+}
+
+export interface PontoRentabilidade {
+  rotulo: string;
+  viagens: number;
+  rentabilidade: number;
+}
+
+export interface SerieRentabilidade {
+  agrupamento: "DIA" | "MES";
+  pontos: PontoRentabilidade[];
 }

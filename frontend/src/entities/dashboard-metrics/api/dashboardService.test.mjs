@@ -25,7 +25,7 @@ const respostaCompleta = {
     margem: 55.38,
     destinoMaisRentavel: { destino: 'São Paulo', viagens: 266, rentabilidadeTotal: 440844.49 },
   },
-  series: { porMes: [], porVeiculo: [] },
+  series: { rentabilidadePorPeriodo: { agrupamento: 'DIA', pontos: [] }, porVeiculo: [] },
   utilizacaoMotoristas: [],
 };
 

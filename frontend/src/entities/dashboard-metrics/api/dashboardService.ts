@@ -4,6 +4,7 @@ import type {
   DashboardMetrics,
   DashboardStatus,
   DestinoMaisRentavel,
+  SerieRentabilidade,
   ViagensPorStatus,
 } from "../model/types";
 
@@ -103,6 +104,27 @@ function mapearResposta(dados: unknown): DashboardData {
     },
     status: mapearStatus(resposta.status),
     metrics: mapearMetricas(resposta.metricas),
+    serieRentabilidade: mapearSerieRentabilidade(resposta.series),
+  };
+}
+
+function mapearSerieRentabilidade(dados: unknown): SerieRentabilidade {
+  const serie = registro(registro(dados).rentabilidadePorPeriodo);
+
+  if (!Array.isArray(serie.pontos)) {
+    throw new Error(RESPOSTA_INVALIDA);
+  }
+
+  return {
+    agrupamento: texto(serie.agrupamento) === "DIA" ? "DIA" : "MES",
+    pontos: serie.pontos.map((item) => {
+      const ponto = registro(item);
+      return {
+        rotulo: texto(ponto.rotulo),
+        viagens: numero(ponto.viagens),
+        rentabilidade: numero(ponto.rentabilidade),
+      };
+    }),
   };
 }
 
