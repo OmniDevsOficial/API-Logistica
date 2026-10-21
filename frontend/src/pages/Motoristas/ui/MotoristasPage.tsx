@@ -8,6 +8,10 @@ import {
   EquipeTabela,
 } from "@widgets/equipe-motoristas";
 import { useEquipeMotoristas } from "../model/useEquipeMotoristas";
+import {
+  chaveNomeMotorista,
+  useRentabilidadeMotoristas,
+} from "../model/useRentabilidadeMotoristas";
 
 const ESTADO_LISTA =
   "rounded-md bg-surface p-6 text-center text-sm text-fg-subtle";
@@ -18,6 +22,7 @@ export function MotoristasPage() {
   const [filtroStatus, setFiltroStatus] = useState<StatusEquipe | null>(null);
 
   const { dados, carregando, erro } = useEquipeMotoristas(filtroStatus);
+  const rentabilidades = useRentabilidadeMotoristas();
 
   const motoristasFiltrados = useMemo(() => {
     const termo = busca.trim().toLowerCase();
@@ -71,7 +76,11 @@ export function MotoristasPage() {
               <h2 className="mb-4 text-lg font-semibold text-fg">
                 Equipe de motoristas
               </h2>
-              <EquipeTabela motoristas={motoristasFiltrados} />
+              <EquipeTabela
+                motoristas={motoristasFiltrados}
+                rentabilidades={rentabilidades}
+                chaveNomeMotorista={chaveNomeMotorista}
+              />
             </div>
           </div>
         ) : null}
