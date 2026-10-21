@@ -33,6 +33,7 @@ public class DashboardRepository {
     private static final String SQL_SERIE_RENTABILIDADE = """
             SELECT to_char(p.inicio, '%2$s') AS rotulo,
                    COUNT(v.data) AS viagens,
+                   COALESCE(SUM(COALESCE(v.custo_frete, 0) + COALESCE(v.pedagio, 0)), 0) AS custo,
                    COALESCE(SUM(COALESCE(v.receita_frete, 0) - COALESCE(v.custo_frete, 0) - COALESCE(v.pedagio, 0)), 0) AS rentabilidade
             FROM generate_series(date_trunc('%1$s', CAST(? AS date)), CAST(? AS date), INTERVAL '1 %1$s') AS p(inicio)
             LEFT JOIN operacional.viagem v
@@ -89,7 +90,8 @@ public class DashboardRepository {
         Date fim = Date.valueOf(periodo.fim());
         return jdbc.query(SQL_SERIE_RENTABILIDADE.formatted(agrupamento.unidadeSql(), agrupamento.formatoRotulo()),
                 (rs, row) -> new PontoRentabilidade(
-                        rs.getString("rotulo"), rs.getLong("viagens"), rs.getBigDecimal("rentabilidade")),
+                        rs.getString("rotulo"), rs.getLong("viagens"), rs.getBigDecimal("custo"),
+                        rs.getBigDecimal("rentabilidade")),
                 inicio, fim, inicio, fim);
     }
 
