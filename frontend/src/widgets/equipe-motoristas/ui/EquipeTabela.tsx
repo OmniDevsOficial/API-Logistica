@@ -13,25 +13,25 @@ const HEADER_CELL =
   "whitespace-nowrap py-3 pr-6 text-left text-xs font-semibold text-fg-muted";
 const CELL = "py-4 pr-6 align-top";
 
-/** Abaixo disso a frequência é exibida em destaque de alerta, como no protótipo. */
-const FREQUENCIA_BAIXA = 50;
-
+/** Frequência é a participação nas viagens: 0% significa motorista sem viagem no período. */
 function Frequencia({ valor }: { valor: number | null }) {
   if (valor === null) {
     return <span className="text-sm text-fg-subtle">—</span>;
   }
 
-  const baixa = valor < FREQUENCIA_BAIXA;
+  const semViagens = valor === 0;
 
   return (
     <span
       className={`inline-flex items-center gap-1 text-sm ${
-        baixa ? "font-medium text-red-500" : "text-fg"
+        semViagens ? "font-medium text-red-500" : "text-fg"
       }`}
-      title={baixa ? "Frequência abaixo do esperado" : undefined}
+      title={semViagens ? "Sem viagens no período" : undefined}
     >
-      {valor}%
-      {baixa && <AlertCircle size={14} aria-label="Frequência baixa" />}
+      {valor.toLocaleString("pt-BR", { maximumFractionDigits: 1 })}%
+      {semViagens && (
+        <AlertCircle size={14} aria-label="Sem viagens no período" />
+      )}
     </span>
   );
 }

@@ -1,25 +1,12 @@
 import { buscarMotoristas } from "./motoristaListaService.ts";
 import { buscarResumoMotoristas } from "./motoristaResumoService.ts";
+import { periodoEquipe } from "./periodoEquipe.ts";
 import { buscarUtilizacaoMotoristas } from "./utilizacaoService.ts";
 import type {
   EquipeMotoristasData,
   MotoristaEquipe,
   StatusEquipe,
 } from "../model/types";
-
-function periodoMesCorrente(hoje = new Date()): {
-  dataInicio: string;
-  dataFim: string;
-} {
-  const doisDigitos = (valor: number) => String(valor).padStart(2, "0");
-  const mes = doisDigitos(hoje.getMonth() + 1);
-  const ano = hoje.getFullYear();
-
-  return {
-    dataInicio: `01/${mes}/${ano}`,
-    dataFim: `${doisDigitos(hoje.getDate())}/${mes}/${ano}`,
-  };
-}
 
 function chaveCpf(cpf: string | null): string | null {
   if (!cpf) return null;
@@ -29,14 +16,15 @@ function chaveCpf(cpf: string | null): string | null {
 }
 
 /**
- * Frequência vem do indicador de utilização (participação nas viagens do mês).
+ * Frequência vem do indicador de utilização (participação nas viagens),
+ * consultado na mesma janela da coluna Viagens.
  * A falha dessa chamada não derruba a tela: os motoristas ficam sem percentual.
  */
 async function carregarFrequencias(
   signal?: AbortSignal,
 ): Promise<Map<string, number>> {
   try {
-    const { dataInicio, dataFim } = periodoMesCorrente();
+    const { dataInicio, dataFim } = periodoEquipe();
     const utilizacao = await buscarUtilizacaoMotoristas(
       dataInicio,
       dataFim,
@@ -46,7 +34,7 @@ async function carregarFrequencias(
 
     const frequencias = new Map<string, number>();
     for (const motorista of utilizacao) {
-      const percentual = Math.round(motorista.percentualUtilizacao ?? 0);
+      const percentual = motorista.percentualUtilizacao ?? 0;
 
       if (typeof motorista.id === "number") {
         frequencias.set(`id:${motorista.id}`, percentual);
