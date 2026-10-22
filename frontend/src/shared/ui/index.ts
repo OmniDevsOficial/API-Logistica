@@ -4,3 +4,5 @@ export { ChartCard } from "./ChartCard/ChartCard";
 export type { ChartCardProps } from "./ChartCard/ChartCard";
 export { PageHeader } from "./PageHeader/PageHeader";
 export type { PageHeaderProps } from "./PageHeader/PageHeader";
+export { Paginacao } from "./Paginacao/Paginacao";
+export type { PaginacaoProps } from "./Paginacao/Paginacao";
