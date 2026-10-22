@@ -15,6 +15,8 @@ interface ViagensTopbarProps {
   podeAvancar: boolean;
   onPeriodoAnterior: () => void;
   onPeriodoSeguinte: () => void;
+  referencia: Date;
+  onSelecionarData: (data: Date) => void;
   onMenuClick: () => void;
   onFiltroAplicado: (viagens: Viagem[]) => void;
   onFiltroLimpo: () => void;
@@ -34,6 +36,8 @@ export function ViagensTopbar({
   podeAvancar,
   onPeriodoAnterior,
   onPeriodoSeguinte,
+  referencia,
+  onSelecionarData,
   onMenuClick,
   onFiltroAplicado,
   onFiltroLimpo,
@@ -72,6 +76,9 @@ export function ViagensTopbar({
             podeAvancar={podeAvancar}
             onAnterior={onPeriodoAnterior}
             onSeguinte={onPeriodoSeguinte}
+            periodo={period}
+            referencia={referencia}
+            onSelecionarData={onSelecionarData}
           />
         </div>
       </div>
