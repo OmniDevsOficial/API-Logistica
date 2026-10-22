@@ -2,13 +2,17 @@ export interface Viagem {
   id: number;
   manifesto: string;
   data: string;
-  origem: string;
-  destino: string;
+  origem: string | null;
+  destino: string | null;
   freteEstimado: number;
   veiculo: string;
   distanciaKm: number;
   estimativaDias: number;
   status: StatusViagem;
+  receita: number | null;
+  /** Frete + pedágio. */
+  custo: number | null;
+  rentabilidade: number | null;
 }
 
 export interface RentabilidadeViagem {
@@ -17,7 +21,14 @@ export interface RentabilidadeViagem {
   rentabilidade: number | null;
 }
 
-export type StatusViagem = "pendente" | "em_transito" | "finalizado";
+export interface RankingDestino {
+  origem: string | null;
+  destino: string;
+  quantidadeViagens: number;
+  rentabilidadeMedia: number;
+}
+
+export type StatusViagem ="pendente" | "em_transito" | "finalizado";
 
 export interface ViagensData {
   periodoLabel: string;
