@@ -70,17 +70,18 @@ class MotoristaServiceTest {
     @ParameterizedTest
     @EnumSource(StatusMotorista.class)
     void deveListarFiltrandoPorCadaStatus(StatusMotorista status) {
-        when(consultaRepository.consultar(periodo, status)).thenReturn(List.of());
+        when(consultaRepository.consultar(status)).thenReturn(List.of());
 
         var resultado = service.listar(status, periodo);
 
         assertTrue(resultado.isEmpty());
-        verify(consultaRepository).consultar(periodo, status);
+        verify(consultaRepository).consultar(status);
     }
 
     @Test
     void deveListarTodosSemFiltroRetornandoDadosEssenciais() {
-        when(consultaRepository.consultar(periodo, null)).thenReturn(List.of(linhaCompleta()));
+        when(consultaRepository.consultar((StatusMotorista) null))
+                .thenReturn(List.of(linhaCompleta()));
 
         var resultado = service.listar(null, periodo);
 
@@ -98,14 +99,14 @@ class MotoristaServiceTest {
 
     @Test
     void deveListarVazioQuandoNaoHaMotoristas() {
-        when(consultaRepository.consultar(periodo, null)).thenReturn(List.of());
+        when(consultaRepository.consultar((StatusMotorista) null)).thenReturn(List.of());
 
         assertTrue(service.listar(null, periodo).isEmpty());
     }
 
     @Test
     void deveRetornarCamposNulosParaMotoristaSemVeiculo() {
-        when(consultaRepository.consultar(periodo, null)).thenReturn(List.of(
+        when(consultaRepository.consultar((StatusMotorista) null)).thenReturn(List.of(
                 new MotoristaListagem(1, "Bruno", "11122233344", null, null, "EM_OPERACAO",
                         null, null, LocalDate.of(2026, 9, 15), 0)));
 

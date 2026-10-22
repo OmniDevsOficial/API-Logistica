@@ -1,6 +1,5 @@
 package com.ominidevs.operacional.motorista.repositories;
 
-import java.sql.Date;
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
@@ -26,7 +25,6 @@ public class MotoristaConsultaRepository {
                        LOWER(TRIM(motorista)) AS nome,
                        COUNT(*) AS quantidade
                 FROM operacional.viagem
-                WHERE data BETWEEN :inicio AND :fim
                 GROUP BY 1, 2
             ) v ON v.cpf = NULLIF(regexp_replace(m.cpf, '[^0-9]', '', 'g'), '')
                 OR (v.cpf IS NULL AND v.nome = LOWER(TRIM(m.nome)))
@@ -41,9 +39,11 @@ public class MotoristaConsultaRepository {
     }
 
     public List<MotoristaListagem> consultar(PeriodoConsulta periodo, StatusMotorista status) {
+        return consultar(status);
+    }
+
+    public List<MotoristaListagem> consultar(StatusMotorista status) {
         Map<String, Object> parametros = new HashMap<>();
-        parametros.put("inicio", Date.valueOf(periodo.inicio()));
-        parametros.put("fim", Date.valueOf(periodo.fim()));
         parametros.put("status", status == null ? null : status.name());
 
         return jdbc.query(CONSULTA, parametros,

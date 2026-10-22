@@ -11,6 +11,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplicat
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.config.Customizer;
@@ -56,6 +57,9 @@ public class SegurancaConfig {
                 .sessionManagement(sessao -> sessao.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(regras -> regras
                         .dispatcherTypeMatchers(DispatcherType.ERROR).permitAll()
+                        // Operador só consulta a equipe; alterar o status continua exclusivo do gestor.
+                        .requestMatchers(HttpMethod.GET, "/motoristas", "/motoristas/resumo")
+                        .hasAnyRole(GESTOR, OPERADOR)
                         .requestMatchers("/dashboard/**", "/indicadores/**", "/motoristas/**").hasRole(GESTOR)
                         .requestMatchers("/viagens/rentabilidade/motoristas").hasRole(GESTOR)
                         .requestMatchers("/viagens/**").hasAnyRole(GESTOR, OPERADOR)

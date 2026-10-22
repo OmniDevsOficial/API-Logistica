@@ -185,7 +185,7 @@ test('frequência corresponde pelo cpf quando o indicador não traz o id', async
   assert.deepEqual(dados.motoristas.map((motorista) => motorista.frequencia), [66.6, 66.6]);
 });
 
-test('listagem e frequência consultam os últimos 12 meses, não só o mês corrente', async () => {
+test('frequência consulta os últimos 12 meses, não só o mês corrente', async () => {
   const urls = [];
   globalThis.fetch = async (input) => {
     urls.push(String(input));
@@ -194,24 +194,16 @@ test('listagem e frequência consultam os últimos 12 meses, não só o mês cor
 
   await buscarEquipeMotoristas();
 
-  const janelaDe = (url) => {
-    const params = new URL(url, 'http://localhost').searchParams;
-    return {
-      dataInicio: params.get('dataInicio'),
-      dataFim: params.get('dataFim'),
-    };
-  };
-
-  const lista = janelaDe(urls.find((url) => url.includes('/motoristas?')));
-  const utilizacao = janelaDe(
+  const consulta = new URL(
     urls.find((url) => url.includes('/indicadores/utilizacao')),
-  );
+    'http://localhost',
+  ).searchParams;
 
-  // Listagem (coluna Viagens) e indicador (Frequência) usam a mesma janela.
-  assert.deepEqual(lista, utilizacao);
-
-  const [diaInicio, mesInicio, anoInicio] = lista.dataInicio.split('/').map(Number);
-  const [diaFim, mesFim, anoFim] = lista.dataFim.split('/').map(Number);
+  const [diaInicio, mesInicio, anoInicio] = consulta
+    .get('dataInicio')
+    .split('/')
+    .map(Number);
+  const [diaFim, mesFim, anoFim] = consulta.get('dataFim').split('/').map(Number);
 
   // Início é o primeiro dia do mês 11 posições antes do fim: cobre 12 meses cheios.
   assert.equal(diaInicio, 1);

@@ -68,6 +68,8 @@ export function DashboardPage() {
           onPeriodoSeguinte={() =>
             setReferencia(deslocarReferencia(period, referencia, 1))
           }
+          referencia={referencia}
+          onSelecionarData={setReferencia}
           onMenuClick={() => setSidebarOpen(true)}
           onManifestoImportado={aoImportarManifesto}
         />

@@ -1,28 +1,13 @@
 import { formatCurrencyBRL } from "@shared/lib";
-import type { RentabilidadeViagem, Viagem } from "../model/types";
+import type { Viagem } from "../model/types";
 import { StatusViagemBadge } from "./StatusViagemBadge";
-import { useEffect, useState } from "react";
-import { getRentabilidade } from "../api/viagemService";
 
 interface ViagemCardProps {
   viagem: Viagem;
 }
 
+// Os valores financeiros já vêm na listagem: o card não faz requisição própria.
 export function ViagemCard({ viagem }: ViagemCardProps) {
-  const [rentabilidade, setRentabilidade] = useState<RentabilidadeViagem | null>(null);
-  const [carregando, setCarregando] = useState(true);
-  const [erro, setErro] = useState(false);
-
-  useEffect(() => {
-    let atual = true;
-    setCarregando(true);
-    getRentabilidade(viagem.manifesto)
-      .then((dados) => { if (atual) setRentabilidade(dados); })
-      .catch(() => { if (atual) setErro(true); })
-      .finally(() => { if (atual) setCarregando(false); });
-    return () => { atual = false; };
-  }, [viagem.manifesto]);
-
   const moeda = (valor: number | null | undefined) =>
     valor === null || valor === undefined
       ? "-"
@@ -48,8 +33,8 @@ export function ViagemCard({ viagem }: ViagemCardProps) {
         {(["receita", "custo", "rentabilidade"] as const).map((campo) => (
           <div key={campo}>
             <span className="block text-xs text-fg-subtle">{campo === "rentabilidade" ? "Rentabilidade" : campo[0].toUpperCase() + campo.slice(1)}</span>
-            <span className={`text-sm font-semibold ${campo === "rentabilidade" && (rentabilidade?.rentabilidade ?? 0) < 0 ? "text-red-600" : "text-fg"}`}>
-              {carregando ? "Carregando…" : erro ? "Erro ao carregar" : moeda(rentabilidade?.[campo])}
+            <span className={`text-sm font-semibold ${campo === "rentabilidade" && (viagem.rentabilidade ?? 0) < 0 ? "text-red-600" : "text-fg"}`}>
+              {moeda(viagem[campo])}
             </span>
           </div>
         ))}

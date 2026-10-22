@@ -7,6 +7,23 @@ export function useEquipeMotoristas(filtro: StatusEquipe | null) {
   const [carregando, setCarregando] = useState(true);
   const [erro, setErro] = useState<string | null>(null);
   const [versao, setVersao] = useState(0);
+  const [atualizacao, setAtualizacao] = useState(0);
+
+  useEffect(() => {
+    function atualizarAoRetornar() {
+      if (document.visibilityState === "visible") {
+        setAtualizacao((valor) => valor + 1);
+      }
+    }
+
+    window.addEventListener("focus", atualizarAoRetornar);
+    document.addEventListener("visibilitychange", atualizarAoRetornar);
+
+    return () => {
+      window.removeEventListener("focus", atualizarAoRetornar);
+      document.removeEventListener("visibilitychange", atualizarAoRetornar);
+    };
+  }, []);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -36,7 +53,7 @@ export function useEquipeMotoristas(filtro: StatusEquipe | null) {
 
     void carregar();
     return () => controller.abort();
-  }, [filtro, versao]);
+  }, [filtro, versao, atualizacao]);
 
   const recarregar = useCallback(() => setVersao((valor) => valor + 1), []);
 

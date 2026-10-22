@@ -55,10 +55,6 @@ export function ViagensPage() {
     () => viagensNoPeriodo(viagensFiltradasPorModal ?? data?.viagens ?? [], intervalo),
     [viagensFiltradasPorModal, data, intervalo],
   );
-  const viagensDoPeriodo = useMemo(
-    () => viagensNoPeriodo(data?.viagens ?? [], intervalo),
-    [data, intervalo],
-  );
 
   // Aqui é a Busca por texto do filtro
   const viagensFiltradas = useMemo(() => {
@@ -66,8 +62,9 @@ export function ViagensPage() {
     if (!termo) return viagensBase;
     return viagensBase.filter(
       (viagem) =>
-        viagem.origem.toLowerCase().includes(termo) ||
-        viagem.destino.toLowerCase().includes(termo),
+        // Origem e destino podem vir nulos do manifesto importado.
+        (viagem.origem ?? "").toLowerCase().includes(termo) ||
+        (viagem.destino ?? "").toLowerCase().includes(termo),
     );
   }, [viagensBase, search]);
 
@@ -84,6 +81,8 @@ export function ViagensPage() {
           podeAvancar={podeAvancarPeriodo(period, referencia)}
           onPeriodoAnterior={() => setReferencia(deslocarReferencia(period, referencia, -1))}
           onPeriodoSeguinte={() => setReferencia(deslocarReferencia(period, referencia, 1))}
+          referencia={referencia}
+          onSelecionarData={setReferencia}
           onMenuClick={() => setSidebarOpen(true)}
           onFiltroAplicado={setViagensFiltradasPorModal}
           onFiltroLimpo={() => {
@@ -99,10 +98,10 @@ export function ViagensPage() {
         {!data && !erro && <p className="py-8 text-center text-sm text-fg-subtle">Carregando viagens…</p>}
         {erro && <p className="py-8 text-center text-sm text-red-600">Não foi possível carregar as viagens.</p>}
         {data && (
-          <div className="grid grid-cols-1 gap-6 items-start lg:grid-cols-[2fr_1fr]">
+          <div className="grid grid-cols-1 gap-6 items-start lg:grid-cols-[minmax(0,1fr)_380px]">
             <ViagensList viagens={viagensFiltradas} />
             {/* Ranking mostra tudo, não é afetado pelos filtros de cima */}
-            <ViagensRanking viagens={viagensDoPeriodo} />
+            <ViagensRanking dataInicio={intervalo.dataInicio} dataFim={intervalo.dataFim} />
           </div>
         )}
       </main>

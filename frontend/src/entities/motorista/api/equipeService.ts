@@ -17,7 +17,7 @@ function chaveCpf(cpf: string | null): string | null {
 
 /**
  * Frequência vem do indicador de utilização (participação nas viagens),
- * consultado na mesma janela da coluna Viagens.
+ * consultado nos últimos 12 meses para não zerar a tela.
  * A falha dessa chamada não derruba a tela: os motoristas ficam sem percentual.
  */
 async function carregarFrequencias(

@@ -1,5 +1,4 @@
 import { apiFetch } from "../../../shared/api/apiFetch.ts";
-import { periodoEquipe } from "./periodoEquipe.ts";
 import type { MotoristaEquipe, StatusEquipe } from "../model/types";
 
 const ENDPOINT = "/api/operacional/motoristas";
@@ -97,16 +96,11 @@ export async function buscarMotoristas(
   filtro?: StatusEquipe | null,
   signal?: AbortSignal,
 ): Promise<MotoristaEquipe[]> {
-  const parametros: string[] = [];
-
-  if (filtro) parametros.push(`status=${STATUS_BACKEND[filtro]}`);
-
-  // Mesma janela da Frequência: a coluna Viagens conta as viagens do período.
-  const { dataInicio, dataFim } = periodoEquipe();
-  parametros.push(`dataInicio=${dataInicio}`, `dataFim=${dataFim}`);
-
-  const query = parametros.length > 0 ? `?${parametros.join("&")}` : "";
-  const resposta = await apiFetch(`${ENDPOINT}${query}`, { signal });
+  const query = filtro ? `?status=${STATUS_BACKEND[filtro]}` : "";
+  const resposta = await apiFetch(`${ENDPOINT}${query}`, {
+    signal,
+    cache: "no-store",
+  });
 
   if (!resposta.ok) {
     throw new Error("Não foi possível carregar os motoristas.");

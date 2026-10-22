@@ -5,6 +5,8 @@ import { formatCpf, formatDateOrToday } from "@shared/lib";
 
 interface EquipeTabelaProps {
   motoristas: MotoristaEquipe[];
+  rentabilidades: Map<string, number | null>;
+  chaveNomeMotorista: (nome: string) => string;
   onStatusChange?: (id: number, novoStatus: StatusEquipe) => void;
   statusSalvando?: number | null;
 }
@@ -12,6 +14,11 @@ interface EquipeTabelaProps {
 const HEADER_CELL =
   "whitespace-nowrap py-3 pr-6 text-left text-xs font-semibold text-fg-muted";
 const CELL = "py-4 pr-6 align-top";
+
+const FORMATADOR_MOEDA = new Intl.NumberFormat("pt-BR", {
+  style: "currency",
+  currency: "BRL",
+});
 
 /** Frequência é a participação nas viagens: 0% significa motorista sem viagem no período. */
 function Frequencia({ valor }: { valor: number | null }) {
@@ -38,6 +45,8 @@ function Frequencia({ valor }: { valor: number | null }) {
 
 export function EquipeTabela({
   motoristas,
+  rentabilidades,
+  chaveNomeMotorista,
   onStatusChange,
   statusSalvando = null,
 }: EquipeTabelaProps) {
@@ -53,22 +62,36 @@ export function EquipeTabela({
         </p>
       ) : (
         <div className="overflow-x-auto">
-          <table className="w-full min-w-[1000px]">
+          <table className="w-full min-w-[1100px] table-fixed">
+            <colgroup>
+              <col className="w-[15%]" />
+              <col className="w-[11%]" />
+              <col className="w-[15%]" />
+              <col className="w-[12%]" />
+              <col className="w-[7%]" />
+              <col className="w-[10%]" />
+              <col className="w-[15%]" />
+              <col className="w-[15%]" />
+            </colgroup>
             <thead>
               <tr className="border-y border-border">
-                <th className={`${HEADER_CELL} w-[23%] pl-6`}>Motorista</th>
-                <th className={`${HEADER_CELL} w-[11%]`}>Veículo/Placa</th>
-                <th className={`${HEADER_CELL} w-[14%]`}>Operação</th>
-                <th className={`${HEADER_CELL} w-[21%]`}>Localização</th>
-                <th className={`${HEADER_CELL} w-[8%]`}>Viagens</th>
-                <th className={`${HEADER_CELL} w-[10%]`}>Frequência</th>
-                <th className={`${HEADER_CELL} w-[13%] text-right`}>Status</th>
+                <th className={`${HEADER_CELL} pl-6`}>Motorista</th>
+                <th className={HEADER_CELL}>Veículo/Placa</th>
+                <th className={HEADER_CELL}>Operação</th>
+                <th className={HEADER_CELL}>Localização</th>
+                <th className={HEADER_CELL}>Viagens</th>
+                <th className={HEADER_CELL}>Frequência</th>
+                <th className={HEADER_CELL}>Rentabilidade média</th>
+                <th className={`${HEADER_CELL} text-right`}>Status</th>
               </tr>
             </thead>
 
             <tbody className="divide-y divide-border">
               {motoristas.map((motorista) => {
                 const cpf = formatCpf(motorista.cpf);
+                const rentabilidade = rentabilidades.get(
+                  chaveNomeMotorista(motorista.nome),
+                );
 
                 return (
                   <tr key={motorista.id}>
@@ -98,7 +121,7 @@ export function EquipeTabela({
 
                     {/* Operação — label discreto + data em destaque */}
                     <td className={CELL}>
-                      <div className="flex flex-col whitespace-nowrap">
+                      <div className="flex flex-col">
                         <span className="text-xs text-fg-muted">
                           {motorista.operacao}
                         </span>
@@ -125,6 +148,21 @@ export function EquipeTabela({
                     {/* Frequência */}
                     <td className={CELL}>
                       <Frequencia valor={motorista.frequencia} />
+                    </td>
+
+                    {/* Rentabilidade média */}
+                    <td className={CELL}>
+                      <span
+                        className={`whitespace-nowrap text-sm font-medium ${
+                          rentabilidade != null && rentabilidade < 0
+                            ? "text-red-600"
+                            : "text-fg"
+                        }`}
+                      >
+                        {rentabilidade == null
+                          ? "-"
+                          : FORMATADOR_MOEDA.format(rentabilidade)}
+                      </span>
                     </td>
 
                     {/* Status */}
