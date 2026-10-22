@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import { atualizarStatusMotorista } from "@entities/motorista";
 import type { StatusEquipe } from "@entities/motorista";
 import { Sidebar } from "@widgets/sidebar";
 import { PageHeader } from "@shared/ui";
@@ -16,8 +17,11 @@ export function MotoristasPage() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [busca, setBusca] = useState("");
   const [filtroStatus, setFiltroStatus] = useState<StatusEquipe | null>(null);
+  const [statusSalvando, setStatusSalvando] = useState<number | null>(null);
+  const [erroStatus, setErroStatus] = useState<string | null>(null);
 
-  const { dados, carregando, erro } = useEquipeMotoristas(filtroStatus);
+  const { dados, carregando, erro, recarregar } =
+    useEquipeMotoristas(filtroStatus);
 
   const motoristasFiltrados = useMemo(() => {
     const termo = busca.trim().toLowerCase();
@@ -30,6 +34,24 @@ export function MotoristasPage() {
         m.veiculo.toLowerCase().includes(termo),
     );
   }, [dados, busca]);
+
+  async function alterarStatus(id: number, novoStatus: StatusEquipe) {
+    setStatusSalvando(id);
+    setErroStatus(null);
+
+    try {
+      await atualizarStatusMotorista(id, novoStatus);
+      recarregar();
+    } catch (erroAtualizacao) {
+      setErroStatus(
+        erroAtualizacao instanceof Error
+          ? erroAtualizacao.message
+          : "Não foi possível atualizar o status do motorista.",
+      );
+    } finally {
+      setStatusSalvando(null);
+    }
+  }
 
   return (
     <div className="min-h-screen">
@@ -67,12 +89,20 @@ export function MotoristasPage() {
               indisponiveis={dados.indisponiveis}
             />
 
-            <div>
-              <h2 className="mb-4 text-lg font-semibold text-fg">
-                Equipe de motoristas
-              </h2>
-              <EquipeTabela motoristas={motoristasFiltrados} />
-            </div>
+            {erroStatus && (
+              <p
+                role="alert"
+                className="rounded-md bg-red-500/10 px-4 py-3 text-sm text-red-500"
+              >
+                {erroStatus}
+              </p>
+            )}
+
+            <EquipeTabela
+              motoristas={motoristasFiltrados}
+              statusSalvando={statusSalvando}
+              onStatusChange={alterarStatus}
+            />
           </div>
         ) : null}
       </main>

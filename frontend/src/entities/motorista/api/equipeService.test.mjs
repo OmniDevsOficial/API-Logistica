@@ -13,6 +13,7 @@ const LISTA = [
   {
     id: 7,
     nome: 'Ana Paula Ribeiro',
+    cpf: '00123456789',
     tipoVeiculo: 'Van',
     placa: 'RTA4F21',
     status: 'EM_OPERACAO',
@@ -24,6 +25,7 @@ const LISTA = [
   {
     id: 8,
     nome: 'Marcos Vinícius Lima',
+    cpf: '11122233344',
     tipoVeiculo: null,
     placa: null,
     status: 'DISPONIVEL',
@@ -34,9 +36,31 @@ const LISTA = [
   },
 ];
 
-function responder(resumo = RESUMO, lista = LISTA) {
+const UTILIZACAO = {
+  motoristas: [
+    {
+      chave: '00123456789',
+      motoristaId: 7,
+      nome: 'Ana Paula Ribeiro',
+      quantidadeViagens: 18,
+      porcentagem: 90,
+      status: 'COM_VIAGENS',
+    },
+    {
+      chave: '11122233344',
+      motoristaId: 8,
+      nome: 'Marcos Vinícius Lima',
+      quantidadeViagens: 0,
+      porcentagem: 0,
+      status: 'SEM_VIAGENS',
+    },
+  ],
+};
+
+function responder(resumo = RESUMO, lista = LISTA, utilizacao = UTILIZACAO) {
   return async (input) => {
     const url = String(input);
+    if (url.includes('/indicadores/utilizacao')) return Response.json(utilizacao);
     return url.endsWith('/motoristas/resumo')
       ? Response.json(resumo)
       : Response.json(lista);
@@ -61,23 +85,27 @@ test('agrega os KPIs do resumo com a lista mapeada para o modelo da tela', async
     {
       id: 7,
       nome: 'Ana Paula Ribeiro',
+      cpf: '00123456789',
       veiculo: 'Van',
       placa: 'RTA4F21',
       operacao: 'Previsão de disponibilidade',
       dataOperacao: '12/10/2026',
       localizacao: 'Campinas/SP',
       viagens: 18,
+      frequencia: 90,
       status: 'em_viagem',
     },
     {
       id: 8,
       nome: 'Marcos Vinícius Lima',
+      cpf: '11122233344',
       veiculo: '-',
       placa: '-',
       operacao: '-',
       dataOperacao: '-',
       localizacao: '-',
       viagens: 0,
+      frequencia: 0,
       status: 'disponivel',
     },
   ]);
@@ -135,4 +163,27 @@ test('resposta fora do contrato vira mensagem amigável', async () => {
   globalThis.fetch = responder(RESUMO, [{ id: 'sete' }]);
 
   await assert.rejects(buscarEquipeMotoristas(), /equipe de motoristas/);
+});
+
+test('frequência corresponde pelo cpf quando o indicador não traz o id', async () => {
+  const semId = {
+    motoristas: UTILIZACAO.motoristas.map((motorista) => ({
+      ...motorista,
+      motoristaId: null,
+      porcentagem: 66.6,
+    })),
+  };
+  globalThis.fetch = responder(RESUMO, LISTA, semId);
+
+  const dados = await buscarEquipeMotoristas();
+
+  assert.deepEqual(dados.motoristas.map((motorista) => motorista.frequencia), [67, 67]);
+});
+
+test('indicador de utilização indisponível deixa a frequência sem valor', async () => {
+  globalThis.fetch = responder(RESUMO, LISTA, { inesperado: true });
+
+  const dados = await buscarEquipeMotoristas();
+
+  assert.deepEqual(dados.motoristas.map((motorista) => motorista.frequencia), [null, null]);
 });

@@ -17,7 +17,7 @@ import com.ominidevs.operacional.motorista.projections.MotoristaListagem;
 public class MotoristaConsultaRepository {
 
     private static final String CONSULTA = """
-            SELECT m.id, m.nome, m.veiculo_tipo, m.veiculo_placa, m.status,
+            SELECT m.id, m.nome, m.cpf, m.veiculo_tipo, m.veiculo_placa, m.status,
                    m.ultima_localizacao, m.ultima_operacao, m.previsao_disponibilidade,
                    COALESCE(v.quantidade, 0) AS quantidade
             FROM operacional.motorista m
@@ -50,6 +50,7 @@ public class MotoristaConsultaRepository {
                 (rs, row) -> new MotoristaListagem(
                         rs.getObject("id", Integer.class),
                         rs.getString("nome"),
+                        rs.getString("cpf"),
                         rs.getString("veiculo_tipo"),
                         rs.getString("veiculo_placa"),
                         rs.getString("status"),

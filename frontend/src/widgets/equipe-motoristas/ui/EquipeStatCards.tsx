@@ -22,7 +22,7 @@ export function EquipeStatCards({
   return (
     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
       {/* Total de motoristas — card destacado */}
-      <div className="flex flex-col gap-2 rounded-md bg-primary p-6">
+      <div className="flex flex-col gap-2 rounded-lg bg-primary p-6">
         <span className="text-sm font-semibold text-white/85">
           Total de motoristas
         </span>
@@ -33,7 +33,7 @@ export function EquipeStatCards({
       </div>
 
       {/* Disponíveis */}
-      <div className="flex flex-col gap-2 rounded-md bg-surface p-6">
+      <div className="flex flex-col gap-2 rounded-lg bg-surface p-6">
         <span className="flex items-center gap-2 text-sm font-semibold text-fg-muted">
           <Dot color="bg-success" />
           Disponíveis
@@ -45,7 +45,7 @@ export function EquipeStatCards({
       </div>
 
       {/* Em viagem */}
-      <div className="flex flex-col gap-2 rounded-md bg-surface p-6">
+      <div className="flex flex-col gap-2 rounded-lg bg-surface p-6">
         <span className="flex items-center gap-2 text-sm font-semibold text-fg-muted">
           <Dot color="bg-primary" />
           Em viagem
@@ -57,7 +57,7 @@ export function EquipeStatCards({
       </div>
 
       {/* Indisponíveis */}
-      <div className="flex flex-col gap-2 rounded-md bg-surface p-6">
+      <div className="flex flex-col gap-2 rounded-lg bg-surface p-6">
         <span className="flex items-center gap-2 text-sm font-semibold text-fg-muted">
           <Dot color="bg-red-500" />
           Indisponíveis

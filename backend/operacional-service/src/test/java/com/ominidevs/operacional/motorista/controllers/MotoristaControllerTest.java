@@ -40,7 +40,7 @@ class MotoristaControllerTest {
 
     private MotoristaResponseDTO motorista(StatusMotorista status) {
         return new MotoristaResponseDTO(
-                1, "Ana", "Caminhão", "ABC1D23", status.name(),
+                1, "Ana", "00123456789", "Caminhão", "ABC1D23", status.name(),
                 "Curitiba", LocalDate.of(2026, 9, 10), null, 3);
     }
 
@@ -69,6 +69,7 @@ class MotoristaControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].id").value(1))
                 .andExpect(jsonPath("$[0].nome").value("Ana"))
+                .andExpect(jsonPath("$[0].cpf").value("00123456789"))
                 .andExpect(jsonPath("$[0].tipoVeiculo").value("Caminhão"))
                 .andExpect(jsonPath("$[0].placa").value("ABC1D23"))
                 .andExpect(jsonPath("$[0].status").value("DISPONIVEL"))
