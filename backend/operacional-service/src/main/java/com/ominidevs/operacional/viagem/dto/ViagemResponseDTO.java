@@ -13,5 +13,8 @@ public record ViagemResponseDTO(
         String veiculo,
         Integer distanciaKm,
         Integer estimativaDias,
-        String status
+        String status,
+        BigDecimal receita,
+        BigDecimal custo,
+        BigDecimal rentabilidade
 ) {}

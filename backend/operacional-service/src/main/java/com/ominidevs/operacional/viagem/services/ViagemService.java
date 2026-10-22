@@ -1,5 +1,7 @@
 package com.ominidevs.operacional.viagem.services;
 
+import com.ominidevs.operacional.indicadores.exceptions.IndicadorInvalidoException;
+import com.ominidevs.operacional.indicadores.model.PeriodoConsulta;
 import com.ominidevs.operacional.motorista.services.MotoristaService;
 import com.ominidevs.operacional.viagem.clients.ManifestoClient;
 import com.ominidevs.operacional.viagem.dto.ManifestoDTO;
@@ -161,21 +163,21 @@ public class ViagemService {
     }
 
     /**
-     * TOP 10 destinos por rentabilidade média no mês (YYYY-MM).
+     * TOP 10 rotas (origem e destino) por rentabilidade média no período.
      * Agregação, desempate e limite são feitos no banco.
+     *
+     * @param dataInicio data inicial no formato dd/MM/aaaa, inclusiva.
+     * @param dataFim data final no formato dd/MM/aaaa, inclusiva.
+     * @return até 10 rotas ordenadas por rentabilidade média decrescente.
+     * @throws IndicadorInvalidoException se alguma data estiver ausente, em
+     *     formato inválido ou se o início for posterior ao fim.
      */
-    public List<RankingDestinoResponse> rankingDestinosPorRentabilidade(String mes) {
+    public List<RankingDestinoResponse> rankingDestinosPorRentabilidade(
+            String dataInicio, String dataFim) {
 
-        if (mes == null || mes.isBlank()) {
-            throw new FiltroInvalidoException(
-                    "mes é obrigatório no formato YYYY-MM"
-            );
-        }
+        PeriodoConsulta periodo = PeriodoConsulta.parse(dataInicio, dataFim);
 
-        YearMonth periodo = converterMes(mes.trim());
-
-        return viagemRepository.rankingDestinosPorRentabilidade(
-                periodo.atDay(1), periodo.atEndOfMonth());
+        return viagemRepository.rankingDestinosPorRentabilidade(periodo.inicio(), periodo.fim());
     }
 
     private void validarFaixaFrete(BigDecimal freteMin, BigDecimal freteMax) {

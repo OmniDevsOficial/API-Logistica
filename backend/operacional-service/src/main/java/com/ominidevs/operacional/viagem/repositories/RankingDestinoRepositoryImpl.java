@@ -14,10 +14,11 @@ public class RankingDestinoRepositoryImpl implements RankingDestinoRepository {
 
     // Considera todos os status. Viagens sem destino ou com valor financeiro nulo
     // ficam fora, então COUNT(*) conta apenas as viagens que entram na média.
-    // Destino agrupa ignorando caixa e espaços; a ordenação usa a média já
-    // arredondada para que empates visíveis caiam nos critérios de desempate.
+    // A rota (origem + destino) agrupa ignorando caixa e espaços; a ordenação usa
+    // a média já arredondada para que empates visíveis caiam nos desempates.
     private static final String SQL_RANKING = """
-            SELECT MIN(TRIM(cidade_destino)) AS destino,
+            SELECT MIN(TRIM(cidade_origem)) AS origem,
+                   MIN(TRIM(cidade_destino)) AS destino,
                    COUNT(*) AS quantidade_viagens,
                    ROUND(AVG(%s), 2) AS rentabilidade_media
             FROM operacional.viagem
@@ -26,8 +27,9 @@ public class RankingDestinoRepositoryImpl implements RankingDestinoRepository {
               AND receita_frete IS NOT NULL
               AND custo_frete IS NOT NULL
               AND pedagio IS NOT NULL
-            GROUP BY UPPER(TRIM(cidade_destino))
-            ORDER BY rentabilidade_media DESC, quantidade_viagens DESC, UPPER(TRIM(cidade_destino))
+            GROUP BY UPPER(TRIM(cidade_origem)), UPPER(TRIM(cidade_destino))
+            ORDER BY rentabilidade_media DESC, quantidade_viagens DESC,
+                     UPPER(TRIM(cidade_destino)), UPPER(TRIM(cidade_origem))
             LIMIT 10
             """.formatted(RentabilidadeService.EXPRESSAO_SQL);
 
@@ -54,6 +56,7 @@ public class RankingDestinoRepositoryImpl implements RankingDestinoRepository {
     public List<RankingDestinoResponse> rankingDestinosPorRentabilidade(LocalDate inicio, LocalDate fim) {
         return jdbc.query(SQL_RANKING,
                 (rs, row) -> new RankingDestinoResponse(
+                        rs.getString("origem"),
                         rs.getString("destino"),
                         rs.getLong("quantidade_viagens"),
                         rs.getBigDecimal("rentabilidade_media")),
