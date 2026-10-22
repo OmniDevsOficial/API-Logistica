@@ -2,7 +2,7 @@ import type { Perfil } from "./types";
 
 const ROTAS_POR_PERFIL: Record<Perfil, readonly string[]> = {
   GESTOR: ["/", "/motoristas", "/motoristas/utilizacao", "/viagens"],
-  OPERADOR: ["/viagens"],
+  OPERADOR: ["/viagens", "/motoristas"],
 };
 
 export function podeAcessar(perfil: Perfil, rota: string): boolean {
