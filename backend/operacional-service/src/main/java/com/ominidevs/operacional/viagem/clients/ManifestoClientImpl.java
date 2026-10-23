@@ -94,6 +94,7 @@ public class ManifestoClientImpl implements ManifestoClient {
                     manifesto.setPrevisaoChegada(d.get("Previsão de chegada"));
                     manifesto.setValorFretes(d.get("Valor Fretes"));
                     manifesto.setPedagio(d.getOrDefault("Pedágio", d.get("Pedagio")));
+                    manifesto.setValeFrete(d.getOrDefault("Vale frete", d.get("Vale Frete")));
                     manifesto.setNumeroLinha(i + 2);
 
                     return manifesto;

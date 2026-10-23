@@ -96,6 +96,7 @@ public class ViagemService {
                 existente.setReceitaFrete(viagem.getReceitaFrete());
                 existente.setCustoFrete(viagem.getCustoFrete());
                 existente.setPedagio(viagem.getPedagio());
+                existente.setValeFrete(viagem.getValeFrete());
                 existente.setValorFrete(viagem.getValorFrete());
                 atualizadas.add(existente);
             }
