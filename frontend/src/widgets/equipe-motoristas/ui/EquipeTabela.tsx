@@ -153,19 +153,17 @@ export function EquipeTabela({
 
                     {/* Rentabilidade média — borrada para o operador */}
                     <td className={CELL}>
-                      {rentabilidade == null ? (
-                        <span className="whitespace-nowrap text-sm font-medium text-fg">
-                          -
-                        </span>
-                      ) : (
-                        <ValorMonetario
-                          className={`whitespace-nowrap text-sm font-medium ${
-                            rentabilidade < 0 ? "text-red-600" : "text-fg"
-                          }`}
-                        >
-                          {FORMATADOR_MOEDA.format(rentabilidade)}
-                        </ValorMonetario>
-                      )}
+                      <ValorMonetario
+                        className={`whitespace-nowrap text-sm font-medium ${
+                          rentabilidade != null && rentabilidade < 0
+                            ? "text-red-600"
+                            : "text-fg"
+                        }`}
+                      >
+                        {rentabilidade == null
+                          ? null
+                          : FORMATADOR_MOEDA.format(rentabilidade)}
+                      </ValorMonetario>
                     </td>
 
                     {/* Status */}

@@ -15,14 +15,9 @@ export function ViagemCard({ viagem }: ViagemCardProps) {
       : `R$ ${valor.toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 
   // Borrado para o operador: só o gestor consegue ler o valor.
-  const valorMonetario = (valor: number | null | undefined) => {
-    const texto = moeda(valor);
-    return texto === null ? (
-      <>-</>
-    ) : (
-      <ValorMonetario>{texto}</ValorMonetario>
-    );
-  };
+  const valorMonetario = (valor: number | null | undefined) => (
+    <ValorMonetario>{moeda(valor)}</ValorMonetario>
+  );
   return (
     <div className="flex flex-col gap-2 rounded-md bg-surface p-5">
       <div className="flex items-start justify-between gap-3">
