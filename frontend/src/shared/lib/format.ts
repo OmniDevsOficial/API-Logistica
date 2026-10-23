@@ -18,6 +18,10 @@ export function formatPercent(value: number): string {
   return `${value.toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}%`;
 }
 
+export function formatFrequencia(value: number): string {
+  return `${value.toLocaleString("pt-BR", { maximumFractionDigits: 1 })}%`;
+}
+
 export function formatCpf(cpf: string | null): string | null {
   if (!cpf) return null;
 

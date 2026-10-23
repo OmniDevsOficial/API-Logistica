@@ -1,7 +1,7 @@
 import { AlertCircle } from "lucide-react";
 import type { MotoristaEquipe, StatusEquipe } from "@entities/motorista";
 import { StatusMotoristaBadge } from "@entities/motorista/ui/StatusMotoristaBadge";
-import { formatCpf, formatDateOrToday } from "@shared/lib";
+import { formatCpf, formatDateOrToday, formatFrequencia } from "@shared/lib";
 import { ValorMonetario } from "@entities/sessao";
 
 interface EquipeTabelaProps {
@@ -22,24 +22,20 @@ const FORMATADOR_MOEDA = new Intl.NumberFormat("pt-BR", {
 });
 
 /** Frequência é a participação nas viagens: 0% significa motorista sem viagem no período. */
-function Frequencia({ valor }: { valor: number | null }) {
+function Frequencia({ valor, baixa }: { valor: number | null; baixa: boolean }) {
   if (valor === null) {
     return <span className="text-sm text-fg-subtle">—</span>;
   }
 
-  const semViagens = valor === 0;
-
   return (
     <span
       className={`inline-flex items-center gap-1 text-sm ${
-        semViagens ? "font-medium text-red-500" : "text-fg"
+        baixa ? "font-medium text-red-500" : "text-fg"
       }`}
-      title={semViagens ? "Sem viagens no período" : undefined}
+      title={baixa ? "Baixa utilização" : undefined}
     >
-      {valor.toLocaleString("pt-BR", { maximumFractionDigits: 1 })}%
-      {semViagens && (
-        <AlertCircle size={14} aria-label="Sem viagens no período" />
-      )}
+      {formatFrequencia(valor)}
+      {baixa && <AlertCircle size={14} aria-label="Baixa utilização" />}
     </span>
   );
 }
@@ -148,7 +144,10 @@ export function EquipeTabela({
 
                     {/* Frequência */}
                     <td className={CELL}>
-                      <Frequencia valor={motorista.frequencia} />
+                      <Frequencia
+                        valor={motorista.frequencia}
+                        baixa={motorista.baixaFrequencia}
+                      />
                     </td>
 
                     {/* Rentabilidade média — borrada para o operador */}

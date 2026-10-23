@@ -2,6 +2,7 @@ import { useMemo, useState } from "react";
 import { atualizarStatusMotorista } from "@entities/motorista";
 import type { StatusEquipe } from "@entities/motorista";
 import { Sidebar } from "@widgets/sidebar";
+import { SinoNotificacoes } from "@features/alerta-utilizacao";
 import { PageHeader } from "@shared/ui";
 import {
   EquipeStatCards,
@@ -67,6 +68,7 @@ export function MotoristasPage() {
           <PageHeader
             title="Motoristas"
             onMenuClick={() => setSidebarOpen(true)}
+            notificacoes={<SinoNotificacoes />}
           />
 
           <EquipeFiltros
