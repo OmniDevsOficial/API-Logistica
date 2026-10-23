@@ -1,6 +1,7 @@
 import { Search } from "lucide-react";
 import type { PeriodOption } from "@entities/dashboard-metrics";
 import { NavegacaoPeriodo, PeriodFilter } from "@features/period-filter";
+import { SinoNotificacoes } from "@features/alerta-utilizacao";
 import { PageHeader } from "@shared/ui";
 import { FiltrarViagensButton } from "./FiltrarViagensButton";
 import type { Viagem } from "@/entities/viagem";
@@ -46,7 +47,11 @@ export function ViagensTopbar({
 }: ViagensTopbarProps) {
   return (
     <header className="mb-7 flex flex-col gap-5">
-      <PageHeader title="Viagens" onMenuClick={onMenuClick} />
+      <PageHeader
+        title="Viagens"
+        onMenuClick={onMenuClick}
+        notificacoes={<SinoNotificacoes />}
+      />
 
       <div className="flex flex-col gap-4 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between">
         <div className="flex items-center gap-2 rounded-md bg-surface px-4 py-2.5">
