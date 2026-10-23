@@ -7,6 +7,7 @@ interface UtilizacaoMotoristaResponse {
   nome: string;
   porcentagem: number;
   status: string;
+  baixaUtilizacao?: boolean;
 }
 
 interface UtilizacaoResponse {
@@ -28,6 +29,7 @@ function mapearResposta(dados: unknown): MotoristaUtilizacao[] {
     nome: motorista.nome,
     percentualUtilizacao: motorista.porcentagem,
     status: motorista.status === "SEM_VIAGENS" ? "SEM_VIAGENS" : "OK",
+    baixaUtilizacao: motorista.baixaUtilizacao === true,
   }));
 }
 

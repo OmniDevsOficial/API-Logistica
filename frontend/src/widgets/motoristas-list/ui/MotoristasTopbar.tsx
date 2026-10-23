@@ -1,4 +1,5 @@
 import { ArrowDownAZ, ArrowUpAZ, Calendar } from "lucide-react";
+import { SinoNotificacoes } from "@features/alerta-utilizacao";
 import { PageHeader } from "@shared/ui";
 
 interface MotoristasTopbarProps {
@@ -21,7 +22,11 @@ export function MotoristasTopbar({
 }: MotoristasTopbarProps) {
   return (
     <header className="mb-7 flex flex-col gap-5">
-      <PageHeader title="Motoristas" onMenuClick={onMenuClick} />
+      <PageHeader
+        title="Motoristas"
+        onMenuClick={onMenuClick}
+        notificacoes={<SinoNotificacoes />}
+      />
 
       <div className="flex flex-wrap items-center gap-3">
         <div className={PILL_CLASS}>

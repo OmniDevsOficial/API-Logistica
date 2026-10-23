@@ -88,6 +88,7 @@ function mapearMotorista(motorista: MotoristaResposta): MotoristaEquipe {
     localizacao: motorista.localizacao ?? "-",
     viagens: motorista.quantidadeViagens,
     frequencia: null,
+    baixaFrequencia: false,
     status: STATUS_EQUIPE[motorista.status],
   };
 }
