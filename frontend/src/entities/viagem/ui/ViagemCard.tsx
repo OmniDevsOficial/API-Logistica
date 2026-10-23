@@ -28,7 +28,9 @@ export function ViagemCard({ viagem }: ViagemCardProps) {
       </div>
       <div className="flex items-baseline gap-2">
         <span className="text-2xl font-bold text-fg">
-          <ValorMonetario>{formatCurrencyBRL(viagem.freteEstimado)}</ValorMonetario>
+          <ValorMonetario>
+            {viagem.freteEstimado == null ? null : formatCurrencyBRL(viagem.freteEstimado)}
+          </ValorMonetario>
         </span>
         <span className="text-[13px] text-fg-subtle">frete estimado</span>
       </div>

@@ -107,7 +107,7 @@ public class ViagemController {
                 viagem.getData(),
                 viagem.getCidadeOrigem(),
                 viagem.getCidadeDestino(),
-                viagem.getValorFrete(),
+                viagem.getReceitaFrete(),
                 viagem.getVeiculo(),
                 distanciaKm,
                 viagem.getEstimativaDias(),
