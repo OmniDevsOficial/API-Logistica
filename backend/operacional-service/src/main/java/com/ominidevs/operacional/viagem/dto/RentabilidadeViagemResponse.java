@@ -8,6 +8,5 @@ public record RentabilidadeViagemResponse(
         String origem,
         String destino,
         BigDecimal receita,
-        BigDecimal custoFrete,
-        BigDecimal pedagio,
+        BigDecimal custo,
         BigDecimal rentabilidade) {}

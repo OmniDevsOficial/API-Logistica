@@ -25,8 +25,7 @@ public class RankingDestinoRepositoryImpl implements RankingDestinoRepository {
             WHERE data BETWEEN ? AND ?
               AND NULLIF(TRIM(cidade_destino), '') IS NOT NULL
               AND receita_frete IS NOT NULL
-              AND custo_frete IS NOT NULL
-              AND pedagio IS NOT NULL
+              AND vale_frete IS NOT NULL
             GROUP BY UPPER(TRIM(cidade_origem)), UPPER(TRIM(cidade_destino))
             ORDER BY rentabilidade_media DESC, quantidade_viagens DESC,
                      UPPER(TRIM(cidade_destino)), UPPER(TRIM(cidade_origem))
@@ -36,8 +35,7 @@ public class RankingDestinoRepositoryImpl implements RankingDestinoRepository {
     private static final String SQL_RENTABILIDADE_MOTORISTA = """
             SELECT MIN(TRIM(motorista)) AS motorista,
                    COUNT(*) FILTER (WHERE receita_frete IS NOT NULL
-                                      AND custo_frete IS NOT NULL
-                                      AND pedagio IS NOT NULL) AS quantidade_viagens,
+                                      AND vale_frete IS NOT NULL) AS quantidade_viagens,
                    ROUND(AVG(%s), 2) AS rentabilidade_media
             FROM operacional.viagem
             WHERE data BETWEEN ? AND ?

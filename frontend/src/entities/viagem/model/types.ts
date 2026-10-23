@@ -10,7 +10,7 @@ export interface Viagem {
   estimativaDias: number;
   status: StatusViagem;
   receita: number | null;
-  /** Frete + pedágio. */
+  /** Vale frete. */
   custo: number | null;
   rentabilidade: number | null;
 }
