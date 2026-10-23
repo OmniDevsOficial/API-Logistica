@@ -60,7 +60,7 @@ class DashboardControllerTest {
         when(repository.consultarResumo(any())).thenReturn(new ResumoViagens(
                 4, 550L, 2, 1, 2, 1, 1));
         when(repository.consultarValoresFinanceiros(any())).thenReturn(List.of(
-                new ValoresFinanceirosViagem(new BigDecimal("2000.00"), null, null)));
+                new ValoresFinanceirosViagem(new BigDecimal("2000.00"), null)));
         when(repository.consultarSerieRentabilidade(any(), any())).thenReturn(List.of(
                 new PontoRentabilidade("09/2026", 4, BigDecimal.ZERO, new BigDecimal("2000.00"))));
         when(repository.consultarSeriePorVeiculo(any())).thenReturn(List.of(
