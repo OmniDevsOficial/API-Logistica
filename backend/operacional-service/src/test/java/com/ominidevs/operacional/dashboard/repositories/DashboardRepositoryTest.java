@@ -42,6 +42,7 @@ class DashboardRepositoryTest {
                     data DATE, motorista TEXT, cpf_motorista TEXT, veiculo TEXT,
                     valor_frete NUMERIC(10,2), km_saida INT, km_chegada INT, status TEXT,
                     receita_frete NUMERIC(12,2), custo_frete NUMERIC(12,2), pedagio NUMERIC(12,2),
+                    vale_frete NUMERIC(12,2),
                     cidade_destino TEXT)
                 """);
         jdbc.execute("""
@@ -90,9 +91,9 @@ class DashboardRepositoryTest {
     @Test
     void serieDeRentabilidadePorDiaTrazTodosOsDiasDoPeriodoComDiaSemViagemZerado() {
         jdbc.update("""
-                INSERT INTO operacional.viagem (data, receita_frete, custo_frete, pedagio) VALUES
-                ('2026-09-10', 1000.00, 600.00, 50.00),
-                ('2026-09-30', 300.00, 500.00, NULL)
+                INSERT INTO operacional.viagem (data, receita_frete, custo_frete, pedagio, vale_frete) VALUES
+                ('2026-09-10', 1000.00, 400.00, 30.00, 650.00),
+                ('2026-09-30', 300.00, NULL, NULL, 500.00)
                 """);
 
         List<PontoRentabilidade> serie = repository.consultarSerieRentabilidade(setembro, AgrupamentoSerie.DIA);
@@ -113,8 +114,8 @@ class DashboardRepositoryTest {
     @Test
     void serieDeRentabilidadePorMesAgrupaOsMesesDoPeriodoEmOrdem() {
         jdbc.update("""
-                INSERT INTO operacional.viagem (data, receita_frete, custo_frete, pedagio) VALUES
-                ('2026-09-15', 1000.00, 600.00, 50.00)
+                INSERT INTO operacional.viagem (data, receita_frete, vale_frete) VALUES
+                ('2026-09-15', 1000.00, 650.00)
                 """);
 
         List<PontoRentabilidade> serie = repository.consultarSerieRentabilidade(
@@ -138,7 +139,7 @@ class DashboardRepositoryTest {
     @Test
     void valoresFinanceirosTrazemSomenteViagensDoPeriodoMantendoCamposVazios() {
         jdbc.update("""
-                UPDATE operacional.viagem SET receita_frete = 1500.00, custo_frete = 900.00, pedagio = 50.00
+                UPDATE operacional.viagem SET receita_frete = 1500.00, vale_frete = 950.00
                 WHERE data IN ('2026-09-01', '2026-08-31')
                 """);
 
@@ -146,21 +147,21 @@ class DashboardRepositoryTest {
 
         assertEquals(4, valores.size());
         assertTrue(valores.contains(new ValoresFinanceirosViagem(
-                new BigDecimal("1500.00"), new BigDecimal("900.00"), new BigDecimal("50.00"))));
+                new BigDecimal("1500.00"), new BigDecimal("950.00"))));
         assertEquals(3, valores.stream()
-                .filter(v -> v.receita() == null && v.custoFrete() == null && v.pedagio() == null)
+                .filter(v -> v.receita() == null && v.valeFrete() == null)
                 .count());
     }
 
     @Test
     void destinoMaisRentavelEOQueSomaMaisRentabilidadeNoPeriodoENaoOQueTemMaiorMedia() {
         jdbc.update("""
-                INSERT INTO operacional.viagem (data, cidade_destino, receita_frete, custo_frete, pedagio) VALUES
-                ('2026-09-02', 'São Paulo', 1000.00, 650.00, 50.00),
-                ('2026-09-03', ' São Paulo ', 800.00, 500.00, NULL),
-                ('2026-09-04', 'Belém', 2000.00, 1450.00, 50.00),
-                ('2026-08-31', 'Manaus', 9000.00, 100.00, 0.00),
-                ('2026-09-05', '   ', 9000.00, 100.00, 0.00)
+                INSERT INTO operacional.viagem (data, cidade_destino, receita_frete, vale_frete) VALUES
+                ('2026-09-02', 'São Paulo', 1000.00, 700.00),
+                ('2026-09-03', ' São Paulo ', 800.00, 500.00),
+                ('2026-09-04', 'Belém', 2000.00, 1500.00),
+                ('2026-08-31', 'Manaus', 9000.00, 100.00),
+                ('2026-09-05', '   ', 9000.00, 100.00)
                 """);
 
         DestinoRentavel destino = repository.consultarDestinoMaisRentavel(setembro);

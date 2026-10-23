@@ -56,7 +56,7 @@ class DashboardServiceTest {
         when(repository.consultarResumo(periodo)).thenReturn(new ResumoViagens(
                 10, 550L, 3, 2, 4, 3, 3));
         when(repository.consultarValoresFinanceiros(periodo)).thenReturn(List.of(
-                new ValoresFinanceirosViagem(new BigDecimal("2000.00"), null, null)));
+                new ValoresFinanceirosViagem(new BigDecimal("2000.00"), null)));
         when(repository.consultarSerieRentabilidade(periodo, AgrupamentoSerie.DIA)).thenReturn(List.of(
                 new PontoRentabilidade("01/09", 10, BigDecimal.ZERO, new BigDecimal("2000.00"))));
         when(repository.consultarSeriePorVeiculo(periodo)).thenReturn(List.of(
@@ -101,23 +101,23 @@ class DashboardServiceTest {
         when(repository.consultarResumo(periodo)).thenReturn(new ResumoViagens(
                 2, null, 2, 0, 0, 0, 2));
         when(repository.consultarValoresFinanceiros(periodo)).thenReturn(List.of(
-                new ValoresFinanceirosViagem(new BigDecimal("3855.60"), new BigDecimal("2169.73"), new BigDecimal("69.47")),
-                new ValoresFinanceirosViagem(new BigDecimal("2120.58"), new BigDecimal("2129.70"), new BigDecimal("165.87"))));
+                new ValoresFinanceirosViagem(new BigDecimal("3855.60"), new BigDecimal("3059.20")),
+                new ValoresFinanceirosViagem(new BigDecimal("2120.58"), new BigDecimal("2715.57"))));
 
         var metricas = service.consultar(periodo).metricas();
 
-        assertEquals(new BigDecimal("4534.77"), metricas.custoTotal());
-        assertEquals(new BigDecimal("1441.41"), metricas.rentabilidadeTotal());
-        assertEquals(new BigDecimal("720.71"), metricas.rentabilidadeMedia());
+        assertEquals(new BigDecimal("5774.77"), metricas.custoTotal());
+        assertEquals(new BigDecimal("201.41"), metricas.rentabilidadeTotal());
+        assertEquals(new BigDecimal("100.71"), metricas.rentabilidadeMedia());
     }
 
     @Test
-    void custoTotalSomaFreteEPedagioDeTodasAsViagensContandoCampoVazioComoZero() {
+    void custoTotalSomaOValeFreteDasViagensIgnorandoValeFreteVazio() {
         when(repository.consultarValoresFinanceiros(periodo)).thenReturn(List.of(
-                new ValoresFinanceirosViagem(new BigDecimal("1000.00"), new BigDecimal("600.00"), new BigDecimal("40.00")),
-                new ValoresFinanceirosViagem(null, new BigDecimal("300.00"), new BigDecimal("10.00")),
-                new ValoresFinanceirosViagem(new BigDecimal("500.00"), new BigDecimal("200.00"), null),
-                new ValoresFinanceirosViagem(new BigDecimal("400.00"), null, null)));
+                new ValoresFinanceirosViagem(new BigDecimal("1000.00"), new BigDecimal("640.00")),
+                new ValoresFinanceirosViagem(null, new BigDecimal("310.00")),
+                new ValoresFinanceirosViagem(new BigDecimal("500.00"), new BigDecimal("200.00")),
+                new ValoresFinanceirosViagem(new BigDecimal("400.00"), null)));
 
         var metricas = service.consultar(periodo).metricas();
 
@@ -129,9 +129,9 @@ class DashboardServiceTest {
         when(repository.consultarResumo(periodo)).thenReturn(new ResumoViagens(
                 3, null, 2, 0, 0, 0, 3));
         when(repository.consultarValoresFinanceiros(periodo)).thenReturn(List.of(
-                new ValoresFinanceirosViagem(new BigDecimal("1000.00"), new BigDecimal("600.00"), new BigDecimal("40.00")),
-                new ValoresFinanceirosViagem(null, new BigDecimal("300.00"), null),
-                new ValoresFinanceirosViagem(new BigDecimal("400.00"), null, null)));
+                new ValoresFinanceirosViagem(new BigDecimal("1000.00"), new BigDecimal("640.00")),
+                new ValoresFinanceirosViagem(null, new BigDecimal("300.00")),
+                new ValoresFinanceirosViagem(new BigDecimal("400.00"), null)));
 
         var metricas = service.consultar(periodo).metricas();
 
@@ -142,9 +142,9 @@ class DashboardServiceTest {
     @Test
     void rentabilidadeTotalSubtraiOCustoTotalDaReceitaDeTodasAsViagensContandoCampoVazioComoZero() {
         when(repository.consultarValoresFinanceiros(periodo)).thenReturn(List.of(
-                new ValoresFinanceirosViagem(new BigDecimal("1000.00"), new BigDecimal("600.00"), new BigDecimal("40.00")),
-                new ValoresFinanceirosViagem(null, new BigDecimal("300.00"), null),
-                new ValoresFinanceirosViagem(new BigDecimal("400.00"), null, null)));
+                new ValoresFinanceirosViagem(new BigDecimal("1000.00"), new BigDecimal("640.00")),
+                new ValoresFinanceirosViagem(null, new BigDecimal("300.00")),
+                new ValoresFinanceirosViagem(new BigDecimal("400.00"), null)));
 
         var metricas = service.consultar(periodo).metricas();
 
@@ -154,7 +154,7 @@ class DashboardServiceTest {
     @Test
     void rentabilidadeTotalPodeSerNegativaQuandoOCustoPassaAReceita() {
         when(repository.consultarValoresFinanceiros(periodo)).thenReturn(List.of(
-                new ValoresFinanceirosViagem(new BigDecimal("500.00"), new BigDecimal("700.00"), new BigDecimal("50.00"))));
+                new ValoresFinanceirosViagem(new BigDecimal("500.00"), new BigDecimal("750.00"))));
 
         var metricas = service.consultar(periodo).metricas();
 
@@ -166,9 +166,9 @@ class DashboardServiceTest {
         when(repository.consultarResumo(periodo)).thenReturn(new ResumoViagens(
                 3, null, 2, 0, 0, 0, 3));
         when(repository.consultarValoresFinanceiros(periodo)).thenReturn(List.of(
-                new ValoresFinanceirosViagem(new BigDecimal("1000.00"), new BigDecimal("600.00"), new BigDecimal("40.00")),
-                new ValoresFinanceirosViagem(null, new BigDecimal("300.00"), null),
-                new ValoresFinanceirosViagem(new BigDecimal("400.00"), null, null)));
+                new ValoresFinanceirosViagem(new BigDecimal("1000.00"), new BigDecimal("640.00")),
+                new ValoresFinanceirosViagem(null, new BigDecimal("300.00")),
+                new ValoresFinanceirosViagem(new BigDecimal("400.00"), null)));
 
         var metricas = service.consultar(periodo).metricas();
 
@@ -179,9 +179,9 @@ class DashboardServiceTest {
     @Test
     void valorDosFretesSomaAReceitaDeTodasAsViagensIgnorandoReceitaVazia() {
         when(repository.consultarValoresFinanceiros(periodo)).thenReturn(List.of(
-                new ValoresFinanceirosViagem(new BigDecimal("1000.00"), new BigDecimal("600.00"), new BigDecimal("40.00")),
-                new ValoresFinanceirosViagem(null, new BigDecimal("300.00"), null),
-                new ValoresFinanceirosViagem(new BigDecimal("400.00"), null, null)));
+                new ValoresFinanceirosViagem(new BigDecimal("1000.00"), new BigDecimal("640.00")),
+                new ValoresFinanceirosViagem(null, new BigDecimal("300.00")),
+                new ValoresFinanceirosViagem(new BigDecimal("400.00"), null)));
 
         var metricas = service.consultar(periodo).metricas();
 
@@ -191,7 +191,7 @@ class DashboardServiceTest {
     @Test
     void valorDosFretesFicaNuloQuandoNenhumaViagemTemReceita() {
         when(repository.consultarValoresFinanceiros(periodo)).thenReturn(List.of(
-                new ValoresFinanceirosViagem(null, new BigDecimal("300.00"), new BigDecimal("10.00"))));
+                new ValoresFinanceirosViagem(null, new BigDecimal("310.00"))));
 
         var metricas = service.consultar(periodo).metricas();
 
@@ -201,9 +201,9 @@ class DashboardServiceTest {
     @Test
     void margemDivideARentabilidadeTotalPeloValorDosFretesEmPorcentagem() {
         when(repository.consultarValoresFinanceiros(periodo)).thenReturn(List.of(
-                new ValoresFinanceirosViagem(new BigDecimal("1000.00"), new BigDecimal("600.00"), new BigDecimal("40.00")),
-                new ValoresFinanceirosViagem(null, new BigDecimal("300.00"), null),
-                new ValoresFinanceirosViagem(new BigDecimal("400.00"), null, null)));
+                new ValoresFinanceirosViagem(new BigDecimal("1000.00"), new BigDecimal("640.00")),
+                new ValoresFinanceirosViagem(null, new BigDecimal("300.00")),
+                new ValoresFinanceirosViagem(new BigDecimal("400.00"), null)));
 
         var metricas = service.consultar(periodo).metricas();
 
@@ -213,7 +213,7 @@ class DashboardServiceTest {
     @Test
     void margemFicaNegativaQuandoOCustoPassaAReceita() {
         when(repository.consultarValoresFinanceiros(periodo)).thenReturn(List.of(
-                new ValoresFinanceirosViagem(new BigDecimal("500.00"), new BigDecimal("700.00"), new BigDecimal("50.00"))));
+                new ValoresFinanceirosViagem(new BigDecimal("500.00"), new BigDecimal("750.00"))));
 
         var metricas = service.consultar(periodo).metricas();
 
@@ -223,8 +223,8 @@ class DashboardServiceTest {
     @Test
     void margemFicaNulaSemValorDosFretesParaDividir() {
         when(repository.consultarValoresFinanceiros(periodo)).thenReturn(List.of(
-                new ValoresFinanceirosViagem(null, new BigDecimal("300.00"), new BigDecimal("10.00")),
-                new ValoresFinanceirosViagem(new BigDecimal("0.00"), new BigDecimal("100.00"), null)));
+                new ValoresFinanceirosViagem(null, new BigDecimal("310.00")),
+                new ValoresFinanceirosViagem(new BigDecimal("0.00"), new BigDecimal("100.00"))));
 
         var metricas = service.consultar(periodo).metricas();
 
@@ -270,9 +270,9 @@ class DashboardServiceTest {
         when(repository.consultarResumo(periodo)).thenReturn(new ResumoViagens(
                 3, null, 2, 0, 0, 0, 3));
         when(repository.consultarValoresFinanceiros(periodo)).thenReturn(List.of(
-                new ValoresFinanceirosViagem(new BigDecimal("1000.00"), new BigDecimal("600.00"), new BigDecimal("40.00")),
-                new ValoresFinanceirosViagem(null, new BigDecimal("300.00"), null),
-                new ValoresFinanceirosViagem(new BigDecimal("400.00"), null, null)));
+                new ValoresFinanceirosViagem(new BigDecimal("1000.00"), new BigDecimal("640.00")),
+                new ValoresFinanceirosViagem(null, new BigDecimal("300.00")),
+                new ValoresFinanceirosViagem(new BigDecimal("400.00"), null)));
 
         var metricas = service.consultar(periodo).metricas();
 
@@ -284,7 +284,7 @@ class DashboardServiceTest {
         when(repository.consultarResumo(periodo)).thenReturn(new ResumoViagens(
                 1, null, 1, 0, 0, 0, 1));
         when(repository.consultarValoresFinanceiros(periodo)).thenReturn(List.of(
-                new ValoresFinanceirosViagem(null, new BigDecimal("300.00"), new BigDecimal("10.00"))));
+                new ValoresFinanceirosViagem(null, new BigDecimal("310.00"))));
 
         assertNull(service.consultar(periodo).metricas().freteMedio());
     }

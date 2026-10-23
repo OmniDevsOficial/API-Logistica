@@ -88,9 +88,8 @@ public class DashboardService {
     private BigDecimal somarCustos(List<ValoresFinanceirosViagem> valores) {
         BigDecimal total = null;
         for (var v : valores) {
-            if (v.custoFrete() == null && v.pedagio() == null) continue;
-            BigDecimal base = total == null ? BigDecimal.ZERO : total;
-            total = base.add(zeroSeNulo(v.custoFrete())).add(zeroSeNulo(v.pedagio()));
+            if (v.valeFrete() == null) continue;
+            total = (total == null ? BigDecimal.ZERO : total).add(v.valeFrete());
         }
         return total;
     }

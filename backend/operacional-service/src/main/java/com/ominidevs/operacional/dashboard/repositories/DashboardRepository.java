@@ -33,8 +33,8 @@ public class DashboardRepository {
     private static final String SQL_SERIE_RENTABILIDADE = """
             SELECT to_char(p.inicio, '%2$s') AS rotulo,
                    COUNT(v.data) AS viagens,
-                   COALESCE(SUM(COALESCE(v.custo_frete, 0) + COALESCE(v.pedagio, 0)), 0) AS custo,
-                   COALESCE(SUM(COALESCE(v.receita_frete, 0) - COALESCE(v.custo_frete, 0) - COALESCE(v.pedagio, 0)), 0) AS rentabilidade
+                   COALESCE(SUM(v.vale_frete), 0) AS custo,
+                   COALESCE(SUM(COALESCE(v.receita_frete, 0) - COALESCE(v.vale_frete, 0)), 0) AS rentabilidade
             FROM generate_series(date_trunc('%1$s', CAST(? AS date)), CAST(? AS date), INTERVAL '1 %1$s') AS p(inicio)
             LEFT JOIN operacional.viagem v
                    ON v.data >= p.inicio AND v.data < p.inicio + INTERVAL '1 %1$s'
@@ -56,12 +56,12 @@ public class DashboardRepository {
     private static final String SQL_DESTINO_MAIS_RENTAVEL = """
             SELECT MIN(TRIM(cidade_destino)) AS destino,
                    COUNT(*) AS viagens,
-                   SUM(COALESCE(receita_frete, 0) - COALESCE(custo_frete, 0) - COALESCE(pedagio, 0)) AS rentabilidade_total
+                   SUM(COALESCE(receita_frete, 0) - COALESCE(vale_frete, 0)) AS rentabilidade_total
             FROM operacional.viagem
             WHERE data BETWEEN ? AND ?
               AND NULLIF(TRIM(cidade_destino), '') IS NOT NULL
             GROUP BY UPPER(TRIM(cidade_destino))
-            HAVING COUNT(receita_frete) + COUNT(custo_frete) + COUNT(pedagio) > 0
+            HAVING COUNT(receita_frete) + COUNT(vale_frete) > 0
             ORDER BY rentabilidade_total DESC, viagens DESC, UPPER(TRIM(cidade_destino))
             LIMIT 1
             """;
@@ -102,11 +102,11 @@ public class DashboardRepository {
 
     public List<ValoresFinanceirosViagem> consultarValoresFinanceiros(PeriodoConsulta periodo) {
         return jdbc.query("""
-                SELECT receita_frete, custo_frete, pedagio
+                SELECT receita_frete, vale_frete
                 FROM operacional.viagem
                 WHERE data BETWEEN ? AND ?
                 """, (rs, row) -> new ValoresFinanceirosViagem(
-                    rs.getBigDecimal("receita_frete"), rs.getBigDecimal("custo_frete"), rs.getBigDecimal("pedagio")),
+                    rs.getBigDecimal("receita_frete"), rs.getBigDecimal("vale_frete")),
                 Date.valueOf(periodo.inicio()), Date.valueOf(periodo.fim()));
     }
 
