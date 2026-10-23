@@ -92,7 +92,6 @@ public class ViagemController {
      * Converte entidade Viagem para DTO de resposta. Calcula distância em km a
      * partir da diferença entre km chegada e km saída e já envia os valores
      * financeiros, evitando uma requisição de rentabilidade por viagem na tela.
-     * O custo exibido é frete + pedágio (pedágio ausente conta como zero).
      */
     private ViagemResponseDTO toResponseDTO(Viagem viagem) {
 
@@ -114,18 +113,8 @@ public class ViagemController {
                 viagem.getEstimativaDias(),
                 converterStatusParaFrontend(viagem.getStatus()),
                 viagem.getReceitaFrete(),
-                custoTotal(viagem),
-                RentabilidadeService.calcular(
-                        viagem.getReceitaFrete(), viagem.getCustoFrete(), viagem.getPedagio()));
-    }
-
-    private BigDecimal custoTotal(Viagem viagem) {
-        if (viagem.getCustoFrete() == null) {
-            return null;
-        }
-        return viagem.getPedagio() == null
-                ? viagem.getCustoFrete()
-                : viagem.getCustoFrete().add(viagem.getPedagio());
+                viagem.getValeFrete(),
+                RentabilidadeService.calcular(viagem.getReceitaFrete(), viagem.getValeFrete()));
     }
 
     private String converterStatusParaFrontend(StatusViagem status) {

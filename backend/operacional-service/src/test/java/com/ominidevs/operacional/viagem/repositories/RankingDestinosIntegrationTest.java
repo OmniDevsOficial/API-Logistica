@@ -42,7 +42,7 @@ class RankingDestinosIntegrationTest {
 
     private int sequencia;
 
-    /** Receita = 1000 + rentabilidade; custo 800 e pedágio 200 somam 1000. */
+    /** Receita = 1000 + rentabilidade; Vale frete = 1000. */
     private Viagem viagem(String data, String destino, String rentabilidade, StatusViagem status) {
         return viagem("Origem Teste", data, destino, rentabilidade, status);
     }
@@ -53,16 +53,16 @@ class RankingDestinosIntegrationTest {
                 "00123456789", "ABC1D23", origem, destino, new BigDecimal("1000.00"),
                 100, 200, status, null, null);
         viagem.setReceitaFrete(new BigDecimal("1000.00").add(new BigDecimal(rentabilidade)));
-        viagem.setCustoFrete(new BigDecimal("800.00"));
-        viagem.setPedagio(new BigDecimal("200.00"));
+        viagem.setCustoFrete(new BigDecimal("300.00"));
+        viagem.setPedagio(new BigDecimal("50.00"));
+        viagem.setValeFrete(new BigDecimal("1000.00"));
         return viagem;
     }
 
-    private Viagem viagemSemFinanceiro(String data, String destino, String receita, String custo, String pedagio) {
+    private Viagem viagemSemFinanceiro(String data, String destino, String receita, String valeFrete) {
         Viagem viagem = viagem(data, destino, "0.00", StatusViagem.FINALIZADO);
         viagem.setReceitaFrete(receita == null ? null : new BigDecimal(receita));
-        viagem.setCustoFrete(custo == null ? null : new BigDecimal(custo));
-        viagem.setPedagio(pedagio == null ? null : new BigDecimal(pedagio));
+        viagem.setValeFrete(valeFrete == null ? null : new BigDecimal(valeFrete));
         return viagem;
     }
 
@@ -88,10 +88,9 @@ class RankingDestinosIntegrationTest {
                 viagem("2026-08-31", "Delta", "-9000.00", StatusViagem.FINALIZADO),
                 viagem("2026-10-01", "Beta", "9000.00", StatusViagem.FINALIZADO),
                 // Nulos: não entram na média nem na contagem.
-                viagemSemFinanceiro("2026-09-20", "Alfa", "5000.00", "100.00", null),
-                viagemSemFinanceiro("2026-09-20", "Alfa", null, "100.00", "100.00"),
-                viagemSemFinanceiro("2026-09-20", "Alfa", "5000.00", null, "100.00"),
-                viagemSemFinanceiro("2026-09-21", "Somente Nulos", null, null, null),
+                viagemSemFinanceiro("2026-09-20", "Alfa", "5000.00", null),
+                viagemSemFinanceiro("2026-09-20", "Alfa", null, "100.00"),
+                viagemSemFinanceiro("2026-09-21", "Somente Nulos", null, null),
                 viagem("2026-09-22", null, "8000.00", StatusViagem.FINALIZADO),
                 viagem("2026-09-22", "   ", "8000.00", StatusViagem.FINALIZADO)
         ));
@@ -187,19 +186,31 @@ class RankingDestinosIntegrationTest {
     }
 
     @Test void mesSomenteComValoresNulosRetornaListaVazia() {
-        salvar(List.of(viagemSemFinanceiro("2026-07-10", "Alfa", null, "100.00", "100.00")));
+        salvar(List.of(viagemSemFinanceiro("2026-07-10", "Alfa", null, "200.00")));
 
         assertTrue(service.rankingDestinosPorRentabilidade("01/07/2026", "31/07/2026").isEmpty());
     }
 
+    @Test void rentabilidadeMediaDoMotoristaUsaOValeFreteEIgnoraViagemSemValor() {
+        salvar(List.of(
+                viagem("2026-09-01", "Delta", "500.00", StatusViagem.FINALIZADO),
+                viagem("2026-09-02", "Alfa", "100.00", StatusViagem.FINALIZADO),
+                viagemSemFinanceiro("2026-09-03", "Alfa", "5000.00", null)));
+
+        var motoristas = service.rentabilidadeMediaPorMotorista(LocalDate.of(2026, 9, 1), LocalDate.of(2026, 9, 30));
+
+        assertEquals(1, motoristas.size());
+        assertEquals(new BigDecimal("300.00"), motoristas.get(0).rentabilidadeMedia());
+        assertEquals(2, motoristas.get(0).quantidadeViagensConsideradas());
+    }
+
     @Test void expressaoSqlEquivaleAFormulaJava() {
-        salvar(List.of(viagemSemFinanceiro("2026-09-01", "Alfa", "1234.56", "789.01", "45.67")));
+        salvar(List.of(viagemSemFinanceiro("2026-09-01", "Alfa", "1234.56", "834.68")));
 
         BigDecimal sql = jdbc.queryForObject(
                 "SELECT " + RentabilidadeService.EXPRESSAO_SQL + " FROM operacional.viagem",
                 BigDecimal.class);
 
-        assertEquals(RentabilidadeService.calcular(
-                new BigDecimal("1234.56"), new BigDecimal("789.01"), new BigDecimal("45.67")), sql);
+        assertEquals(RentabilidadeService.calcular(new BigDecimal("1234.56"), new BigDecimal("834.68")), sql);
     }
 }
