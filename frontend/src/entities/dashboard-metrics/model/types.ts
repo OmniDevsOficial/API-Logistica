@@ -8,19 +8,27 @@ export interface ViagensPorStatus {
   finalizado: number;
 }
 
+export interface DestinoMaisRentavel {
+  destino: string;
+  viagens: number;
+  rentabilidadeTotal: number;
+}
+
 export interface DashboardMetrics {
   totalViagens: number;
   freteTotal: number | null;
   freteMedio: number | null;
   kmTotal: number | null;
   motoristasAtivos: number;
+  viagensPorMotorista: number | null;
   veiculosUtilizados: number;
   viagensPorStatus: ViagensPorStatus;
   custoTotal: number | null;
   custoMedio: number | null;
   rentabilidadeTotal: number | null;
   rentabilidadeMedia: number | null;
-  taxaOcupacao: number | null;
+  margem: number | null;
+  destinoMaisRentavel: DestinoMaisRentavel | null;
 }
 
 export interface DashboardData {
@@ -30,4 +38,17 @@ export interface DashboardData {
   };
   status: DashboardStatus;
   metrics: DashboardMetrics;
+  serieRentabilidade: SerieRentabilidade;
+}
+
+export interface PontoRentabilidade {
+  rotulo: string;
+  viagens: number;
+  custo: number;
+  rentabilidade: number;
+}
+
+export interface SerieRentabilidade {
+  agrupamento: "DIA" | "MES";
+  pontos: PontoRentabilidade[];
 }

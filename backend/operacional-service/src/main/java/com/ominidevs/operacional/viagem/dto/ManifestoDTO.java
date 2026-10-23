@@ -18,6 +18,7 @@ public class ManifestoDTO {
     private String previsaoChegada;
     private String valorFretes;
     private String pedagio;
+    private String valeFrete;
     private int numeroLinha;
 
     public ManifestoDTO() {
@@ -115,6 +116,8 @@ public class ManifestoDTO {
     public void setValorFretes(String valorFretes) { this.valorFretes = valorFretes; }
     public String getPedagio() { return pedagio; }
     public void setPedagio(String pedagio) { this.pedagio = pedagio; }
+    public String getValeFrete() { return valeFrete; }
+    public void setValeFrete(String valeFrete) { this.valeFrete = valeFrete; }
     public int getNumeroLinha() { return numeroLinha; }
     public void setNumeroLinha(int numeroLinha) { this.numeroLinha = numeroLinha; }
 

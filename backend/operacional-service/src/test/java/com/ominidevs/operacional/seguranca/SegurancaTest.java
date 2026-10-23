@@ -12,16 +12,19 @@ import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilde
 
 import com.ominidevs.operacional.dashboard.controllers.DashboardController;
 import com.ominidevs.operacional.dashboard.services.DashboardService;
+import com.ominidevs.operacional.motorista.controllers.MotoristaController;
+import com.ominidevs.operacional.motorista.services.MotoristaService;
 import com.ominidevs.operacional.viagem.controllers.ViagemController;
 import com.ominidevs.operacional.viagem.services.ViagemService;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.options;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@WebMvcTest(controllers = {DashboardController.class, ViagemController.class})
+@WebMvcTest(controllers = {DashboardController.class, ViagemController.class, MotoristaController.class})
 @Import(SegurancaConfig.class)
 @TestPropertySource(properties = {
         "jwt.secret=" + TokensDeTeste.SEGREDO,
@@ -37,6 +40,9 @@ class SegurancaTest {
 
     @MockitoBean
     private ViagemService viagemService;
+
+    @MockitoBean
+    private MotoristaService motoristaService;
 
     private MockHttpServletRequestBuilder dashboard() {
         return get("/dashboard").param("dataInicio", "01/09/2026").param("dataFim", "30/09/2026");
@@ -90,6 +96,25 @@ class SegurancaTest {
     void operadorAcessaAsViagens() throws Exception {
         mvc.perform(get("/viagens").header(HttpHeaders.AUTHORIZATION, bearer(TokensDeTeste.valido("OPERADOR"))))
                 .andExpect(status().isOk());
+    }
+
+    @Test
+    void operadorConsultaOsMotoristas() throws Exception {
+        String token = bearer(TokensDeTeste.valido("OPERADOR"));
+
+        mvc.perform(get("/motoristas").header(HttpHeaders.AUTHORIZATION, token))
+                .andExpect(status().isOk());
+        mvc.perform(get("/motoristas/resumo").header(HttpHeaders.AUTHORIZATION, token))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    void operadorNaoAlteraStatusDoMotorista() throws Exception {
+        mvc.perform(patch("/motoristas/1/status")
+                        .header(HttpHeaders.AUTHORIZATION, bearer(TokensDeTeste.valido("OPERADOR")))
+                        .contentType("application/json")
+                        .content("{\"status\":\"ATIVO\"}"))
+                .andExpect(status().isForbidden());
     }
 
     @Test

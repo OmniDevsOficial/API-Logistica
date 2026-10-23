@@ -42,22 +42,27 @@ class RankingDestinosIntegrationTest {
 
     private int sequencia;
 
-    /** Receita = 1000 + rentabilidade; custo 800 e pedágio 200 somam 1000. */
+    /** Receita = 1000 + rentabilidade; Vale frete = 1000. */
     private Viagem viagem(String data, String destino, String rentabilidade, StatusViagem status) {
+        return viagem("Origem Teste", data, destino, rentabilidade, status);
+    }
+
+    private Viagem viagem(String origem, String data, String destino, String rentabilidade,
+            StatusViagem status) {
         Viagem viagem = new Viagem("M-" + (++sequencia), LocalDate.parse(data), "Motorista Teste",
-                "00123456789", "ABC1D23", "Origem Teste", destino, new BigDecimal("1000.00"),
+                "00123456789", "ABC1D23", origem, destino, new BigDecimal("1000.00"),
                 100, 200, status, null, null);
         viagem.setReceitaFrete(new BigDecimal("1000.00").add(new BigDecimal(rentabilidade)));
-        viagem.setCustoFrete(new BigDecimal("800.00"));
-        viagem.setPedagio(new BigDecimal("200.00"));
+        viagem.setCustoFrete(new BigDecimal("300.00"));
+        viagem.setPedagio(new BigDecimal("50.00"));
+        viagem.setValeFrete(new BigDecimal("1000.00"));
         return viagem;
     }
 
-    private Viagem viagemSemFinanceiro(String data, String destino, String receita, String custo, String pedagio) {
+    private Viagem viagemSemFinanceiro(String data, String destino, String receita, String valeFrete) {
         Viagem viagem = viagem(data, destino, "0.00", StatusViagem.FINALIZADO);
         viagem.setReceitaFrete(receita == null ? null : new BigDecimal(receita));
-        viagem.setCustoFrete(custo == null ? null : new BigDecimal(custo));
-        viagem.setPedagio(pedagio == null ? null : new BigDecimal(pedagio));
+        viagem.setValeFrete(valeFrete == null ? null : new BigDecimal(valeFrete));
         return viagem;
     }
 
@@ -83,10 +88,9 @@ class RankingDestinosIntegrationTest {
                 viagem("2026-08-31", "Delta", "-9000.00", StatusViagem.FINALIZADO),
                 viagem("2026-10-01", "Beta", "9000.00", StatusViagem.FINALIZADO),
                 // Nulos: não entram na média nem na contagem.
-                viagemSemFinanceiro("2026-09-20", "Alfa", "5000.00", "100.00", null),
-                viagemSemFinanceiro("2026-09-20", "Alfa", null, "100.00", "100.00"),
-                viagemSemFinanceiro("2026-09-20", "Alfa", "5000.00", null, "100.00"),
-                viagemSemFinanceiro("2026-09-21", "Somente Nulos", null, null, null),
+                viagemSemFinanceiro("2026-09-20", "Alfa", "5000.00", null),
+                viagemSemFinanceiro("2026-09-20", "Alfa", null, "100.00"),
+                viagemSemFinanceiro("2026-09-21", "Somente Nulos", null, null),
                 viagem("2026-09-22", null, "8000.00", StatusViagem.FINALIZADO),
                 viagem("2026-09-22", "   ", "8000.00", StatusViagem.FINALIZADO)
         ));
@@ -101,7 +105,7 @@ class RankingDestinosIntegrationTest {
     @Test void dadosConhecidosOrdenamPorMediaDecrescenteComDesempate() {
         salvarSetembro();
 
-        List<RankingDestinoResponse> ranking = service.rankingDestinosPorRentabilidade("2026-09");
+        List<RankingDestinoResponse> ranking = service.rankingDestinosPorRentabilidade("01/09/2026", "30/09/2026");
 
         assertEquals(List.of("Delta", "Alfa", "Beta", "Gama", "Epsilon", "Campinas", "Zeta"),
                 ranking.stream().map(r -> r.destino().equals("CAMPINAS") ? "Campinas" : r.destino()).toList());
@@ -114,7 +118,7 @@ class RankingDestinosIntegrationTest {
     @Test void empateNaMediaDesempataPorQuantidadeEDepoisPorNome() {
         salvarSetembro();
 
-        List<RankingDestinoResponse> empatados = service.rankingDestinosPorRentabilidade("2026-09")
+        List<RankingDestinoResponse> empatados = service.rankingDestinosPorRentabilidade("01/09/2026", "30/09/2026")
                 .subList(1, 4);
 
         conferir(empatados.get(0), "Alfa", 2, "200.00");
@@ -125,7 +129,7 @@ class RankingDestinosIntegrationTest {
     @Test void destinoAgrupaIgnorandoCaixa() {
         salvarSetembro();
 
-        RankingDestinoResponse campinas = service.rankingDestinosPorRentabilidade("2026-09").get(5);
+        RankingDestinoResponse campinas = service.rankingDestinosPorRentabilidade("01/09/2026", "30/09/2026").get(5);
 
         assertTrue("Campinas".equalsIgnoreCase(campinas.destino()));
         assertEquals(2, campinas.quantidadeViagens());
@@ -135,7 +139,7 @@ class RankingDestinosIntegrationTest {
     @Test void valoresNulosEDestinoVazioFicamForaDoCalculo() {
         salvarSetembro();
 
-        List<RankingDestinoResponse> ranking = service.rankingDestinosPorRentabilidade("2026-09");
+        List<RankingDestinoResponse> ranking = service.rankingDestinosPorRentabilidade("01/09/2026", "30/09/2026");
 
         assertEquals(2, ranking.get(1).quantidadeViagens());
         assertTrue(ranking.stream().noneMatch(r -> r.destino() == null
@@ -148,33 +152,65 @@ class RankingDestinosIntegrationTest {
                 viagens.add(viagem("2026-11-05", "Destino %02d".formatted(i), i + ".00", StatusViagem.FINALIZADO)));
         salvar(viagens);
 
-        List<RankingDestinoResponse> ranking = service.rankingDestinosPorRentabilidade("2026-11");
+        List<RankingDestinoResponse> ranking = service.rankingDestinosPorRentabilidade("01/11/2026", "30/11/2026");
 
         assertEquals(10, ranking.size());
         assertEquals("Destino 12", ranking.get(0).destino());
         assertEquals("Destino 03", ranking.get(9).destino());
     }
 
+    @Test void periodoAnualIncluiViagensDeTodosOsMeses() {
+        salvarSetembro();
+
+        List<RankingDestinoResponse> ranking = service.rankingDestinosPorRentabilidade("01/01/2026", "31/12/2026");
+
+        conferir(ranking.get(0), "Beta", 2, "4600.00");
+        assertEquals("Origem Teste", ranking.get(0).origem());
+    }
+
+    @Test void mesmaRotaComOrigensDiferentesFormaGruposSeparados() {
+        salvar(List.of(
+                viagem("2026-09-01", "Delta", "500.00", StatusViagem.FINALIZADO),
+                viagem("Outra Origem", "2026-09-02", "Delta", "100.00", StatusViagem.FINALIZADO)));
+
+        List<RankingDestinoResponse> ranking = service.rankingDestinosPorRentabilidade("01/09/2026", "30/09/2026");
+
+        assertEquals(List.of("Origem Teste", "Outra Origem"),
+                ranking.stream().map(RankingDestinoResponse::origem).toList());
+    }
+
     @Test void mesSemViagensRetornaListaVazia() {
         salvarSetembro();
 
-        assertTrue(service.rankingDestinosPorRentabilidade("2026-12").isEmpty());
+        assertTrue(service.rankingDestinosPorRentabilidade("01/12/2026", "31/12/2026").isEmpty());
     }
 
     @Test void mesSomenteComValoresNulosRetornaListaVazia() {
-        salvar(List.of(viagemSemFinanceiro("2026-07-10", "Alfa", null, "100.00", "100.00")));
+        salvar(List.of(viagemSemFinanceiro("2026-07-10", "Alfa", null, "200.00")));
 
-        assertTrue(service.rankingDestinosPorRentabilidade("2026-07").isEmpty());
+        assertTrue(service.rankingDestinosPorRentabilidade("01/07/2026", "31/07/2026").isEmpty());
+    }
+
+    @Test void rentabilidadeMediaDoMotoristaUsaOValeFreteEIgnoraViagemSemValor() {
+        salvar(List.of(
+                viagem("2026-09-01", "Delta", "500.00", StatusViagem.FINALIZADO),
+                viagem("2026-09-02", "Alfa", "100.00", StatusViagem.FINALIZADO),
+                viagemSemFinanceiro("2026-09-03", "Alfa", "5000.00", null)));
+
+        var motoristas = service.rentabilidadeMediaPorMotorista(LocalDate.of(2026, 9, 1), LocalDate.of(2026, 9, 30));
+
+        assertEquals(1, motoristas.size());
+        assertEquals(new BigDecimal("300.00"), motoristas.get(0).rentabilidadeMedia());
+        assertEquals(2, motoristas.get(0).quantidadeViagensConsideradas());
     }
 
     @Test void expressaoSqlEquivaleAFormulaJava() {
-        salvar(List.of(viagemSemFinanceiro("2026-09-01", "Alfa", "1234.56", "789.01", "45.67")));
+        salvar(List.of(viagemSemFinanceiro("2026-09-01", "Alfa", "1234.56", "834.68")));
 
         BigDecimal sql = jdbc.queryForObject(
                 "SELECT " + RentabilidadeService.EXPRESSAO_SQL + " FROM operacional.viagem",
                 BigDecimal.class);
 
-        assertEquals(RentabilidadeService.calcular(
-                new BigDecimal("1234.56"), new BigDecimal("789.01"), new BigDecimal("45.67")), sql);
+        assertEquals(RentabilidadeService.calcular(new BigDecimal("1234.56"), new BigDecimal("834.68")), sql);
     }
 }

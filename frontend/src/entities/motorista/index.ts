@@ -1,10 +1,12 @@
 export type {
+  EquipeMotoristasData,
+  MotoristaEquipe,
+  MotoristaResumo,
   MotoristaStatus,
   MotoristaUtilizacao,
   StatusEquipe,
-  MotoristaEquipe,
 } from "./model/types";
-export {
-  getEquipeMotoristasData,
-  type EquipeMotoristasData,
-} from "./api/equipeService";
+export { buscarEquipeMotoristas } from "./api/equipeService";
+export { buscarRentabilidadeMotoristas } from "./api/rentabilidadeMotoristasService";
+export { buscarResumoMotoristas } from "./api/motoristaResumoService";
+export { atualizarStatusMotorista } from "./api/statusMotoristaService";

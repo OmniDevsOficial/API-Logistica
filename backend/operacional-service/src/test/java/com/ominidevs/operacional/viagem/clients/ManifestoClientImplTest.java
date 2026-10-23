@@ -42,7 +42,7 @@ class ManifestoClientImplTest {
                 .andRespond(withSuccess("""
                         [{"Manifesto":"M1","Data":"01/10/2026","Motorista":"Ana","CPF":"00123456789",
                         "Veículo":"ABC1D23","Filial":"São Paulo","Destino":"Campinas","Valor Frete":"1.500,50",
-                        "Km saída":"100","Km chegada":"250","Status":"Finalizado","Observações operacionais":"Teste"}]
+                        "Vale frete":"2.715,57","Km saída":"100","Km chegada":"250","Status":"Finalizado","Observações operacionais":"Teste"}]
                         """, MediaType.APPLICATION_JSON));
         var dados = client.enviar(file);
         assertEquals(1, dados.size());
@@ -55,6 +55,7 @@ class ManifestoClientImplTest {
         assertEquals("São Paulo", dto.getOrigem());
         assertEquals("Campinas", dto.getDestino());
         assertEquals("1.500,50", dto.getValorFrete());
+        assertEquals("2.715,57", dto.getValeFrete());
         assertEquals("100", dto.getKmSaida());
         assertEquals("250", dto.getKmChegada());
         assertEquals("Finalizado", dto.getStatus());

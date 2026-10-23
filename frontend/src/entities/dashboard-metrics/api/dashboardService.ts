@@ -3,6 +3,8 @@ import type {
   DashboardData,
   DashboardMetrics,
   DashboardStatus,
+  DestinoMaisRentavel,
+  SerieRentabilidade,
   ViagensPorStatus,
 } from "../model/types";
 
@@ -57,6 +59,20 @@ function mapearViagensPorStatus(dados: unknown): ViagensPorStatus {
   };
 }
 
+function mapearDestinoMaisRentavel(dados: unknown): DestinoMaisRentavel | null {
+  if (dados === null || dados === undefined) {
+    return null;
+  }
+
+  const destino = registro(dados);
+
+  return {
+    destino: texto(destino.destino),
+    viagens: numero(destino.viagens),
+    rentabilidadeTotal: numero(destino.rentabilidadeTotal),
+  };
+}
+
 function mapearMetricas(dados: unknown): DashboardMetrics {
   const metricas = registro(dados);
 
@@ -66,13 +82,15 @@ function mapearMetricas(dados: unknown): DashboardMetrics {
     freteMedio: numeroOuNulo(metricas.freteMedio),
     kmTotal: numeroOuNulo(metricas.kmTotal),
     motoristasAtivos: numero(metricas.motoristasAtivos),
+    viagensPorMotorista: numeroOuNulo(metricas.viagensPorMotorista),
     veiculosUtilizados: numero(metricas.veiculosUtilizados),
     viagensPorStatus: mapearViagensPorStatus(metricas.viagensPorStatus),
     custoTotal: numeroOuNulo(metricas.custoTotal),
     custoMedio: numeroOuNulo(metricas.custoMedio),
     rentabilidadeTotal: numeroOuNulo(metricas.rentabilidadeTotal),
     rentabilidadeMedia: numeroOuNulo(metricas.rentabilidadeMedia),
-    taxaOcupacao: numeroOuNulo(metricas.taxaOcupacao),
+    margem: numeroOuNulo(metricas.margem),
+    destinoMaisRentavel: mapearDestinoMaisRentavel(metricas.destinoMaisRentavel),
   };
 }
 
@@ -86,6 +104,28 @@ function mapearResposta(dados: unknown): DashboardData {
     },
     status: mapearStatus(resposta.status),
     metrics: mapearMetricas(resposta.metricas),
+    serieRentabilidade: mapearSerieRentabilidade(resposta.series),
+  };
+}
+
+function mapearSerieRentabilidade(dados: unknown): SerieRentabilidade {
+  const serie = registro(registro(dados).rentabilidadePorPeriodo);
+
+  if (!Array.isArray(serie.pontos)) {
+    throw new Error(RESPOSTA_INVALIDA);
+  }
+
+  return {
+    agrupamento: texto(serie.agrupamento) === "DIA" ? "DIA" : "MES",
+    pontos: serie.pontos.map((item) => {
+      const ponto = registro(item);
+      return {
+        rotulo: texto(ponto.rotulo),
+        viagens: numero(ponto.viagens),
+        custo: numero(ponto.custo),
+        rentabilidade: numero(ponto.rentabilidade),
+      };
+    }),
   };
 }
 
@@ -103,6 +143,7 @@ async function consultar(url: string, signal?: AbortSignal): Promise<Response> {
       erro instanceof Error && erro.name === "TimeoutError"
         ? SERVICO_DEMOROU
         : SEM_CONEXAO,
+      { cause: erro },
     );
   }
 }

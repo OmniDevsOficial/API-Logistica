@@ -1,124 +1,94 @@
-import type { StatusEquipe, MotoristaEquipe } from "../model/types";
+import { buscarMotoristas } from "./motoristaListaService.ts";
+import { buscarResumoMotoristas } from "./motoristaResumoService.ts";
+import { periodoEquipe } from "./periodoEquipe.ts";
+import { buscarUtilizacaoMotoristas } from "./utilizacaoService.ts";
+import type {
+  EquipeMotoristasData,
+  MotoristaEquipe,
+  StatusEquipe,
+} from "../model/types";
 
-const MOTORISTAS_MOCK: MotoristaEquipe[] = [
-  {
-    id: 1,
-    nome: "Carlos Henrique Souza",
-    telefone: "(11) 98125-5826",
-    veiculo: "Truck",
-    placa: "RTA4F21",
-    operacao: "Previsão de retorno",
-    dataOperacao: "Hoje, 14:50",
-    localizacao: "Guarulhos/SP",
-    viagens: 20,
-    status: "em_viagem",
-  },
-  {
-    id: 2,
-    nome: "Ana Paula Ribeiro",
-    telefone: "(11) 98125-5826",
-    veiculo: "Van",
-    placa: "RTA4F21",
-    operacao: "Última operação",
-    dataOperacao: "Hoje, 11:20",
-    localizacao: "Campinas/SP",
-    viagens: 18,
-    status: "disponivel",
-  },
-  {
-    id: 3,
-    nome: "Marcos Vinícius Lima",
-    telefone: "(11) 98125-5826",
-    veiculo: "Carreta",
-    placa: "RTA4F21",
-    operacao: "Previsão de disponibilidade",
-    dataOperacao: "06/10, 13:55",
-    localizacao: "São Paulo/SP",
-    viagens: 9,
-    status: "indisponivel",
-  },
-  {
-    id: 4,
-    nome: "Juliana Torres",
-    telefone: "(11) 98125-5826",
-    veiculo: "Fiorino",
-    placa: "RTA4F21",
-    operacao: "Previsão de retorno",
-    dataOperacao: "04/10, 19:53",
-    localizacao: "São José Dos Campos/SP",
-    viagens: 14,
-    status: "em_viagem",
-  },
-  {
-    id: 5,
-    nome: "Roberto Alvez",
-    telefone: "(11) 98125-5826",
-    veiculo: "Bitrem",
-    placa: "RTA4F21",
-    operacao: "Última operação",
-    dataOperacao: "Hoje, 12:20",
-    localizacao: "Campinas/SP",
-    viagens: 22,
-    status: "disponivel",
-  },
-  {
-    id: 6,
-    nome: "Fernando Costa",
-    telefone: "(11) 98125-5826",
-    veiculo: "Truck",
-    placa: "RTA4F21",
-    operacao: "Previsão de retorno",
-    dataOperacao: "09/10, 05:38",
-    localizacao: "Jacareí/SP",
-    viagens: 12,
-    status: "em_viagem",
-  },
-  {
-    id: 7,
-    nome: "Diego Martins Faria",
-    telefone: "(11) 98125-5826",
-    veiculo: "Carreta",
-    placa: "RTA4F21",
-    operacao: "Previsão de disponibilidade",
-    dataOperacao: "Hoje, 14:50",
-    localizacao: "São José Dos Campos/SP",
-    viagens: 15,
-    status: "indisponivel",
-  },
-  {
-    id: 8,
-    nome: "Luiz Fernando Rocha",
-    telefone: "(11) 98125-5826",
-    veiculo: "Van",
-    placa: "RTA4F21",
-    operacao: "Última operação",
-    dataOperacao: "Hoje, 09:15",
-    localizacao: "Taubaté/SP",
-    viagens: 8,
-    status: "disponivel",
-  },
-];
+function chaveCpf(cpf: string | null): string | null {
+  if (!cpf) return null;
 
-export interface EquipeMotoristasData {
-  totalMotoristas: number;
-  disponiveis: number;
-  emViagem: number;
-  indisponiveis: number;
-  motoristas: MotoristaEquipe[];
+  const digitos = cpf.replace(/\D/g, "");
+  return digitos.length === 11 ? digitos : null;
 }
 
-export function getEquipeMotoristasData(
-  filtro?: StatusEquipe | null,
-): EquipeMotoristasData {
-  const motoristas = filtro
-    ? MOTORISTAS_MOCK.filter((m) => m.status === filtro)
-    : MOTORISTAS_MOCK;
+/**
+ * Frequência vem do indicador de utilização (participação nas viagens),
+ * consultado nos últimos 12 meses para não zerar a tela.
+ * A falha dessa chamada não derruba a tela: os motoristas ficam sem percentual.
+ */
+async function carregarFrequencias(
+  signal?: AbortSignal,
+): Promise<Map<string, number>> {
+  try {
+    const { dataInicio, dataFim } = periodoEquipe();
+    const utilizacao = await buscarUtilizacaoMotoristas(
+      dataInicio,
+      dataFim,
+      "desc",
+      signal,
+    );
 
-  return {
-    totalMotoristas: 1563,
-    disponiveis: 965,
-    emViagem: 398,
-    indisponiveis: 200,
-    motoristas,
-  };
+    const frequencias = new Map<string, number>();
+    for (const motorista of utilizacao) {
+      const percentual = motorista.percentualUtilizacao ?? 0;
+
+      if (typeof motorista.id === "number") {
+        frequencias.set(`id:${motorista.id}`, percentual);
+      } else {
+        frequencias.set(`cpf:${String(motorista.id).replace(/\D/g, "")}`, percentual);
+      }
+    }
+
+    return frequencias;
+  } catch (erroFrequencia) {
+    if (signal?.aborted) throw erroFrequencia;
+    return new Map();
+  }
+}
+
+function comFrequencia(
+  motoristas: MotoristaEquipe[],
+  frequencias: Map<string, number>,
+): MotoristaEquipe[] {
+  return motoristas.map((motorista) => {
+    const cpf = chaveCpf(motorista.cpf);
+    const percentual =
+      frequencias.get(`id:${motorista.id}`) ??
+      (cpf ? frequencias.get(`cpf:${cpf}`) : undefined);
+
+    return { ...motorista, frequencia: percentual ?? null };
+  });
+}
+
+export async function buscarEquipeMotoristas(
+  filtro?: StatusEquipe | null,
+  signal?: AbortSignal,
+): Promise<EquipeMotoristasData> {
+  try {
+    const [resumo, motoristas, frequencias] = await Promise.all([
+      buscarResumoMotoristas(signal),
+      buscarMotoristas(filtro, signal),
+      carregarFrequencias(signal),
+    ]);
+
+    return {
+      totalMotoristas: resumo.total,
+      disponiveis: resumo.disponiveis,
+      emViagem: resumo.emOperacao,
+      indisponiveis: resumo.indisponiveis,
+      motoristas: comFrequencia(motoristas, frequencias),
+    };
+  } catch (erro) {
+    if (signal?.aborted) {
+      throw erro;
+    }
+
+    throw new Error("Não foi possível carregar a equipe de motoristas.", {
+      cause: erro,
+    });
+  }
 }

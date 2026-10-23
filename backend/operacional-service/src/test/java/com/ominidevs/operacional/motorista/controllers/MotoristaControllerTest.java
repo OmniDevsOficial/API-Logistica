@@ -25,7 +25,6 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import com.ominidevs.operacional.indicadores.model.PeriodoConsulta;
 import com.ominidevs.operacional.motorista.dto.MotoristaResumoResponse;
 import com.ominidevs.operacional.motorista.dto.MotoristaResponseDTO;
 import com.ominidevs.operacional.motorista.entities.StatusMotorista;
@@ -40,7 +39,7 @@ class MotoristaControllerTest {
 
     private MotoristaResponseDTO motorista(StatusMotorista status) {
         return new MotoristaResponseDTO(
-                1, "Ana", "Caminhão", "ABC1D23", status.name(),
+                1, "Ana", "00123456789", "Caminhão", "ABC1D23", status.name(),
                 "Curitiba", LocalDate.of(2026, 9, 10), null, 3);
     }
 
@@ -61,14 +60,15 @@ class MotoristaControllerTest {
     }
 
     @Test
-    void deveListarMotoristasComPeriodoPadraoDoMesCorrente() throws Exception {
-        when(service.listar(isNull(), eq(PeriodoConsulta.mesCorrente())))
+    void deveListarMotoristasSemFiltroDePeriodo() throws Exception {
+        when(service.listar(isNull()))
                 .thenReturn(List.of(motorista(StatusMotorista.DISPONIVEL)));
 
         mvc.perform(get("/motoristas"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].id").value(1))
                 .andExpect(jsonPath("$[0].nome").value("Ana"))
+                .andExpect(jsonPath("$[0].cpf").value("00123456789"))
                 .andExpect(jsonPath("$[0].tipoVeiculo").value("Caminhão"))
                 .andExpect(jsonPath("$[0].placa").value("ABC1D23"))
                 .andExpect(jsonPath("$[0].status").value("DISPONIVEL"))
@@ -80,7 +80,7 @@ class MotoristaControllerTest {
 
     @Test
     void deveListarVazioQuandoNaoHaMotoristas() throws Exception {
-        when(service.listar(any(), any())).thenReturn(List.of());
+        when(service.listar(any())).thenReturn(List.of());
 
         mvc.perform(get("/motoristas"))
                 .andExpect(status().isOk())
@@ -90,61 +90,28 @@ class MotoristaControllerTest {
     @ParameterizedTest
     @ValueSource(strings = {"disponivel", "DISPONIVEL"})
     void deveFiltrarPorStatusAceitandoSemPontuacaoEMinusculas(String status) throws Exception {
-        when(service.listar(eq(StatusMotorista.DISPONIVEL), any())).thenReturn(List.of());
+        when(service.listar(eq(StatusMotorista.DISPONIVEL))).thenReturn(List.of());
 
         mvc.perform(get("/motoristas").param("status", status))
                 .andExpect(status().isOk());
 
-        verify(service).listar(eq(StatusMotorista.DISPONIVEL), any());
+        verify(service).listar(eq(StatusMotorista.DISPONIVEL));
     }
 
     @ParameterizedTest
     @ValueSource(strings = {"em_operacao", "indisponivel"})
     void deveFiltrarPorCadaStatusDaTela(String status) throws Exception {
-        when(service.listar(any(), any())).thenReturn(List.of());
+        when(service.listar(any())).thenReturn(List.of());
 
         mvc.perform(get("/motoristas").param("status", status))
                 .andExpect(status().isOk());
 
-        verify(service).listar(eq(StatusMotorista.parse(status)), any());
+        verify(service).listar(eq(StatusMotorista.parse(status)));
     }
 
     @Test
     void deveRejeitarStatusDeFiltroInvalido() throws Exception {
         mvc.perform(get("/motoristas").param("status", "VIAGEM"))
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.erro").isNotEmpty());
-
-        verifyNoInteractions(service);
-    }
-
-    @Test
-    void deveAceitarPeriodoInformado() throws Exception {
-        when(service.listar(isNull(), eq(PeriodoConsulta.parse("01/09/2026", "10/09/2026"))))
-                .thenReturn(List.of());
-
-        mvc.perform(get("/motoristas")
-                        .param("dataInicio", "01/09/2026")
-                        .param("dataFim", "10/09/2026"))
-                .andExpect(status().isOk());
-
-        verify(service).listar(isNull(), eq(PeriodoConsulta.parse("01/09/2026", "10/09/2026")));
-    }
-
-    @Test
-    void deveRejeitarPeriodoIncompleto() throws Exception {
-        mvc.perform(get("/motoristas").param("dataInicio", "01/09/2026"))
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.erro").isNotEmpty());
-
-        verifyNoInteractions(service);
-    }
-
-    @Test
-    void deveRejeitarDataInvalida() throws Exception {
-        mvc.perform(get("/motoristas")
-                        .param("dataInicio", "31/02/2026")
-                        .param("dataFim", "10/09/2026"))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.erro").isNotEmpty());
 
