@@ -1,4 +1,5 @@
 import { formatCurrencyBRL } from "@shared/lib";
+import { ValorMonetario } from "@entities/sessao";
 import type { RankingDestino } from "../model/types";
 
 interface ViagemRankingItemProps {
@@ -22,7 +23,9 @@ export function ViagemRankingItem({ posicao, destino }: ViagemRankingItemProps) 
         <p className="mt-1 text-[13px] text-fg-subtle">
           {destino.quantidadeViagens} {rotuloViagens} ·{" "}
           <span className="font-semibold text-fg">
-            {formatCurrencyBRL(destino.rentabilidadeMedia, 2)}
+            <ValorMonetario>
+              {formatCurrencyBRL(destino.rentabilidadeMedia, 2)}
+            </ValorMonetario>
           </span>{" "}
           rentabilidade média
         </p>

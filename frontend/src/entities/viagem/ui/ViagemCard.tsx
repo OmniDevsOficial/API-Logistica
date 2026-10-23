@@ -1,4 +1,5 @@
 import { formatCurrencyBRL } from "@shared/lib";
+import { ValorMonetario } from "@entities/sessao";
 import type { Viagem } from "../model/types";
 import { StatusViagemBadge } from "./StatusViagemBadge";
 
@@ -8,10 +9,20 @@ interface ViagemCardProps {
 
 // Os valores financeiros já vêm na listagem: o card não faz requisição própria.
 export function ViagemCard({ viagem }: ViagemCardProps) {
-  const moeda = (valor: number | null | undefined) =>
+  const moeda = (valor: number | null | undefined): string | null =>
     valor === null || valor === undefined
-      ? "-"
+      ? null
       : `R$ ${valor.toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+
+  // Borrado para o operador: só o gestor consegue ler o valor.
+  const valorMonetario = (valor: number | null | undefined) => {
+    const texto = moeda(valor);
+    return texto === null ? (
+      <>-</>
+    ) : (
+      <ValorMonetario>{texto}</ValorMonetario>
+    );
+  };
   return (
     <div className="flex flex-col gap-2 rounded-md bg-surface p-5">
       <div className="flex items-start justify-between gap-3">
@@ -22,7 +33,7 @@ export function ViagemCard({ viagem }: ViagemCardProps) {
       </div>
       <div className="flex items-baseline gap-2">
         <span className="text-2xl font-bold text-fg">
-          {formatCurrencyBRL(viagem.freteEstimado)}
+          <ValorMonetario>{formatCurrencyBRL(viagem.freteEstimado)}</ValorMonetario>
         </span>
         <span className="text-[13px] text-fg-subtle">frete estimado</span>
       </div>
@@ -34,7 +45,7 @@ export function ViagemCard({ viagem }: ViagemCardProps) {
           <div key={campo}>
             <span className="block text-xs text-fg-subtle">{campo === "rentabilidade" ? "Rentabilidade" : campo[0].toUpperCase() + campo.slice(1)}</span>
             <span className={`text-sm font-semibold ${campo === "rentabilidade" && (viagem.rentabilidade ?? 0) < 0 ? "text-red-600" : "text-fg"}`}>
-              {moeda(viagem[campo])}
+              {valorMonetario(viagem[campo])}
             </span>
           </div>
         ))}
