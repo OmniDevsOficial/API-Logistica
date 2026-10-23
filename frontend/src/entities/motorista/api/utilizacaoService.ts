@@ -1,4 +1,4 @@
-import { apiFetch } from "@shared/api";
+import { apiFetch } from "../../../shared/api/apiFetch.ts";
 import type { MotoristaUtilizacao } from "../model/types";
 
 interface UtilizacaoMotoristaResponse {

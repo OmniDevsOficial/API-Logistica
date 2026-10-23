@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { buscarEquipeMotoristas } from "@entities/motorista";
 import type { EquipeMotoristasData, StatusEquipe } from "@entities/motorista";
 
@@ -6,6 +6,7 @@ export function useEquipeMotoristas(filtro: StatusEquipe | null) {
   const [dados, setDados] = useState<EquipeMotoristasData | null>(null);
   const [carregando, setCarregando] = useState(true);
   const [erro, setErro] = useState<string | null>(null);
+  const [versao, setVersao] = useState(0);
   const [atualizacao, setAtualizacao] = useState(0);
 
   useEffect(() => {
@@ -52,7 +53,9 @@ export function useEquipeMotoristas(filtro: StatusEquipe | null) {
 
     void carregar();
     return () => controller.abort();
-  }, [filtro, atualizacao]);
+  }, [filtro, versao, atualizacao]);
 
-  return { dados, carregando, erro };
+  const recarregar = useCallback(() => setVersao((valor) => valor + 1), []);
+
+  return { dados, carregando, erro, recarregar };
 }

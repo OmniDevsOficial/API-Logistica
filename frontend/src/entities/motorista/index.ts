@@ -9,3 +9,4 @@ export type {
 export { buscarEquipeMotoristas } from "./api/equipeService";
 export { buscarRentabilidadeMotoristas } from "./api/rentabilidadeMotoristasService";
 export { buscarResumoMotoristas } from "./api/motoristaResumoService";
+export { atualizarStatusMotorista } from "./api/statusMotoristaService";

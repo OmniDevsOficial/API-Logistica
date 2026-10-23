@@ -178,6 +178,7 @@ public class MotoristaService {
         return new MotoristaResponseDTO(
                 linha.id(),
                 linha.nome(),
+                linha.cpf(),
                 linha.veiculoTipo(),
                 linha.veiculoPlaca(),
                 linha.status(),
@@ -192,6 +193,7 @@ public class MotoristaService {
         return new MotoristaResponseDTO(
                 motorista.getId(),
                 motorista.getNome(),
+                motorista.getCpf(),
                 motorista.getVeiculoTipo(),
                 motorista.getVeiculoPlaca(),
                 motorista.getStatus().name(),
