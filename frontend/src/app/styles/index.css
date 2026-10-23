@@ -20,6 +20,19 @@
   --spacing-sidebar: 220px;
 
   --font-sans: "Poppins", "Segoe UI", system-ui, Roboto, sans-serif;
+
+  --animate-surgir: surgir 180ms ease-out;
+
+  @keyframes surgir {
+    from {
+      opacity: 0;
+      transform: translateY(6px);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
 }
 
 :root {

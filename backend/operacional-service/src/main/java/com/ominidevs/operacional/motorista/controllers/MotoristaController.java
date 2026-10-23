@@ -12,8 +12,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.ominidevs.operacional.indicadores.exceptions.IndicadorInvalidoException;
-import com.ominidevs.operacional.indicadores.model.PeriodoConsulta;
 import com.ominidevs.operacional.motorista.dto.MotoristaResumoResponse;
 import com.ominidevs.operacional.motorista.dto.MotoristaResponseDTO;
 import com.ominidevs.operacional.motorista.dto.StatusMotoristaRequest;
@@ -38,11 +36,9 @@ public class MotoristaController {
 
     @GetMapping
     public ResponseEntity<List<MotoristaResponseDTO>> listar(
-            @RequestParam(required = false) String status,
-            @RequestParam(required = false) String dataInicio,
-            @RequestParam(required = false) String dataFim
+            @RequestParam(required = false) String status
     ) {
-        return ResponseEntity.ok(service.listar(filtroStatus(status), resolverPeriodo(dataInicio, dataFim)));
+        return ResponseEntity.ok(service.listar(filtroStatus(status)));
     }
 
     @GetMapping("/resumo")
@@ -62,17 +58,5 @@ public class MotoristaController {
 
     private StatusMotorista filtroStatus(String status) {
         return status == null || status.isBlank() ? null : StatusMotorista.parse(status);
-    }
-
-    private PeriodoConsulta resolverPeriodo(String dataInicio, String dataFim) {
-        if (dataInicio == null && dataFim == null) {
-            return PeriodoConsulta.mesCorrente();
-        }
-
-        if (dataInicio == null || dataFim == null) {
-            throw new IndicadorInvalidoException("Informe dataInicio e dataFim no formato dd/MM/aaaa.");
-        }
-
-        return PeriodoConsulta.parse(dataInicio, dataFim);
     }
 }

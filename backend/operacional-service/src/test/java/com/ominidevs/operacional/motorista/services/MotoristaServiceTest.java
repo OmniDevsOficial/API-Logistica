@@ -63,29 +63,31 @@ class MotoristaServiceTest {
     }
 
     private MotoristaListagem linhaCompleta() {
-        return new MotoristaListagem(1, "Ana", "Caminhão", "ABC1D23", "DISPONIVEL",
+        return new MotoristaListagem(1, "Ana", "00123456789", "Caminhão", "ABC1D23", "DISPONIVEL",
                 "Curitiba", LocalDate.of(2026, 9, 10), null, 3);
     }
 
     @ParameterizedTest
     @EnumSource(StatusMotorista.class)
     void deveListarFiltrandoPorCadaStatus(StatusMotorista status) {
-        when(consultaRepository.consultar(periodo, status)).thenReturn(List.of());
+        when(consultaRepository.consultar(status)).thenReturn(List.of());
 
         var resultado = service.listar(status, periodo);
 
         assertTrue(resultado.isEmpty());
-        verify(consultaRepository).consultar(periodo, status);
+        verify(consultaRepository).consultar(status);
     }
 
     @Test
     void deveListarTodosSemFiltroRetornandoDadosEssenciais() {
-        when(consultaRepository.consultar(periodo, null)).thenReturn(List.of(linhaCompleta()));
+        when(consultaRepository.consultar((StatusMotorista) null))
+                .thenReturn(List.of(linhaCompleta()));
 
         var resultado = service.listar(null, periodo);
 
         assertEquals(1, resultado.size());
         assertEquals("Ana", resultado.getFirst().nome());
+        assertEquals("00123456789", resultado.getFirst().cpf());
         assertEquals("Caminhão", resultado.getFirst().tipoVeiculo());
         assertEquals("ABC1D23", resultado.getFirst().placa());
         assertEquals("DISPONIVEL", resultado.getFirst().status());
@@ -97,15 +99,15 @@ class MotoristaServiceTest {
 
     @Test
     void deveListarVazioQuandoNaoHaMotoristas() {
-        when(consultaRepository.consultar(periodo, null)).thenReturn(List.of());
+        when(consultaRepository.consultar((StatusMotorista) null)).thenReturn(List.of());
 
         assertTrue(service.listar(null, periodo).isEmpty());
     }
 
     @Test
     void deveRetornarCamposNulosParaMotoristaSemVeiculo() {
-        when(consultaRepository.consultar(periodo, null)).thenReturn(List.of(
-                new MotoristaListagem(1, "Bruno", null, null, "EM_OPERACAO",
+        when(consultaRepository.consultar((StatusMotorista) null)).thenReturn(List.of(
+                new MotoristaListagem(1, "Bruno", "11122233344", null, null, "EM_OPERACAO",
                         null, null, LocalDate.of(2026, 9, 15), 0)));
 
         var motorista = service.listar(null, periodo).getFirst();

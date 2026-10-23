@@ -38,7 +38,11 @@ public class MotoristaService {
     }
 
     public List<MotoristaResponseDTO> listar(StatusMotorista status, PeriodoConsulta periodo) {
-        return consultaRepository.consultar(periodo, status).stream()
+        return listar(status);
+    }
+
+    public List<MotoristaResponseDTO> listar(StatusMotorista status) {
+        return consultaRepository.consultar(status).stream()
                 .map(this::paraResponse)
                 .toList();
     }
@@ -174,6 +178,7 @@ public class MotoristaService {
         return new MotoristaResponseDTO(
                 linha.id(),
                 linha.nome(),
+                linha.cpf(),
                 linha.veiculoTipo(),
                 linha.veiculoPlaca(),
                 linha.status(),
@@ -188,6 +193,7 @@ public class MotoristaService {
         return new MotoristaResponseDTO(
                 motorista.getId(),
                 motorista.getNome(),
+                motorista.getCpf(),
                 motorista.getVeiculoTipo(),
                 motorista.getVeiculoPlaca(),
                 motorista.getStatus().name(),

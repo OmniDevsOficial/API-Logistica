@@ -12,11 +12,14 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.ominidevs.operacional.viagem.dto.RankingDestinoResponse;
+import com.ominidevs.operacional.viagem.dto.RentabilidadeMotoristaResponse;
 import com.ominidevs.operacional.viagem.dto.ViagemResponseDTO;
 import com.ominidevs.operacional.viagem.dto.ImportacaoManifestoResponse;
 import com.ominidevs.operacional.viagem.entities.StatusViagem;
 import com.ominidevs.operacional.viagem.entities.Viagem;
+import com.ominidevs.operacional.viagem.services.RentabilidadeService;
 import com.ominidevs.operacional.viagem.services.ViagemService;
+import com.ominidevs.operacional.indicadores.model.PeriodoConsulta;
 
 @RestController
 @RequestMapping("/viagens")
@@ -38,6 +41,14 @@ public class ViagemController {
         }
     }
 
+    @GetMapping("/rentabilidade/motoristas")
+    public ResponseEntity<List<RentabilidadeMotoristaResponse>> rentabilidadePorMotorista(
+            @RequestParam("dataInicio") String dataInicio,
+            @RequestParam("dataFim") String dataFim) {
+        PeriodoConsulta periodo = PeriodoConsulta.parse(dataInicio, dataFim);
+        return ResponseEntity.ok(viagemService.rentabilidadeMediaPorMotorista(periodo.inicio(), periodo.fim()));
+    }
+
     @PostMapping("/importar-manifesto")
     public ResponseEntity<ImportacaoManifestoResponse> importarManifesto(
             @RequestParam("file") MultipartFile file) {
@@ -46,14 +57,15 @@ public class ViagemController {
     }
 
     /**
-     * TOP 10 destinos por rentabilidade média no mês. Exemplo de requisição:
-     * GET /api/operacional/viagens/ranking-destinos?mes=2026-09
+     * TOP 10 rotas por rentabilidade média no período. Exemplo de requisição:
+     * GET /api/operacional/viagens/ranking-destinos?dataInicio=01/01/2026&dataFim=31/12/2026
      */
     @GetMapping("/ranking-destinos")
     public ResponseEntity<List<RankingDestinoResponse>> rankingDestinos(
-            @RequestParam(required = false) String mes) {
+            @RequestParam(required = false) String dataInicio,
+            @RequestParam(required = false) String dataFim) {
 
-        return ResponseEntity.ok(viagemService.rankingDestinosPorRentabilidade(mes));
+        return ResponseEntity.ok(viagemService.rankingDestinosPorRentabilidade(dataInicio, dataFim));
     }
 
     /**
@@ -78,7 +90,9 @@ public class ViagemController {
 
     /**
      * Converte entidade Viagem para DTO de resposta. Calcula distância em km a
-     * partir da diferença entre km chegada e km saída.
+     * partir da diferença entre km chegada e km saída e já envia os valores
+     * financeiros, evitando uma requisição de rentabilidade por viagem na tela.
+     * O custo exibido é frete + pedágio (pedágio ausente conta como zero).
      */
     private ViagemResponseDTO toResponseDTO(Viagem viagem) {
 
@@ -98,7 +112,20 @@ public class ViagemController {
                 viagem.getVeiculo(),
                 distanciaKm,
                 viagem.getEstimativaDias(),
-                converterStatusParaFrontend(viagem.getStatus()));
+                converterStatusParaFrontend(viagem.getStatus()),
+                viagem.getReceitaFrete(),
+                custoTotal(viagem),
+                RentabilidadeService.calcular(
+                        viagem.getReceitaFrete(), viagem.getCustoFrete(), viagem.getPedagio()));
+    }
+
+    private BigDecimal custoTotal(Viagem viagem) {
+        if (viagem.getCustoFrete() == null) {
+            return null;
+        }
+        return viagem.getPedagio() == null
+                ? viagem.getCustoFrete()
+                : viagem.getCustoFrete().add(viagem.getPedagio());
     }
 
     private String converterStatusParaFrontend(StatusViagem status) {

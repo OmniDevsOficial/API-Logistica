@@ -19,12 +19,14 @@ export type StatusEquipe = "disponivel" | "em_viagem" | "indisponivel";
 export interface MotoristaEquipe {
   id: number;
   nome: string;
+  cpf: string | null;
   veiculo: string;
   placa: string;
   operacao: string;
   dataOperacao: string;
   localizacao: string;
   viagens: number;
+  frequencia: number | null;
   status: StatusEquipe;
 }
 

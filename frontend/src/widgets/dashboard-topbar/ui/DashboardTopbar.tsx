@@ -11,6 +11,8 @@ interface DashboardTopbarProps {
   podeAvancar: boolean;
   onPeriodoAnterior: () => void;
   onPeriodoSeguinte: () => void;
+  referencia: Date;
+  onSelecionarData: (data: Date) => void;
   onMenuClick: () => void;
   onManifestoImportado: (resultado: ResultadoImportacao) => void;
 }
@@ -22,6 +24,8 @@ export function DashboardTopbar({
   podeAvancar,
   onPeriodoAnterior,
   onPeriodoSeguinte,
+  referencia,
+  onSelecionarData,
   onMenuClick,
   onManifestoImportado,
 }: DashboardTopbarProps) {
@@ -41,6 +45,9 @@ export function DashboardTopbar({
           podeAvancar={podeAvancar}
           onAnterior={onPeriodoAnterior}
           onSeguinte={onPeriodoSeguinte}
+          periodo={period}
+          referencia={referencia}
+          onSelecionarData={onSelecionarData}
           className="w-full justify-center"
         />
       </div>
@@ -56,6 +63,9 @@ export function DashboardTopbar({
             podeAvancar={podeAvancar}
             onAnterior={onPeriodoAnterior}
             onSeguinte={onPeriodoSeguinte}
+            periodo={period}
+            referencia={referencia}
+            onSelecionarData={onSelecionarData}
           />
         </div>
       </div>

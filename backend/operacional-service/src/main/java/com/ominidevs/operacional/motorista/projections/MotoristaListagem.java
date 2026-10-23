@@ -5,6 +5,7 @@ import java.time.LocalDate;
 public record MotoristaListagem(
         Integer id,
         String nome,
+        String cpf,
         String veiculoTipo,
         String veiculoPlaca,
         String status,

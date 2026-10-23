@@ -18,6 +18,7 @@ const STATUS_EQUIPE: Record<string, StatusEquipe> = {
 interface MotoristaResposta {
   id: number;
   nome: string;
+  cpf?: string | null;
   tipoVeiculo: string | null;
   placa: string | null;
   status: string;
@@ -79,12 +80,14 @@ function mapearMotorista(motorista: MotoristaResposta): MotoristaEquipe {
   return {
     id: motorista.id,
     nome: motorista.nome,
+    cpf: motorista.cpf ?? null,
     veiculo: motorista.tipoVeiculo ?? "-",
     placa: motorista.placa ?? "-",
     operacao,
     dataOperacao,
     localizacao: motorista.localizacao ?? "-",
     viagens: motorista.quantidadeViagens,
+    frequencia: null,
     status: STATUS_EQUIPE[motorista.status],
   };
 }
@@ -94,7 +97,10 @@ export async function buscarMotoristas(
   signal?: AbortSignal,
 ): Promise<MotoristaEquipe[]> {
   const query = filtro ? `?status=${STATUS_BACKEND[filtro]}` : "";
-  const resposta = await apiFetch(`${ENDPOINT}${query}`, { signal });
+  const resposta = await apiFetch(`${ENDPOINT}${query}`, {
+    signal,
+    cache: "no-store",
+  });
 
   if (!resposta.ok) {
     throw new Error("Não foi possível carregar os motoristas.");
