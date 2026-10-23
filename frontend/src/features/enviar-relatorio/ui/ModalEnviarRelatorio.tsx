@@ -159,8 +159,9 @@ export function ModalEnviarRelatorio({
         ? '1 viagem importada com sucesso.'
         : `${resultado.viagensImportadas} viagens importadas com sucesso.`;
       const duplicadas = resultado.manifestosDuplicados;
+      // Só a contagem: a lista de manifestos pode ter milhares de itens e quebra o layout.
       const mensagemDuplicadas = duplicadas.length > 0
-        ? ` ${duplicadas.length} ${duplicadas.length === 1 ? 'manifesto já existia' : 'manifestos já existiam'} no banco: ${duplicadas.join(', ')}. Essas viagens não foram importadas novamente.`
+        ? ` ${duplicadas.length} ${duplicadas.length === 1 ? 'manifesto já existia' : 'manifestos já existiam'} no banco.`
         : '';
 
       exibirFeedback(
