@@ -44,7 +44,7 @@ class DashboardControllerTest {
 
         mvc = MockMvcBuilders
                 .standaloneSetup(new DashboardController(
-                        new DashboardService(repository, new UtilizacaoService(utilizacaoRepository))))
+                        new DashboardService(repository, new UtilizacaoService(utilizacaoRepository, new BigDecimal("30")))))
                 .setControllerAdvice(new DashboardExceptionHandler())
                 .build();
     }

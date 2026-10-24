@@ -12,6 +12,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.ominidevs.operacional.indicadores.dto.UtilizacaoMotoristaResponse;
+import com.ominidevs.operacional.indicadores.model.PeriodoConsulta;
+import com.ominidevs.operacional.indicadores.services.UtilizacaoService;
 import com.ominidevs.operacional.motorista.dto.MotoristaResumoResponse;
 import com.ominidevs.operacional.motorista.dto.MotoristaResponseDTO;
 import com.ominidevs.operacional.motorista.dto.StatusMotoristaRequest;
@@ -24,9 +27,11 @@ import com.ominidevs.operacional.motorista.services.MotoristaService;
 public class MotoristaController {
 
     private final MotoristaService service;
+    private final UtilizacaoService utilizacaoService;
 
-    public MotoristaController(MotoristaService service) {
+    public MotoristaController(MotoristaService service, UtilizacaoService utilizacaoService) {
         this.service = service;
+        this.utilizacaoService = utilizacaoService;
     }
 
     @GetMapping("/ping")
@@ -44,6 +49,13 @@ public class MotoristaController {
     @GetMapping("/resumo")
     public ResponseEntity<MotoristaResumoResponse> resumo() {
         return ResponseEntity.ok(service.resumo());
+    }
+
+    @GetMapping("/baixa-utilizacao")
+    public ResponseEntity<List<UtilizacaoMotoristaResponse>> baixaUtilizacao(
+            @RequestParam(required = false) String mes
+    ) {
+        return ResponseEntity.ok(utilizacaoService.listarBaixaUtilizacao(PeriodoConsulta.doMes(mes)));
     }
 
     @PatchMapping("/{id}/status")

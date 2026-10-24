@@ -64,7 +64,7 @@ class DashboardServiceTest {
                 new PontoSerie("SEM_VEICULO", 4, new BigDecimal("800.00"))));
         when(utilizacaoService.consultar(periodo, OrdenacaoUtilizacao.DESC)).thenReturn(utilizacao(
                 List.of(new UtilizacaoMotoristaResponse("00123456789", 1, "Ana", 6,
-                        new BigDecimal("60.00"), "COM_VIAGENS"))));
+                        new BigDecimal("60.00"), "COM_VIAGENS", false))));
 
         var resultado = service.consultar(periodo);
 
