@@ -3,6 +3,7 @@ export {
   formatCurrencyBRL,
   formatCpf,
   formatDateOrToday,
+  formatFrequencia,
   formatPercent,
   formatDateRange,
 } from "./format";

@@ -93,6 +93,7 @@ test('agrega os KPIs do resumo com a lista mapeada para o modelo da tela', async
       localizacao: 'Campinas/SP',
       viagens: 18,
       frequencia: 90,
+      baixaFrequencia: false,
       status: 'em_viagem',
     },
     {
@@ -106,6 +107,7 @@ test('agrega os KPIs do resumo com a lista mapeada para o modelo da tela', async
       localizacao: '-',
       viagens: 0,
       frequencia: 0,
+      baixaFrequencia: false,
       status: 'disponivel',
     },
   ]);
@@ -217,4 +219,21 @@ test('indicador de utilização indisponível deixa a frequência sem valor', as
   const dados = await buscarEquipeMotoristas();
 
   assert.deepEqual(dados.motoristas.map((motorista) => motorista.frequencia), [null, null]);
+});
+
+test('frequência abaixo do limite do back chega marcada para destaque', async () => {
+  const comAlerta = {
+    motoristas: UTILIZACAO.motoristas.map((motorista) => ({
+      ...motorista,
+      baixaUtilizacao: motorista.motoristaId === 8,
+    })),
+  };
+  globalThis.fetch = responder(RESUMO, LISTA, comAlerta);
+
+  const dados = await buscarEquipeMotoristas();
+
+  assert.deepEqual(
+    dados.motoristas.map((motorista) => motorista.baixaFrequencia),
+    [false, true],
+  );
 });

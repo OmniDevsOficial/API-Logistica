@@ -1,7 +1,7 @@
 // Node: node --test src/shared/lib/format.test.mjs
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { formatDateOrToday, formatCpf } from './format.ts';
+import { formatDateOrToday, formatCpf, formatFrequencia } from './format.ts';
 
 const HOJE = new Date(2026, 9, 21);
 
@@ -23,4 +23,10 @@ test('cpf sai formatado 000.000.000-00', () => {
   assert.equal(formatCpf('001.234.567-89'), '001.234.567-89');
   assert.equal(formatCpf(null), null);
   assert.equal(formatCpf('123'), '123');
+});
+
+test('frequência sai com no máximo uma casa decimal', () => {
+  assert.equal(formatFrequencia(26), '26%');
+  assert.equal(formatFrequencia(26.456), '26,5%');
+  assert.equal(formatFrequencia(0), '0%');
 });

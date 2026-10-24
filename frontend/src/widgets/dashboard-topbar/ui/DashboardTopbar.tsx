@@ -2,6 +2,7 @@ import type { PeriodOption } from "@entities/dashboard-metrics";
 import type { ResultadoImportacao } from "@features/enviar-relatorio/api/importarManifesto";
 import { BotaoEnviarRelatorio } from "@features/enviar-relatorio/ui/BotaoEnviarRelatorio";
 import { NavegacaoPeriodo, PeriodFilter } from "@features/period-filter";
+import { SinoNotificacoes } from "@features/alerta-utilizacao";
 import { PageHeader } from "@shared/ui";
 
 interface DashboardTopbarProps {
@@ -31,7 +32,11 @@ export function DashboardTopbar({
 }: DashboardTopbarProps) {
   return (
     <header className="mb-7 flex flex-col gap-5">
-      <PageHeader title="Dashboard" onMenuClick={onMenuClick} />
+      <PageHeader
+        title="Dashboard"
+        onMenuClick={onMenuClick}
+        notificacoes={<SinoNotificacoes />}
+      />
 
       <div className="flex flex-col gap-4 sm:hidden">
         <div className="flex items-center justify-between gap-3">

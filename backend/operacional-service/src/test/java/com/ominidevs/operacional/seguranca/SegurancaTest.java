@@ -16,6 +16,7 @@ import com.ominidevs.operacional.motorista.controllers.MotoristaController;
 import com.ominidevs.operacional.motorista.services.MotoristaService;
 import com.ominidevs.operacional.viagem.controllers.ViagemController;
 import com.ominidevs.operacional.viagem.services.ViagemService;
+import com.ominidevs.operacional.indicadores.services.UtilizacaoService;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.options;
@@ -43,6 +44,9 @@ class SegurancaTest {
 
     @MockitoBean
     private MotoristaService motoristaService;
+
+    @MockitoBean
+    private UtilizacaoService utilizacaoService;
 
     private MockHttpServletRequestBuilder dashboard() {
         return get("/dashboard").param("dataInicio", "01/09/2026").param("dataFim", "30/09/2026");
@@ -144,6 +148,20 @@ class SegurancaTest {
         mvc.perform(options("/viagens")
                         .header(HttpHeaders.ORIGIN, "http://site-desconhecido.com")
                         .header(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "GET"))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void gestorConsultaBaixaUtilizacao() throws Exception {
+        mvc.perform(get("/motoristas/baixa-utilizacao")
+                        .header(HttpHeaders.AUTHORIZATION, bearer(TokensDeTeste.valido("GESTOR"))))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    void operadorNaoConsultaBaixaUtilizacao() throws Exception {
+        mvc.perform(get("/motoristas/baixa-utilizacao")
+                        .header(HttpHeaders.AUTHORIZATION, bearer(TokensDeTeste.valido("OPERADOR"))))
                 .andExpect(status().isForbidden());
     }
 }
