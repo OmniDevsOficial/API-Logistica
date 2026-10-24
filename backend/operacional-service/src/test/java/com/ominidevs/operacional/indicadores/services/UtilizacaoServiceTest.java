@@ -11,7 +11,7 @@ import static org.mockito.Mockito.*;
 
 class UtilizacaoServiceTest {
     private final UtilizacaoRepository repo = mock(UtilizacaoRepository.class);
-    private final UtilizacaoService service = new UtilizacaoService(repo);
+    private final UtilizacaoService service = new UtilizacaoService(repo, new BigDecimal("30"));
     private final PeriodoConsulta periodo = PeriodoConsulta.parse("01/09/2026", "10/09/2026");
 
     private MotoristaQuantidadeViagens motorista(String chave, String nome, long quantidade) {
@@ -83,5 +83,62 @@ class UtilizacaoServiceTest {
         assertEquals(3, resultado.totalViagens());
         assertEquals(new BigDecimal("33.33"), resultado.motoristas().getFirst().porcentagem());
         assertEquals(new BigDecimal("66.67"), resultado.motoristas().getLast().porcentagem());
+    }
+
+    private MotoristaQuantidadeViagens cadastrado(int id, String nome, long quantidade) {
+        return new MotoristaQuantidadeViagens(String.valueOf(id), id, nome, quantidade);
+    }
+
+    @Test void marcaBaixaUtilizacaoSoAbaixoDoLimite() {
+        when(repo.consultar(periodo)).thenReturn(List.of(
+                cadastrado(1, "Ana", 2), cadastrado(2, "Bruno", 3), cadastrado(3, "Carlos", 5)));
+        var motoristas = service.consultar(periodo, OrdenacaoUtilizacao.DESC).motoristas();
+        assertEquals(List.of("Carlos", "Bruno", "Ana"), motoristas.stream().map(d -> d.nome()).toList());
+        assertEquals(List.of(false, false, true),
+                motoristas.stream().map(d -> d.baixaUtilizacao()).toList());
+    }
+
+    @Test void listaSoQuemEstaAbaixoDoLimite() {
+        when(repo.consultar(periodo)).thenReturn(List.of(
+                cadastrado(1, "Ana", 2), cadastrado(2, "Bruno", 3), cadastrado(3, "Carlos", 5)));
+        var alertas = service.listarBaixaUtilizacao(periodo);
+        assertEquals(List.of("Ana"), alertas.stream().map(d -> d.nome()).toList());
+        assertEquals(new BigDecimal("20.00"), alertas.getFirst().porcentagem());
+    }
+
+    @Test void exatamenteNoLimiteNaoGeraAlerta() {
+        when(repo.consultar(periodo)).thenReturn(List.of(
+                cadastrado(1, "Ana", 3), cadastrado(2, "Bruno", 7)));
+        assertTrue(service.listarBaixaUtilizacao(periodo).isEmpty());
+    }
+
+    @Test void motoristaSemViagensEntraComZero() {
+        when(repo.consultar(periodo)).thenReturn(List.of(
+                cadastrado(1, "Ana", 0), cadastrado(2, "Bruno", 4)));
+        var alertas = service.listarBaixaUtilizacao(periodo);
+        assertEquals(List.of("Ana"), alertas.stream().map(d -> d.nome()).toList());
+        assertEquals(new BigDecimal("0.00"), alertas.getFirst().porcentagem());
+    }
+
+    @Test void mesSemMotoristasAbaixoDoLimiteRetornaListaVazia() {
+        when(repo.consultar(periodo)).thenReturn(List.of(
+                cadastrado(1, "Ana", 5), cadastrado(2, "Bruno", 5)));
+        assertTrue(service.listarBaixaUtilizacao(periodo).isEmpty());
+    }
+
+    @Test void viagemSemMotoristaCadastradoNaoGeraAlerta() {
+        when(repo.consultar(periodo)).thenReturn(List.of(
+                motorista("SEM_IDENTIFICACAO", "Sem motorista identificado", 1),
+                cadastrado(1, "Ana", 9)));
+        assertTrue(service.listarBaixaUtilizacao(periodo).isEmpty());
+    }
+
+    @Test void usaOLimiteConfigurado() {
+        var comLimite50 = new UtilizacaoService(repo, new BigDecimal("50"));
+        when(repo.consultar(periodo)).thenReturn(List.of(
+                cadastrado(1, "Ana", 4), cadastrado(2, "Bruno", 6)));
+        assertEquals(List.of("Ana"),
+                comLimite50.listarBaixaUtilizacao(periodo).stream().map(d -> d.nome()).toList());
+        assertTrue(service.listarBaixaUtilizacao(periodo).isEmpty());
     }
 }
