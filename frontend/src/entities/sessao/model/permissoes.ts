@@ -17,3 +17,7 @@ export function rotaInicial(perfil: Perfil): string {
 export function podeVerValoresMonetarios(perfil: Perfil): boolean {
   return perfil === "GESTOR";
 }
+
+export function podeVerAlertasUtilizacao(perfil: Perfil): boolean {
+  return perfil === "GESTOR";
+}

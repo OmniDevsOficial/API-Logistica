@@ -1,4 +1,5 @@
 export type {
+  AlertaUtilizacao,
   EquipeMotoristasData,
   MotoristaEquipe,
   MotoristaResumo,
@@ -6,6 +7,7 @@ export type {
   MotoristaUtilizacao,
   StatusEquipe,
 } from "./model/types";
+export { buscarAlertasUtilizacao } from "./api/alertaUtilizacaoService";
 export { buscarEquipeMotoristas } from "./api/equipeService";
 export { buscarRentabilidadeMotoristas } from "./api/rentabilidadeMotoristasService";
 export { buscarResumoMotoristas } from "./api/motoristaResumoService";

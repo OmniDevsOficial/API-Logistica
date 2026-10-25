@@ -5,6 +5,13 @@ export interface MotoristaUtilizacao {
   nome: string;
   percentualUtilizacao: number | null;
   status: MotoristaStatus;
+  baixaUtilizacao: boolean;
+}
+
+export interface AlertaUtilizacao {
+  id: number | string;
+  nome: string;
+  percentual: number;
 }
 
 export interface MotoristaResumo {
@@ -27,6 +34,7 @@ export interface MotoristaEquipe {
   localizacao: string;
   viagens: number;
   frequencia: number | null;
+  baixaFrequencia: boolean;
   status: StatusEquipe;
 }
 
