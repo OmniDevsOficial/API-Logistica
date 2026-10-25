@@ -332,18 +332,18 @@
 │   │   └── 📄 01-schemas.sql
 │   └── 🐳 Dockerfile
 ├── 📁 docs
-│   ├── 📁 documentacao
+│   ├── 📁 documentacao-cliente
+│   │   ├── 📝 manual-instalacao.md
+│   │   └── 📝 manual-usuario.md
+│   ├── 📁 documentacao-produto
 │   │   ├── 📕 Backlog.pdf
 │   │   ├── 📕 Cenarios_sprint1.pdf
 │   │   ├── 📕 DoR_e_DoD_sprint1.pdf
-│   │   └── 📝 file_tree.md
-│   ├── 📁 manuais
-│   │   ├── 📝 manual-instalacao.md
-│   │   └── 📝 manual-usuario.md
-│   └── 📁 sprints
-│       ├── 📝 sprint-1.md
-│       ├── 📝 sprint-2.md
-│       └── 📝 sprint-3.md
+│   │   └──  📝 file_tree.md
+│   ├── 📁 sprints
+│   │   ├── 📝 sprint-1.md
+│   │   ├── 📝 sprint-2.md
+│   │   └── 📝 sprint-3.md
 ├── 📁 e2e
 │   └── 📄 permissoes.e2e.test.mjs
 ├── 📁 frontend
