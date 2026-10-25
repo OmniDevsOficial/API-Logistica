@@ -8,6 +8,7 @@
   <a href="#visao-geral"> Visão Geral </a> |
   <a href="#sprint-2-meta"> Metas </a> |
   <a href="#backlog-sprint-2"> Backlog </a> |
+  <a href="#dor-dod"> DoR e DoD </a> |
   <a href="#desenvolvimento"> Desenvolvimento </a> |
   <a href="#retrospectiva"> Retrospectiva </a> |
   <a href="#documentos"> Documentos </a> |
@@ -43,6 +44,23 @@ A Sprint 2 concentrou-se na estruturação do núcleo financeiro, segurança e a
 | 🎗 10 | US15 |   Média    | Como gestor, quero realizar login seguro na plataforma, para garantir a segurança dos dados no sistema.                     |     4      |   2    | 🟢 Entregue |
 | 🎗 11 | US16 |   Média    | Como gestor, quero ver na tela dashboard apenas os dados considerados essenciais, para garantir uma visão clara e objetiva. |     5      |   2    | 🟢 Entregue |
 | 🎗 12 | US07 |   Média    | Como gestor, quero receber um alerta de motoristas com baixa utilização no mês, para agir sobre ociosidade.                 |     5      |   2    | 🟢 Entregue |
+
+## ✅ DoR e DoD da Sprint <a id="dor-dod"></a>
+
+**🚀 Definition of Ready (DoR)** — quando uma história está pronta para entrar na sprint:
+
+- A história de usuário possui valor de negócio claro e definido.
+- Os critérios de aceitação e as regras de negócio estão documentados no ticket.
+- Os cenários de teste (BDD) estão descritos para orientar o desenvolvimento.
+- O esforço (estimativa) foi pontuado pela equipe.
+
+**✔️ Definition of Done (DoD)** — quando uma história está concluída:
+
+- O código foi implementado e atende a todos os critérios de aceitação.
+- O código passou por Code Review (Pull Request aprovado por no mínimo 1 membro da equipe).
+- Os testes foram executados e validados no backend.
+- A nova funcionalidade não quebrou funcionalidades anteriores.
+- A documentação da sprint foi atualizada.
 
 ## 🛠️ Desenvolvimento da Sprint <a id="desenvolvimento"></a>
 
@@ -85,6 +103,21 @@ A Sprint 1 terminou com histórias pendentes, uma task de dashboard grande demai
 - **Filtro de viagens (OM-102):** o filtro passa a enviar origem e destino e o backend filtra pelos dois; ao selecionar mais de um filtro do mesmo tipo, são retornadas as viagens de todos eles.
 - **% de utilização (OM-101):** reimportar o mesmo manifesto mantém o percentual e não duplica viagens; um segundo manifesto, com viagens novas, altera o percentual de acordo com o CSV. O número do manifesto identifica cada viagem de forma única.
 
+<details>
+<summary><b>Critérios de aceite dos Ajustes (OM-99)</b></summary>
+
+|     | Critério                                                                                               |
+| :-: | :----------------------------------------------------------------------------------------------------- |
+| ✅  | Todas as subtasks concluídas (OM-101, OM-102 e OM-114).                                                |
+| ✅  | O filtro da tela de viagem envia origem e destino, e o backend filtra pelos dois.                      |
+| ✅  | Retorna as viagens de todos os filtros quando há mais de um do mesmo tipo selecionado.                 |
+| ✅  | Reimportar o mesmo manifesto mantém o % de utilização e não duplica viagens.                           |
+| ✅  | Um segundo manifesto, com viagens novas, altera o % de forma coerente com o CSV.                       |
+| ✅  | O número do manifesto identifica cada viagem de forma única.                                           |
+| ✅  | Testes do Operacional e do Relatório alinhados com o `main/java`, sem testes quebrados ou incompletos. |
+
+</details>
+
 #### US08 — Apuração de frete, custos e cálculo de rentabilidade (story OM-8)
 
 Permite apurar o valor do frete e os custos operacionais de cada viagem para calcular a rentabilidade real da operação. Os valores são obtidos diretamente pela importação/reimportação da planilha de manifesto (sem tela de cadastro ou edição manual), sendo as informações de rentabilidade visíveis apenas para o perfil de Gestor.
@@ -93,12 +126,36 @@ Permite apurar o valor do frete e os custos operacionais de cada viagem para cal
 - **Back (OM-108):** Processamento da fórmula de rentabilidade durante a importação do manifesto via UPSERT (evitando duplicidade quando um manifesto é reimportado para correção) e tratamento de valores nulos.
 - **Front (OM-117):** Exibição das receitas, despesas e saldo final de rentabilidade restrita aos gestores, com destaque visual em vermelho para viagens deficitárias.
 
+<details>
+<summary><b>Critérios de aceite da US08</b></summary>
+
+|     | Critério                                                                                 |
+| :-: | :--------------------------------------------------------------------------------------- |
+| ✅  | Frete, vale-frete, pedágio e rentabilidade em colunas monetárias precisas.               |
+| ✅  | Valores obtidos pela importação do manifesto, sem tela de cadastro ou edição manual.     |
+| ✅  | Reimportar um manifesto corrigido atualiza as viagens sem duplicá-las (UPSERT).          |
+| ✅  | Valores nulos tratados no cálculo da rentabilidade.                                      |
+| ✅  | Rentabilidade visível apenas para o perfil Gestor, com viagens deficitárias em vermelho. |
+
+</details>
+
 #### US09 — Rentabilidade média por motorista (story OM-9)
 
 Exibe a rentabilidade média obtida por viagem de cada motorista, permitindo ao Gestor comparar o desempenho financeiro da frota agregada.
 
 - **Back (OM-116):** Cálculo da média (`AVG`) agrupada por motorista no período filtrado, desconsiderando viagens com valores financeiros nulos.
 - **Front (OM-115):** Listagem comparativa restrita ao perfil Gestor, com suporte a ordenação crescente/decrescente e tratamento para motoristas sem viagens no mês _(em revisão)_.
+
+<details>
+<summary><b>Critérios de aceite da US09</b></summary>
+
+|     | Critério                                                                                                     |
+| :-: | :----------------------------------------------------------------------------------------------------------- |
+| ✅  | Média (`AVG`) da rentabilidade por viagem de cada motorista no período, ignorando viagens com valores nulos. |
+| ✅  | Acesso restrito ao perfil Gestor.                                                                            |
+| ⚠️  | Ordenação crescente e decrescente e tratamento de motoristas sem viagens no mês (OM-115), em revisão.        |
+
+</details>
 
 #### US05 — Tela única de motoristas disponíveis (story OM-5)
 
@@ -108,12 +165,34 @@ Centraliza em uma única visualização os motoristas disponíveis para agilizar
 - **Front (OM-105):** Interface dedicada listando os motoristas e seus respectivos status operacionais.
 - **Integração (OM-104):** Conexão do card "Disponíveis" do dashboard ao KPI da US05, garantindo que o valor exibido coincida exatamente com a contagem da tela de motoristas _(em revisão)_.
 
+<details>
+<summary><b>Critérios de aceite da US05</b></summary>
+
+|     | Critério                                                                                               |
+| :-: | :----------------------------------------------------------------------------------------------------- |
+| ✅  | Endpoints de consulta e de alteração manual do status do motorista.                                    |
+| ✅  | A alteração manual de status é preservada após novas importações de manifesto.                         |
+| ✅  | Tela única lista os motoristas e seus status operacionais.                                             |
+| ⚠️  | Card "Disponíveis" do dashboard com valor igual à contagem da tela de motoristas (OM-104), em revisão. |
+
+</details>
+
 #### US14 — Identificação das rotas de maior retorno no mês (story OM-14)
 
 Identifica os destinos com maior retorno financeiro no mês para embasar campanhas de engajamento de motoristas.
 
 - **Back (OM-118):** Agrupamento por destino gerando o ranking dos 10 destinos com maior média de rentabilidade no mês, ordenados de forma decrescente.
 - **Front / Integração:** A integração do ranking com o componente visual no frontend e o ajuste do rótulo de exibição ficaram pendentes para finalização.
+
+<details>
+<summary><b>Critérios de aceite da US14</b></summary>
+
+|     | Critério                                                                                      |
+| :-: | :-------------------------------------------------------------------------------------------- |
+| ✅  | Ranking dos 10 destinos com maior média de rentabilidade no mês, em ordem decrescente (back). |
+| ⚠️  | Integração do ranking com o componente visual e ajuste do rótulo de exibição, pendentes.      |
+
+</details>
 
 #### US15 — Login seguro e controle de acesso por perfil (story OM-109)
 
@@ -123,6 +202,18 @@ Garante a proteção dos dados operacionais e financeiros através de autentica�
 - **Front (OM-107):** Tela de login com validação de campos e exibição de mensagens genéricas para credenciais inválidas.
 - **Integração (OM-113):** Configuração de CORS, interceptação de respostas `401` (não autenticado) e `403` (acesso negado para perfil Operador em telas financeiras) e proteção de rotas privadas.
 
+<details>
+<summary><b>Critérios de aceite da US15</b></summary>
+
+|     | Critério                                                                                                             |
+| :-: | :------------------------------------------------------------------------------------------------------------------- |
+| ✅  | Senhas criptografadas com Bcrypt e token JWT com expiração de 8 horas.                                               |
+| ✅  | Credenciais inválidas exibem mensagem genérica.                                                                      |
+| ✅  | Respostas `401` (não autenticado) e `403` (acesso negado) tratadas; perfil Operador sem acesso às telas financeiras. |
+| ✅  | CORS configurado e rotas privadas protegidas por perfil.                                                             |
+
+</details>
+
 #### US16 — Dashboard com dados essenciais (story OM-110)
 
 Apresenta no painel principal apenas os indicadores essenciais da operação para garantir uma leitura rápida e objetiva pelo gestor.
@@ -130,12 +221,34 @@ Apresenta no painel principal apenas os indicadores essenciais da operação par
 - **Back (OM-100):** Endpoint consolidado (`GET /dashboard`) reunindo as métricas principais do período.
 - **Integração (OM-111):** Conexão dos quadrantes do dashboard aos dados reais, atualização automática após upload de planilhas e tratamento de estados vazios (_Empty State_).
 
+<details>
+<summary><b>Critérios de aceite da US16</b></summary>
+
+|     | Critério                                                                     |
+| :-: | :--------------------------------------------------------------------------- |
+| ✅  | Endpoint consolidado `GET /dashboard` com as métricas principais do período. |
+| ✅  | Quadrantes do dashboard alimentados por dados reais da API.                  |
+| ✅  | Dashboard atualizado automaticamente após o upload de planilhas.             |
+| ✅  | Estados vazios (_Empty State_) tratados.                                     |
+
+</details>
+
 #### US07 — Alerta de motoristas com baixa utilização no mês (story OM-7)
 
 Auxilia o gestor a identificar proativamente motoristas agregados com baixa taxa de ocupação no mês para agir sobre a ociosidade da frota.
 
 - **Back (OM-XXX):** Endpoint `GET /motoristas/baixa-utilizacao?mes=YYYY-MM` identificando motoristas abaixo do limite mínimo de utilização (padrão de 30%, configurável por variável de ambiente), incluindo motoristas sem viagens no período com `0%` _(em andamento)_.
 - **Front (OM-YYY):** Exibição de alerta no sino de notificações no formato _"Alerta motorista: {nome}, baixa frequência: {percentual}%"_ e destaque da frequência em vermelho com ícone de alerta na tela de motoristas _(em revisão)_.
+
+<details>
+<summary><b>Critérios de aceite da US07</b></summary>
+
+|     | Critério                                                                                                                                                 |
+| :-: | :------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| ✅  | Endpoint `GET /motoristas/baixa-utilizacao` com limite padrão de 30% (configurável por variável de ambiente), incluindo motoristas sem viagens com `0%`. |
+| ✅  | Alerta no sino de notificações e destaque em vermelho, com ícone, na tela de motoristas.                                                                 |
+
+</details>
 
 ## 🔍 Retrospectiva <a id="retrospectiva"></a>
 
@@ -163,7 +276,6 @@ Auxilia o gestor a identificar proativamente motoristas agregados com baixa taxa
 
 - [Cenários de User Stories](../documentacao-produto/Cenarios_sprint2.pdf)
 - [Backlog completo](../documentacao-produto/Backlog.pdf)
-- [DoR e DoD da Sprint](../documentacao-produto/DoR_e_DoD_sprint2.pdf)
 
 ## 🎥 Link do Vídeo <a id="link-do-video"></a>
 
