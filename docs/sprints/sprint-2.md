@@ -144,7 +144,7 @@ Permite apurar o valor do frete e os custos operacionais de cada viagem para cal
 Exibe a rentabilidade média obtida por viagem de cada motorista, permitindo ao Gestor comparar o desempenho financeiro da frota agregada.
 
 - **Back (OM-116):** Cálculo da média (`AVG`) agrupada por motorista no período filtrado, desconsiderando viagens com valores financeiros nulos.
-- **Front (OM-115):** Listagem comparativa restrita ao perfil Gestor, com suporte a ordenação crescente/decrescente e tratamento para motoristas sem viagens no mês _(em revisão)_.
+- **Front (OM-115):** Listagem comparativa restrita ao perfil Gestor, com suporte a ordenação crescente/decrescente e tratamento para motoristas sem viagens no mês.
 
 <details>
 <summary><b>Critérios de aceite da US09</b></summary>
@@ -153,7 +153,7 @@ Exibe a rentabilidade média obtida por viagem de cada motorista, permitindo ao 
 | :-: | :----------------------------------------------------------------------------------------------------------- |
 | ✅  | Média (`AVG`) da rentabilidade por viagem de cada motorista no período, ignorando viagens com valores nulos. |
 | ✅  | Acesso restrito ao perfil Gestor.                                                                            |
-| ⚠️  | Ordenação crescente e decrescente e tratamento de motoristas sem viagens no mês (OM-115), em revisão.        |
+| ✅  | Ordenação crescente e decrescente e tratamento de motoristas sem viagens no mês (OM-115).        |
 
 </details>
 
@@ -163,7 +163,7 @@ Centraliza em uma única visualização os motoristas disponíveis para agilizar
 
 - **Back (OM-103):** Endpoints de consulta e alteração manual de status (`PATCH /motoristas/{id}/status`), preservando a alteração manual mesmo após novas importações de manifesto.
 - **Front (OM-105):** Interface dedicada listando os motoristas e seus respectivos status operacionais.
-- **Integração (OM-104):** Conexão do card "Disponíveis" do dashboard ao KPI da US05, garantindo que o valor exibido coincida exatamente com a contagem da tela de motoristas _(em revisão)_.
+- **Integração (OM-104):** Conexão do card "Disponíveis" do dashboard ao KPI da US05, garantindo que o valor exibido coincida exatamente com a contagem da tela de motoristas.
 
 <details>
 <summary><b>Critérios de aceite da US05</b></summary>
@@ -173,7 +173,7 @@ Centraliza em uma única visualização os motoristas disponíveis para agilizar
 | ✅  | Endpoints de consulta e de alteração manual do status do motorista.                                    |
 | ✅  | A alteração manual de status é preservada após novas importações de manifesto.                         |
 | ✅  | Tela única lista os motoristas e seus status operacionais.                                             |
-| ⚠️  | Card "Disponíveis" do dashboard com valor igual à contagem da tela de motoristas (OM-104), em revisão. |
+| ✅  | Card "Disponíveis" do dashboard com valor igual à contagem da tela de motoristas (OM-104), em revisão. |
 
 </details>
 
@@ -190,7 +190,7 @@ Identifica os destinos com maior retorno financeiro no mês para embasar campanh
 |     | Critério                                                                                      |
 | :-: | :-------------------------------------------------------------------------------------------- |
 | ✅  | Ranking dos 10 destinos com maior média de rentabilidade no mês, em ordem decrescente (back). |
-| ⚠️  | Integração do ranking com o componente visual e ajuste do rótulo de exibição, pendentes.      |
+| ✅  | Integração do ranking com o componente visual e ajuste do rótulo de exibição, pendentes.      |
 
 </details>
 
@@ -237,8 +237,8 @@ Apresenta no painel principal apenas os indicadores essenciais da operação par
 
 Auxilia o gestor a identificar proativamente motoristas agregados com baixa taxa de ocupação no mês para agir sobre a ociosidade da frota.
 
-- **Back (OM-XXX):** Endpoint `GET /motoristas/baixa-utilizacao?mes=YYYY-MM` identificando motoristas abaixo do limite mínimo de utilização (padrão de 30%, configurável por variável de ambiente), incluindo motoristas sem viagens no período com `0%` _(em andamento)_.
-- **Front (OM-YYY):** Exibição de alerta no sino de notificações no formato _"Alerta motorista: {nome}, baixa frequência: {percentual}%"_ e destaque da frequência em vermelho com ícone de alerta na tela de motoristas _(em revisão)_.
+- **Back (OM-XXX):** Endpoint `GET /motoristas/baixa-utilizacao?mes=YYYY-MM` identificando motoristas abaixo do limite mínimo de utilização (padrão de 30%, configurável por variável de ambiente), incluindo motoristas sem viagens no período com `0%`.
+- **Front (OM-YYY):** Exibição de alerta no sino de notificações no formato _"Alerta motorista: {nome}, baixa frequência: {percentual}%"_ e destaque da frequência em vermelho com ícone de alerta na tela de motoristas.
 
 <details>
 <summary><b>Critérios de aceite da US07</b></summary>
@@ -258,14 +258,14 @@ Auxilia o gestor a identificar proativamente motoristas agregados com baixa taxa
 - Criação do microsserviço dedicado de autenticação (`autenticacao-service`) com controle de acesso por perfil (Operador e Gestor).
 - Pagamento das pendências técnicas da Sprint 1 com a integração real dos quadrantes do dashboard (OM-100 e OM-111).
 - Task de ajustes (OM-99) concluída: filtro de viagens corrigido (OM-102), % de utilização corrigido (OM-101) e testes do back-end alinhados (OM-114).
-
+- Integração do card "Disponíveis" do dashboard em revisão.
+- Interface de ordenação da rentabilidade média por motorista em revisão.
+- Backend concluído (OM-118), junto com a integração visual no frontend e ajuste de título.
+  
 **O que não deu certo / Pendências no fechamento**
 
 - Algumas tarefas entraram na reta final da sprint em fase de revisão (Pull Request aberto) ou finalização:
-  - **US05 (OM-104):** Integração do card "Disponíveis" do dashboard em revisão.
-  - **US09 (OM-115):** Interface de ordenação da rentabilidade média por motorista em revisão.
-  - **US14:** Backend concluído (OM-118), restando a integração visual no frontend e ajuste de título.
-  - **US07:** Backend do alerta de baixa utilização em andamento e frontend em revisão.
+- **US07:** Backend do alerta de baixa utilização em andamento e frontend em revisão, ainda há calculos que não podem ser feitos com precisão por falta de confirmação da fórmula com o cliente.
 
 **O que muda na Sprint 3**
 
