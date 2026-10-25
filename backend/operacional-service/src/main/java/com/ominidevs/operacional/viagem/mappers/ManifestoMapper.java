@@ -37,6 +37,7 @@ public class ManifestoMapper {
         viagem.setReceitaFrete(converterValor(manifesto.getValorFretes()));
         viagem.setCustoFrete(converterValor(manifesto.getValorFrete()));
         viagem.setPedagio(converterValor(manifesto.getPedagio()));
+        viagem.setValeFrete(converterValor(manifesto.getValeFrete()));
         viagem.setVeiculoTipo(converterTexto(manifesto.getTipoVeiculo()));
         viagem.setDataPrevisaoChegada(converterDataOpcional(manifesto.getPrevisaoChegada()));
 

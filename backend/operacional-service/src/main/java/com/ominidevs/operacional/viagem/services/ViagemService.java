@@ -1,11 +1,14 @@
 package com.ominidevs.operacional.viagem.services;
 
+import com.ominidevs.operacional.indicadores.exceptions.IndicadorInvalidoException;
+import com.ominidevs.operacional.indicadores.model.PeriodoConsulta;
 import com.ominidevs.operacional.motorista.services.MotoristaService;
 import com.ominidevs.operacional.viagem.clients.ManifestoClient;
 import com.ominidevs.operacional.viagem.dto.ManifestoDTO;
 import com.ominidevs.operacional.viagem.dto.ImportacaoManifestoResponse;
 import com.ominidevs.operacional.viagem.dto.ErroLinhaImportacao;
 import com.ominidevs.operacional.viagem.dto.RankingDestinoResponse;
+import com.ominidevs.operacional.viagem.dto.RentabilidadeMotoristaResponse;
 import com.ominidevs.operacional.viagem.entities.StatusViagem;
 import com.ominidevs.operacional.viagem.entities.Viagem;
 import com.ominidevs.operacional.viagem.exceptions.FiltroInvalidoException;
@@ -93,6 +96,7 @@ public class ViagemService {
                 existente.setReceitaFrete(viagem.getReceitaFrete());
                 existente.setCustoFrete(viagem.getCustoFrete());
                 existente.setPedagio(viagem.getPedagio());
+                existente.setValeFrete(viagem.getValeFrete());
                 existente.setValorFrete(viagem.getValorFrete());
                 atualizadas.add(existente);
             }
@@ -151,26 +155,30 @@ public class ViagemService {
                 .orElseThrow(() -> new java.util.NoSuchElementException("Viagem não encontrada: " + manifesto));
         return new RentabilidadeViagemResponse(viagem.getManifesto(), viagem.getMotorista(),
                 viagem.getCidadeOrigem(), viagem.getCidadeDestino(), viagem.getReceitaFrete(),
-                viagem.getCustoFrete(), viagem.getPedagio(),
-                RentabilidadeService.calcular(viagem.getReceitaFrete(), viagem.getCustoFrete(), viagem.getPedagio()));
+                viagem.getValeFrete(),
+                RentabilidadeService.calcular(viagem.getReceitaFrete(), viagem.getValeFrete()));
+    }
+
+    public List<RentabilidadeMotoristaResponse> rentabilidadeMediaPorMotorista(LocalDate inicio, LocalDate fim) {
+        return viagemRepository.rentabilidadeMediaPorMotorista(inicio, fim);
     }
 
     /**
-     * TOP 10 destinos por rentabilidade média no mês (YYYY-MM).
+     * TOP 10 rotas (origem e destino) por rentabilidade média no período.
      * Agregação, desempate e limite são feitos no banco.
+     *
+     * @param dataInicio data inicial no formato dd/MM/aaaa, inclusiva.
+     * @param dataFim data final no formato dd/MM/aaaa, inclusiva.
+     * @return até 10 rotas ordenadas por rentabilidade média decrescente.
+     * @throws IndicadorInvalidoException se alguma data estiver ausente, em
+     *     formato inválido ou se o início for posterior ao fim.
      */
-    public List<RankingDestinoResponse> rankingDestinosPorRentabilidade(String mes) {
+    public List<RankingDestinoResponse> rankingDestinosPorRentabilidade(
+            String dataInicio, String dataFim) {
 
-        if (mes == null || mes.isBlank()) {
-            throw new FiltroInvalidoException(
-                    "mes é obrigatório no formato YYYY-MM"
-            );
-        }
+        PeriodoConsulta periodo = PeriodoConsulta.parse(dataInicio, dataFim);
 
-        YearMonth periodo = converterMes(mes.trim());
-
-        return viagemRepository.rankingDestinosPorRentabilidade(
-                periodo.atDay(1), periodo.atEndOfMonth());
+        return viagemRepository.rankingDestinosPorRentabilidade(periodo.inicio(), periodo.fim());
     }
 
     private void validarFaixaFrete(BigDecimal freteMin, BigDecimal freteMax) {

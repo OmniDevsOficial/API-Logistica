@@ -11,6 +11,8 @@
   --color-fg-subtle: #9ca3af;
   --color-success: #22c55e;
   --color-trend: #86efac;
+  --color-grafico-forte: #2f49ff;
+  --color-grafico-claro: #8a9bff;
 
   --radius-lg: 20px;
   --radius-md: 14px;
@@ -18,6 +20,19 @@
   --spacing-sidebar: 220px;
 
   --font-sans: "Poppins", "Segoe UI", system-ui, Roboto, sans-serif;
+
+  --animate-surgir: surgir 180ms ease-out;
+
+  @keyframes surgir {
+    from {
+      opacity: 0;
+      transform: translateY(6px);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
 }
 
 :root {
@@ -36,6 +51,8 @@
     --color-fg-muted: #9ca3af;
     --color-fg-subtle: #6b7280;
     --color-success: #4ade80;
+    --color-grafico-forte: #3049ff;
+    --color-grafico-claro: #7384ff;
     --color-shadow: rgba(0, 0, 0, 0.35);
   }
 }

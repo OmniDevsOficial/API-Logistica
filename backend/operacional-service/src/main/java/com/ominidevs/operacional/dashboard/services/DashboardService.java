@@ -7,13 +7,19 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 
 import com.ominidevs.operacional.dashboard.dto.DashboardResponse;
+import com.ominidevs.operacional.dashboard.dto.DestinoMaisRentavelResponse;
 import com.ominidevs.operacional.dashboard.dto.MetricasDashboardResponse;
+import com.ominidevs.operacional.dashboard.dto.PontoRentabilidadeResponse;
 import com.ominidevs.operacional.dashboard.dto.PontoSerieResponse;
+import com.ominidevs.operacional.dashboard.dto.SerieRentabilidadeResponse;
 import com.ominidevs.operacional.dashboard.dto.SeriesDashboardResponse;
 import com.ominidevs.operacional.dashboard.dto.ViagensPorStatusResponse;
+import com.ominidevs.operacional.dashboard.model.AgrupamentoSerie;
+import com.ominidevs.operacional.dashboard.projections.DestinoRentavel;
+import com.ominidevs.operacional.dashboard.projections.PontoRentabilidade;
 import com.ominidevs.operacional.dashboard.projections.PontoSerie;
 import com.ominidevs.operacional.dashboard.projections.ResumoViagens;
-import com.ominidevs.operacional.viagem.services.RentabilidadeService;
+import com.ominidevs.operacional.dashboard.projections.ValoresFinanceirosViagem;
 import com.ominidevs.operacional.dashboard.repositories.DashboardRepository;
 import com.ominidevs.operacional.indicadores.dto.UtilizacaoMotoristaResponse;
 import com.ominidevs.operacional.indicadores.model.OrdenacaoUtilizacao;
@@ -23,7 +29,6 @@ import com.ominidevs.operacional.indicadores.services.UtilizacaoService;
 @Service
 public class DashboardService {
 
-    private static final BigDecimal SEM_FONTE_NO_BANCO = null;
     private static final String COM_DADOS = "COM_DADOS";
     private static final String SEM_DADOS = "SEM_DADOS";
 
@@ -39,7 +44,7 @@ public class DashboardService {
         ResumoViagens resumo = repository.consultarResumo(periodo);
 
         SeriesDashboardResponse series = new SeriesDashboardResponse(
-                converterSerie(repository.consultarSerieMensal(periodo)),
+                consultarSerieRentabilidade(periodo),
                 converterSerie(repository.consultarSeriePorVeiculo(periodo)));
 
         List<UtilizacaoMotoristaResponse> utilizacao =
@@ -57,33 +62,85 @@ public class DashboardService {
     private MetricasDashboardResponse converterMetricas(ResumoViagens resumo, PeriodoConsulta periodo) {
         var valores = repository.consultarValoresFinanceiros(periodo);
         if (valores == null) valores = List.of();
-        BigDecimal custoTotal = BigDecimal.ZERO;
-        BigDecimal lucroTotal = BigDecimal.ZERO;
-        long viagensCalculaveis = 0;
-        for (var v : valores) {
-            BigDecimal lucro = RentabilidadeService.calcular(v.receita(), v.custoFrete(), v.pedagio());
-            if (lucro != null) {
-                custoTotal = custoTotal.add(v.custoFrete()).add(v.pedagio());
-                lucroTotal = lucroTotal.add(lucro);
-                viagensCalculaveis++;
-            }
-        }
+        BigDecimal custoTotal = somarCustos(valores);
+        BigDecimal receitaTotal = somarReceitas(valores);
+        BigDecimal rentabilidadeTotal = rentabilidade(receitaTotal, custoTotal);
         return new MetricasDashboardResponse(
                 resumo.totalViagens(),
-                arredondar(resumo.freteTotal()),
-                arredondar(resumo.freteMedio()),
+                arredondar(receitaTotal),
+                mediaPorViagem(receitaTotal, resumo.totalViagens()),
                 resumo.kmTotal(),
                 resumo.motoristasAtivos(),
+                viagensPorMotorista(resumo.totalViagens(), resumo.motoristasAtivos()),
                 resumo.veiculosUtilizados(),
                 new ViagensPorStatusResponse(
                         resumo.viagensPendentes(),
                         resumo.viagensEmTransito(),
                         resumo.viagensFinalizadas()),
-                viagensCalculaveis == 0 ? null : arredondar(custoTotal),
-                viagensCalculaveis == 0 ? null : arredondar(custoTotal.divide(BigDecimal.valueOf(viagensCalculaveis), 2, RoundingMode.HALF_UP)),
-                viagensCalculaveis == 0 ? null : arredondar(lucroTotal),
-                viagensCalculaveis == 0 ? null : arredondar(lucroTotal.divide(BigDecimal.valueOf(viagensCalculaveis), 2, RoundingMode.HALF_UP)),
-                SEM_FONTE_NO_BANCO);
+                arredondar(custoTotal),
+                mediaPorViagem(custoTotal, resumo.totalViagens()),
+                arredondar(rentabilidadeTotal),
+                mediaPorViagem(rentabilidadeTotal, resumo.totalViagens()),
+                margem(rentabilidadeTotal, receitaTotal),
+                converterDestino(repository.consultarDestinoMaisRentavel(periodo)));
+    }
+
+    private BigDecimal somarCustos(List<ValoresFinanceirosViagem> valores) {
+        BigDecimal total = null;
+        for (var v : valores) {
+            if (v.valeFrete() == null) continue;
+            total = (total == null ? BigDecimal.ZERO : total).add(v.valeFrete());
+        }
+        return total;
+    }
+
+    private BigDecimal somarReceitas(List<ValoresFinanceirosViagem> valores) {
+        BigDecimal total = null;
+        for (var v : valores) {
+            if (v.receita() == null) continue;
+            total = (total == null ? BigDecimal.ZERO : total).add(v.receita());
+        }
+        return total;
+    }
+
+    private BigDecimal rentabilidade(BigDecimal receitaTotal, BigDecimal custoTotal) {
+        if (receitaTotal == null && custoTotal == null) return null;
+        return zeroSeNulo(receitaTotal).subtract(zeroSeNulo(custoTotal));
+    }
+
+    private DestinoMaisRentavelResponse converterDestino(DestinoRentavel destino) {
+        if (destino == null) return null;
+        return new DestinoMaisRentavelResponse(
+                destino.destino(), destino.viagens(), arredondar(destino.rentabilidadeTotal()));
+    }
+
+    private BigDecimal viagensPorMotorista(long totalViagens, long motoristasAtivos) {
+        if (motoristasAtivos == 0) return null;
+        return BigDecimal.valueOf(totalViagens).divide(BigDecimal.valueOf(motoristasAtivos), 2, RoundingMode.HALF_UP);
+    }
+
+    private BigDecimal margem(BigDecimal rentabilidadeTotal, BigDecimal receitaTotal) {
+        if (rentabilidadeTotal == null || receitaTotal == null || receitaTotal.signum() == 0) return null;
+        return rentabilidadeTotal.multiply(BigDecimal.valueOf(100)).divide(receitaTotal, 2, RoundingMode.HALF_UP);
+    }
+
+    private BigDecimal mediaPorViagem(BigDecimal total, long totalViagens) {
+        if (total == null || totalViagens == 0) return null;
+        return total.divide(BigDecimal.valueOf(totalViagens), 2, RoundingMode.HALF_UP);
+    }
+
+    private BigDecimal zeroSeNulo(BigDecimal valor) {
+        return valor == null ? BigDecimal.ZERO : valor;
+    }
+
+    private SerieRentabilidadeResponse consultarSerieRentabilidade(PeriodoConsulta periodo) {
+        AgrupamentoSerie agrupamento = AgrupamentoSerie.para(periodo);
+        List<PontoRentabilidade> pontos = repository.consultarSerieRentabilidade(periodo, agrupamento);
+        if (pontos == null) pontos = List.of();
+        return new SerieRentabilidadeResponse(agrupamento.name(), pontos.stream()
+                .map(ponto -> new PontoRentabilidadeResponse(
+                        ponto.rotulo(), ponto.viagens(), arredondar(ponto.custo()), arredondar(ponto.rentabilidade())))
+                .toList());
     }
 
     private List<PontoSerieResponse> converterSerie(List<PontoSerie> pontos) {

@@ -50,9 +50,11 @@ class ViagemFiltrosIntegrationTest {
     }
 
     private Viagem viagem(String manifesto, String data, String destino, String frete, StatusViagem status) {
-        return new Viagem(manifesto, LocalDate.parse(data), "Motorista Teste", "00123456789",
-                "ABC1D23", "Origem Teste", destino, frete == null ? null : new BigDecimal(frete),
+        Viagem viagem = new Viagem(manifesto, LocalDate.parse(data), "Motorista Teste", "00123456789",
+                "ABC1D23", "Origem Teste", destino, new BigDecimal("1.00"),
                 100, 200, status, null, null);
+        viagem.setReceitaFrete(frete == null ? null : new BigDecimal(frete));
+        return viagem;
     }
 
     private void conferir(List<Viagem> viagens, String... manifestos) {
