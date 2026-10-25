@@ -34,15 +34,15 @@ A Sprint 2 concentrou-se na estruturação do núcleo financeiro, segurança e a
 
 ## 📋 Backlog da Sprint 2 <a id="backlog-sprint-2"></a>
 
-| Rank  |  ID  | Prioridade | User Story                                                                                                                  | Estimativa | Sprint |          Situação           |
-| :---: | :--: | :--------: | :-------------------------------------------------------------------------------------------------------------------------- | :--------: | :----: | :-------------------------: |
-| 🎗 6  | US08 |   Média    | Como gestor, quero registrar frete e custos de cada viagem, para calcular a rentabilidade.                                  |     3      |   2    |         🟢 Entregue         |
-| 🎗 7  | US09 |   Média    | Como gestor, quero visualizar a rentabilidade média por viagem de cada motorista, para comparar desempenho.                 |     4      |   2    |   🟡 Em revisão (parcial)   |
-| 🎗 8  | US05 |   Média    | Como operador, quero ver em uma tela única quais motoristas estão disponíveis, para direcionar novas viagens rapidamente.   |     5      |   2    |   🟡 Em revisão (parcial)   |
-| 🎗 9  | US14 |   Baixa    | Como gestor, quero identificar as rotas mais concorridas do mês, para criar campanhas de engajamento de motoristas.         |     4      |   2    | 🟡 Parcial (Back concluído) |
-| 🎗 10 | US15 |   Média    | Como gestor, quero realizar login seguro na plataforma, para garantir a segurança dos dados no sistema.                     |     4      |   2    |         🟢 Entregue         |
-| 🎗 11 | US16 |   Média    | Como gestor, quero ver na tela dashboard apenas os dados considerados essenciais, para garantir uma visão clara e objetiva. |     5      |   2    |         🟢 Entregue         |
-| 🎗 12 | US07 |   Média    | Como gestor, quero receber um alerta de motoristas com baixa utilização no mês, para agir sobre ociosidade.                 |     5      |   2    |       🔵 Em andamento       |
+| Rank  |  ID  | Prioridade | User Story                                                                                                                  | Estimativa | Sprint |  Situação   |
+| :---: | :--: | :--------: | :-------------------------------------------------------------------------------------------------------------------------- | :--------: | :----: | :---------: |
+| 🎗 6  | US08 |   Média    | Como gestor, quero registrar frete e custos de cada viagem, para calcular a rentabilidade.                                  |     3      |   2    | 🟢 Entregue |
+| 🎗 7  | US09 |   Média    | Como gestor, quero visualizar a rentabilidade média por viagem de cada motorista, para comparar desempenho.                 |     4      |   2    | 🟢 Entregue |
+| 🎗 8  | US05 |   Média    | Como operador, quero ver em uma tela única quais motoristas estão disponíveis, para direcionar novas viagens rapidamente.   |     5      |   2    | 🟢 Entregue |
+| 🎗 9  | US14 |   Baixa    | Como gestor, quero identificar as rotas mais concorridas do mês, para criar campanhas de engajamento de motoristas.         |     4      |   2    | 🟢 Entregue |
+| 🎗 10 | US15 |   Média    | Como gestor, quero realizar login seguro na plataforma, para garantir a segurança dos dados no sistema.                     |     4      |   2    | 🟢 Entregue |
+| 🎗 11 | US16 |   Média    | Como gestor, quero ver na tela dashboard apenas os dados considerados essenciais, para garantir uma visão clara e objetiva. |     5      |   2    | 🟢 Entregue |
+| 🎗 12 | US07 |   Média    | Como gestor, quero receber um alerta de motoristas com baixa utilização no mês, para agir sobre ociosidade.                 |     5      |   2    | 🟢 Entregue |
 
 ## 🛠️ Desenvolvimento da Sprint <a id="desenvolvimento"></a>
 
@@ -50,26 +50,40 @@ Resumo de tudo o que foi desenvolvido na sprint, organizado por User Story e vin
 
 ### Visão geral das tasks
 
-|  US  | Story Jira | Issue (Subtask) |    Tipo    | O que foi feito                                                                                                    | Responsável |    Status    |                                   Jira                                    |
-| :--: | :--------: | :-------------: | :--------: | :----------------------------------------------------------------------------------------------------------------- | :---------: | :----------: | :-----------------------------------------------------------------------: |
-| US16 |   OM-110   |     OM-100      |    Back    | Prover endpoint com os dados reais e indicadores consolidados do dashboard                                         | Pedro Lucas | 🟢 Concluída | [OM-100](https://vinnismoreira-1787621786306.atlassian.net/browse/OM-100) |
-| US16 |   OM-110   |     OM-111      | Integração | Popular os cards e indicadores do dashboard com os dados reais da API                                              | Pedro Lucas | 🟢 Concluída | [OM-111](https://vinnismoreira-1787621786306.atlassian.net/browse/OM-111) |
-| US05 |    OM-5    |     OM-103      |    Back    | Endpoint de listagem, resumo e atualização de status de motoristas disponíveis                                     | Pedro Lucas | 🟢 Concluída | [OM-103](https://vinnismoreira-1787621786306.atlassian.net/browse/OM-103) |
-| US05 |    OM-5    |     OM-104      | Integração | Conectar o card "Disponíveis" do dashboard ao KPI de motoristas disponíveis (valor igual ao da tela de motorista)  | Pedro Lucas | 🟢 Concluída | [OM-104](https://vinnismoreira-1787621786306.atlassian.net/browse/OM-104) |
-| US05 |    OM-5    |     OM-105      |   Front    | Interface de tela única exibindo os motoristas disponíveis e seus status                                           | Pedro Lucas | 🟢 Concluída | [OM-105](https://vinnismoreira-1787621786306.atlassian.net/browse/OM-105) |
-| US15 |   OM-109   |     OM-107      |   Front    | Tela de login e validação de formulário de acesso                                                                  | Pedro Lucas | 🟢 Concluída | [OM-107](https://vinnismoreira-1787621786306.atlassian.net/browse/OM-107) |
-| US15 |   OM-109   |     OM-112      |    Back    | Serviço de autenticação (`autenticacao-service`), geração de token JWT e criptografia                              | Pedro Lucas | 🟢 Concluída | [OM-112](https://vinnismoreira-1787621786306.atlassian.net/browse/OM-112) |
-| US15 |   OM-109   |     OM-113      | Integração | Integração do fluxo de login, controle de sessão (401/403), CORS e proteção de rotas privadas por perfil           | Pedro Lucas | 🟢 Concluída | [OM-113](https://vinnismoreira-1787621786306.atlassian.net/browse/OM-113) |
-| US08 |    OM-8    |     OM-106      |     BD     | Ajuste de tipos monetários e estrutura de banco para custos, vale-frete e rentabilidade                            | Pedro Lucas | 🟢 Concluída | [OM-106](https://vinnismoreira-1787621786306.atlassian.net/browse/OM-106) |
-| US08 |    OM-8    |     OM-108      |    Back    | Importação de custos pelo manifesto e cálculo automático da rentabilidade de cada viagem                           | Pedro Lucas | 🟢 Concluída | [OM-108](https://vinnismoreira-1787621786306.atlassian.net/browse/OM-108) |
-| US08 |    OM-8    |     OM-117      |   Front    | Exibição de frete, custos e rentabilidade por viagem na interface (restrito ao perfil Gestor)                      | Pedro Lucas | 🟢 Concluída | [OM-117](https://vinnismoreira-1787621786306.atlassian.net/browse/OM-117) |
-| US09 |    OM-9    |     OM-115      |   Front    | Interface para visualização e ordenação da rentabilidade média por motorista (acesso apenas Gestor)                | Pedro Lucas | 🟢 Concluída | [OM-115](https://vinnismoreira-1787621786306.atlassian.net/browse/OM-115) |
-| US09 |    OM-9    |     OM-116      |    Back    | Endpoint de cálculo da rentabilidade média por viagem de cada motorista (`AVG`)                                    | Pedro Lucas | 🟢 Concluída | [OM-116](https://vinnismoreira-1787621786306.atlassian.net/browse/OM-116) |
-| US14 |   OM-14    |     OM-118      |    Back    | Endpoint de ranking dos 10 destinos com maior média de rentabilidade no mês                                        | Pedro Lucas | 🟢 Concluída | [OM-118](https://vinnismoreira-1787621786306.atlassian.net/browse/OM-118) |
-| US07 |    OM-7    |     OM-XXX      |    Back    | Endpoint `GET /motoristas/baixa-utilizacao?mes=YYYY-MM` (limite padrão 30%, configurável por variável de ambiente) | Pedro Lucas | 🟢 Concluída | [OM-XXX](https://vinnismoreira-1787621786306.atlassian.net/browse/OM-XXX) |
-| US07 |    OM-7    |     OM-YYY      |   Front    | Alerta de baixa utilização no sino de notificações e destaque em vermelho na tela de motorista                     | Pedro Lucas | 🟢 Concluída | [OM-YYY](https://vinnismoreira-1787621786306.atlassian.net/browse/OM-YYY) |
+|   US    | Story Jira | Issue (Subtask) |    Tipo    | O que foi feito                                                                                                                   |     Responsável     |    Status    |                                   Jira                                    |
+| :-----: | :--------: | :-------------: | :--------: | :-------------------------------------------------------------------------------------------------------------------------------- | :-----------------: | :----------: | :-----------------------------------------------------------------------: |
+| Ajustes |   OM-99    |     OM-114      |    Back    | Testes do Operacional (pasta de motorista) e do Relatório alinhados com o `main/java`, sem testes quebrados ou incompletos        |   Yuri Gonçalves    | 🟢 Concluída | [OM-114](https://vinnismoreira-1787621786306.atlassian.net/browse/OM-114) |
+| Ajustes |   OM-99    |     OM-102      |  Back/BD   | Filtro da tela de viagem passa a enviar origem e destino e aceita mais de um filtro do mesmo tipo (ex.: finalizado e em trânsito) |  Henrique Martins   | 🟢 Concluída | [OM-102](https://vinnismoreira-1787621786306.atlassian.net/browse/OM-102) |
+| Ajustes |   OM-99    |     OM-101      | Front/Back | Correção do % de utilização na tela de motorista ao importar manifestos diferentes, sem duplicar viagens na reimportação          | Guilherme Alvarenga | 🟢 Concluída | [OM-101](https://vinnismoreira-1787621786306.atlassian.net/browse/OM-101) |
+|  US16   |   OM-110   |     OM-100      |    Back    | Prover endpoint com os dados reais e indicadores consolidados do dashboard                                                        |   Thomaz De Mello   | 🟢 Concluída | [OM-100](https://vinnismoreira-1787621786306.atlassian.net/browse/OM-100) |
+|  US16   |   OM-110   |     OM-111      | Integração | Popular os cards e indicadores do dashboard com os dados reais da API                                                             |   Thomaz De Mello   | 🟢 Concluída | [OM-111](https://vinnismoreira-1787621786306.atlassian.net/browse/OM-111) |
+|  US05   |    OM-5    |     OM-103      |    Back    | Endpoint de listagem, resumo e atualização de status de motoristas disponíveis                                                    |  Vinicius Moreira   | 🟢 Concluída | [OM-103](https://vinnismoreira-1787621786306.atlassian.net/browse/OM-103) |
+|  US05   |    OM-5    |     OM-104      | Integração | Conectar o card "Disponíveis" do dashboard ao KPI de motoristas disponíveis (valor igual ao da tela de motorista)                 |  Vinicius Moreira   | 🟢 Concluída | [OM-104](https://vinnismoreira-1787621786306.atlassian.net/browse/OM-104) |
+|  US05   |    OM-5    |     OM-105      |   Front    | Interface de tela única exibindo os motoristas disponíveis e seus status                                                          |  Vinicius Moreira   | 🟢 Concluída | [OM-105](https://vinnismoreira-1787621786306.atlassian.net/browse/OM-105) |
+|  US15   |   OM-109   |     OM-107      |   Front    | Tela de login e validação de formulário de acesso                                                                                 |     Pedro Lucas     | 🟢 Concluída | [OM-107](https://vinnismoreira-1787621786306.atlassian.net/browse/OM-107) |
+|  US15   |   OM-109   |     OM-112      |    Back    | Serviço de autenticação (`autenticacao-service`), geração de token JWT e criptografia                                             |     Pedro Lucas     | 🟢 Concluída | [OM-112](https://vinnismoreira-1787621786306.atlassian.net/browse/OM-112) |
+|  US15   |   OM-109   |     OM-113      | Integração | Integração do fluxo de login, controle de sessão (401/403), CORS e proteção de rotas privadas por perfil                          |     Pedro Lucas     | 🟢 Concluída | [OM-113](https://vinnismoreira-1787621786306.atlassian.net/browse/OM-113) |
+|  US08   |    OM-8    |     OM-106      |     BD     | Ajuste de tipos monetários e estrutura de banco para custos, vale-frete e rentabilidade                                           | Guilherme Alvarenga | 🟢 Concluída | [OM-106](https://vinnismoreira-1787621786306.atlassian.net/browse/OM-106) |
+|  US08   |    OM-8    |     OM-108      |    Back    | Importação de custos pelo manifesto e cálculo automático da rentabilidade de cada viagem                                          | Guilherme Alvarenga | 🟢 Concluída | [OM-108](https://vinnismoreira-1787621786306.atlassian.net/browse/OM-108) |
+|  US08   |    OM-8    |     OM-117      |   Front    | Exibição de frete, custos e rentabilidade por viagem na interface (restrito ao perfil Gestor)                                     | Guilherme Alvarenga | 🟢 Concluída | [OM-117](https://vinnismoreira-1787621786306.atlassian.net/browse/OM-117) |
+|  US09   |    OM-9    |     OM-115      |   Front    | Interface para visualização e ordenação da rentabilidade média por motorista (acesso apenas Gestor)                               | Guilherme Alvarenga | 🟢 Concluída | [OM-115](https://vinnismoreira-1787621786306.atlassian.net/browse/OM-115) |
+|  US09   |    OM-9    |     OM-116      |    Back    | Endpoint de cálculo da rentabilidade média por viagem de cada motorista (`AVG`)                                                   | Guilherme Alvarenga | 🟢 Concluída | [OM-116](https://vinnismoreira-1787621786306.atlassian.net/browse/OM-116) |
+|  US14   |   OM-14    |     OM-118      |    Back    | Endpoint de ranking dos 10 destinos com maior média de rentabilidade no mês                                                       |   Yuri Gonçalves    | 🟢 Concluída | [OM-118](https://vinnismoreira-1787621786306.atlassian.net/browse/OM-118) |
+|  US07   |    OM-7    |     OM-120      |   Front    | Endpoint `GET /motoristas/baixa-utilizacao?mes=YYYY-MM` (limite padrão 30%, configurável por variável de ambiente)                |     Pedro Lucas     | 🟢 Concluída | [OM-120](https://vinnismoreira-1787621786306.atlassian.net/browse/OM-120) |
+|  US07   |    OM-7    |     OM-121      |    Back    | Alerta de baixa utilização no sino de notificações e destaque em vermelho na tela de motorista                                    |     Pedro Lucas     | 🟢 Concluída | [OM-121](https://vinnismoreira-1787621786306.atlassian.net/browse/OM-121) |
 
 ### Detalhamento por User Story
+
+#### Ajustes da Sprint 2 — Fechamento das pendências da Sprint 1 (story OM-99)
+
+A Sprint 1 terminou com histórias pendentes, uma task de dashboard grande demais e lacunas de integração em outras histórias. Esta task reúne o que precisava ser corrigido antes de iniciar as histórias da Sprint 2.
+
+> **Objetivo:** fechar as pendências da Sprint 1 e deixar o escopo da Sprint 2 definido.
+> **Critério de aceite:** todas as subtasks concluídas.
+
+- **Testes (OM-114):** criação da pasta de testes de motorista no serviço Operacional e verificação de que todas as funcionalidades, no Operacional e no Relatório, têm testes alinhados com o `main/java` e retornando o resultado esperado.
+- **Filtro de viagens (OM-102):** o filtro passa a enviar origem e destino e o backend filtra pelos dois; ao selecionar mais de um filtro do mesmo tipo, são retornadas as viagens de todos eles.
+- **% de utilização (OM-101):** reimportar o mesmo manifesto mantém o percentual e não duplica viagens; um segundo manifesto, com viagens novas, altera o percentual de acordo com o CSV. O número do manifesto identifica cada viagem de forma única.
 
 #### US08 — Apuração de frete, custos e cálculo de rentabilidade (story OM-8)
 
@@ -130,6 +144,7 @@ Auxilia o gestor a identificar proativamente motoristas agregados com baixa taxa
 - Entrega majoritária do escopo planejado, com conclusão integral das histórias centrais de negócio (US08, US15 e US16) e do backend de todas as demais histórias (US05, US09 e US14).
 - Criação do microsserviço dedicado de autenticação (`autenticacao-service`) com controle de acesso por perfil (Operador e Gestor).
 - Pagamento das pendências técnicas da Sprint 1 com a integração real dos quadrantes do dashboard (OM-100 e OM-111).
+- Task de ajustes (OM-99) concluída: filtro de viagens corrigido (OM-102), % de utilização corrigido (OM-101) e testes do back-end alinhados (OM-114).
 
 **O que não deu certo / Pendências no fechamento**
 
