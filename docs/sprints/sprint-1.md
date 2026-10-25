@@ -97,8 +97,10 @@ Permite ao operador levar para o sistema a planilha do processo que ele já usa,
 - **Front:** estrutura inicial em React com arquitetura FSD (OM-88), tela do dashboard fiel ao Figma (OM-82) e botão de upload com arrastar e soltar (OM-68).
 - **Back:** microsserviço de processamento que converte o arquivo em JSON, sem retrabalho para os demais serviços, com cache simples e fallback para arquivo inválido (OM-67).
 - **Banco:** schema inicial criado por migration, com CPF do motorista e placa do veículo únicos (OM-83).
+
 <details>
 <summary><b>Critérios de aceite da US01</b></summary>
+
 | | Critério |
 | :---: | :--- |
 | ✅ | Aceitar estritamente arquivos `.xlsx` e `.csv`. |
@@ -108,14 +110,17 @@ Permite ao operador levar para o sistema a planilha do processo que ele já usa,
 | ✅ | Estrutura do banco criada por migration, com CPF do motorista e placa do veículo únicos e veículo opcional na viagem. |
 
 </details>
+
 ### US02 — Importação de manifesto (story OM-71)
  
 Permite ao operador importar um relatório de manifesto e cadastrar viagens em lote, sem preenchimento manual.
  
 - **Back:** validação dos campos obrigatórios (manifesto, CPF, data e valor do frete), com erro `manifesto inválido ou incompleto`; veículo e destino opcionais (gravados como `null`); limite de 10 MB.
 - **Front:** upload restrito a `.xlsx` e `.csv`, confirmação com a quantidade de viagens importadas e mensagens de erro claras.
+
 <details>
 <summary><b>Critérios de aceite da US02</b></summary>
+
 | | Critério |
 | :---: | :--- |
 | ✅ | Rejeitar linhas sem os campos obrigatórios (manifesto, CPF do motorista, data e valor do frete). |
@@ -124,6 +129,7 @@ Permite ao operador importar um relatório de manifesto e cadastrar viagens em l
 | ✅ | Confirmação com a quantidade de viagens importadas. |
  
 </details>
+
 ### US03 — Viagens por motorista no mês (story OM-3)
  
 Exibe o total de viagens de cada motorista no período escolhido e permite abrir as viagens que compõem o total.
@@ -131,8 +137,10 @@ Exibe o total de viagens de cada motorista no período escolhido e permite abrir
 - **Back:** contagem por período, recalculada a cada mudança, com motoristas sem viagens retornando `0`.
 - **Front:** lista com seletor de período (sem recarregar a página) e detalhamento ao clicar no total.
 - **Integração (OM-98):** substituição dos dados mockados do dashboard por dados reais; ver pendências na [Retrospectiva](#retrospectiva).
+
 <details>
 <summary><b>Critérios de aceite da US03</b></summary>
+
 | | Critério |
 | :---: | :--- |
 | ✅ | Recalcular o total de viagens ao alterar o período. |
@@ -141,14 +149,17 @@ Exibe o total de viagens de cada motorista no período escolhido e permite abrir
 | ⚠️ | Dados do dashboard vindos do backend (OM-98), pendente de finalização. |
  
 </details>
+
 ### US04 — Filtro de viagens por destino/região (story OM-4)
  
 Permite filtrar as viagens por destino ou região e ver a lista atualizada sem recarregar a página.
  
 - **Back:** filtros combinados, e lista vazia (sem erro) quando nada corresponde.
 - **Front:** modal de filtros integrado aos filtros existentes, com mensagem quando não há resultados.
+
 <details>
 <summary><b>Critérios de aceite da US04</b></summary>
+
 | | Critério |
 | :---: | :--- |
 | ✅ | Filtros combinados (ex.: destino + data) no backend. |
@@ -156,6 +167,7 @@ Permite filtrar as viagens por destino ou região e ver a lista atualizada sem r
 | ⚠️ | Atualização assíncrona na interface, sem recarregar a página, e mensagem de ausência de resultados (OM-77), pendente de finalização. |
  
 </details>
+
 ### US06 — % de utilização por motorista (story OM-6)
  
 Calcula e exibe o percentual de utilização de cada motorista no período, com ordenação crescente e decrescente.
@@ -165,8 +177,10 @@ Calcula e exibe o percentual de utilização de cada motorista no período, com 
  
 - **Back:** recálculo por período, ordenação, motorista sem viagens com 0% e dias disponíveis igual a zero tratado como "sem dados" (sem divisão por zero).
 - **Front:** lista com percentuais, seletor de período, ordenação e mensagens para ausência de viagens ou de dados de disponibilidade.
+
 <details>
 <summary><b>Critérios de aceite da US06</b></summary>
+
 | | Critério |
 | :---: | :--- |
 | ✅ | Fórmula: (dias em operação ÷ dias disponíveis no período) × 100. |
