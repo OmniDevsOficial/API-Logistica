@@ -281,7 +281,7 @@ Auxilia o gestor a identificar proativamente motoristas agregados com baixa taxa
 
 Neste vídeo é mostrado o desenvolvimento da **Plataforma de Controle de Motoristas Agregados**, feito pela equipe **OmniDevs** ao decorrer do ciclo da 2ª (segunda) Sprint.
 
-<a href="#"><img src="https://img.shields.io/badge/YouTube-FF0000?style=for-the-badge&logo=youtube&logoColor=white"/></a>
+<a href="https://youtu.be/eVJscMSMfT4"><img src="https://img.shields.io/badge/YouTube-FF0000?style=for-the-badge&logo=youtube&logoColor=white"/></a>
 
 ## 👥 **Equipe** <a id="equipe"></a>
 
