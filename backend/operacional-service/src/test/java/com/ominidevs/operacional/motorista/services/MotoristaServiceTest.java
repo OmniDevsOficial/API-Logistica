@@ -14,6 +14,7 @@ import static org.mockito.Mockito.when;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
@@ -29,6 +30,8 @@ import com.ominidevs.operacional.motorista.projections.MotoristaListagem;
 import com.ominidevs.operacional.motorista.projections.MotoristaStatusContagem;
 import com.ominidevs.operacional.motorista.repositories.MotoristaConsultaRepository;
 import com.ominidevs.operacional.motorista.repositories.MotoristaRepository;
+import com.ominidevs.operacional.veiculo.dto.VeiculoResumoResponse;
+import com.ominidevs.operacional.veiculo.services.VeiculoConsultaService;
 import com.ominidevs.operacional.viagem.entities.StatusViagem;
 import com.ominidevs.operacional.viagem.entities.Viagem;
 
@@ -36,7 +39,9 @@ class MotoristaServiceTest {
 
     private final MotoristaRepository repository = mock(MotoristaRepository.class);
     private final MotoristaConsultaRepository consultaRepository = mock(MotoristaConsultaRepository.class);
-    private final MotoristaService service = new MotoristaService(repository, consultaRepository);
+    private final VeiculoConsultaService veiculoConsultaService = mock(VeiculoConsultaService.class);
+    private final MotoristaService service =
+            new MotoristaService(repository, consultaRepository, veiculoConsultaService);
     private final PeriodoConsulta periodo = PeriodoConsulta.parse("01/09/2026", "10/09/2026");
 
     private Viagem viagem(String motorista, String cpf, LocalDate data, String destino) {
@@ -95,6 +100,33 @@ class MotoristaServiceTest {
         assertEquals(LocalDate.of(2026, 9, 10), resultado.getFirst().ultimaOperacao());
         assertNull(resultado.getFirst().previsaoDisponibilidade());
         assertEquals(3, resultado.getFirst().quantidadeViagens());
+    }
+
+    @Test
+    void deveUsarVeiculoCadastradoComoPrincipalNoLugarDoManifesto() {
+        when(consultaRepository.consultar((StatusMotorista) null)).thenReturn(List.of(linhaCompleta()));
+        var cavalo = new VeiculoResumoResponse("AAJ3354", "CAVALO MECÂNICO", "1114", true);
+        var reboque = new VeiculoResumoResponse("AAJ3355", "SEMI-REBOQUE COM 2 EIXOS", "SR", true);
+        when(veiculoConsultaService.veiculosPorMotorista(List.of(1))).thenReturn(Map.of(1, List.of(cavalo, reboque)));
+
+        var motorista = service.listar(null, periodo).getFirst();
+
+        assertEquals("CAVALO MECÂNICO", motorista.tipoVeiculo());
+        assertEquals("AAJ3354", motorista.placa());
+        assertEquals("1114", motorista.modeloVeiculo());
+        assertEquals(List.of(cavalo, reboque), motorista.veiculos());
+    }
+
+    @Test
+    void deveManterVeiculoDoManifestoSemModeloQuandoNaoHaCadastro() {
+        when(consultaRepository.consultar((StatusMotorista) null)).thenReturn(List.of(linhaCompleta()));
+
+        var motorista = service.listar(null, periodo).getFirst();
+
+        assertEquals("Caminhão", motorista.tipoVeiculo());
+        assertEquals("ABC1D23", motorista.placa());
+        assertNull(motorista.modeloVeiculo());
+        assertTrue(motorista.veiculos().isEmpty());
     }
 
     @Test
@@ -190,6 +222,36 @@ class MotoristaServiceTest {
         assertEquals(LocalDate.of(2026, 9, 10), criado.getUltimaOperacao());
         assertEquals("Curitiba", criado.getUltimaLocalizacao());
         assertNull(criado.getPrevisaoDisponibilidade());
+    }
+
+    @Test
+    void deveCompletarCpfDoMotoristaCriadoPelaImportacaoDeVeiculos() {
+        Motorista semCpf = new Motorista("Ana  Lúcia", null, LocalDate.of(2026, 9, 1), StatusMotorista.DISPONIVEL);
+        when(repository.buscarPorCpf("00123456789")).thenReturn(List.of());
+        when(repository.buscarSemCpfPorChaveNome("ana lucia")).thenReturn(List.of(semCpf));
+
+        service.sincronizarComManifesto(List.of(
+                viagem("ANA LUCIA", "001.234.567-89", LocalDate.of(2026, 9, 10), "Curitiba")));
+
+        assertEquals("00123456789", semCpf.getCpf());
+        verify(repository).saveAll(List.of(semCpf));
+    }
+
+    @Test
+    void naoReaproveitaMotoristaSemCpfQuandoHaHomonimos() {
+        Motorista primeiro = new Motorista("Ana", null, LocalDate.of(2026, 9, 1), StatusMotorista.DISPONIVEL);
+        Motorista segundo = new Motorista("ANA", null, LocalDate.of(2026, 9, 1), StatusMotorista.DISPONIVEL);
+        when(repository.buscarPorCpf("00123456789")).thenReturn(List.of());
+        when(repository.buscarSemCpfPorChaveNome("ana")).thenReturn(List.of(primeiro, segundo));
+
+        service.sincronizarComManifesto(List.of(
+                viagem("Ana", "00123456789", LocalDate.of(2026, 9, 10), "Curitiba")));
+
+        ArgumentCaptor<List<Motorista>> captor = ArgumentCaptor.forClass(List.class);
+        verify(repository).saveAll(captor.capture());
+        assertEquals("00123456789", captor.getValue().getFirst().getCpf());
+        assertNull(primeiro.getCpf());
+        assertNull(segundo.getCpf());
     }
 
     @Test

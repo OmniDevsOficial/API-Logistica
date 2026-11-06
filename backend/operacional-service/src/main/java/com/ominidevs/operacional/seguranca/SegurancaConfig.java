@@ -63,6 +63,8 @@ public class SegurancaConfig {
                         .requestMatchers("/dashboard/**", "/indicadores/**", "/motoristas/**").hasRole(GESTOR)
                         .requestMatchers("/viagens/rentabilidade/motoristas").hasRole(GESTOR)
                         .requestMatchers("/viagens/**").hasAnyRole(GESTOR, OPERADOR)
+                        // Gestor e operador consultam e importam a frota.
+                        .requestMatchers("/veiculos", "/veiculos/**").hasAnyRole(GESTOR, OPERADOR)
                         .anyRequest().authenticated())
                 .oauth2ResourceServer(oauth2 -> oauth2
                         .jwt(jwt -> jwt.jwtAuthenticationConverter(conversorDePerfil()))

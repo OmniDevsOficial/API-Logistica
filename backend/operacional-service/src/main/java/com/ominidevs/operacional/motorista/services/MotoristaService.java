@@ -16,10 +16,13 @@ import com.ominidevs.operacional.motorista.dto.MotoristaResponseDTO;
 import com.ominidevs.operacional.motorista.entities.Motorista;
 import com.ominidevs.operacional.motorista.entities.StatusMotorista;
 import com.ominidevs.operacional.motorista.exceptions.MotoristaNaoEncontradoException;
+import com.ominidevs.operacional.motorista.model.NomeMotorista;
 import com.ominidevs.operacional.motorista.projections.MotoristaListagem;
 import com.ominidevs.operacional.motorista.projections.MotoristaStatusContagem;
 import com.ominidevs.operacional.motorista.repositories.MotoristaConsultaRepository;
 import com.ominidevs.operacional.motorista.repositories.MotoristaRepository;
+import com.ominidevs.operacional.veiculo.dto.VeiculoResumoResponse;
+import com.ominidevs.operacional.veiculo.services.VeiculoConsultaService;
 import com.ominidevs.operacional.viagem.entities.StatusViagem;
 import com.ominidevs.operacional.viagem.entities.Viagem;
 
@@ -28,22 +31,33 @@ public class MotoristaService {
 
     private final MotoristaRepository repository;
     private final MotoristaConsultaRepository consultaRepository;
+    private final VeiculoConsultaService veiculoConsultaService;
 
     public MotoristaService(
             MotoristaRepository repository,
-            MotoristaConsultaRepository consultaRepository
+            MotoristaConsultaRepository consultaRepository,
+            VeiculoConsultaService veiculoConsultaService
     ) {
         this.repository = repository;
         this.consultaRepository = consultaRepository;
+        this.veiculoConsultaService = veiculoConsultaService;
     }
 
     public List<MotoristaResponseDTO> listar(StatusMotorista status, PeriodoConsulta periodo) {
         return listar(status);
     }
 
+    /**
+     * Lista os motoristas com o veículo principal e todos os veículos
+     * cadastrados. Os veículos de todos os motoristas vêm em uma única consulta.
+     */
     public List<MotoristaResponseDTO> listar(StatusMotorista status) {
-        return consultaRepository.consultar(status).stream()
-                .map(this::paraResponse)
+        List<MotoristaListagem> linhas = consultaRepository.consultar(status);
+        Map<Integer, List<VeiculoResumoResponse>> veiculos = veiculoConsultaService.veiculosPorMotorista(
+                linhas.stream().map(MotoristaListagem::id).toList());
+
+        return linhas.stream()
+                .map(linha -> paraResponse(linha, veiculos.getOrDefault(linha.id(), List.of())))
                 .toList();
     }
 
@@ -112,6 +126,14 @@ public class MotoristaService {
                 ? repository.buscarSemCpfPorNome(nome)
                 : repository.buscarPorCpf(cpf);
 
+        if (candidatos.isEmpty() && cpf != null) {
+            Motorista semCpf = unicoSemCpfComMesmoNome(viagem.getMotorista());
+            if (semCpf != null) {
+                semCpf.setCpf(cpf);
+                return semCpf;
+            }
+        }
+
         return candidatos.stream()
                 .findFirst()
                 .orElseGet(() -> new Motorista(
@@ -120,6 +142,26 @@ public class MotoristaService {
                         LocalDate.now(),
                         StatusMotorista.DISPONIVEL
                 ));
+    }
+
+    /**
+     * Motoristas criados pela importação de veículos não têm CPF. Quando o
+     * manifesto traz um CPF ainda desconhecido, reaproveita esse cadastro em
+     * vez de duplicar o motorista. Com homônimos não há como escolher, então
+     * nenhum é reaproveitado.
+     */
+    private Motorista unicoSemCpfComMesmoNome(String nome) {
+        String chave = NomeMotorista.chave(nome);
+        if (chave == null) {
+            return null;
+        }
+        List<Motorista> semCpf = repository.buscarSemCpfPorChaveNome(chave);
+        if (semCpf.size() != 1) {
+            return null;
+        }
+        // A mesma instância pode já ter recebido outro CPF neste lote.
+        Motorista candidato = semCpf.getFirst();
+        return normalizarCpf(candidato.getCpf()) == null ? candidato : null;
     }
 
     private void atualizarDadosDerivados(Motorista motorista, List<Viagem> viagens, Viagem ultima) {
@@ -174,33 +216,43 @@ public class MotoristaService {
         return valor == null || valor.isBlank() ? null : valor.trim();
     }
 
-    private MotoristaResponseDTO paraResponse(MotoristaListagem linha) {
+    private MotoristaResponseDTO paraResponse(MotoristaListagem linha, List<VeiculoResumoResponse> veiculos) {
+        VeiculoResumoResponse principal = veiculos.isEmpty() ? null : veiculos.getFirst();
         return new MotoristaResponseDTO(
                 linha.id(),
                 linha.nome(),
                 linha.cpf(),
-                linha.veiculoTipo(),
-                linha.veiculoPlaca(),
+                principal == null ? linha.veiculoTipo() : principal.tipo(),
+                principal == null ? linha.veiculoPlaca() : principal.placa(),
                 linha.status(),
                 linha.ultimaLocalizacao(),
                 linha.ultimaOperacao(),
                 linha.previsaoDisponibilidade(),
-                linha.quantidadeViagens()
+                linha.quantidadeViagens(),
+                principal == null ? null : principal.modelo(),
+                veiculos
         );
     }
 
     private MotoristaResponseDTO paraResponse(Motorista motorista, long quantidadeViagens) {
+        Integer id = motorista.getId();
+        List<VeiculoResumoResponse> veiculos = id == null
+                ? List.of()
+                : veiculoConsultaService.veiculosPorMotorista(List.of(id)).getOrDefault(id, List.of());
+        VeiculoResumoResponse principal = veiculos.isEmpty() ? null : veiculos.getFirst();
         return new MotoristaResponseDTO(
                 motorista.getId(),
                 motorista.getNome(),
                 motorista.getCpf(),
-                motorista.getVeiculoTipo(),
-                motorista.getVeiculoPlaca(),
+                principal == null ? motorista.getVeiculoTipo() : principal.tipo(),
+                principal == null ? motorista.getVeiculoPlaca() : principal.placa(),
                 motorista.getStatus().name(),
                 motorista.getUltimaLocalizacao(),
                 motorista.getUltimaOperacao(),
                 motorista.getPrevisaoDisponibilidade(),
-                quantidadeViagens
+                quantidadeViagens,
+                principal == null ? null : principal.modelo(),
+                veiculos
         );
     }
 
