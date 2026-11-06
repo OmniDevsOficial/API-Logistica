@@ -73,6 +73,16 @@ public class Motorista {
         return cpf;
     }
 
+    /**
+     * Completa o CPF de um motorista cadastrado antes sem ele (por exemplo,
+     * pela importação de veículos, que não traz CPF).
+     *
+     * @param cpf CPF apenas com dígitos.
+     */
+    public void setCpf(String cpf) {
+        this.cpf = cpf;
+    }
+
     public LocalDate getDataCriacao() {
         return dataCriacao;
     }
