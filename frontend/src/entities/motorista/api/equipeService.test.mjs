@@ -88,6 +88,8 @@ test('agrega os KPIs do resumo com a lista mapeada para o modelo da tela', async
       cpf: '00123456789',
       veiculo: 'Van',
       placa: 'RTA4F21',
+      modelo: null,
+      outrosVeiculos: [],
       operacao: 'Previsão de disponibilidade',
       dataOperacao: '12/10/2026',
       localizacao: 'Campinas/SP',
@@ -102,6 +104,8 @@ test('agrega os KPIs do resumo com a lista mapeada para o modelo da tela', async
       cpf: '11122233344',
       veiculo: '-',
       placa: '-',
+      modelo: null,
+      outrosVeiculos: [],
       operacao: '-',
       dataOperacao: '-',
       localizacao: '-',
@@ -110,6 +114,30 @@ test('agrega os KPIs do resumo com a lista mapeada para o modelo da tela', async
       baixaFrequencia: false,
       status: 'disponivel',
     },
+  ]);
+});
+
+test('veículo principal traz modelo e tipo formatado; os demais ficam em outrosVeiculos', async () => {
+  const comFrota = [{
+    ...LISTA[0],
+    tipoVeiculo: 'CAVALO MECÂNICO',
+    placa: 'AAJ3354',
+    modeloVeiculo: '1114',
+    veiculos: [
+      { placa: 'AAJ3354', tipo: 'CAVALO MECÂNICO', modelo: '1114', ativo: true },
+      { placa: 'AAJ3355', tipo: 'SEMI-REBOQUE COM 2 EIXOS', modelo: 'SR', ativo: true },
+      { tipo: 'item fora do contrato é ignorado' },
+    ],
+  }];
+  globalThis.fetch = responder(RESUMO, comFrota);
+
+  const [motorista] = (await buscarEquipeMotoristas()).motoristas;
+
+  assert.equal(motorista.veiculo, 'Cavalo mecânico');
+  assert.equal(motorista.placa, 'AAJ3354');
+  assert.equal(motorista.modelo, '1114');
+  assert.deepEqual(motorista.outrosVeiculos, [
+    { placa: 'AAJ3355', tipo: 'SEMI-REBOQUE COM 2 EIXOS', modelo: 'SR', ativo: true },
   ]);
 });
 

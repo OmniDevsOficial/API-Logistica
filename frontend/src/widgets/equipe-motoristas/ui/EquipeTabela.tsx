@@ -1,7 +1,13 @@
 import { AlertCircle } from "lucide-react";
 import type { MotoristaEquipe, StatusEquipe } from "@entities/motorista";
 import { StatusMotoristaBadge } from "@entities/motorista/ui/StatusMotoristaBadge";
-import { formatCpf, formatDateOrToday, formatFrequencia } from "@shared/lib";
+import type { VeiculoResumo } from "@entities/veiculo";
+import {
+  formatCpf,
+  formatDateOrToday,
+  formatFrequencia,
+  formatTipoVeiculo,
+} from "@shared/lib";
 import { ValorMonetario } from "@entities/sessao";
 
 interface EquipeTabelaProps {
@@ -40,6 +46,44 @@ function Frequencia({ valor, baixa }: { valor: number | null; baixa: boolean }) 
   );
 }
 
+function descreverVeiculo(veiculo: VeiculoResumo): string {
+  return [veiculo.placa, veiculo.modelo, formatTipoVeiculo(veiculo.tipo)]
+    .filter(Boolean)
+    .join(" · ");
+}
+
+/**
+ * Veículo principal (modelo · tipo e placa). Os demais veículos do motorista
+ * ficam no selo "+N", com a lista completa no tooltip.
+ */
+function VeiculoCelula({ motorista }: { motorista: MotoristaEquipe }) {
+  const titulo = [motorista.modelo, motorista.veiculo !== "-" ? motorista.veiculo : null]
+    .filter(Boolean)
+    .join(" · ");
+  const outros = motorista.outrosVeiculos;
+  const listaOutros = outros.map(descreverVeiculo).join("\n");
+
+  return (
+    <div className="flex flex-col">
+      <span className="flex items-center gap-1.5 text-sm text-fg">
+        <span className="min-w-0 truncate" title={titulo || undefined}>
+          {titulo || "-"}
+        </span>
+        {outros.length > 0 && (
+          <span
+            className="shrink-0 cursor-default rounded-full bg-border px-1.5 text-xs font-medium text-fg-muted"
+            title={listaOutros}
+            aria-label={`Mais ${outros.length} ${outros.length === 1 ? "veículo" : "veículos"}: ${listaOutros.replaceAll("\n", "; ")}`}
+          >
+            +{outros.length}
+          </span>
+        )}
+      </span>
+      <span className="text-xs text-fg-muted">{motorista.placa}</span>
+    </div>
+  );
+}
+
 export function EquipeTabela({
   motoristas,
   rentabilidades,
@@ -62,12 +106,13 @@ export function EquipeTabela({
           <table className="w-full min-w-[1100px] table-fixed">
             <colgroup>
               <col className="w-[15%]" />
-              <col className="w-[11%]" />
-              <col className="w-[15%]" />
+              {/* Veículo/Placa ganhou espaço para modelo · tipo e o selo "+N". */}
+              <col className="w-[14%]" />
+              <col className="w-[13%]" />
               <col className="w-[12%]" />
               <col className="w-[7%]" />
               <col className="w-[10%]" />
-              <col className="w-[15%]" />
+              <col className="w-[14%]" />
               <col className="w-[15%]" />
             </colgroup>
             <thead>
@@ -104,16 +149,9 @@ export function EquipeTabela({
                       </div>
                     </td>
 
-                    {/* Veículo/Placa */}
+                    {/* Veículo/Placa — modelo · tipo do principal, placa abaixo */}
                     <td className={CELL}>
-                      <div className="flex flex-col">
-                        <span className="text-sm text-fg">
-                          {motorista.veiculo}
-                        </span>
-                        <span className="text-xs text-fg-muted">
-                          {motorista.placa}
-                        </span>
-                      </div>
+                      <VeiculoCelula motorista={motorista} />
                     </td>
 
                     {/* Operação — label discreto + data em destaque */}

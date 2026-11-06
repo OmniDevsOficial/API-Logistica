@@ -1,3 +1,5 @@
+import type { VeiculoResumo } from "../../veiculo/model/types.ts";
+
 export type MotoristaStatus = "OK" | "SEM_VIAGENS";
 
 export interface MotoristaUtilizacao {
@@ -27,8 +29,14 @@ export interface MotoristaEquipe {
   id: number;
   nome: string;
   cpf: string | null;
+  /** Tipo do veículo principal já formatado para exibição ("Cavalo mecânico") ou "-". */
   veiculo: string;
+  /** Placa do veículo principal ou "-". */
   placa: string;
+  /** Modelo (nome) do veículo principal; null quando não importado. */
+  modelo: string | null;
+  /** Demais veículos do motorista, além do principal. */
+  outrosVeiculos: VeiculoResumo[];
   operacao: string;
   dataOperacao: string;
   localizacao: string;

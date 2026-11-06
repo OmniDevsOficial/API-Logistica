@@ -3,6 +3,8 @@ import { atualizarStatusMotorista } from "@entities/motorista";
 import type { StatusEquipe } from "@entities/motorista";
 import { Sidebar } from "@widgets/sidebar";
 import { SinoNotificacoes } from "@features/alerta-utilizacao";
+import { BotaoImportarVeiculos } from "@features/importar-veiculos";
+import { podeImportarVeiculos, useSessao } from "@entities/sessao";
 import { PageHeader } from "@shared/ui";
 import {
   EquipeStatCards,
@@ -29,17 +31,32 @@ export function MotoristasPage() {
     useEquipeMotoristas(filtroStatus);
   const rentabilidades = useRentabilidadeMotoristas();
 
+  const { usuario } = useSessao();
+  const exibirImportacaoVeiculos =
+    usuario !== null && podeImportarVeiculos(usuario.perfil);
+
   const motoristasFiltrados = useMemo(() => {
     const termo = busca.trim().toLowerCase();
     const motoristas = dados?.motoristas ?? [];
     if (!termo) return motoristas;
+    // Placa é comparada sem hífen/espaço: "abc-1d23" encontra "ABC1D23".
+    const termoPlaca = termo.replace(/[\s-]/g, "");
     return motoristas.filter(
       (m) =>
         m.nome.toLowerCase().includes(termo) ||
         m.localizacao.toLowerCase().includes(termo) ||
-        m.veiculo.toLowerCase().includes(termo),
+        m.veiculo.toLowerCase().includes(termo) ||
+        (m.modelo?.toLowerCase().includes(termo) ?? false) ||
+        (termoPlaca !== "" &&
+          [m.placa, ...m.outrosVeiculos.map((v) => v.placa)].some((placa) =>
+            placa.toLowerCase().includes(termoPlaca),
+          )),
     );
   }, [dados, busca]);
+
+  const botaoImportarVeiculos = exibirImportacaoVeiculos ? (
+    <BotaoImportarVeiculos onImportado={recarregar} />
+  ) : null;
 
   async function alterarStatus(id: number, novoStatus: StatusEquipe) {
     setStatusSalvando(id);
@@ -69,7 +86,11 @@ export function MotoristasPage() {
             title="Motoristas"
             onMenuClick={() => setSidebarOpen(true)}
             notificacoes={<SinoNotificacoes />}
+            acoes={botaoImportarVeiculos}
           />
+
+          {/* Em telas pequenas o botão sai do cabeçalho para não espremer o título. */}
+          {botaoImportarVeiculos && <div className="sm:hidden">{botaoImportarVeiculos}</div>}
 
           <EquipeFiltros
             busca={busca}

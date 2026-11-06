@@ -5,12 +5,14 @@ export interface PageHeaderProps {
   title: string;
   onMenuClick: () => void;
   notificacoes?: ReactNode;
+  /** Ações da página (ex.: botão de importação), exibidas antes dos ícones. */
+  acoes?: ReactNode;
 }
 
 const ICON_BUTTON_CLASS =
   "flex h-10 w-10 shrink-0 cursor-pointer items-center justify-center rounded-full bg-surface text-black hover:text-fg";
 
-export function PageHeader({ title, onMenuClick, notificacoes }: PageHeaderProps) {
+export function PageHeader({ title, onMenuClick, notificacoes, acoes }: PageHeaderProps) {
   return (
     <div className="flex items-center justify-between gap-4">
       <div className="flex items-center gap-3">
@@ -26,6 +28,7 @@ export function PageHeader({ title, onMenuClick, notificacoes }: PageHeaderProps
       </div>
 
       <div className="flex items-center gap-3">
+        {acoes && <div className="hidden sm:block">{acoes}</div>}
         <button
           type="button"
           className={ICON_BUTTON_CLASS}
