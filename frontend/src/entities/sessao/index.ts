@@ -1,6 +1,7 @@
 export type { Perfil, UsuarioSessao } from "./model/types";
 export {
   podeAcessar,
+  podeImportarVeiculos,
   podeVerAlertasUtilizacao,
   podeVerValoresMonetarios,
   rotaInicial,

@@ -1,4 +1,4 @@
-// src/features/enviar-relatorio/ui/MensagemFeedbackUpload.tsx
+// src/shared/ui/MensagemFeedbackUpload/MensagemFeedbackUpload.tsx
 import { useEffect, useState } from 'react';
 import { AlertCircle, CheckCircle2, X } from 'lucide-react';
 

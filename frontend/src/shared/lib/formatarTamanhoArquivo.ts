@@ -1,4 +1,4 @@
-// src/features/enviar-relatorio/lib/formatarTamanhoArquivo.ts
+// src/shared/lib/formatarTamanhoArquivo.ts
 
 // Transforma bytes em algo legível tipo "2.4 MB" pra mostrar no card do arquivo
 export function formatarTamanhoArquivo(bytes: number): string {

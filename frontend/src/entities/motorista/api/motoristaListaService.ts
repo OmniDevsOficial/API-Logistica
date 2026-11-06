@@ -1,4 +1,7 @@
 import { apiFetch } from "../../../shared/api/apiFetch.ts";
+import { formatTipoVeiculo } from "../../../shared/lib/format.ts";
+import { lerVeiculoResumo } from "../../veiculo/api/veiculoService.ts";
+import type { VeiculoResumo } from "../../veiculo/model/types.ts";
 import type { MotoristaEquipe, StatusEquipe } from "../model/types";
 
 const ENDPOINT = "/api/operacional/motoristas";
@@ -26,6 +29,18 @@ interface MotoristaResposta {
   ultimaOperacao: string | null;
   previsaoDisponibilidade: string | null;
   quantidadeViagens: number;
+  /** Modelo do veículo principal (ausente em versões antigas da API). */
+  modeloVeiculo?: string | null;
+  /** Veículos cadastrados, ativos primeiro; o primeiro é o principal. */
+  veiculos?: unknown[];
+}
+
+/** Itens fora do contrato são descartados para não derrubar a tela inteira. */
+function lerVeiculos(veiculos: unknown): VeiculoResumo[] {
+  if (!Array.isArray(veiculos)) return [];
+  return veiculos
+    .map(lerVeiculoResumo)
+    .filter((veiculo): veiculo is VeiculoResumo => veiculo !== null);
 }
 
 function ehMotoristaValida(item: unknown): item is MotoristaResposta {
@@ -76,13 +91,16 @@ function mapearOperacao(motorista: MotoristaResposta): {
 
 function mapearMotorista(motorista: MotoristaResposta): MotoristaEquipe {
   const { operacao, dataOperacao } = mapearOperacao(motorista);
+  const veiculos = lerVeiculos(motorista.veiculos);
 
   return {
     id: motorista.id,
     nome: motorista.nome,
     cpf: motorista.cpf ?? null,
-    veiculo: motorista.tipoVeiculo ?? "-",
+    veiculo: formatTipoVeiculo(motorista.tipoVeiculo) ?? "-",
     placa: motorista.placa ?? "-",
+    modelo: motorista.modeloVeiculo?.trim() || null,
+    outrosVeiculos: veiculos.slice(1),
     operacao,
     dataOperacao,
     localizacao: motorista.localizacao ?? "-",
