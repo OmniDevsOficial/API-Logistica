@@ -6,7 +6,9 @@ export {
   formatFrequencia,
   formatPercent,
   formatDateRange,
+  formatTipoVeiculo,
 } from "./format";
+export { formatarTamanhoArquivo } from "./formatarTamanhoArquivo";
 export {
   paginasVisiveis,
   totalDePaginas,
