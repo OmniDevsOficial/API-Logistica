@@ -12,18 +12,18 @@ interface Propriedades {
 
 const estilos = {
   erro: {
-    container: 'border-red-300 bg-red-50',
-    conteudo: 'text-red-700',
+    container: 'border-red-300 bg-red-50 dark:border-red-500/40 dark:bg-red-500/10',
+    conteudo: 'text-red-700 dark:text-red-400',
     barra: 'bg-red-600',
   },
   sucesso: {
-    container: 'border-green-300 bg-green-50',
-    conteudo: 'text-green-700',
+    container: 'border-green-300 bg-green-50 dark:border-green-500/40 dark:bg-green-500/10',
+    conteudo: 'text-green-700 dark:text-green-400',
     barra: 'bg-green-500',
   },
   aviso: {
-    container: 'border-amber-300 bg-amber-50',
-    conteudo: 'text-amber-800',
+    container: 'border-amber-300 bg-amber-50 dark:border-amber-500/40 dark:bg-amber-500/10',
+    conteudo: 'text-amber-800 dark:text-amber-300',
     barra: 'bg-amber-500',
   },
 } as const;
