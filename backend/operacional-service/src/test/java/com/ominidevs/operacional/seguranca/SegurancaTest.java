@@ -15,6 +15,7 @@ import com.ominidevs.operacional.dashboard.controllers.DashboardController;
 import com.ominidevs.operacional.dashboard.services.DashboardService;
 import com.ominidevs.operacional.motorista.controllers.MotoristaController;
 import com.ominidevs.operacional.motorista.services.MotoristaService;
+import com.ominidevs.operacional.motorista.services.RankingMotoristaService;
 import com.ominidevs.operacional.viagem.controllers.ViagemController;
 import com.ominidevs.operacional.viagem.services.ViagemService;
 import com.ominidevs.operacional.indicadores.services.UtilizacaoService;
@@ -50,6 +51,9 @@ class SegurancaTest {
 
     @MockitoBean
     private MotoristaService motoristaService;
+
+    @MockitoBean
+    private RankingMotoristaService rankingMotoristaService;
 
     @MockitoBean
     private UtilizacaoService utilizacaoService;
@@ -175,6 +179,27 @@ class SegurancaTest {
         mvc.perform(get("/motoristas/baixa-utilizacao")
                         .header(HttpHeaders.AUTHORIZATION, bearer(TokensDeTeste.valido("OPERADOR"))))
                 .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void gestorConsultaORanking() throws Exception {
+        mvc.perform(get("/motoristas/ranking").param("mes", "2026-09")
+                        .header(HttpHeaders.AUTHORIZATION, bearer(TokensDeTeste.valido("GESTOR"))))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    void operadorNaoConsultaORanking() throws Exception {
+        mvc.perform(get("/motoristas/ranking").param("mes", "2026-09")
+                        .header(HttpHeaders.AUTHORIZATION, bearer(TokensDeTeste.valido("OPERADOR"))))
+                .andExpect(status().isForbidden())
+                .andExpect(jsonPath("$.erro").value("Seu perfil não tem permissão para acessar este recurso."));
+    }
+
+    @Test
+    void semTokenNaoConsultaORanking() throws Exception {
+        mvc.perform(get("/motoristas/ranking"))
+                .andExpect(status().isUnauthorized());
     }
 
     @Test

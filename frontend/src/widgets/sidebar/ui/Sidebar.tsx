@@ -23,7 +23,7 @@ const MAIN_NAV_ITEMS: NavItem[] = [
   { label: "Motoristas", icon: User, path: "/motoristas" },
   { label: "Registros", icon: ClipboardList },
   { label: "Viagens", icon: Truck, path: "/viagens" },
-  { label: "Ranking", icon: Trophy },
+  { label: "Ranking", icon: Trophy, path: "/ranking" },
 ];
 
 const NAV_ITEM_BASE_CLASS =

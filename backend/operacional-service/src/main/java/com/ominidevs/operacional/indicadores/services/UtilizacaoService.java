@@ -1,7 +1,6 @@
 package com.ominidevs.operacional.indicadores.services;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.util.Comparator;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Value;
@@ -79,9 +78,7 @@ public class UtilizacaoService {
     }
 
     private BigDecimal calcularPorcentagem(long quantidade, long total) {
-        if (total == 0) return new BigDecimal("0.00");
-        // Arredondamento individual: a soma exibida pode ser 99,99% ou 100,01%.
-        return BigDecimal.valueOf(quantidade).multiply(BigDecimal.valueOf(100))
-                .divide(BigDecimal.valueOf(total), 2, RoundingMode.HALF_UP);
+        // Mesma fórmula da frequência do ranking, centralizada em Porcentagem.
+        return Porcentagem.calcular(quantidade, total);
     }
 }
