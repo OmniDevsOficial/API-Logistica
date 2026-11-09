@@ -36,26 +36,26 @@ function TabelaOcorrencias({
   tom: "erro" | "aviso";
 }) {
   if (ocorrencias.length === 0) return null;
-  const cor = tom === "erro" ? "text-red-700" : "text-amber-800";
+  const cor = tom === "erro" ? "text-red-700 dark:text-red-400" : "text-amber-800 dark:text-amber-300";
 
   return (
     <section className="flex flex-col gap-2">
       <h3 className={`m-0 text-sm font-semibold ${cor}`}>{titulo}</h3>
-      <div className="max-h-60 overflow-y-auto rounded-lg border border-gray-200">
+      <div className="max-h-60 overflow-y-auto rounded-lg border border-border">
         <table className="w-full border-collapse text-left text-sm">
-          <thead className="sticky top-0 bg-gray-50">
-            <tr className="text-xs text-gray-500">
+          <thead className="sticky top-0 bg-background">
+            <tr className="text-xs text-fg-muted">
               <th scope="col" className="w-16 px-3 py-2 font-semibold">Linha</th>
               <th scope="col" className="w-24 px-3 py-2 font-semibold">Placa</th>
               <th scope="col" className="px-3 py-2 font-semibold">{colunaMensagem}</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-gray-100">
+          <tbody className="divide-y divide-border">
             {ocorrencias.map((ocorrencia) => (
               <tr key={`${ocorrencia.linha}-${ocorrencia.mensagem}`}>
-                <td className="px-3 py-2 align-top text-gray-500">{ocorrencia.linha}</td>
-                <td className="px-3 py-2 align-top font-mono text-gray-700">{ocorrencia.placa ?? "—"}</td>
-                <td className="px-3 py-2 align-top text-gray-700">{ocorrencia.mensagem}</td>
+                <td className="px-3 py-2 align-top text-fg-muted">{ocorrencia.linha}</td>
+                <td className="px-3 py-2 align-top font-mono text-fg">{ocorrencia.placa ?? "—"}</td>
+                <td className="px-3 py-2 align-top text-fg">{ocorrencia.mensagem}</td>
               </tr>
             ))}
           </tbody>
@@ -75,7 +75,7 @@ function ResumoImportacao({ resultado }: { resultado: ResultadoImportacaoVeiculo
 
   return (
     <div className="flex flex-col gap-4" role="status" aria-live="polite">
-      <p className="m-0 text-sm text-gray-600">
+      <p className="m-0 text-sm text-fg-muted">
         {resultado.linhasComErro > 0
           ? "Importação concluída. As linhas rejeitadas abaixo não foram gravadas; as demais foram."
           : "Importação concluída. Todas as linhas foram gravadas."}
@@ -86,11 +86,11 @@ function ResumoImportacao({ resultado }: { resultado: ResultadoImportacaoVeiculo
           <div
             key={card.rotulo}
             className={`rounded-lg border px-3 py-2 ${
-              card.destaque ? "border-red-300 bg-red-50" : "border-gray-200"
+              card.destaque ? "border-red-300 bg-red-50 dark:border-red-500/40 dark:bg-red-500/10" : "border-border"
             }`}
           >
-            <dt className={`text-xs ${card.destaque ? "text-red-700" : "text-gray-500"}`}>{card.rotulo}</dt>
-            <dd className={`m-0 text-lg font-semibold ${card.destaque ? "text-red-700" : "text-gray-900"}`}>
+            <dt className={`text-xs ${card.destaque ? "text-red-700 dark:text-red-400" : "text-fg-muted"}`}>{card.rotulo}</dt>
+            <dd className={`m-0 text-lg font-semibold ${card.destaque ? "text-red-700 dark:text-red-400" : "text-fg"}`}>
               {card.valor}
             </dd>
           </div>

@@ -26,7 +26,7 @@ export function FiltrarViagensButton({
         onClick={() => setModalAberto(true)}
         className={
           buttonClassName ??
-          "inline-flex items-center gap-2 whitespace-nowrap rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-700 shadow-sm hover:bg-slate-50 hover:border-slate-400 transition-colors"
+          "inline-flex items-center gap-2 whitespace-nowrap rounded-lg border border-slate-300 bg-surface px-4 py-2 text-sm font-medium text-fg shadow-sm hover:bg-background hover:border-slate-400 transition-colors dark:border-border"
         }
       >
         <SlidersHorizontal className="h-4 w-4" />
