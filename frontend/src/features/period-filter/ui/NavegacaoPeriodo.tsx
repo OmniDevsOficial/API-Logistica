@@ -4,7 +4,7 @@ import type { PeriodOption } from "@entities/dashboard-metrics";
 import { SeletorPeriodo } from "./SeletorPeriodo";
 
 const DATE_RANGE_CLASS =
-  "relative flex items-center gap-2 whitespace-nowrap rounded-md bg-surface px-4 py-2.5 text-sm font-medium text-black";
+  "relative flex items-center gap-2 whitespace-nowrap rounded-md bg-surface px-4 py-2.5 text-sm font-medium text-fg";
 const NAV_BUTTON_CLASS =
   "flex shrink-0 cursor-pointer items-center text-fg-muted transition-colors duration-150 hover:text-fg disabled:cursor-not-allowed disabled:opacity-40";
 // Largura fixa para as setas não mudarem de lugar quando o texto muda de tamanho.

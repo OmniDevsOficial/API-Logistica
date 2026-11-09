@@ -26,7 +26,7 @@ interface ViagensTopbarProps {
 }
 
 const PILL_CLASS =
-  "flex items-center gap-2 whitespace-nowrap rounded-md bg-surface px-4 py-2.5 text-sm font-medium text-black";
+  "flex items-center gap-2 whitespace-nowrap rounded-md bg-surface px-4 py-2.5 text-sm font-medium text-fg";
 
 export function ViagensTopbar({
   search,

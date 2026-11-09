@@ -28,9 +28,9 @@ const MAIN_NAV_ITEMS: NavItem[] = [
 
 const NAV_ITEM_BASE_CLASS =
   "flex items-center gap-3 rounded-md px-3 py-[11px] text-sm font-medium";
-const NAV_ITEM_INACTIVE_CLASS = `${NAV_ITEM_BASE_CLASS} text-black`;
+const NAV_ITEM_INACTIVE_CLASS = `${NAV_ITEM_BASE_CLASS} text-fg`;
 const NAV_ITEM_ACTIVE_CLASS = `${NAV_ITEM_BASE_CLASS} bg-primary font-semibold text-white`;
-const NAV_ITEM_DISABLED_CLASS = `${NAV_ITEM_BASE_CLASS} cursor-default text-black`;
+const NAV_ITEM_DISABLED_CLASS = `${NAV_ITEM_BASE_CLASS} cursor-default text-fg`;
 
 interface SidebarProps {
   open: boolean;

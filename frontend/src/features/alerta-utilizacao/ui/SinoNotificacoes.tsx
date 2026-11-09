@@ -53,7 +53,7 @@ export function SinoNotificacoes() {
         aria-label={rotulo}
         aria-haspopup="dialog"
         aria-expanded={aberto}
-        className="relative flex h-10 w-10 shrink-0 cursor-pointer items-center justify-center rounded-full bg-surface text-black hover:text-fg"
+        className="relative flex h-10 w-10 shrink-0 cursor-pointer items-center justify-center rounded-full bg-surface text-fg hover:text-fg-muted"
       >
         <Bell size={18} />
         {total > 0 && (
