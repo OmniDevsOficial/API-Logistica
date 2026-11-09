@@ -1,7 +1,7 @@
 import type { Perfil } from "./types";
 
 const ROTAS_POR_PERFIL: Record<Perfil, readonly string[]> = {
-  GESTOR: ["/", "/motoristas", "/motoristas/utilizacao", "/viagens"],
+  GESTOR: ["/", "/motoristas", "/motoristas/utilizacao", "/viagens", "/ranking"],
   OPERADOR: ["/viagens", "/motoristas"],
 };
 

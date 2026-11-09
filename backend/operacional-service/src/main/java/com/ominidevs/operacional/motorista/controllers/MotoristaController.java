@@ -13,13 +13,16 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.ominidevs.operacional.indicadores.dto.UtilizacaoMotoristaResponse;
+import com.ominidevs.operacional.indicadores.exceptions.IndicadorInvalidoException;
 import com.ominidevs.operacional.indicadores.model.PeriodoConsulta;
 import com.ominidevs.operacional.indicadores.services.UtilizacaoService;
 import com.ominidevs.operacional.motorista.dto.MotoristaResumoResponse;
 import com.ominidevs.operacional.motorista.dto.MotoristaResponseDTO;
+import com.ominidevs.operacional.motorista.dto.RankingMotoristaResponse;
 import com.ominidevs.operacional.motorista.dto.StatusMotoristaRequest;
 import com.ominidevs.operacional.motorista.entities.StatusMotorista;
 import com.ominidevs.operacional.motorista.services.MotoristaService;
+import com.ominidevs.operacional.motorista.services.RankingMotoristaService;
 
 @CrossOrigin(origins = "http://localhost:5173")
 @RestController
@@ -28,10 +31,16 @@ public class MotoristaController {
 
     private final MotoristaService service;
     private final UtilizacaoService utilizacaoService;
+    private final RankingMotoristaService rankingService;
 
-    public MotoristaController(MotoristaService service, UtilizacaoService utilizacaoService) {
+    public MotoristaController(
+            MotoristaService service,
+            UtilizacaoService utilizacaoService,
+            RankingMotoristaService rankingService
+    ) {
         this.service = service;
         this.utilizacaoService = utilizacaoService;
+        this.rankingService = rankingService;
     }
 
     @GetMapping("/ping")
@@ -58,6 +67,26 @@ public class MotoristaController {
         return ResponseEntity.ok(utilizacaoService.listarBaixaUtilizacao(PeriodoConsulta.doMes(mes)));
     }
 
+    /**
+     * Ranking mensal de desempenho dos motoristas, restrito ao Gestor
+     * (GET /motoristas/** exige ROLE_GESTOR na SegurancaConfig).
+     *
+     * O período pode vir como {@code mes=AAAA-MM} ou como
+     * {@code dataInicio}/{@code dataFim} no formato dd/MM/aaaa (o formato que o
+     * front da tela de ranking envia). Sem parâmetro, usa o mês atual.
+     *
+     * Ex.: GET /motoristas/ranking?mes=2026-02
+     *      GET /motoristas/ranking?dataInicio=01/11/2026&dataFim=30/11/2026
+     */
+    @GetMapping("/ranking")
+    public ResponseEntity<List<RankingMotoristaResponse>> ranking(
+            @RequestParam(required = false) String mes,
+            @RequestParam(required = false) String dataInicio,
+            @RequestParam(required = false) String dataFim
+    ) {
+        return ResponseEntity.ok(rankingService.ranking(periodoRanking(mes, dataInicio, dataFim)));
+    }
+
     @PatchMapping("/{id}/status")
     public ResponseEntity<MotoristaResponseDTO> alterarStatus(
             @PathVariable Integer id,
@@ -70,5 +99,25 @@ public class MotoristaController {
 
     private StatusMotorista filtroStatus(String status) {
         return status == null || status.isBlank() ? null : StatusMotorista.parse(status);
+    }
+
+    private PeriodoConsulta periodoRanking(String mes, String dataInicio, String dataFim) {
+        boolean temDatas = presente(dataInicio) || presente(dataFim);
+
+        if (presente(mes)) {
+            if (temDatas) {
+                throw new IndicadorInvalidoException(
+                        "Informe mes ou dataInicio/dataFim, mas não os dois.");
+            }
+            return PeriodoConsulta.doMes(mes);
+        }
+
+        // Sem nenhum parâmetro, o mês atual (mesma regra de baixa-utilizacao).
+        return temDatas ? PeriodoConsulta.parse(dataInicio, dataFim)
+                : PeriodoConsulta.doMes((String) null);
+    }
+
+    private boolean presente(String valor) {
+        return valor != null && !valor.isBlank();
     }
 }
