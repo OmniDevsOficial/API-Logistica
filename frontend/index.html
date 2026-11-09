@@ -5,6 +5,18 @@
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Controle de Motoristas</title>
+    <script>
+      (function () {
+        var tema;
+        try {
+          tema = localStorage.getItem("tema");
+        } catch (erro) {}
+        if (tema !== "claro" && tema !== "escuro") {
+          tema = matchMedia("(prefers-color-scheme: dark)").matches ? "escuro" : "claro";
+        }
+        document.documentElement.dataset.tema = tema;
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>
