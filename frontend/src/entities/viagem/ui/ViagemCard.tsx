@@ -41,7 +41,7 @@ export function ViagemCard({ viagem }: ViagemCardProps) {
         {(["receita", "custo", "rentabilidade"] as const).map((campo) => (
           <div key={campo}>
             <span className="block text-xs text-fg-subtle">{campo === "rentabilidade" ? "Rentabilidade" : campo[0].toUpperCase() + campo.slice(1)}</span>
-            <span className={`text-sm font-semibold ${campo === "rentabilidade" && (viagem.rentabilidade ?? 0) < 0 ? "text-red-600" : "text-fg"}`}>
+            <span className={`text-sm font-semibold ${campo === "rentabilidade" && (viagem.rentabilidade ?? 0) < 0 ? "text-red-600 dark:text-red-400" : "text-fg"}`}>
               {valorMonetario(viagem[campo])}
             </span>
           </div>
