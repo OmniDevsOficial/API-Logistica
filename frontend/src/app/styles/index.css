@@ -1,5 +1,7 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where([data-tema="escuro"], [data-tema="escuro"] *));
+
 @theme {
   --color-background: #f3f4f6;
   --color-surface: #ffffff;
@@ -37,24 +39,19 @@
 
 :root {
   --color-shadow: rgba(17, 19, 24, 0.06);
-  color-scheme: light dark;
+  color-scheme: light;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --color-background: #101114;
-    --color-surface: #1a1b20;
-    --color-border: #2a2c33;
-    --color-primary: #5b74ff;
-    --color-primary-dark: #7c90ff;
-    --color-fg: #f3f4f6;
-    --color-fg-muted: #9ca3af;
-    --color-fg-subtle: #6b7280;
-    --color-success: #4ade80;
-    --color-grafico-forte: #3049ff;
-    --color-grafico-claro: #7384ff;
-    --color-shadow: rgba(0, 0, 0, 0.35);
-  }
+:root[data-tema="escuro"] {
+  --color-background: #101010;
+  --color-surface: #151515;
+  --color-border: #2c2c2c;
+  --color-fg: #ffffff;
+  --color-fg-muted: #b4b4b4;
+  --color-fg-subtle: #7c7c7c;
+  --color-success: #4ade80;
+  --color-shadow: rgba(0, 0, 0, 0.5);
+  color-scheme: dark;
 }
 
 @layer utilities {
