@@ -193,7 +193,7 @@ export function EquipeTabela({
                       <ValorMonetario
                         className={`whitespace-nowrap text-sm font-medium ${
                           rentabilidade != null && rentabilidade < 0
-                            ? "text-red-600"
+                            ? "text-red-600 dark:text-red-400"
                             : "text-fg"
                         }`}
                       >
