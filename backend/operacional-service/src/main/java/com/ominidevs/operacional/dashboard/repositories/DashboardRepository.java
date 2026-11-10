@@ -10,6 +10,7 @@ import com.ominidevs.operacional.dashboard.model.AgrupamentoSerie;
 import com.ominidevs.operacional.dashboard.projections.DestinoRentavel;
 import com.ominidevs.operacional.dashboard.projections.PontoRentabilidade;
 import com.ominidevs.operacional.dashboard.projections.PontoSerie;
+import com.ominidevs.operacional.dashboard.projections.RentabilidadeTipoVeiculo;
 import com.ominidevs.operacional.dashboard.projections.ResumoViagens;
 import com.ominidevs.operacional.dashboard.projections.ValoresFinanceirosViagem;
 import com.ominidevs.operacional.indicadores.model.PeriodoConsulta;
@@ -66,6 +67,24 @@ public class DashboardRepository {
             LIMIT 1
             """;
 
+    public static final String TIPO_NAO_IDENTIFICADO = "NAO_IDENTIFICADO";
+
+    private static final String SQL_RENTABILIDADE_POR_TIPO = """
+            SELECT tipo, viagens, receita, custo
+            FROM (
+                SELECT COALESCE(NULLIF(UPPER(TRIM(ve.tipo)), ''), '%1$s') AS tipo,
+                       COUNT(*) AS viagens,
+                       COALESCE(SUM(v.receita_frete), 0) AS receita,
+                       COALESCE(SUM(v.vale_frete), 0) AS custo
+                FROM operacional.viagem v
+                LEFT JOIN operacional.veiculo ve
+                       ON ve.placa = UPPER(regexp_replace(v.veiculo, '[[:space:]-]', '', 'g'))
+                WHERE v.data >= ? AND v.data < ?
+                GROUP BY 1
+            ) por_tipo
+            ORDER BY tipo = '%1$s', receita - custo DESC, tipo
+            """.formatted(TIPO_NAO_IDENTIFICADO);
+
     private final JdbcTemplate jdbc;
 
     public DashboardRepository(JdbcTemplate jdbc) {
@@ -116,6 +135,14 @@ public class DashboardRepository {
                         rs.getString("destino"), rs.getLong("viagens"), rs.getBigDecimal("rentabilidade_total")),
                 Date.valueOf(periodo.inicio()), Date.valueOf(periodo.fim()))
                 .stream().findFirst().orElse(null);
+    }
+
+    public List<RentabilidadeTipoVeiculo> consultarRentabilidadePorTipo(PeriodoConsulta periodo) {
+        return jdbc.query(SQL_RENTABILIDADE_POR_TIPO,
+                (rs, row) -> new RentabilidadeTipoVeiculo(
+                        rs.getString("tipo"), rs.getLong("viagens"),
+                        rs.getBigDecimal("receita"), rs.getBigDecimal("custo")),
+                Date.valueOf(periodo.inicio()), Date.valueOf(periodo.fim().plusDays(1)));
     }
 
     private org.springframework.jdbc.core.RowMapper<PontoSerie> pontoSerie() {
