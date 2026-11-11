@@ -3,7 +3,10 @@ import { buscarAlertasUtilizacao } from "@entities/motorista";
 import type { AlertaUtilizacao } from "@entities/motorista";
 import { podeVerAlertasUtilizacao, useSessao } from "@entities/sessao";
 
-export function useAlertasUtilizacao(): AlertaUtilizacao[] {
+export function useAlertasUtilizacao(
+  dataInicio?: string,
+  dataFim?: string,
+): AlertaUtilizacao[] {
   const { usuario } = useSessao();
   const habilitado =
     usuario !== null && podeVerAlertasUtilizacao(usuario.perfil);
@@ -31,14 +34,14 @@ export function useAlertasUtilizacao(): AlertaUtilizacao[] {
 
     const controller = new AbortController();
 
-    buscarAlertasUtilizacao(controller.signal)
+    buscarAlertasUtilizacao(controller.signal, dataInicio, dataFim)
       .then(setAlertas)
       .catch(() => {
         if (!controller.signal.aborted) setAlertas([]);
       });
 
     return () => controller.abort();
-  }, [habilitado, atualizacao]);
+  }, [habilitado, atualizacao, dataInicio, dataFim]);
 
   return habilitado ? alertas : [];
 }

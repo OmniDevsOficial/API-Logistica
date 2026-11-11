@@ -21,8 +21,8 @@ interface FrequenciaMotorista {
 }
 
 /**
- * Frequência vem do indicador de utilização (participação nas viagens),
- * consultado nos últimos 12 meses para não zerar a tela.
+ * Frequência vem do indicador de utilização, consultado no mês corrente para
+ * manter o mesmo percentual exibido nos alertas de baixa utilização.
  * A falha dessa chamada não derruba a tela: os motoristas ficam sem percentual.
  */
 async function carregarFrequencias(
