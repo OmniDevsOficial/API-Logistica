@@ -96,6 +96,7 @@ public class ViagemService {
                 existente.setReceitaFrete(viagem.getReceitaFrete());
                 existente.setCustoFrete(viagem.getCustoFrete());
                 existente.setPedagio(viagem.getPedagio());
+                existente.setValeFrete(viagem.getValeFrete());
                 existente.setValorFrete(viagem.getValorFrete());
                 atualizadas.add(existente);
             }
@@ -154,8 +155,8 @@ public class ViagemService {
                 .orElseThrow(() -> new java.util.NoSuchElementException("Viagem não encontrada: " + manifesto));
         return new RentabilidadeViagemResponse(viagem.getManifesto(), viagem.getMotorista(),
                 viagem.getCidadeOrigem(), viagem.getCidadeDestino(), viagem.getReceitaFrete(),
-                viagem.getCustoFrete(), viagem.getPedagio(),
-                RentabilidadeService.calcular(viagem.getReceitaFrete(), viagem.getCustoFrete(), viagem.getPedagio()));
+                viagem.getValeFrete(),
+                RentabilidadeService.calcular(viagem.getReceitaFrete(), viagem.getValeFrete()));
     }
 
     public List<RentabilidadeMotoristaResponse> rentabilidadeMediaPorMotorista(LocalDate inicio, LocalDate fim) {

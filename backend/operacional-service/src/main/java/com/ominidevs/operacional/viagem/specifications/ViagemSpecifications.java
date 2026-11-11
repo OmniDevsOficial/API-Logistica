@@ -40,14 +40,14 @@ public final class ViagemSpecifications {
         if (freteMin == null) {
             return (root, query, cb) -> cb.conjunction();
         }
-        return (root, query, cb) -> cb.greaterThanOrEqualTo(root.get("valorFrete"), freteMin);
+        return (root, query, cb) -> cb.greaterThanOrEqualTo(root.get("receitaFrete"), freteMin);
     }
 
     public static Specification<Viagem> freteMaximo(BigDecimal freteMax) {
         if (freteMax == null) {
             return (root, query, cb) -> cb.conjunction();
         }
-        return (root, query, cb) -> cb.lessThanOrEqualTo(root.get("valorFrete"), freteMax);
+        return (root, query, cb) -> cb.lessThanOrEqualTo(root.get("receitaFrete"), freteMax);
     }
 
     public static Specification<Viagem> dataNoMes(LocalDate inicioMes, LocalDate fimMes) {

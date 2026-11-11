@@ -88,11 +88,14 @@ test('agrega os KPIs do resumo com a lista mapeada para o modelo da tela', async
       cpf: '00123456789',
       veiculo: 'Van',
       placa: 'RTA4F21',
+      modelo: null,
+      outrosVeiculos: [],
       operacao: 'Previsão de disponibilidade',
       dataOperacao: '12/10/2026',
       localizacao: 'Campinas/SP',
       viagens: 18,
       frequencia: 90,
+      baixaFrequencia: false,
       status: 'em_viagem',
     },
     {
@@ -101,13 +104,40 @@ test('agrega os KPIs do resumo com a lista mapeada para o modelo da tela', async
       cpf: '11122233344',
       veiculo: '-',
       placa: '-',
+      modelo: null,
+      outrosVeiculos: [],
       operacao: '-',
       dataOperacao: '-',
       localizacao: '-',
       viagens: 0,
       frequencia: 0,
+      baixaFrequencia: false,
       status: 'disponivel',
     },
+  ]);
+});
+
+test('veículo principal traz modelo e tipo formatado; os demais ficam em outrosVeiculos', async () => {
+  const comFrota = [{
+    ...LISTA[0],
+    tipoVeiculo: 'CAVALO MECÂNICO',
+    placa: 'AAJ3354',
+    modeloVeiculo: '1114',
+    veiculos: [
+      { placa: 'AAJ3354', tipo: 'CAVALO MECÂNICO', modelo: '1114', ativo: true },
+      { placa: 'AAJ3355', tipo: 'SEMI-REBOQUE COM 2 EIXOS', modelo: 'SR', ativo: true },
+      { tipo: 'item fora do contrato é ignorado' },
+    ],
+  }];
+  globalThis.fetch = responder(RESUMO, comFrota);
+
+  const [motorista] = (await buscarEquipeMotoristas()).motoristas;
+
+  assert.equal(motorista.veiculo, 'Cavalo mecânico');
+  assert.equal(motorista.placa, 'AAJ3354');
+  assert.equal(motorista.modelo, '1114');
+  assert.deepEqual(motorista.outrosVeiculos, [
+    { placa: 'AAJ3355', tipo: 'SEMI-REBOQUE COM 2 EIXOS', modelo: 'SR', ativo: true },
   ]);
 });
 
@@ -217,4 +247,21 @@ test('indicador de utilização indisponível deixa a frequência sem valor', as
   const dados = await buscarEquipeMotoristas();
 
   assert.deepEqual(dados.motoristas.map((motorista) => motorista.frequencia), [null, null]);
+});
+
+test('frequência abaixo do limite do back chega marcada para destaque', async () => {
+  const comAlerta = {
+    motoristas: UTILIZACAO.motoristas.map((motorista) => ({
+      ...motorista,
+      baixaUtilizacao: motorista.motoristaId === 8,
+    })),
+  };
+  globalThis.fetch = responder(RESUMO, LISTA, comAlerta);
+
+  const dados = await buscarEquipeMotoristas();
+
+  assert.deepEqual(
+    dados.motoristas.map((motorista) => motorista.baixaFrequencia),
+    [false, true],
+  );
 });

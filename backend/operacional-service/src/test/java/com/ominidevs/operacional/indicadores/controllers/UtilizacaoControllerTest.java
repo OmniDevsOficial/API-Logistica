@@ -1,5 +1,6 @@
 package com.ominidevs.operacional.indicadores.controllers;
 
+import java.math.BigDecimal;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -22,7 +23,7 @@ class UtilizacaoControllerTest {
     private MockMvc mvc;
 
     @BeforeEach void configurar() {
-        mvc = MockMvcBuilders.standaloneSetup(new UtilizacaoController(new UtilizacaoService(repo)))
+        mvc = MockMvcBuilders.standaloneSetup(new UtilizacaoController(new UtilizacaoService(repo, new BigDecimal("30"))))
                 .setControllerAdvice(new IndicadorExceptionHandler()).build();
     }
 
@@ -37,7 +38,8 @@ class UtilizacaoControllerTest {
                 .andExpect(jsonPath("$.ordenacao").value("desc"))
                 .andExpect(jsonPath("$.totalViagens").value(2))
                 .andExpect(jsonPath("$.motoristas[0].porcentagem").value(100))
-                .andExpect(jsonPath("$.motoristas[0].motoristaId").value(1));
+                .andExpect(jsonPath("$.motoristas[0].motoristaId").value(1))
+                .andExpect(jsonPath("$.motoristas[0].baixaUtilizacao").value(false));
     }
 
     @Test void aceitaCrescente() throws Exception {

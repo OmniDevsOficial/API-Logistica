@@ -1,7 +1,13 @@
 import { AlertCircle } from "lucide-react";
 import type { MotoristaEquipe, StatusEquipe } from "@entities/motorista";
 import { StatusMotoristaBadge } from "@entities/motorista/ui/StatusMotoristaBadge";
-import { formatCpf, formatDateOrToday } from "@shared/lib";
+import type { VeiculoResumo } from "@entities/veiculo";
+import {
+  formatCpf,
+  formatDateOrToday,
+  formatFrequencia,
+  formatTipoVeiculo,
+} from "@shared/lib";
 import { ValorMonetario } from "@entities/sessao";
 
 interface EquipeTabelaProps {
@@ -22,25 +28,59 @@ const FORMATADOR_MOEDA = new Intl.NumberFormat("pt-BR", {
 });
 
 /** Frequência é a participação nas viagens: 0% significa motorista sem viagem no período. */
-function Frequencia({ valor }: { valor: number | null }) {
+function Frequencia({ valor, baixa }: { valor: number | null; baixa: boolean }) {
   if (valor === null) {
     return <span className="text-sm text-fg-subtle">—</span>;
   }
 
-  const semViagens = valor === 0;
-
   return (
     <span
       className={`inline-flex items-center gap-1 text-sm ${
-        semViagens ? "font-medium text-red-500" : "text-fg"
+        baixa ? "font-medium text-red-500" : "text-fg"
       }`}
-      title={semViagens ? "Sem viagens no período" : undefined}
+      title={baixa ? "Baixa utilização" : undefined}
     >
-      {valor.toLocaleString("pt-BR", { maximumFractionDigits: 1 })}%
-      {semViagens && (
-        <AlertCircle size={14} aria-label="Sem viagens no período" />
-      )}
+      {formatFrequencia(valor)}
+      {baixa && <AlertCircle size={14} aria-label="Baixa utilização" />}
     </span>
+  );
+}
+
+function descreverVeiculo(veiculo: VeiculoResumo): string {
+  return [veiculo.placa, veiculo.modelo, formatTipoVeiculo(veiculo.tipo)]
+    .filter(Boolean)
+    .join(" · ");
+}
+
+/**
+ * Veículo principal (modelo · tipo e placa). Os demais veículos do motorista
+ * ficam no selo "+N", com a lista completa no tooltip.
+ */
+function VeiculoCelula({ motorista }: { motorista: MotoristaEquipe }) {
+  const titulo = [motorista.modelo, motorista.veiculo !== "-" ? motorista.veiculo : null]
+    .filter(Boolean)
+    .join(" · ");
+  const outros = motorista.outrosVeiculos;
+  const listaOutros = outros.map(descreverVeiculo).join("\n");
+
+  return (
+    <div className="flex flex-col">
+      <span className="flex items-center gap-1.5 text-sm text-fg">
+        <span className="min-w-0 truncate" title={titulo || undefined}>
+          {titulo || "-"}
+        </span>
+        {outros.length > 0 && (
+          <span
+            className="shrink-0 cursor-default rounded-full bg-border px-1.5 text-xs font-medium text-fg-muted"
+            title={listaOutros}
+            aria-label={`Mais ${outros.length} ${outros.length === 1 ? "veículo" : "veículos"}: ${listaOutros.replaceAll("\n", "; ")}`}
+          >
+            +{outros.length}
+          </span>
+        )}
+      </span>
+      <span className="text-xs text-fg-muted">{motorista.placa}</span>
+    </div>
   );
 }
 
@@ -66,12 +106,13 @@ export function EquipeTabela({
           <table className="w-full min-w-[1100px] table-fixed">
             <colgroup>
               <col className="w-[15%]" />
-              <col className="w-[11%]" />
-              <col className="w-[15%]" />
+              {/* Veículo/Placa ganhou espaço para modelo · tipo e o selo "+N". */}
+              <col className="w-[14%]" />
+              <col className="w-[13%]" />
               <col className="w-[12%]" />
               <col className="w-[7%]" />
               <col className="w-[10%]" />
-              <col className="w-[15%]" />
+              <col className="w-[14%]" />
               <col className="w-[15%]" />
             </colgroup>
             <thead>
@@ -108,16 +149,9 @@ export function EquipeTabela({
                       </div>
                     </td>
 
-                    {/* Veículo/Placa */}
+                    {/* Veículo/Placa — modelo · tipo do principal, placa abaixo */}
                     <td className={CELL}>
-                      <div className="flex flex-col">
-                        <span className="text-sm text-fg">
-                          {motorista.veiculo}
-                        </span>
-                        <span className="text-xs text-fg-muted">
-                          {motorista.placa}
-                        </span>
-                      </div>
+                      <VeiculoCelula motorista={motorista} />
                     </td>
 
                     {/* Operação — label discreto + data em destaque */}
@@ -148,7 +182,10 @@ export function EquipeTabela({
 
                     {/* Frequência */}
                     <td className={CELL}>
-                      <Frequencia valor={motorista.frequencia} />
+                      <Frequencia
+                        valor={motorista.frequencia}
+                        baixa={motorista.baixaFrequencia}
+                      />
                     </td>
 
                     {/* Rentabilidade média — borrada para o operador */}
@@ -156,7 +193,7 @@ export function EquipeTabela({
                       <ValorMonetario
                         className={`whitespace-nowrap text-sm font-medium ${
                           rentabilidade != null && rentabilidade < 0
-                            ? "text-red-600"
+                            ? "text-red-600 dark:text-red-400"
                             : "text-fg"
                         }`}
                       >

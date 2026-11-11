@@ -242,7 +242,7 @@ class ViagemControllerTest {
                 .andExpect(jsonPath("$[0].id").exists())
                 .andExpect(jsonPath("$[0].origem").value("São Paulo"))      // getCidadeOrigem()
                 .andExpect(jsonPath("$[0].destino").value("Rio de Janeiro")) // getCidadeDestino()
-                .andExpect(jsonPath("$[0].freteEstimado").value(1500.50))
+                .andExpect(jsonPath("$[0].freteEstimado").doesNotExist())
                 .andExpect(jsonPath("$[0].veiculo").value("ABC1D23"))
                 .andExpect(jsonPath("$[0].distanciaKm").value(100))         // kmChegada - kmSaida = 1100 - 1000
                 .andExpect(jsonPath("$[0].estimativaDias").value(2))
@@ -252,8 +252,28 @@ class ViagemControllerTest {
     }
 
     @Test
-    @DisplayName("GET viagens envia receita, custo (frete + pedágio) e rentabilidade de cada viagem")
+    @DisplayName("GET viagens envia receita, custo (Vale frete) e rentabilidade de cada viagem")
     void deveRetornarValoresFinanceiros() throws Exception {
+
+        Viagem viagem = criarViagem();
+        viagem.setReceitaFrete(new BigDecimal("2000.00"));
+        viagem.setCustoFrete(new BigDecimal("1200.00"));
+        viagem.setPedagio(new BigDecimal("50.00"));
+        viagem.setValeFrete(new BigDecimal("1670.00"));
+        when(viagemService.filtrar(isNull(), isNull(), isNull(), isNull(), isNull()))
+                .thenReturn(List.of(viagem));
+
+        mockMvc.perform(get("/viagens"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].freteEstimado").value(2000.00))
+                .andExpect(jsonPath("$[0].receita").value(2000.00))
+                .andExpect(jsonPath("$[0].custo").value(1670.00))
+                .andExpect(jsonPath("$[0].rentabilidade").value(330.00));
+    }
+
+    @Test
+    @DisplayName("GET viagens sem Vale frete deixa custo e rentabilidade nulos")
+    void semValeFreteCustoERentabilidadeFicamNulos() throws Exception {
 
         Viagem viagem = criarViagem();
         viagem.setReceitaFrete(new BigDecimal("2000.00"));
@@ -265,23 +285,7 @@ class ViagemControllerTest {
         mockMvc.perform(get("/viagens"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].receita").value(2000.00))
-                .andExpect(jsonPath("$[0].custo").value(1250.00))
-                .andExpect(jsonPath("$[0].rentabilidade").value(750.00));
-    }
-
-    @Test
-    @DisplayName("GET viagens sem pedágio mostra o custo do frete e rentabilidade nula")
-    void semPedagioCustoEhOFreteERentabilidadeNula() throws Exception {
-
-        Viagem viagem = criarViagem();
-        viagem.setReceitaFrete(new BigDecimal("2000.00"));
-        viagem.setCustoFrete(new BigDecimal("1200.00"));
-        when(viagemService.filtrar(isNull(), isNull(), isNull(), isNull(), isNull()))
-                .thenReturn(List.of(viagem));
-
-        mockMvc.perform(get("/viagens"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].custo").value(1200.00))
+                .andExpect(jsonPath("$[0].custo").doesNotExist())
                 .andExpect(jsonPath("$[0].rentabilidade").doesNotExist());
     }
 

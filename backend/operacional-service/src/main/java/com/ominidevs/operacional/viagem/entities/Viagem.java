@@ -59,6 +59,9 @@ public class Viagem {
     @Column(name = "pedagio", precision = 12, scale = 2)
     private BigDecimal pedagio;
 
+    @Column(name = "vale_frete", precision = 12, scale = 2)
+    private BigDecimal valeFrete;
+
     @Column(name = "km_saida")
     private Integer kmSaida;
 
@@ -214,6 +217,14 @@ public class Viagem {
 
     public void setPedagio(BigDecimal pedagio) {
         this.pedagio = pedagio;
+    }
+
+    public BigDecimal getValeFrete() {
+        return valeFrete;
+    }
+
+    public void setValeFrete(BigDecimal valeFrete) {
+        this.valeFrete = valeFrete;
     }
 
     public Integer getKmSaida() {

@@ -4,13 +4,13 @@ export interface Viagem {
   data: string;
   origem: string | null;
   destino: string | null;
-  freteEstimado: number;
+  freteEstimado: number | null;
   veiculo: string;
   distanciaKm: number;
   estimativaDias: number;
   status: StatusViagem;
   receita: number | null;
-  /** Frete + pedágio. */
+  /** Vale frete. */
   custo: number | null;
   rentabilidade: number | null;
 }

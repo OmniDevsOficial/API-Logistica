@@ -153,6 +153,7 @@ class ImportacaoManifestoTest {
                 "São Paulo", "Campinas", "800,00", "100", "250", "Finalizado", "Teste");
         entrada.setValorFretes("1.200,00");
         entrada.setPedagio("35,50");
+        entrada.setValeFrete("835,50");
         when(client.enviar(file)).thenReturn(List.of(entrada));
         var existente = new Viagem("M1", LocalDate.of(2026, 10, 1), "Motorista Teste", "00123456789", "ABC1D23",
                 "São Paulo", "Campinas", new BigDecimal("1500.50"), 100, 250, StatusViagem.FINALIZADO, "Teste", null);
@@ -165,6 +166,7 @@ class ImportacaoManifestoTest {
         assertEquals(new BigDecimal("800.00"), resultado.viagensImportadas().get(0).getCustoFrete());
         assertEquals(new BigDecimal("1200.00"), resultado.viagensImportadas().get(0).getReceitaFrete());
         assertEquals(new BigDecimal("35.50"), resultado.viagensImportadas().get(0).getPedagio());
+        assertEquals(new BigDecimal("835.50"), resultado.viagensImportadas().get(0).getValeFrete());
     }
 
     @ParameterizedTest

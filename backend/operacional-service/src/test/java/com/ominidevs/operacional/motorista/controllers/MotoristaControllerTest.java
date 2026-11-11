@@ -13,7 +13,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.YearMonth;
 import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -25,16 +27,23 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
+import com.ominidevs.operacional.indicadores.dto.UtilizacaoMotoristaResponse;
+import com.ominidevs.operacional.indicadores.model.PeriodoConsulta;
+import com.ominidevs.operacional.indicadores.services.UtilizacaoService;
 import com.ominidevs.operacional.motorista.dto.MotoristaResumoResponse;
 import com.ominidevs.operacional.motorista.dto.MotoristaResponseDTO;
+import com.ominidevs.operacional.motorista.dto.RankingMotoristaResponse;
 import com.ominidevs.operacional.motorista.entities.StatusMotorista;
 import com.ominidevs.operacional.motorista.exceptions.MotoristaExceptionHandler;
 import com.ominidevs.operacional.motorista.exceptions.MotoristaNaoEncontradoException;
 import com.ominidevs.operacional.motorista.services.MotoristaService;
+import com.ominidevs.operacional.motorista.services.RankingMotoristaService;
 
 class MotoristaControllerTest {
 
     private final MotoristaService service = mock(MotoristaService.class);
+    private final UtilizacaoService utilizacaoService = mock(UtilizacaoService.class);
+    private final RankingMotoristaService rankingService = mock(RankingMotoristaService.class);
     private MockMvc mvc;
 
     private MotoristaResponseDTO motorista(StatusMotorista status) {
@@ -45,7 +54,8 @@ class MotoristaControllerTest {
 
     @BeforeEach
     void configurar() {
-        mvc = MockMvcBuilders.standaloneSetup(new MotoristaController(service))
+        mvc = MockMvcBuilders.standaloneSetup(
+                        new MotoristaController(service, utilizacaoService, rankingService))
                 .setControllerAdvice(new MotoristaExceptionHandler())
                 .build();
     }
@@ -177,5 +187,171 @@ class MotoristaControllerTest {
                 .andExpect(jsonPath("$.emOperacao").value(1))
                 .andExpect(jsonPath("$.indisponiveis").value(0))
                 .andExpect(jsonPath("$.total").value(3));
+    }
+
+    private UtilizacaoMotoristaResponse baixaUtilizacao(String nome, String porcentagem) {
+        return new UtilizacaoMotoristaResponse("00123456789", 1, nome, 1,
+                new BigDecimal(porcentagem), "COM_VIAGENS", true);
+    }
+
+    @Test
+    @DisplayName("GET /motoristas/baixa-utilizacao retorna os motoristas abaixo do limite no mês informado")
+    void deveListarMotoristasComBaixaUtilizacaoNoMes() throws Exception {
+        when(utilizacaoService.listarBaixaUtilizacao(any()))
+                .thenReturn(List.of(baixaUtilizacao("Ana", "12.50")));
+
+        mvc.perform(get("/motoristas/baixa-utilizacao").param("mes", "2026-09"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].nome").value("Ana"))
+                .andExpect(jsonPath("$[0].porcentagem").value(12.5))
+                .andExpect(jsonPath("$[0].baixaUtilizacao").value(true));
+
+        verify(utilizacaoService).listarBaixaUtilizacao(
+                new PeriodoConsulta(LocalDate.of(2026, 9, 1), LocalDate.of(2026, 9, 30)));
+    }
+
+    @Test
+    @DisplayName("GET /motoristas/baixa-utilizacao sem mês usa o mês atual")
+    void deveUsarMesAtualQuandoMesNaoInformado() throws Exception {
+        when(utilizacaoService.listarBaixaUtilizacao(any())).thenReturn(List.of());
+        YearMonth atual = YearMonth.now();
+
+        mvc.perform(get("/motoristas/baixa-utilizacao"))
+                .andExpect(status().isOk());
+
+        verify(utilizacaoService).listarBaixaUtilizacao(
+                new PeriodoConsulta(atual.atDay(1), atual.atEndOfMonth()));
+    }
+
+    @Test
+    @DisplayName("GET /motoristas/baixa-utilizacao retorna 200 com lista vazia quando ninguém está abaixo do limite")
+    void deveRetornarListaVaziaSemAlertas() throws Exception {
+        when(utilizacaoService.listarBaixaUtilizacao(any())).thenReturn(List.of());
+
+        mvc.perform(get("/motoristas/baixa-utilizacao").param("mes", "2026-09"))
+                .andExpect(status().isOk())
+                .andExpect(content().json("[]"));
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"2026-13", "09/2026", "2026-9", "abc"})
+    @DisplayName("GET /motoristas/baixa-utilizacao retorna 400 para mês em formato inválido")
+    void deveRetornar400ParaMesInvalido(String mes) throws Exception {
+        mvc.perform(get("/motoristas/baixa-utilizacao").param("mes", mes))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.erro").value("Informe o mês no formato AAAA-MM."));
+
+        verifyNoInteractions(utilizacaoService);
+    }
+
+    private RankingMotoristaResponse itemRanking() {
+        return new RankingMotoristaResponse(1, 7, "Ana", "00123456789", null, "Truck", "ABC1D23",
+                7, 5, new BigDecimal("25.00"), new BigDecimal("333.33"),
+                new BigDecimal("1000.00"), new BigDecimal("1500.00"), new BigDecimal("500.00"));
+    }
+
+    @Test
+    @DisplayName("GET /motoristas/ranking calcula o ranking do mês informado")
+    void deveCalcularRankingDoMesInformado() throws Exception {
+        when(rankingService.ranking(any())).thenReturn(List.of(itemRanking()));
+
+        mvc.perform(get("/motoristas/ranking").param("mes", "2026-02"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].posicao").value(1))
+                .andExpect(jsonPath("$[0].nome").value("Ana"))
+                .andExpect(jsonPath("$[0].cpf").value("00123456789"))
+                .andExpect(jsonPath("$[0].rentabilidadeMedia").value(333.33))
+                .andExpect(jsonPath("$[0].rentabilidadeTotal").value(1000.00))
+                .andExpect(jsonPath("$[0].quantidadeViagens").value(5))
+                .andExpect(jsonPath("$[0].viagens").value(7))
+                .andExpect(jsonPath("$[0].frequencia").value(25.00));
+
+        verify(rankingService).ranking(
+                new PeriodoConsulta(LocalDate.of(2026, 2, 1), LocalDate.of(2026, 2, 28)));
+    }
+
+    @Test
+    @DisplayName("GET /motoristas/ranking aceita dataInicio/dataFim em dd/MM/aaaa (formato do front)")
+    void deveAceitarDataInicioEDataFim() throws Exception {
+        when(rankingService.ranking(any())).thenReturn(List.of());
+
+        mvc.perform(get("/motoristas/ranking")
+                        .param("dataInicio", "01/11/2026")
+                        .param("dataFim", "30/11/2026"))
+                .andExpect(status().isOk())
+                .andExpect(content().json("[]"));
+
+        verify(rankingService).ranking(
+                new PeriodoConsulta(LocalDate.of(2026, 11, 1), LocalDate.of(2026, 11, 30)));
+    }
+
+    @Test
+    @DisplayName("GET /motoristas/ranking sem parâmetro usa o mês atual")
+    void deveUsarMesAtualSemParametros() throws Exception {
+        when(rankingService.ranking(any())).thenReturn(List.of());
+        YearMonth atual = YearMonth.now();
+
+        mvc.perform(get("/motoristas/ranking"))
+                .andExpect(status().isOk());
+
+        verify(rankingService).ranking(
+                new PeriodoConsulta(atual.atDay(1), atual.atEndOfMonth()));
+    }
+
+    @Test
+    @DisplayName("GET /motoristas/ranking retorna 200 com lista vazia quando o mês não tem viagens")
+    void deveRetornarListaVaziaQuandoMesSemViagens() throws Exception {
+        when(rankingService.ranking(any())).thenReturn(List.of());
+
+        mvc.perform(get("/motoristas/ranking").param("mes", "2026-12"))
+                .andExpect(status().isOk())
+                .andExpect(content().json("[]"));
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"2026-13", "09/2026", "2026-9", "abc"})
+    @DisplayName("GET /motoristas/ranking retorna 400 para mês em formato inválido")
+    void deveRetornar400ParaMesDeRankingInvalido(String mes) throws Exception {
+        mvc.perform(get("/motoristas/ranking").param("mes", mes))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.erro").value("Informe o mês no formato AAAA-MM."));
+
+        verifyNoInteractions(rankingService);
+    }
+
+    @Test
+    @DisplayName("GET /motoristas/ranking retorna 400 quando informa mês e datas juntos")
+    void deveRejeitarMesEDatasJuntos() throws Exception {
+        mvc.perform(get("/motoristas/ranking")
+                        .param("mes", "2026-02")
+                        .param("dataInicio", "01/02/2026")
+                        .param("dataFim", "28/02/2026"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.erro").isNotEmpty());
+
+        verifyNoInteractions(rankingService);
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"31/02/2026", "2026-02-01", "abc"})
+    @DisplayName("GET /motoristas/ranking retorna 400 para data em formato inválido")
+    void deveRetornar400ParaDataInvalida(String dataInicio) throws Exception {
+        mvc.perform(get("/motoristas/ranking")
+                        .param("dataInicio", dataInicio)
+                        .param("dataFim", "28/02/2026"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.erro").value("Informe datas válidas no formato dd/MM/aaaa."));
+
+        verifyNoInteractions(rankingService);
+    }
+
+    @Test
+    @DisplayName("GET /motoristas/ranking retorna 400 quando falta dataFim")
+    void deveRejeitarPeriodoSemDataFinal() throws Exception {
+        mvc.perform(get("/motoristas/ranking").param("dataInicio", "01/02/2026"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.erro").isNotEmpty());
+
+        verifyNoInteractions(rankingService);
     }
 }

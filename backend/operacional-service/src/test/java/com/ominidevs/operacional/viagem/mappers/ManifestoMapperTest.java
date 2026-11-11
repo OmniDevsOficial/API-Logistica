@@ -304,6 +304,15 @@ class ManifestoMapperTest {
         var viagem = mapper.toEntity(manifesto);
         assertEquals(new BigDecimal("2715.57"), viagem.getReceitaFrete());
         assertNull(viagem.getPedagio());
+        assertNull(viagem.getValeFrete());
+    }
+
+    @Test
+    void mapeiaValeFreteComoValorMonetario() {
+        ManifestoDTO manifesto = new ManifestoDTO("MAN-001", "20/09/2026", "João", "123", "ABC1D23",
+                "São Paulo", "Santos", "2.129,70", "", "", "Pendente", null);
+        manifesto.setValeFrete("2.715,57");
+        assertEquals(new BigDecimal("2715.57"), mapper.toEntity(manifesto).getValeFrete());
     }
 
     @Test

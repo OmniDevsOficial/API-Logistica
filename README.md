@@ -3,13 +3,22 @@
   <img src="https://i.imgur.com/VbBN3Tk.jpeg" width="170x" height="170x" style="border-radius:20%;">
 </p>
 <div align="center">
-  <strong>OMNIDEVS LOG</strong><br>
+  <strong>OMNIDEVS</strong><br>
   Sistema para consumir dados e visualizar informações, proporcionando uma análise objetiva e apoiando a tomada de decisões.
 </div>
 <div align="center">
-                                                                                                                                                                                                                               
-
-<a href="#problema">Problema</a> • <a href="#solucao">Solução</a> • <a href="#backlog">Backlog</a> • <a href="#cronograma">Cronograma de Sprints</a> • <a href="#definition-of-ready-dor">DoR</a> • <a href="#definition-of-done-dod">DoD</a> • <a href="#tecnologias">Tecnologias</a> • <a href="#estrutura-do-projeto">Estrutura do projeto</a> • <a href="#fluxo-de-trabalho">Fluxo de Trabalho</a> • <a href="#manual-de-instalacao">Manual de instalação</a> • <a href="#equipe">Equipe</a>
+<a 
+href="#problema">Problema</a> • <a 
+href="#solucao">Solução</a> • <a 
+href="#backlog">Backlog</a> • <a 
+href="#cronograma">Cronograma de Sprints</a> • <a 
+href="#definition-of-ready-dor">DoR</a> • <a href="#definition-of-done-dod">DoD</a> • <a 
+href="#tecnologias">Tecnologias</a> • <a 
+href="#estrutura-do-projeto">Estrutura do projeto</a> • <a
+href="#estrategia-de-branch">Estratégia de Branch</a> • <a 
+href="#fluxo-de-trabalho">Fluxo de Trabalho</a> • <a 
+href="#manuais">Manuais</a> • <a 
+href="#equipe">Equipe</a>
 </div>
 
 
@@ -22,7 +31,7 @@ A transportadora não tem visibilidade consolidada sobre os motoristas agregados
 A proposta é um jeito simples e visual de acompanhar motoristas agregados, cruzando quantas viagens cada um fez, se está disponível pra novas operações e quanto retorno cada viagem realmente trouxe. Com isso, o time enxerga rápido quem está livre para pegar uma nova viagem (sem deixar ninguém parado à toa) e quem está trazendo o melhor resultado financeiro. 
 
 
-Parceiro: Newelog
+Parceiro: <strong>Newelog</strong>
 
 
 ## <a id="backlog"></a> 📝 **Backlog do Produto** 
@@ -30,27 +39,30 @@ Parceiro: Newelog
 
 | Rank | ID | Prioridade | User Story | Estimativa | Sprint |
 |:---:|:---:|:---:|---|:---:|:---:|
-| 1 | US1 | Alta | Como operador, quero exportar a planilha da análise obtida e importá-la no sistema, para não perder o fluxo já usado. | 4 | 1 |
-| 2 | US2 | Alta | Como operador, quero importar o relatório de manifesto para popular viagens automaticamente. | 4 | 1 |
-| 3 | US4 | Alta |  Como operador, quero filtrar viagens por destino/região, para entender a demanda por rota. | 4 | 1 |
-| 4 | US6 | Alta | Como operador, quero ver a % de utilização de cada motorista, para evitar a desocupação de frotas. | 3 | 1 |
-| 5 | US3 | Alta | Como gestor, quero visualizar quantas viagens cada motorista fez no mês, para medir a frequência de contratação. | 4 | 1 |
-| 6 | US8 | Média | Como gestor, quero registrar frete e custos de cada viagem, para calcular a rentabilidade. | 4 | 2 |
-| 7 | US9 | Média | Como gestor, quero visualizar a rentabilidade média por viagem de cada motorista, para comparar desempenho. | 4 | 2 |
-| 8 | US5 | Média | Como operador, quero ver em uma tela única quais motoristas estão disponíveis, para direcionar novas viagens rapidamente. | 4 | 2 |
-| 9 | US7 | Média | Como gestor, quero receber um alerta de motoristas com baixa utilização no mês, para agir sobre ociosidade. | 5 | 2 |
-| 10 | US10 | Média | Como gestor, quero ver quanto cada motorista recebeu no mês, para controle de pagamento. | 3 | 2 |
-| 11 | US11 | Média | Como gestor, quero comparar a rentabilidade entre tipos de veículo, para decisões estratégicas de frota. | 5 | 3 |
-| 12 | US13 | Baixa | Como gestor, quero um ranking mensal de motoristas, para identificar os melhores resultados. | 4 | 3 |
-| 13 | US14 | Baixa | Como gestor, quero identificar as rotas mais concorridas do mês, para criar campanhas de engajamento de motoristas. | 3 | 3 |
-| 14 | US12 | Baixa | Como gestor, quero segmentar indicadores por gênero do motorista, para análise de diversidade da frota. | 3 | 3 |
+| 1 | US01 | Alta | Como operador, quero exportar a planilha da análise obtida e importá-la no sistema, para não perder o fluxo já usado. | 4 | 1 |
+| 2 | US02 | Alta | Como operador, quero importar o relatório de manifesto para popular viagens automaticamente. | 4 | 1 |
+| 3 | US04 | Alta |  Como operador, quero filtrar viagens por destino/região, para entender a demanda por rota. | 4 | 1 |
+| 4 | US06 | Alta | Como operador, quero ver a % de utilização de cada motorista, para evitar a desocupação de frotas. | 3 | 1 |
+| 5 | US03 | Alta | Como gestor, quero visualizar quantas viagens cada motorista fez no mês, para medir a frequência de contratação. | 4 | 1 |
+| 6 | US08 | Média | Como gestor, quero registrar frete e custos de cada viagem, para calcular a rentabilidade. | 4 | 2 |
+| 7 | US09 | Média | Como gestor, quero visualizar a rentabilidade média por viagem de cada motorista, para comparar desempenho. | 4 | 2 |
+| 8 | US05 | Média | Como operador, quero ver em uma tela única quais motoristas estão disponíveis, para direcionar novas viagens rapidamente. | 4 | 2 |
+| 9 | US14 | Média | Como gestor, quero identificar as rotas mais concorridas do mês, para criar campanhas de engajamento de motoristas. | 3 | 2 |
+| 10 | US15 | Média | Como gestor, quero realizar login seguro na plataforma, para garantir a segurança dos dados no sistema. | 3 | 2 |
+| 11 | US16 | Média | Como gestor, quero ver na tela dashboard apenas os dados considerados essências, para garantir uma visão clara e objetiva. | 3 | 2 |
+| 12 | US07 | Média | Como gestor, quero receber um alerta de motoristas com baixa utilização no mês, para agir sobre ociosidade. | 5 | 2 |
+| 13 | US11 | Média | Como gestor, quero comparar a rentabilidade entre tipos de veículo, para decisões estratégicas de frota. | 5 | 3 |
+| 14 | US10 | Média | Como gestor, quero ver quanto cada motorista recebeu no mês, para controle de pagamento. | 3 | 3 |
+| 15 | US13 | Baixa | Como gestor, quero um ranking mensal de motoristas, para identificar os melhores resultados. | 4 | 3 |
+| 16 | US12 | Baixa | Como gestor, quero segmentar indicadores por gênero do motorista, para análise de diversidade da frota. | 3 | 3 |
+
 
 ## 📅 **Cronograma de Sprints** <a id="cronograma"></a>
 
 | Sprint | Período | Documentação | Status | Vídeo |
 |:---:|:---:|:---:|:---:|:---:|
-| **SPRINT 1** | 07/09 - 27/09 | [Sprint 1 docs](docs/sprints/sprint-1.md) | 🟡 Em andamento | [🎥 Assistir](https://youtu.be/VLJHqNIcwLM) |
-| **SPRINT 2** | 05/10 - 25/10 | [Sprint 2 docs](docs/sprints/sprint-2.md) | ⚪ Não iniciada | |
+| **SPRINT 1** | 07/09 - 27/09 | [Sprint 1 docs](docs/sprints/sprint-1.md) | 🟢 Concluído | [🎥 Assistir](https://www.youtube.com/watch?v=BLwNPkoQqVA) |
+| **SPRINT 2** | 05/10 - 25/10 | [Sprint 2 docs](docs/sprints/sprint-2.md) | 🟢 Concluído | [🎥 Assistir](https://youtu.be/eVJscMSMfT4) |
 | **SPRINT 3** | 02/11 - 22/11 | [Sprint 3 docs](docs/sprints/sprint-3.md) | ⚪ Não iniciada | |
 
 ### 📋Definition of Ready (DoR) <a id="definition-of-ready-dor"></a>
@@ -102,7 +114,13 @@ Parceiro: Newelog
 
 ## 📁 Estrutura do Projeto <a id="estrutura-do-projeto"></a>
 
-[![Ver Estrutura](https://img.shields.io/badge/📁_Ver_Estrutura-2496ED?style=for-the-badge&logo=files&logoColor=white)](docs/documentacao/file_tree.md)
+[![Ver Estrutura](https://img.shields.io/badge/📁_Ver_Estrutura-2496ED?style=for-the-badge&logo=files&logoColor=white)](docs/documentacao-produto/file_tree.md)
+
+## 🛠️ Estratégia de Branch → Github Flow <a id="estrategia-de-branch"></a>
+
+Consiste em criar branchs de curta duração para as etapas e funcionalidades da aplicação. Ao concluir o objetivo daquela branch faz-se um PR (Pull Request), para a branch `development`, e o rebase, após isso apaga-se ela do repositório remoto.
+
+Ao término de toda US (User Story) é criado outro PR, só que desta vez da `development` para a `main`, representando a entrega do desenvolvimento da aplicação durante o ciclo. 
 
 ## 🔀 Fluxo de Trabalho <a id="fluxo-de-trabalho"></a>
 
@@ -127,79 +145,22 @@ Parceiro: Newelog
           2 desenvolva e faça commits
 ```
 
-## ⚙️ Manual de Instalação <a id="manual-de-instalacao"></a>
+## 📚 Manuais <a id="manuais"></a>
+Documentação do produto destinada ao cliente.
+- [Manual de Instalação](docs/documentacao-cliente/manual-instalacao.md):
+  instruções para configurar o ambiente e executar a aplicação.
 
-### 📌 Pré-requisitos
-
-| Ferramenta | Versão mínima | Descrição |
-| :--- | :---: | :--- |
-| **Git** | 2.x | Clonar o repositório |
-| **Docker** | 24.x | Rodar os containers |
-| **Docker Compose** | 2.x | Orquestrar os serviços |
-
-
-### 1️⃣ Clonar o repositório
-
-```bash
-git clone https://github.com/OmniDevsOficial/API-Logistica.git
-cd API-Logistica
-```
-
-### 2️⃣ Configurar variáveis de ambiente
-
-```bash
-# Linux / macOS
-cp .env.example .env
-```
-
-```powershell
-# Windows (PowerShell)
-Copy-Item .env.example .env
-```
-
-Edite o arquivo `.env` gerado com os valores desejados, por exemplo:
-
-```env
-POSTGRES_DB=newelog_db
-POSTGRES_USER=newelog_app
-POSTGRES_PASSWORD=newelog_app
-```
-
-### 3️⃣ Subir os containers
-
-```bash
-docker compose up --build
-```
-
-### 4️⃣ Acessar os serviços
-
-Após todos os containers estarem rodando, acesse:
-
-| Serviço | URL | Descrição |
-| :--- | :--- | :--- |
-| Frontend | http://localhost:3000 | Interface web (React + Vite) |
-| Operacional API | http://localhost:8081 | Microsserviço operacional (Spring Boot) |
-| Relatório API | http://localhost:8082 | Microsserviço de relatórios (Spring Boot) |
-| PostgreSQL | localhost:5433 | Banco de dados (acesso via pgAdmin, DBeaver, etc.) |
-
-### 5️⃣ Parar os containers
-
-```bash
-# Parar os containers (mantém os dados do banco)
-docker compose down
-
-# Parar e remover os volumes (apaga os dados do banco)
-docker compose down -v
-```
-
+- [Manual do Usuário](docs/documentacao-cliente/manual-usuario.md):
+  instruções para utilizar as funcionalidades da plataforma.
+  
 ## 👥 **Equipe** <a id="equipe"></a>
 
 | Foto | Nome | Função | GitHub |
 | :---: | :--- | :--- | :---: |
 | <img src="https://github.com/Marcio-gustavoI.png" width=50px alt="Foto do Márcio"> | **Márcio Inocêncio** | Product Owner | <a href="https://github.com/Marcio-gustavoI"><img src="https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white"></a> |
-| <img src="https://github.com/Viniciuss-Moreira.png" width=50px alt="Foto do Vinicius"> | **Vinicius Moreira** | Scrum Master | <a href="https://github.com/Viniciuss-Moreira"><img src="https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white"></a> |
+| <img src="https://github.com/DeveloperCorsair.png" width=50px alt="Foto do Henrique"> | **Henrique Martins** | Scrum Master | <a href="https://github.com/DeveloperCorsair"><img src="https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white"></a> |
+| <img src="https://github.com/Viniciuss-Moreira.png" width=50px alt="Foto do Vinicius"> | **Vinicius Moreira** | Desenvolvedor | <a href="https://github.com/Viniciuss-Moreira"><img src="https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white"></a> |
 | <img src="https://github.com/hiGuigo.png" width=50px alt="Foto do Guilherme"> | **Guilherme Alvarenga** | Desenvolvedor | <a href="https://github.com/hiGuigo"><img src="https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white"></a> |
-| <img src="https://github.com/DeveloperCorsair.png" width=50px alt="Foto do Henrique"> | **Henrique Martins** | Desenvolvedor | <a href="https://github.com/DeveloperCorsair"><img src="https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white"></a> |
 | <img src="https://github.com/pedrodevroot.png" width=50px alt="Foto do Pedro"> | **Pedro Lucas** | Desenvolvedor | <a href="https://github.com/pedrodevroot"><img src="https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white"></a> |
 | <img src="https://github.com/ThOMaZMe11o.png" width=50px alt="Foto do Thomaz"> | **Thomaz De Mello** | Desenvolvedor | <a href="https://github.com/ThOMaZMe11o"><img src="https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white"></a> |
 | <img src="https://github.com/Yuri-Dev-OH.png" width=50px alt="Foto do Yuri"> | **Yuri Gonçalves** | Desenvolvedor | <a href="https://github.com/Yuri-Dev-OH"><img src="https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white"></a> |

@@ -4,4 +4,5 @@ import java.math.BigDecimal;
 
 public record UtilizacaoMotoristaResponse(
         String chave, Integer motoristaId, String nome,
-        long quantidadeViagens, BigDecimal porcentagem, String status) {}
+        long quantidadeViagens, BigDecimal porcentagem, String status,
+        boolean baixaUtilizacao) {}

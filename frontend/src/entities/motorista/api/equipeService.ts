@@ -15,6 +15,11 @@ function chaveCpf(cpf: string | null): string | null {
   return digitos.length === 11 ? digitos : null;
 }
 
+interface FrequenciaMotorista {
+  percentual: number;
+  baixa: boolean;
+}
+
 /**
  * Frequência vem do indicador de utilização (participação nas viagens),
  * consultado nos últimos 12 meses para não zerar a tela.
@@ -22,7 +27,7 @@ function chaveCpf(cpf: string | null): string | null {
  */
 async function carregarFrequencias(
   signal?: AbortSignal,
-): Promise<Map<string, number>> {
+): Promise<Map<string, FrequenciaMotorista>> {
   try {
     const { dataInicio, dataFim } = periodoEquipe();
     const utilizacao = await buscarUtilizacaoMotoristas(
@@ -32,14 +37,17 @@ async function carregarFrequencias(
       signal,
     );
 
-    const frequencias = new Map<string, number>();
+    const frequencias = new Map<string, FrequenciaMotorista>();
     for (const motorista of utilizacao) {
-      const percentual = motorista.percentualUtilizacao ?? 0;
+      const frequencia = {
+        percentual: motorista.percentualUtilizacao ?? 0,
+        baixa: motorista.baixaUtilizacao,
+      };
 
       if (typeof motorista.id === "number") {
-        frequencias.set(`id:${motorista.id}`, percentual);
+        frequencias.set(`id:${motorista.id}`, frequencia);
       } else {
-        frequencias.set(`cpf:${String(motorista.id).replace(/\D/g, "")}`, percentual);
+        frequencias.set(`cpf:${String(motorista.id).replace(/\D/g, "")}`, frequencia);
       }
     }
 
@@ -52,15 +60,19 @@ async function carregarFrequencias(
 
 function comFrequencia(
   motoristas: MotoristaEquipe[],
-  frequencias: Map<string, number>,
+  frequencias: Map<string, FrequenciaMotorista>,
 ): MotoristaEquipe[] {
   return motoristas.map((motorista) => {
     const cpf = chaveCpf(motorista.cpf);
-    const percentual =
+    const frequencia =
       frequencias.get(`id:${motorista.id}`) ??
       (cpf ? frequencias.get(`cpf:${cpf}`) : undefined);
 
-    return { ...motorista, frequencia: percentual ?? null };
+    return {
+      ...motorista,
+      frequencia: frequencia?.percentual ?? null,
+      baixaFrequencia: frequencia?.baixa ?? false,
+    };
   });
 }
 

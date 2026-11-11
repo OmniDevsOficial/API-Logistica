@@ -12,7 +12,7 @@ const OPTIONS: { value: PeriodOption; label: string }[] = [
 ];
 
 const OPTION_INACTIVE_CLASS =
-  "cursor-pointer rounded-[12px] bg-surface px-3.5 py-2.5 text-sm font-medium text-black";
+  "cursor-pointer rounded-[12px] bg-surface px-3.5 py-2.5 text-sm font-medium text-fg";
 const OPTION_ACTIVE_CLASS =
   "cursor-pointer rounded-md bg-primary px-3.5 py-2.5 text-sm font-medium text-white";
 

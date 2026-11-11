@@ -18,6 +18,10 @@ export function formatPercent(value: number): string {
   return `${value.toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}%`;
 }
 
+export function formatFrequencia(value: number): string {
+  return `${value.toLocaleString("pt-BR", { maximumFractionDigits: 1 })}%`;
+}
+
 export function formatCpf(cpf: string | null): string | null {
   if (!cpf) return null;
 
@@ -62,4 +66,27 @@ export function formatDateOrToday(brDate: string, hoje = new Date()): string {
 
 export function formatDateRange(inicio: string, fim: string): string {
   return `${formatBrDate(inicio)} - ${formatBrDate(fim)}`;
+}
+
+/** Siglas de tipo de veículo que continuam em maiúsculas na exibição. */
+const SIGLAS_TIPO_VEICULO = new Set(["VUC", "VLC", "SUV"]);
+
+/**
+ * O backend grava o tipo em maiúsculas ("CAVALO MECÂNICO"); a tela mostra só a
+ * primeira letra maiúscula ("Cavalo mecânico"), preservando siglas ("VUC").
+ */
+export function formatTipoVeiculo(tipo: string | null | undefined): string | null {
+  const texto = tipo?.trim().replace(/\s+/g, " ");
+  if (!texto) return null;
+
+  const palavras = texto
+    .toLocaleLowerCase("pt-BR")
+    .split(" ")
+    .map((palavra) => {
+      const maiuscula = palavra.toLocaleUpperCase("pt-BR");
+      return SIGLAS_TIPO_VEICULO.has(maiuscula) ? maiuscula : palavra;
+    })
+    .join(" ");
+
+  return palavras.charAt(0).toLocaleUpperCase("pt-BR") + palavras.slice(1);
 }

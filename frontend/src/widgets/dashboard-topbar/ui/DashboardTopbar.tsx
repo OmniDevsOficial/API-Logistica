@@ -1,7 +1,9 @@
 import type { PeriodOption } from "@entities/dashboard-metrics";
 import type { ResultadoImportacao } from "@features/enviar-relatorio/api/importarManifesto";
 import { BotaoEnviarRelatorio } from "@features/enviar-relatorio/ui/BotaoEnviarRelatorio";
+import { BotaoImportarVeiculos } from "@features/importar-veiculos";
 import { NavegacaoPeriodo, PeriodFilter } from "@features/period-filter";
+import { SinoNotificacoes } from "@features/alerta-utilizacao";
 import { PageHeader } from "@shared/ui";
 
 interface DashboardTopbarProps {
@@ -31,11 +33,18 @@ export function DashboardTopbar({
 }: DashboardTopbarProps) {
   return (
     <header className="mb-7 flex flex-col gap-5">
-      <PageHeader title="Dashboard" onMenuClick={onMenuClick} />
+      <PageHeader
+        title="Dashboard"
+        onMenuClick={onMenuClick}
+        notificacoes={<SinoNotificacoes />}
+      />
 
       <div className="flex flex-col gap-4 sm:hidden">
-        <div className="flex items-center justify-between gap-3">
-          <BotaoEnviarRelatorio onImportado={onManifestoImportado} />
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div className="flex flex-wrap items-center gap-2">
+            <BotaoEnviarRelatorio onImportado={onManifestoImportado} />
+            <BotaoImportarVeiculos variante="secundaria" />
+          </div>
 
           <PeriodFilter value={period} onChange={onPeriodChange} />
         </div>
@@ -53,7 +62,11 @@ export function DashboardTopbar({
       </div>
 
       <div className="hidden flex-wrap items-center justify-between gap-3 sm:flex">
-        <BotaoEnviarRelatorio onImportado={onManifestoImportado} />
+        {/* Importação de veículos ao lado da do manifesto. O operador, que não acessa o dashboard, importa pela tela de Motoristas. */}
+        <div className="flex items-center gap-3">
+          <BotaoEnviarRelatorio onImportado={onManifestoImportado} />
+          <BotaoImportarVeiculos variante="secundaria" />
+        </div>
 
         <div className="flex flex-wrap items-center gap-3">
           <PeriodFilter value={period} onChange={onPeriodChange} />

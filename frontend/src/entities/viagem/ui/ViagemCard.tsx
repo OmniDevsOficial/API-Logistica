@@ -28,7 +28,9 @@ export function ViagemCard({ viagem }: ViagemCardProps) {
       </div>
       <div className="flex items-baseline gap-2">
         <span className="text-2xl font-bold text-fg">
-          <ValorMonetario>{formatCurrencyBRL(viagem.freteEstimado)}</ValorMonetario>
+          <ValorMonetario>
+            {viagem.freteEstimado == null ? null : formatCurrencyBRL(viagem.freteEstimado)}
+          </ValorMonetario>
         </span>
         <span className="text-[13px] text-fg-subtle">frete estimado</span>
       </div>
@@ -39,7 +41,7 @@ export function ViagemCard({ viagem }: ViagemCardProps) {
         {(["receita", "custo", "rentabilidade"] as const).map((campo) => (
           <div key={campo}>
             <span className="block text-xs text-fg-subtle">{campo === "rentabilidade" ? "Rentabilidade" : campo[0].toUpperCase() + campo.slice(1)}</span>
-            <span className={`text-sm font-semibold ${campo === "rentabilidade" && (viagem.rentabilidade ?? 0) < 0 ? "text-red-600" : "text-fg"}`}>
+            <span className={`text-sm font-semibold ${campo === "rentabilidade" && (viagem.rentabilidade ?? 0) < 0 ? "text-red-600 dark:text-red-400" : "text-fg"}`}>
               {valorMonetario(viagem[campo])}
             </span>
           </div>
