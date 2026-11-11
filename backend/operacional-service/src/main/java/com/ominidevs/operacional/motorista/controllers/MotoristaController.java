@@ -62,9 +62,12 @@ public class MotoristaController {
 
     @GetMapping("/baixa-utilizacao")
     public ResponseEntity<List<UtilizacaoMotoristaResponse>> baixaUtilizacao(
-            @RequestParam(required = false) String mes
+            @RequestParam(required = false) String mes,
+            @RequestParam(required = false) String dataInicio,
+            @RequestParam(required = false) String dataFim
     ) {
-        return ResponseEntity.ok(utilizacaoService.listarBaixaUtilizacao(PeriodoConsulta.doMes(mes)));
+        return ResponseEntity.ok(utilizacaoService.listarBaixaUtilizacao(
+                periodoBaixaUtilizacao(mes, dataInicio, dataFim)));
     }
 
     /**
@@ -113,6 +116,26 @@ public class MotoristaController {
         }
 
         // Sem nenhum parâmetro, o mês atual (mesma regra de baixa-utilizacao).
+        return temDatas ? PeriodoConsulta.parse(dataInicio, dataFim)
+                : PeriodoConsulta.doMes((String) null);
+    }
+
+    private PeriodoConsulta periodoBaixaUtilizacao(String mes, String dataInicio, String dataFim) {
+        boolean temDatas = presente(dataInicio) || presente(dataFim);
+
+        if (presente(mes)) {
+            if (temDatas) {
+                throw new IndicadorInvalidoException(
+                        "Informe mes ou dataInicio/dataFim, mas não os dois.");
+            }
+            return PeriodoConsulta.doMes(mes);
+        }
+
+        if (temDatas && (!presente(dataInicio) || !presente(dataFim))) {
+            throw new IndicadorInvalidoException(
+                    "Informe dataInicio e dataFim juntos.");
+        }
+
         return temDatas ? PeriodoConsulta.parse(dataInicio, dataFim)
                 : PeriodoConsulta.doMes((String) null);
     }

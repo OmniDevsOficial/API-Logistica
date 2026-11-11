@@ -5,8 +5,13 @@ import { useAlertasUtilizacao } from "../model/useAlertasUtilizacao";
 
 const LIMITE_CONTADOR = 99;
 
-export function SinoNotificacoes() {
-  const alertas = useAlertasUtilizacao();
+interface SinoNotificacoesProps {
+  dataInicio?: string;
+  dataFim?: string;
+}
+
+export function SinoNotificacoes({ dataInicio, dataFim }: SinoNotificacoesProps) {
+  const alertas = useAlertasUtilizacao(dataInicio, dataFim);
   const [aberto, setAberto] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 

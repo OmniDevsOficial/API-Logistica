@@ -5,9 +5,8 @@ import java.math.RoundingMode;
 
 /**
  * Percentual único do backend (parte ÷ total × 100), com duas casas e
- * arredondamento HALF_UP. É a base da frequência do ranking de motoristas
- * (dias com viagem ÷ dias do mês) e da participação nas viagens usada pela
- * utilização, para que a fórmula não seja duplicada.
+ * arredondamento HALF_UP. A frequência dos motoristas usa dias em operação
+ * divididos por 30.
  */
 public final class Porcentagem {
 
