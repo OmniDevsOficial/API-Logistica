@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import type { PeriodOption } from "@entities/dashboard-metrics";
 import type { ResultadoImportacao } from "@features/enviar-relatorio/api/importarManifesto";
+import { podeVerValoresMonetarios, useSessao } from "@entities/sessao";
 import { Sidebar } from "@widgets/sidebar";
 import { DashboardTopbar } from "@widgets/dashboard-topbar";
 import { DashboardOverview } from "@widgets/dashboard-overview";
@@ -12,7 +13,9 @@ import {
   referenciaDaDataIso,
 } from "../lib/intervaloDoPeriodo";
 import { lerFiltroSalvo, salvarFiltro } from "../lib/filtroSalvo";
+import { mesDaReferencia, rotuloDoMes } from "../lib/mesDaReferencia";
 import { useDashboard } from "../model/useDashboard";
+import { useRentabilidadePorTipo } from "../model/useRentabilidadePorTipo";
 
 const MENSAGEM_CLASS =
   "rounded-md bg-surface p-6 text-center text-sm text-fg-subtle";
@@ -36,6 +39,12 @@ export function DashboardPage() {
     [period, referencia],
   );
   const { dados, carregando, erro, recarregar } = useDashboard(intervalo);
+  const { usuario } = useSessao();
+  const ehGestor = usuario !== null && podeVerValoresMonetarios(usuario.perfil);
+  const rentabilidadePorTipo = useRentabilidadePorTipo(
+    mesDaReferencia(referencia),
+    ehGestor,
+  );
 
   function aoImportarManifesto(resultado: ResultadoImportacao) {
     const referenciaImportada = resultado.dataMaisRecente
@@ -48,6 +57,7 @@ export function DashboardPage() {
     }
 
     recarregar();
+    rentabilidadePorTipo.recarregar();
   }
 
   return (
@@ -72,6 +82,7 @@ export function DashboardPage() {
           onSelecionarData={setReferencia}
           onMenuClick={() => setSidebarOpen(true)}
           onManifestoImportado={aoImportarManifesto}
+          onVeiculosImportados={rentabilidadePorTipo.recarregar}
         />
 
         {erro ? (
@@ -91,7 +102,14 @@ export function DashboardPage() {
                 </p>
               )}
 
-              <DashboardOverview data={dados} />
+              <DashboardOverview
+                data={dados}
+                rentabilidadePorTipo={
+                  ehGestor
+                    ? { ...rentabilidadePorTipo, mes: rotuloDoMes(referencia) }
+                    : null
+                }
+              />
             </div>
           )
         )}

@@ -12,17 +12,21 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import com.ominidevs.operacional.dashboard.exceptions.DashboardExceptionHandler;
 import com.ominidevs.operacional.dashboard.projections.PontoRentabilidade;
 import com.ominidevs.operacional.dashboard.projections.PontoSerie;
+import com.ominidevs.operacional.dashboard.projections.RentabilidadeTipoVeiculo;
 import com.ominidevs.operacional.dashboard.projections.ResumoViagens;
 import com.ominidevs.operacional.dashboard.projections.ValoresFinanceirosViagem;
 import com.ominidevs.operacional.dashboard.repositories.DashboardRepository;
 import com.ominidevs.operacional.dashboard.services.DashboardService;
+import com.ominidevs.operacional.indicadores.model.PeriodoConsulta;
 import com.ominidevs.operacional.indicadores.projections.MotoristaQuantidadeViagens;
 import com.ominidevs.operacional.indicadores.repositories.UtilizacaoRepository;
 import com.ominidevs.operacional.indicadores.services.UtilizacaoService;
 
 import static org.hamcrest.Matchers.nullValue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -143,5 +147,50 @@ class DashboardControllerTest {
         consultarSetembro()
                 .andExpect(status().isServiceUnavailable())
                 .andExpect(jsonPath("$.erro").exists());
+    }
+
+    @Test
+    void rentabilidadePorTipoDevolveUmItemPorTipoComNegativos() throws Exception {
+        when(repository.consultarRentabilidadePorTipo(eq(PeriodoConsulta.doMesObrigatorio("2026-01")))).thenReturn(List.of(
+                new RentabilidadeTipoVeiculo("TRUCK", 2, new BigDecimal("1000.00"), new BigDecimal("400.00")),
+                new RentabilidadeTipoVeiculo("NAO_IDENTIFICADO", 1, new BigDecimal("100.00"), new BigDecimal("300.00"))));
+
+        mvc.perform(get("/dashboard/rentabilidade-por-tipo").param("mes", "2026-01"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(2))
+                .andExpect(jsonPath("$[0].tipo").value("TRUCK"))
+                .andExpect(jsonPath("$[0].viagens").value(2))
+                .andExpect(jsonPath("$[0].receita").value(1000.00))
+                .andExpect(jsonPath("$[0].custo").value(400.00))
+                .andExpect(jsonPath("$[0].rentabilidade").value(600.00))
+                .andExpect(jsonPath("$[0].mediaPorViagem").value(300.00))
+                .andExpect(jsonPath("$[1].tipo").value("NAO_IDENTIFICADO"))
+                .andExpect(jsonPath("$[1].rentabilidade").value(-200.00));
+    }
+
+    @Test
+    void rentabilidadePorTipoDeMesSemViagensDevolveListaVazia() throws Exception {
+        when(repository.consultarRentabilidadePorTipo(any())).thenReturn(List.of());
+
+        mvc.perform(get("/dashboard/rentabilidade-por-tipo").param("mes", "2026-01"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(0));
+    }
+
+    @Test
+    void rentabilidadePorTipoSemMesRetorna400() throws Exception {
+        mvc.perform(get("/dashboard/rentabilidade-por-tipo"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.erro").value("Informe o mês no formato AAAA-MM."));
+        verifyNoInteractions(repository);
+    }
+
+    @Test
+    void rentabilidadePorTipoComMesInvalidoRetorna400() throws Exception {
+        for (String mes : List.of("", "2026-13", "01/2026", "2026-1")) {
+            mvc.perform(get("/dashboard/rentabilidade-por-tipo").param("mes", mes))
+                    .andExpect(status().isBadRequest())
+                    .andExpect(jsonPath("$.erro").value("Informe o mês no formato AAAA-MM."));
+        }
     }
 }

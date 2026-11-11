@@ -42,10 +42,10 @@ export function DashboardTopbar({
 
       <div className="flex flex-col gap-4 sm:hidden">
         <div className="flex flex-wrap items-center justify-between gap-3">
-          <BotaoUpload
-            onManifestoImportado={onManifestoImportado}
-            onVeiculosImportados={onVeiculosImportados}
-          />
+          <div className="flex flex-wrap items-center gap-2">
+            <BotaoEnviarRelatorio onImportado={onManifestoImportado} />
+            <BotaoImportarVeiculos variante="secundaria" onImportado={onVeiculosImportados} />
+          </div>
 
           <PeriodFilter value={period} onChange={onPeriodChange} />
         </div>
@@ -63,10 +63,11 @@ export function DashboardTopbar({
       </div>
 
       <div className="hidden flex-wrap items-center justify-between gap-3 sm:flex">
-        <BotaoUpload
-          onManifestoImportado={onManifestoImportado}
-          onVeiculosImportados={onVeiculosImportados}
-        />
+        {/* Importação de veículos ao lado da do manifesto. O operador, que não acessa o dashboard, importa pela tela de Motoristas. */}
+        <div className="flex items-center gap-3">
+          <BotaoEnviarRelatorio onImportado={onManifestoImportado} />
+          <BotaoImportarVeiculos variante="secundaria" onImportado={onVeiculosImportados} />
+        </div>
 
         <div className="flex flex-wrap items-center gap-3">
           <PeriodFilter value={period} onChange={onPeriodChange} />
