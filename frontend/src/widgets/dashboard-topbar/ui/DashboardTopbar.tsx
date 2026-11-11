@@ -17,6 +17,7 @@ interface DashboardTopbarProps {
   onSelecionarData: (data: Date) => void;
   onMenuClick: () => void;
   onManifestoImportado: (resultado: ResultadoImportacao) => void;
+  onVeiculosImportados?: () => void;
 }
 
 export function DashboardTopbar({
@@ -30,6 +31,7 @@ export function DashboardTopbar({
   onSelecionarData,
   onMenuClick,
   onManifestoImportado,
+  onVeiculosImportados,
 }: DashboardTopbarProps) {
   return (
     <header className="mb-7 flex flex-col gap-5">
@@ -43,7 +45,7 @@ export function DashboardTopbar({
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div className="flex flex-wrap items-center gap-2">
             <BotaoEnviarRelatorio onImportado={onManifestoImportado} />
-            <BotaoImportarVeiculos variante="secundaria" />
+            <BotaoImportarVeiculos variante="secundaria" onImportado={onVeiculosImportados} />
           </div>
 
           <PeriodFilter value={period} onChange={onPeriodChange} />
@@ -65,7 +67,7 @@ export function DashboardTopbar({
         {/* Importação de veículos ao lado da do manifesto. O operador, que não acessa o dashboard, importa pela tela de Motoristas. */}
         <div className="flex items-center gap-3">
           <BotaoEnviarRelatorio onImportado={onManifestoImportado} />
-          <BotaoImportarVeiculos variante="secundaria" />
+          <BotaoImportarVeiculos variante="secundaria" onImportado={onVeiculosImportados} />
         </div>
 
         <div className="flex flex-wrap items-center gap-3">

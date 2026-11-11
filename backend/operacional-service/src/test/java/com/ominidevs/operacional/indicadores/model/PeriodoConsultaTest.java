@@ -23,6 +23,19 @@ class PeriodoConsultaTest {
         assertThrows(IndicadorInvalidoException.class,
                 () -> PeriodoConsulta.parse("10/09/2026", "01/09/2026"));
     }
+    @Test void mesObrigatorioCobreDoPrimeiroAoUltimoDiaDoMes() {
+        var fevereiro = PeriodoConsulta.doMesObrigatorio("2024-02");
+        assertEquals(java.time.LocalDate.of(2024, 2, 1), fevereiro.inicio());
+        assertEquals(java.time.LocalDate.of(2024, 2, 29), fevereiro.fim());
+    }
+    @ParameterizedTest
+    @ValueSource(strings = {"", "   ", "2026-13", "2026-1", "01/2026", "2026/01", "janeiro"})
+    void mesObrigatorioRejeitaMesAusenteOuInvalido(String mes) {
+        assertThrows(IndicadorInvalidoException.class, () -> PeriodoConsulta.doMesObrigatorio(mes));
+    }
+    @Test void mesObrigatorioRejeitaNulo() {
+        assertThrows(IndicadorInvalidoException.class, () -> PeriodoConsulta.doMesObrigatorio(null));
+    }
     @Test void validaOrdenacao() {
         assertEquals(OrdenacaoUtilizacao.ASC, OrdenacaoUtilizacao.parse("asc"));
         assertEquals(OrdenacaoUtilizacao.DESC, OrdenacaoUtilizacao.parse("DESC"));

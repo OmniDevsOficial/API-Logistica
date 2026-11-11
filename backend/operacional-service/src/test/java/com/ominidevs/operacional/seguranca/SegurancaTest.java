@@ -182,6 +182,21 @@ class SegurancaTest {
     }
 
     @Test
+    void gestorConsultaARentabilidadePorTipo() throws Exception {
+        mvc.perform(get("/dashboard/rentabilidade-por-tipo").param("mes", "2026-01")
+                        .header(HttpHeaders.AUTHORIZATION, bearer(TokensDeTeste.valido("GESTOR"))))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    void operadorNaoConsultaARentabilidadePorTipo() throws Exception {
+        mvc.perform(get("/dashboard/rentabilidade-por-tipo").param("mes", "2026-01")
+                        .header(HttpHeaders.AUTHORIZATION, bearer(TokensDeTeste.valido("OPERADOR"))))
+                .andExpect(status().isForbidden())
+                .andExpect(jsonPath("$.erro").value("Seu perfil não tem permissão para acessar este recurso."));
+    }
+
+    @Test
     void gestorConsultaORanking() throws Exception {
         mvc.perform(get("/motoristas/ranking").param("mes", "2026-09")
                         .header(HttpHeaders.AUTHORIZATION, bearer(TokensDeTeste.valido("GESTOR"))))
