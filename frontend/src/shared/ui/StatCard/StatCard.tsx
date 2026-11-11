@@ -44,7 +44,11 @@ export function StatCard({
         </span>
       )}
       {caption && !trendLabel && (
-        <span className="text-[13px] text-fg-subtle">{caption}</span>
+        <span
+          className={`text-[13px] ${highlighted ? "font-medium text-white/85" : "text-fg-subtle"}`}
+        >
+          {caption}
+        </span>
       )}
     </div>
   );
