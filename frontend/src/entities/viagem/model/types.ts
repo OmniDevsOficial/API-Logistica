@@ -34,3 +34,24 @@ export interface ViagensData {
   periodoLabel: string;
   viagens: Viagem[];
 }
+
+export type StatusHistoricoViagem = "EM_ANDAMENTO" | "CONCLUIDA";
+
+export interface ViagemHistorico {
+  id: number;
+  manifesto: string;
+  origem: string | null;
+  destino: string | null;
+  dataSaida: string;
+  previsaoChegada: string | null;
+  status: StatusHistoricoViagem;
+}
+
+export interface PaginaHistoricoViagens {
+  viagens: ViagemHistorico[];
+  pagina: number;
+  tamanho: number;
+  totalViagens: number;
+  totalPaginas: number;
+  ultimaPagina: boolean;
+}
