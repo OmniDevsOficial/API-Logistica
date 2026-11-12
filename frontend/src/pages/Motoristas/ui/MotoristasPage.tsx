@@ -1,9 +1,10 @@
 import { useMemo, useState } from "react";
 import { atualizarStatusMotorista } from "@entities/motorista";
-import type { StatusEquipe } from "@entities/motorista";
+import type { MotoristaEquipe, StatusEquipe } from "@entities/motorista";
 import { Sidebar } from "@widgets/sidebar";
 import { SinoNotificacoes } from "@features/alerta-utilizacao";
 import { BotaoImportarVeiculos } from "@features/importar-veiculos";
+import { ModalHistoricoViagens } from "@features/historico-viagens";
 import { podeImportarVeiculos, useSessao } from "@entities/sessao";
 import { PageHeader } from "@shared/ui";
 import {
@@ -17,6 +18,11 @@ import {
   useRentabilidadeMotoristas,
 } from "../model/useRentabilidadeMotoristas";
 
+interface MotoristaSelecionado {
+  id: number;
+  nome: string;
+}
+
 const ESTADO_LISTA =
   "rounded-md bg-surface p-6 text-center text-sm text-fg-subtle";
 
@@ -26,6 +32,9 @@ export function MotoristasPage() {
   const [filtroStatus, setFiltroStatus] = useState<StatusEquipe | null>(null);
   const [statusSalvando, setStatusSalvando] = useState<number | null>(null);
   const [erroStatus, setErroStatus] = useState<string | null>(null);
+  const [motoristaHistorico, setMotoristaHistorico] =
+    useState<MotoristaSelecionado | null>(null);
+  const [historicoAberto, setHistoricoAberto] = useState(false);
 
   const { dados, carregando, erro, recarregar } =
     useEquipeMotoristas(filtroStatus);
@@ -74,6 +83,11 @@ export function MotoristasPage() {
     } finally {
       setStatusSalvando(null);
     }
+  }
+
+  function abrirHistorico(motorista: MotoristaEquipe) {
+    setMotoristaHistorico({ id: motorista.id, nome: motorista.nome });
+    setHistoricoAberto(true);
   }
 
   return (
@@ -132,9 +146,17 @@ export function MotoristasPage() {
               chaveNomeMotorista={chaveNomeMotorista}
               statusSalvando={statusSalvando}
               onStatusChange={alterarStatus}
+              onMotoristaClick={abrirHistorico}
             />
           </div>
         ) : null}
+
+        <ModalHistoricoViagens
+          motoristaId={motoristaHistorico?.id ?? null}
+          nome={motoristaHistorico?.nome ?? ""}
+          open={historicoAberto}
+          onClose={() => setHistoricoAberto(false)}
+        />
       </main>
     </div>
   );
