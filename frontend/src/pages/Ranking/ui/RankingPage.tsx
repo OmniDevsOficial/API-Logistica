@@ -5,6 +5,7 @@ import { Sidebar } from "@widgets/sidebar";
 import { RankingList } from "@widgets/ranking-list";
 import { RankingPodium } from "@widgets/ranking-podium";
 import { SinoNotificacoes } from "@features/alerta-utilizacao";
+import { ModalHistoricoViagens } from "@features/historico-viagens";
 import {
   NavegacaoPeriodo,
   deslocarReferencia,
@@ -15,6 +16,11 @@ import { PageHeader } from "@shared/ui";
 import { distribuirRanking } from "../lib/distribuirRanking";
 import { rotuloMes } from "../lib/rotuloMes";
 import { useRankingMotoristas } from "../model/useRankingMotoristas";
+
+interface MotoristaSelecionado {
+  id: number;
+  nome: string;
+}
 
 const MENSAGEM_CLASS =
   "rounded-md bg-surface p-6 text-center text-sm text-fg-subtle";
@@ -39,6 +45,9 @@ function combinaComABusca(motorista: RankingMotorista, termo: string): boolean {
 export function RankingPage() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [busca, setBusca] = useState("");
+  const [motoristaHistorico, setMotoristaHistorico] =
+    useState<MotoristaSelecionado | null>(null);
+  const [historicoAberto, setHistoricoAberto] = useState(false);
   // Padrão do filtro é o mês atual, como no dashboard.
   const [referencia, setReferencia] = useState(() => new Date());
 
@@ -67,9 +76,11 @@ export function RankingPage() {
     [lista, termo],
   );
 
-  // TODO(US17): quando o modal de detalhes existir, passar
-  // onMotoristaClick={(motoristaId) => abrirDetalhes(motoristaId)} para o
-  // pódio e para a lista. Enquanto isso o clique não faz nada.
+  function abrirHistorico(motoristaId: number) {
+    const motorista = dados?.find((item) => item.motoristaId === motoristaId);
+    setMotoristaHistorico({ id: motoristaId, nome: motorista?.nome ?? "" });
+    setHistoricoAberto(true);
+  }
 
   return (
     <div className="min-h-screen">
@@ -134,11 +145,26 @@ export function RankingPage() {
           </p>
         ) : (
           <div className="flex flex-col gap-6">
-            <RankingPodium podio={podioVisivel} />
+            <RankingPodium
+              podio={podioVisivel}
+              onMotoristaClick={abrirHistorico}
+            />
             {/* Com 3 motoristas ou menos não há lista: só o pódio. */}
-            {lista.length > 0 && <RankingList motoristas={listaVisivel} />}
+            {lista.length > 0 && (
+              <RankingList
+                motoristas={listaVisivel}
+                onMotoristaClick={abrirHistorico}
+              />
+            )}
           </div>
         )}
+
+        <ModalHistoricoViagens
+          motoristaId={motoristaHistorico?.id ?? null}
+          nome={motoristaHistorico?.nome ?? ""}
+          open={historicoAberto}
+          onClose={() => setHistoricoAberto(false)}
+        />
       </main>
     </div>
   );
