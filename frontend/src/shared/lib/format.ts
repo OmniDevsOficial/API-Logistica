@@ -64,6 +64,14 @@ export function formatDateOrToday(brDate: string, hoje = new Date()): string {
   return ehHoje ? "Hoje" : brDate;
 }
 
+export function formatIsoDate(iso: string | null): string {
+  const partes = iso?.match(/^(\d{4})-(\d{2})-(\d{2})/);
+  if (!partes) return "—";
+
+  const [, ano, mes, dia] = partes;
+  return `${dia}/${mes}/${ano}`;
+}
+
 export function formatDateRange(inicio: string, fim: string): string {
   return `${formatBrDate(inicio)} - ${formatBrDate(fim)}`;
 }
