@@ -58,7 +58,7 @@ public class SegurancaConfig {
                 .authorizeHttpRequests(regras -> regras
                         .dispatcherTypeMatchers(DispatcherType.ERROR).permitAll()
                         // Operador só consulta a equipe; alterar o status continua exclusivo do gestor.
-                        .requestMatchers(HttpMethod.GET, "/motoristas", "/motoristas/resumo")
+                        .requestMatchers(HttpMethod.GET, "/motoristas", "/motoristas/resumo", "/motoristas/*/viagens")
                         .hasAnyRole(GESTOR, OPERADOR)
                         .requestMatchers("/dashboard/**", "/indicadores/**", "/motoristas/**").hasRole(GESTOR)
                         .requestMatchers("/viagens/rentabilidade/motoristas").hasRole(GESTOR)
