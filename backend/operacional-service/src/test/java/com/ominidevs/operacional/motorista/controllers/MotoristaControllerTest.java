@@ -32,10 +32,15 @@ import com.ominidevs.operacional.indicadores.model.PeriodoConsulta;
 import com.ominidevs.operacional.indicadores.services.UtilizacaoService;
 import com.ominidevs.operacional.motorista.dto.MotoristaResumoResponse;
 import com.ominidevs.operacional.motorista.dto.MotoristaResponseDTO;
+import com.ominidevs.operacional.motorista.dto.PaginaHistoricoViagensResponse;
 import com.ominidevs.operacional.motorista.dto.RankingMotoristaResponse;
+import com.ominidevs.operacional.motorista.dto.ViagemHistoricoResponse;
 import com.ominidevs.operacional.motorista.entities.StatusMotorista;
 import com.ominidevs.operacional.motorista.exceptions.MotoristaExceptionHandler;
 import com.ominidevs.operacional.motorista.exceptions.MotoristaNaoEncontradoException;
+import com.ominidevs.operacional.motorista.exceptions.PaginacaoInvalidaException;
+import com.ominidevs.operacional.motorista.model.StatusHistoricoViagem;
+import com.ominidevs.operacional.motorista.services.HistoricoViagemService;
 import com.ominidevs.operacional.motorista.services.MotoristaService;
 import com.ominidevs.operacional.motorista.services.RankingMotoristaService;
 
@@ -44,6 +49,7 @@ class MotoristaControllerTest {
     private final MotoristaService service = mock(MotoristaService.class);
     private final UtilizacaoService utilizacaoService = mock(UtilizacaoService.class);
     private final RankingMotoristaService rankingService = mock(RankingMotoristaService.class);
+    private final HistoricoViagemService historicoService = mock(HistoricoViagemService.class);
     private MockMvc mvc;
 
     private MotoristaResponseDTO motorista(StatusMotorista status) {
@@ -55,7 +61,7 @@ class MotoristaControllerTest {
     @BeforeEach
     void configurar() {
         mvc = MockMvcBuilders.standaloneSetup(
-                        new MotoristaController(service, utilizacaoService, rankingService))
+                        new MotoristaController(service, utilizacaoService, rankingService, historicoService))
                 .setControllerAdvice(new MotoristaExceptionHandler())
                 .build();
     }
@@ -353,5 +359,77 @@ class MotoristaControllerTest {
                 .andExpect(jsonPath("$.erro").isNotEmpty());
 
         verifyNoInteractions(rankingService);
+    }
+
+    private PaginaHistoricoViagensResponse paginaHistorico() {
+        return new PaginaHistoricoViagensResponse(
+                List.of(new ViagemHistoricoResponse(
+                        812, "251104", "Jacareí", "Curitiba",
+                        LocalDate.of(2026, 10, 28), null, StatusHistoricoViagem.EM_ANDAMENTO)),
+                0, 10, 37, 4, false);
+    }
+
+    @Test
+    @DisplayName("GET /motoristas/{id}/viagens retorna a página com os campos do contrato")
+    void deveRetornarHistoricoDeViagens() throws Exception {
+        when(historicoService.listar(1, 0, 10)).thenReturn(paginaHistorico());
+
+        mvc.perform(get("/motoristas/1/viagens"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.viagens[0].id").value(812))
+                .andExpect(jsonPath("$.viagens[0].manifesto").value("251104"))
+                .andExpect(jsonPath("$.viagens[0].origem").value("Jacareí"))
+                .andExpect(jsonPath("$.viagens[0].destino").value("Curitiba"))
+                .andExpect(jsonPath("$.viagens[0].dataSaida").value("2026-10-28"))
+                .andExpect(jsonPath("$.viagens[0].previsaoChegada").doesNotExist())
+                .andExpect(jsonPath("$.viagens[0].status").value("EM_ANDAMENTO"))
+                .andExpect(jsonPath("$.pagina").value(0))
+                .andExpect(jsonPath("$.tamanho").value(10))
+                .andExpect(jsonPath("$.totalViagens").value(37))
+                .andExpect(jsonPath("$.totalPaginas").value(4))
+                .andExpect(jsonPath("$.ultimaPagina").value(false));
+    }
+
+    @Test
+    @DisplayName("GET /motoristas/{id}/viagens não expõe campos da entidade")
+    void naoDeveExporCamposDaEntidade() throws Exception {
+        when(historicoService.listar(1, 0, 10)).thenReturn(paginaHistorico());
+
+        mvc.perform(get("/motoristas/1/viagens"))
+                .andExpect(jsonPath("$.viagens[0].cpf_motorista").doesNotExist())
+                .andExpect(jsonPath("$.viagens[0].valorFrete").doesNotExist());
+    }
+
+    @Test
+    @DisplayName("GET /motoristas/{id}/viagens repassa a paginação informada")
+    void deveRepassarPaginacaoInformada() throws Exception {
+        when(historicoService.listar(1, 2, 5)).thenReturn(paginaHistorico());
+
+        mvc.perform(get("/motoristas/1/viagens").param("pagina", "2").param("tamanho", "5"))
+                .andExpect(status().isOk());
+
+        verify(historicoService).listar(1, 2, 5);
+    }
+
+    @Test
+    @DisplayName("GET /motoristas/{id}/viagens retorna 404 quando o motorista não existe")
+    void deveRetornar404NoHistoricoDeMotoristaInexistente() throws Exception {
+        when(historicoService.listar(eq(99), any(Integer.class), any(Integer.class)))
+                .thenThrow(new MotoristaNaoEncontradoException(99));
+
+        mvc.perform(get("/motoristas/99/viagens"))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.erro").value("Motorista não encontrado: 99"));
+    }
+
+    @Test
+    @DisplayName("GET /motoristas/{id}/viagens retorna 400 para paginação inválida")
+    void deveRetornar400NoHistoricoComPaginacaoInvalida() throws Exception {
+        when(historicoService.listar(1, 0, 51))
+                .thenThrow(new PaginacaoInvalidaException("O tamanho da página deve estar entre 1 e 50."));
+
+        mvc.perform(get("/motoristas/1/viagens").param("tamanho", "51"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.erro").value("O tamanho da página deve estar entre 1 e 50."));
     }
 }
