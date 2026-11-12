@@ -14,6 +14,7 @@ import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilde
 import com.ominidevs.operacional.dashboard.controllers.DashboardController;
 import com.ominidevs.operacional.dashboard.services.DashboardService;
 import com.ominidevs.operacional.motorista.controllers.MotoristaController;
+import com.ominidevs.operacional.motorista.services.HistoricoViagemService;
 import com.ominidevs.operacional.motorista.services.MotoristaService;
 import com.ominidevs.operacional.motorista.services.RankingMotoristaService;
 import com.ominidevs.operacional.viagem.controllers.ViagemController;
@@ -54,6 +55,9 @@ class SegurancaTest {
 
     @MockitoBean
     private RankingMotoristaService rankingMotoristaService;
+
+    @MockitoBean
+    private HistoricoViagemService historicoViagemService;
 
     @MockitoBean
     private UtilizacaoService utilizacaoService;
@@ -126,6 +130,22 @@ class SegurancaTest {
                 .andExpect(status().isOk());
         mvc.perform(get("/motoristas/resumo").header(HttpHeaders.AUTHORIZATION, token))
                 .andExpect(status().isOk());
+    }
+
+    @Test
+    void operadorEGestorConsultamOHistoricoDeViagens() throws Exception {
+        mvc.perform(get("/motoristas/1/viagens")
+                        .header(HttpHeaders.AUTHORIZATION, bearer(TokensDeTeste.valido("OPERADOR"))))
+                .andExpect(status().isOk());
+        mvc.perform(get("/motoristas/1/viagens")
+                        .header(HttpHeaders.AUTHORIZATION, bearer(TokensDeTeste.valido("GESTOR"))))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    void historicoDeViagensSemTokenRetorna401() throws Exception {
+        mvc.perform(get("/motoristas/1/viagens"))
+                .andExpect(status().isUnauthorized());
     }
 
     @Test
