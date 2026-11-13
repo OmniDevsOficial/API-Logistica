@@ -1,8 +1,9 @@
 // src/features/enviar-relatorio/ui/ModalEnviarRelatorio.tsx
 import { useEffect, useRef, useState } from 'react';
+import type { ReactNode } from 'react';
 
 import { MensagemFeedbackUpload, ModalImportacao } from '@shared/ui';
-import type { TipoMensagemUpload } from '@shared/ui';
+import type { TipoMensagemUpload, ValidacaoArquivo } from '@shared/ui';
 
 // ALTERAÇÃO: endpoint operacional que salva viagens, sem simulação.
 import { importarManifesto, mensagemErroImportacao } from '../api/importarManifesto';
@@ -12,6 +13,9 @@ import { validarArquivoRelatorio } from '../lib/validarArquivoRelatorio';
 interface Propriedades {
   onFechar: () => void;
   onImportado?: (resultado: ResultadoImportacao) => void;
+  titulo?: string;
+  validarArquivo?: (arquivo: File) => ValidacaoArquivo | Promise<ValidacaoArquivo>;
+  seletor?: (bloqueado: boolean) => ReactNode;
 }
 
 interface Feedback {
@@ -26,6 +30,9 @@ const DURACAO_MENSAGEM_MS = 5000;
 export function ModalEnviarRelatorio({
   onFechar,
   onImportado,
+  titulo = 'Importar manifesto',
+  validarArquivo = validarArquivoRelatorio,
+  seletor,
 }: Propriedades) {
   const [feedback, setFeedback] = useState<Feedback | null>(null);
 
@@ -108,11 +115,12 @@ export function ModalEnviarRelatorio({
 
   return (
     <ModalImportacao
-      titulo="Importar manifesto"
+      titulo={titulo}
       formatosAceitos=".csv ou .xlsx de até 10MB."
       accept=".csv,.xlsx"
       rotuloConfirmar="Importar manifesto"
-      validarArquivo={validarArquivoRelatorio}
+      validarArquivo={validarArquivo}
+      seletor={seletor}
       onEnviar={enviar}
       onArquivoInvalido={(mensagem) => exibirFeedback('erro', mensagem)}
       onArquivoSelecionado={fecharFeedback}

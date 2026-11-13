@@ -19,7 +19,7 @@ import java.math.BigDecimal;
  * @param viagens             viagens do motorista no período (alias de
  *                            {@code quantidadeViagens}, consumido pelo front)
  * @param quantidadeViagens   viagens do motorista no período
- * @param frequencia          dias com viagem ÷ dias do mês × 100
+ * @param frequencia          dias em operação ÷ 30 × 100
  * @param rentabilidadeMedia  rentabilidadeTotal ÷ quantidadeViagens (média da US09)
  * @param rentabilidadeTotal  Σ (receita_frete − vale_frete) no período
  * @param frete               Σ receita_frete no período

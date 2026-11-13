@@ -40,10 +40,6 @@ export function MotoristasPage() {
     useEquipeMotoristas(filtroStatus);
   const rentabilidades = useRentabilidadeMotoristas();
 
-  const { usuario } = useSessao();
-  const exibirImportacaoVeiculos =
-    usuario !== null && podeImportarVeiculos(usuario.perfil);
-
   const motoristasFiltrados = useMemo(() => {
     const termo = busca.trim().toLowerCase();
     const motoristas = dados?.motoristas ?? [];
@@ -62,10 +58,6 @@ export function MotoristasPage() {
           )),
     );
   }, [dados, busca]);
-
-  const botaoImportarVeiculos = exibirImportacaoVeiculos ? (
-    <BotaoImportarVeiculos onImportado={recarregar} />
-  ) : null;
 
   async function alterarStatus(id: number, novoStatus: StatusEquipe) {
     setStatusSalvando(id);
@@ -100,11 +92,7 @@ export function MotoristasPage() {
             title="Motoristas"
             onMenuClick={() => setSidebarOpen(true)}
             notificacoes={<SinoNotificacoes />}
-            acoes={botaoImportarVeiculos}
           />
-
-          {/* Em telas pequenas o botão sai do cabeçalho para não espremer o título. */}
-          {botaoImportarVeiculos && <div className="sm:hidden">{botaoImportarVeiculos}</div>}
 
           <EquipeFiltros
             busca={busca}

@@ -1,13 +1,7 @@
-import { AlertCircle } from "lucide-react";
 import type { MotoristaEquipe, StatusEquipe } from "@entities/motorista";
 import { StatusMotoristaBadge } from "@entities/motorista/ui/StatusMotoristaBadge";
 import type { VeiculoResumo } from "@entities/veiculo";
-import {
-  formatCpf,
-  formatDateOrToday,
-  formatFrequencia,
-  formatTipoVeiculo,
-} from "@shared/lib";
+import { formatCpf, formatDateOrToday, formatTipoVeiculo } from "@shared/lib";
 import { ValorMonetario } from "@entities/sessao";
 
 interface EquipeTabelaProps {
@@ -27,25 +21,6 @@ const FORMATADOR_MOEDA = new Intl.NumberFormat("pt-BR", {
   style: "currency",
   currency: "BRL",
 });
-
-/** Frequência é a participação nas viagens: 0% significa motorista sem viagem no período. */
-function Frequencia({ valor, baixa }: { valor: number | null; baixa: boolean }) {
-  if (valor === null) {
-    return <span className="text-sm text-fg-subtle">—</span>;
-  }
-
-  return (
-    <span
-      className={`inline-flex items-center gap-1 text-sm ${
-        baixa ? "font-medium text-red-500" : "text-fg"
-      }`}
-      title={baixa ? "Baixa utilização" : undefined}
-    >
-      {formatFrequencia(valor)}
-      {baixa && <AlertCircle size={14} aria-label="Baixa utilização" />}
-    </span>
-  );
-}
 
 function descreverVeiculo(veiculo: VeiculoResumo): string {
   return [veiculo.placa, veiculo.modelo, formatTipoVeiculo(veiculo.tipo)]
@@ -105,16 +80,14 @@ export function EquipeTabela({
         </p>
       ) : (
         <div className="overflow-x-auto">
-          <table className="w-full min-w-[1100px] table-fixed">
+          <table className="w-full min-w-[1000px] table-fixed">
             <colgroup>
+              <col className="w-[18%]" />
+              <col className="w-[16%]" />
+              <col className="w-[14%]" />
+              <col className="w-[14%]" />
+              <col className="w-[8%]" />
               <col className="w-[15%]" />
-              {/* Veículo/Placa ganhou espaço para modelo · tipo e o selo "+N". */}
-              <col className="w-[14%]" />
-              <col className="w-[13%]" />
-              <col className="w-[12%]" />
-              <col className="w-[7%]" />
-              <col className="w-[10%]" />
-              <col className="w-[14%]" />
               <col className="w-[15%]" />
             </colgroup>
             <thead>
@@ -124,7 +97,6 @@ export function EquipeTabela({
                 <th className={HEADER_CELL}>Operação</th>
                 <th className={HEADER_CELL}>Localização</th>
                 <th className={HEADER_CELL}>Viagens</th>
-                <th className={HEADER_CELL}>Frequência</th>
                 <th className={HEADER_CELL}>Rentabilidade média</th>
                 <th className={`${HEADER_CELL} text-right`}>Status</th>
               </tr>
@@ -200,14 +172,6 @@ export function EquipeTabela({
                       <span className="text-sm text-fg">
                         {motorista.viagens}
                       </span>
-                    </td>
-
-                    {/* Frequência */}
-                    <td className={CELL}>
-                      <Frequencia
-                        valor={motorista.frequencia}
-                        baixa={motorista.baixaFrequencia}
-                      />
                     </td>
 
                     {/* Rentabilidade média — borrada para o operador */}

@@ -1,6 +1,8 @@
 import { useState } from "react";
+import type { ReactNode } from "react";
 
 import { MensagemFeedbackUpload, ModalImportacao } from "@shared/ui";
+import type { ValidacaoArquivo } from "@shared/ui";
 
 import {
   importarVeiculos,
@@ -16,6 +18,9 @@ import { validarArquivoVeiculos } from "../lib/validarArquivoVeiculos";
 interface Propriedades {
   onFechar: () => void;
   onImportado?: (resultado: ResultadoImportacaoVeiculos) => void;
+  titulo?: string;
+  validarArquivo?: (arquivo: File) => ValidacaoArquivo | Promise<ValidacaoArquivo>;
+  seletor?: (bloqueado: boolean) => ReactNode;
 }
 
 interface ErroTela {
@@ -118,7 +123,13 @@ function ResumoImportacao({ resultado }: { resultado: ResultadoImportacaoVeiculo
  * Depois do envio mostra o resumo e as linhas rejeitadas em vez de fechar,
  * para quem importou conferir o que precisa corrigir na planilha.
  */
-export function ModalImportarVeiculos({ onFechar, onImportado }: Propriedades) {
+export function ModalImportarVeiculos({
+  onFechar,
+  onImportado,
+  titulo = "Importar veículos",
+  validarArquivo = validarArquivoVeiculos,
+  seletor,
+}: Propriedades) {
   const [erro, setErro] = useState<ErroTela | null>(null);
   const [resultado, setResultado] = useState<ResultadoImportacaoVeiculos | null>(null);
 
@@ -163,14 +174,15 @@ export function ModalImportarVeiculos({ onFechar, onImportado }: Propriedades) {
 
   return (
     <ModalImportacao
-      titulo="Importar veículos"
+      titulo={titulo}
       formatosAceitos=".csv de até 10MB, com as colunas Placa e Tipo Veículo."
       accept=".csv"
       rotuloConfirmar="Importar veículos"
       rotuloFechar={resultado ? "Fechar" : "Cancelar"}
       instrucao={resultado ? "Importar outra planilha" : undefined}
       areaCompacta={resultado !== null}
-      validarArquivo={validarArquivoVeiculos}
+      validarArquivo={validarArquivo}
+      seletor={seletor}
       onEnviar={enviar}
       onArquivoInvalido={(mensagem) => {
         setResultado(null);

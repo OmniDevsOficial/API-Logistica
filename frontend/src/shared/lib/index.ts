@@ -17,3 +17,9 @@ export {
   RETICENCIAS,
   type ItemPaginacao,
 } from "./paginacao";
+export {
+  colunasDoCabecalho,
+  identificarPlanilha,
+  lerTipoDaPlanilha,
+  type TipoPlanilha,
+} from "./planilha";
