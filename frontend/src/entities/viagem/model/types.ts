@@ -6,7 +6,7 @@ export interface Viagem {
   destino: string | null;
   freteEstimado: number | null;
   veiculo: string;
-  distanciaKm: number;
+  distanciaKm: number | null;
   estimativaDias: number;
   status: StatusViagem;
   receita: number | null;

@@ -35,7 +35,7 @@ export function ViagemCard({ viagem }: ViagemCardProps) {
         <span className="text-[13px] text-fg-subtle">frete estimado</span>
       </div>
       <span className="text-[13px] text-fg-subtle">
-        {viagem.veiculo} · {viagem.distanciaKm}km
+        {viagem.veiculo} · {viagem.distanciaKm == null ? "-" : `${viagem.distanciaKm}km`} · estimativa {viagem.estimativaDias} dias
       </span>
       <div className="mt-2 grid grid-cols-3 gap-3 border-t border-border pt-3">
         {(["receita", "custo", "rentabilidade"] as const).map((campo) => (

@@ -95,11 +95,7 @@ public class ViagemController {
      */
     private ViagemResponseDTO toResponseDTO(Viagem viagem) {
 
-        Integer distanciaKm = null;
-
-        if (viagem.getKmSaida() != null && viagem.getKmChegada() != null) {
-            distanciaKm = viagem.getKmChegada() - viagem.getKmSaida();
-        }
+        Integer distanciaKm = calcularDistanciaKm(viagem);
 
         return new ViagemResponseDTO(
                 viagem.getId(),
@@ -115,6 +111,18 @@ public class ViagemController {
                 viagem.getReceitaFrete(),
                 viagem.getValeFrete(),
                 RentabilidadeService.calcular(viagem.getReceitaFrete(), viagem.getValeFrete()));
+    }
+
+    /** Leituras ausentes ou zeradas não permitem calcular a distância. */
+    private Integer calcularDistanciaKm(Viagem viagem) {
+        Integer kmSaida = viagem.getKmSaida();
+        Integer kmChegada = viagem.getKmChegada();
+        if (kmSaida == null || kmChegada == null || kmSaida == 0 || kmChegada == 0) {
+            return null;
+        }
+
+        long distancia = Math.abs((long) kmChegada - kmSaida);
+        return distancia == 0 ? null : Math.toIntExact(distancia);
     }
 
     private String converterStatusParaFrontend(StatusViagem status) {

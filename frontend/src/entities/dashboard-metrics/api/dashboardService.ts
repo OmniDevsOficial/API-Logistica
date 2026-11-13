@@ -4,11 +4,16 @@ import type {
   DashboardMetrics,
   DashboardStatus,
   DestinoMaisRentavel,
+  RentabilidadeTipoVeiculo,
   SerieRentabilidade,
   ViagensPorStatus,
 } from "../model/types";
 
 const ENDPOINT = "/api/operacional/dashboard";
+const ENDPOINT_RENTABILIDADE_POR_TIPO = `${ENDPOINT}/rentabilidade-por-tipo`;
+const TIPO_NAO_IDENTIFICADO = "NAO_IDENTIFICADO";
+const FALHA_RENTABILIDADE_POR_TIPO =
+  "Não foi possível carregar a rentabilidade por tipo de veículo.";
 const TEMPO_LIMITE_MS = 30_000;
 const RESPOSTA_INVALIDA = "A resposta do serviço está inválida.";
 const FALHA_NA_CONSULTA = "Não foi possível carregar os dados do dashboard.";
@@ -164,4 +169,41 @@ export async function buscarDashboard(
   }
 
   return mapearResposta(await resposta.json());
+}
+
+function mapearTipoVeiculo(dados: unknown): RentabilidadeTipoVeiculo {
+  const item = registro(dados);
+  const tipo = texto(item.tipo);
+
+  return {
+    tipo,
+    naoIdentificado: tipo === TIPO_NAO_IDENTIFICADO,
+    viagens: numero(item.viagens),
+    receita: numero(item.receita),
+    custo: numero(item.custo),
+    rentabilidade: numero(item.rentabilidade),
+    mediaPorViagem: numeroOuNulo(item.mediaPorViagem),
+  };
+}
+
+export async function getRentabilidadePorTipo(
+  mes: string,
+  signal?: AbortSignal,
+): Promise<RentabilidadeTipoVeiculo[]> {
+  const parametros = new URLSearchParams({ mes });
+  const resposta = await consultar(
+    `${ENDPOINT_RENTABILIDADE_POR_TIPO}?${parametros.toString()}`,
+    signal,
+  );
+
+  if (!resposta.ok) {
+    throw new Error(FALHA_RENTABILIDADE_POR_TIPO);
+  }
+
+  const dados: unknown = await resposta.json();
+  if (!Array.isArray(dados)) {
+    throw new Error(RESPOSTA_INVALIDA);
+  }
+
+  return dados.map(mapearTipoVeiculo);
 }

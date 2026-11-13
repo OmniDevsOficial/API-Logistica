@@ -5,9 +5,14 @@ import type {
 import { ChartCard, StatCard } from "@shared/ui";
 import { formatCurrencyBRL, formatPercent } from "@shared/lib";
 import { GraficoRentabilidadeViagens } from "./GraficoRentabilidadeViagens";
+import {
+  CardRentabilidadePorTipo,
+  type EstadoRentabilidadePorTipo,
+} from "./CardRentabilidadePorTipo";
 
 interface DashboardOverviewProps {
   data: DashboardData;
+  rentabilidadePorTipo: EstadoRentabilidadePorTipo | null;
 }
 
 const SEM_DADO = "-";
@@ -39,7 +44,7 @@ function decimal(valor: number | null): string {
       });
 }
 
-export function DashboardOverview({ data }: DashboardOverviewProps) {
+export function DashboardOverview({ data, rentabilidadePorTipo }: DashboardOverviewProps) {
   const { metrics } = data;
 
   return (
@@ -114,11 +119,18 @@ export function DashboardOverview({ data }: DashboardOverviewProps) {
         caption="Média no período"
       />
       <StatCard
-        className="sm:col-span-2 lg:col-start-3 lg:col-span-2 lg:row-start-4"
+        className="sm:col-span-2 lg:col-start-1 lg:col-span-2 lg:row-start-5"
         title="Destino mais rentável"
         value={metrics.destinoMaisRentavel?.destino ?? SEM_DADO}
         caption={legendaDestino(metrics.destinoMaisRentavel)}
       />
+
+      {rentabilidadePorTipo && (
+        <CardRentabilidadePorTipo
+          estado={rentabilidadePorTipo}
+          className="sm:col-span-2 lg:col-start-3 lg:col-span-2 lg:row-start-4 lg:row-span-2"
+        />
+      )}
     </div>
   );
 }
