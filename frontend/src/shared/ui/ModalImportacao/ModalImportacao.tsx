@@ -19,7 +19,7 @@ export interface ModalImportacaoProps {
   /** Texto do botão de envio (ex.: "Importar manifesto"). */
   rotuloConfirmar: string;
   /** Validação no cliente; arquivo inválido não é enviado. */
-  validarArquivo: (arquivo: File) => ValidacaoArquivo;
+  validarArquivo: (arquivo: File) => ValidacaoArquivo | Promise<ValidacaoArquivo>;
   /**
    * Envia o arquivo. Deve tratar os próprios erros e devolver `true` para
    * limpar a seleção (sucesso) ou `false` para mantê-la e permitir reenviar.
@@ -44,6 +44,7 @@ export interface ModalImportacaoProps {
   rotuloFechar?: string;
   /** Reduz a área de envio quando já há um resultado na tela. */
   areaCompacta?: boolean;
+  seletor?: (bloqueado: boolean) => ReactNode;
 }
 
 const FOCO_PRIMARIO =
@@ -69,6 +70,7 @@ export function ModalImportacao({
   instrucao = "Escolha um arquivo ou arraste e solte aqui.",
   rotuloFechar = "Cancelar",
   areaCompacta = false,
+  seletor,
 }: ModalImportacaoProps) {
   const [arrastando, setArrastando] = useState(false);
   const [arquivoSelecionado, setArquivoSelecionado] = useState<File | null>(null);
@@ -97,9 +99,9 @@ export function ModalImportacao({
     if (inputRef.current) inputRef.current.value = "";
   }
 
-  function tratarNovoArquivo(arquivo: File) {
+  async function tratarNovoArquivo(arquivo: File) {
     if (envioEmAndamentoRef.current) return;
-    const resultado = validarArquivo(arquivo);
+    const resultado = await validarArquivo(arquivo);
 
     if (!resultado.valido) {
       removerArquivo();
@@ -115,12 +117,12 @@ export function ModalImportacao({
     evento.preventDefault();
     setArrastando(false);
     const arquivo = evento.dataTransfer.files[0];
-    if (arquivo) tratarNovoArquivo(arquivo);
+    if (arquivo) void tratarNovoArquivo(arquivo);
   }
 
   function aoSelecionarPeloInput(evento: ChangeEvent<HTMLInputElement>) {
     const arquivo = evento.target.files?.[0];
-    if (arquivo) tratarNovoArquivo(arquivo);
+    if (arquivo) void tratarNovoArquivo(arquivo);
   }
 
   async function enviar() {
@@ -167,6 +169,8 @@ export function ModalImportacao({
             <X size={20} />
           </button>
         </div>
+
+        {seletor?.(enviando)}
 
         {conteudo}
 
