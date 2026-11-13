@@ -2,7 +2,6 @@ package com.ominidevs.operacional.motorista.services;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.time.temporal.ChronoUnit;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.IntStream;
@@ -20,7 +19,7 @@ import com.ominidevs.operacional.motorista.repositories.RankingMotoristaConsulta
  *
  * Somente as viagens do mês selecionado entram no cálculo. Para cada motorista:
  * rentabilidade média = rentabilidade total ÷ quantidade de viagens (a média da
- * US09) e frequência = dias com viagem ÷ dias do mês × 100. A ordenação usa um
+ * US09) e frequência = dias em operação ÷ 30 × 100. A ordenação usa um
  * único Comparator — rentabilidade média (desc), quantidade de viagens (desc),
  * frequência (desc) e nome (asc) — e a posição sequencial (1..n) é atribuída
  * depois de ordenar. O nome é o desempate final, então a ordem é sempre
@@ -58,10 +57,8 @@ public class RankingMotoristaService {
             return List.of();
         }
 
-        long diasDoMes = ChronoUnit.DAYS.between(periodo.inicio(), periodo.fim()) + 1;
-
         List<RankingMotoristaResponse> ordenado = linhas.stream()
-                .map(linha -> paraResponse(linha, diasDoMes))
+                .map(this::paraResponse)
                 .sorted(ORDEM)
                 .toList();
 
@@ -71,12 +68,12 @@ public class RankingMotoristaService {
                 .toList();
     }
 
-    private RankingMotoristaResponse paraResponse(RankingMotoristaLinha linha, long diasDoMes) {
+    private RankingMotoristaResponse paraResponse(RankingMotoristaLinha linha) {
         // Cada grupo nasce de pelo menos uma viagem, então o divisor nunca é zero.
         BigDecimal media = linha.rentabilidadeTotal()
                 .divide(BigDecimal.valueOf(linha.quantidadeViagens()), 2, RoundingMode.HALF_UP);
-        // Frequência do mês: dias com viagem ÷ dias do mês × 100 (fev = 28/29).
-        BigDecimal frequencia = Porcentagem.calcular(linha.diasComViagem(), diasDoMes);
+        // Fórmula acordada para utilização: dias em operação ÷ 30 × 100.
+        BigDecimal frequencia = Porcentagem.calcular(linha.diasComViagem(), 30);
 
         return new RankingMotoristaResponse(
                 0,

@@ -15,7 +15,8 @@ public class UtilizacaoRepository {
 
     public List<MotoristaQuantidadeViagens> consultar(PeriodoConsulta periodo) {
         // Uma consulta mantém contagem e total no mesmo retrato do banco.
-        // Não filtra status nem deduplica manifesto: cada linha é uma viagem.
+        // Só viagens finalizadas contam como dias efetivamente operados.
+        // Cada viagem finalizada conta uma vez, sem deduplicar manifestos.
         // CPF continua texto, preservando zeros iniciais; nomes não são identidade.
         return jdbc.query("""
                 WITH cadastro AS (
@@ -25,9 +26,11 @@ public class UtilizacaoRepository {
                     GROUP BY NULLIF(regexp_replace(cpf, '[^0-9]', '', 'g'), '')
                 ), viagens AS (
                     SELECT NULLIF(regexp_replace(cpf_motorista, '[^0-9]', '', 'g'), '') AS cpf,
-                           MIN(NULLIF(TRIM(motorista), '')) AS nome, COUNT(*) AS quantidade
+                           MIN(NULLIF(TRIM(motorista), '')) AS nome, COUNT(*) AS quantidade,
+                           COUNT(DISTINCT data) AS dias_em_operacao
                     FROM operacional.viagem
                     WHERE data BETWEEN ? AND ?
+                      AND status = 'FINALIZADO'
                     GROUP BY NULLIF(regexp_replace(cpf_motorista, '[^0-9]', '', 'g'), '')
                 )
                 SELECT COALESCE(c.cpf, v.cpf, 'SEM_IDENTIFICACAO') AS chave,
@@ -36,12 +39,13 @@ public class UtilizacaoRepository {
                             THEN 'Sem motorista identificado'
                             ELSE COALESCE(NULLIF(TRIM(c.nome), ''), v.nome, 'Motorista sem nome')
                        END AS nome,
-                       COALESCE(v.quantidade, 0) AS quantidade
+                       COALESCE(v.quantidade, 0) AS quantidade,
+                       COALESCE(v.dias_em_operacao, 0) AS dias_em_operacao
                 FROM cadastro c FULL OUTER JOIN viagens v ON c.cpf = v.cpf
                 """,
                 (rs, row) -> new MotoristaQuantidadeViagens(
                         rs.getString("chave"), rs.getObject("motorista_id", Integer.class),
-                        rs.getString("nome"), rs.getLong("quantidade")),
+                        rs.getString("nome"), rs.getLong("quantidade"), rs.getLong("dias_em_operacao")),
                 Date.valueOf(periodo.inicio()), Date.valueOf(periodo.fim()));
     }
 }
