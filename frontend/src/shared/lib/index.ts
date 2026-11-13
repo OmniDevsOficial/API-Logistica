@@ -6,6 +6,7 @@ export {
   formatFrequencia,
   formatPercent,
   formatDateRange,
+  formatIsoDate,
   formatTipoVeiculo,
 } from "./format";
 export { formatarTamanhoArquivo } from "./formatarTamanhoArquivo";

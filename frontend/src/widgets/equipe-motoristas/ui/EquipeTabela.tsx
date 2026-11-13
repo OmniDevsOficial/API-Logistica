@@ -10,6 +10,7 @@ interface EquipeTabelaProps {
   chaveNomeMotorista: (nome: string) => string;
   onStatusChange?: (id: number, novoStatus: StatusEquipe) => void;
   statusSalvando?: number | null;
+  onMotoristaClick?: (motorista: MotoristaEquipe) => void;
 }
 
 const HEADER_CELL =
@@ -65,6 +66,7 @@ export function EquipeTabela({
   chaveNomeMotorista,
   onStatusChange,
   statusSalvando = null,
+  onMotoristaClick,
 }: EquipeTabelaProps) {
   return (
     <div className="overflow-hidden rounded-lg bg-surface">
@@ -106,15 +108,35 @@ export function EquipeTabela({
                 const rentabilidade = rentabilidades.get(
                   chaveNomeMotorista(motorista.nome),
                 );
+                const selecionar = onMotoristaClick
+                  ? () => onMotoristaClick(motorista)
+                  : undefined;
 
                 return (
-                  <tr key={motorista.id}>
+                  <tr
+                    key={motorista.id}
+                    onClick={selecionar}
+                    className={selecionar ? "cursor-pointer hover:bg-background" : undefined}
+                  >
                     {/* Motorista — nome com o documento logo abaixo */}
                     <td className={`${CELL} pl-6`}>
                       <div className="flex flex-col">
-                        <span className="text-sm font-semibold text-fg">
-                          {motorista.nome}
-                        </span>
+                        {selecionar ? (
+                          <button
+                            type="button"
+                            className="cursor-pointer text-left text-sm font-semibold text-fg transition-colors hover:text-primary"
+                            onClick={(evento) => {
+                              evento.stopPropagation();
+                              selecionar();
+                            }}
+                          >
+                            {motorista.nome}
+                          </button>
+                        ) : (
+                          <span className="text-sm font-semibold text-fg">
+                            {motorista.nome}
+                          </span>
+                        )}
                         <span className="text-xs text-fg-muted">
                           {cpf ?? "—"}
                         </span>
@@ -168,7 +190,10 @@ export function EquipeTabela({
                     </td>
 
                     {/* Status */}
-                    <td className={`${CELL} text-right`}>
+                    <td
+                      className={`${CELL} text-right`}
+                      onClick={(evento) => evento.stopPropagation()}
+                    >
                       <StatusMotoristaBadge
                         status={motorista.status}
                         salvando={statusSalvando === motorista.id}
