@@ -10,6 +10,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import com.ominidevs.operacional.dashboard.exceptions.DashboardExceptionHandler;
+import com.ominidevs.operacional.dashboard.projections.ComponentesPagamentoMotorista;
 import com.ominidevs.operacional.dashboard.projections.PontoRentabilidade;
 import com.ominidevs.operacional.dashboard.projections.PontoSerie;
 import com.ominidevs.operacional.dashboard.projections.RentabilidadeTipoVeiculo;
@@ -183,6 +184,44 @@ class DashboardControllerTest {
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.erro").value("Informe o mês no formato AAAA-MM."));
         verifyNoInteractions(repository);
+    }
+
+    @Test
+    void pagamentoMotoristasDevolveUmItemPorMotoristaDoMaiorParaOMenorValor() throws Exception {
+        when(repository.consultarComponentesPagamento(eq(PeriodoConsulta.doMesObrigatorio("2026-08")))).thenReturn(List.of(
+                new ComponentesPagamentoMotorista("111", "Bruno", 1, new BigDecimal("250.50")),
+                new ComponentesPagamentoMotorista("222", "Ana", 2, new BigDecimal("1500.00")),
+                new ComponentesPagamentoMotorista(DashboardRepository.SEM_IDENTIFICACAO, "Sem motorista identificado", 1, null)));
+
+        mvc.perform(get("/dashboard/pagamento-motoristas").param("mes", "2026-08"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(3))
+                .andExpect(jsonPath("$[0].motorista").value("Ana"))
+                .andExpect(jsonPath("$[0].cpf").value("222"))
+                .andExpect(jsonPath("$[0].quantidadeViagens").value(2))
+                .andExpect(jsonPath("$[0].valorAPagar").value(1500.00))
+                .andExpect(jsonPath("$[1].motorista").value("Bruno"))
+                .andExpect(jsonPath("$[1].valorAPagar").value(250.50))
+                .andExpect(jsonPath("$[2].motorista").value("Sem motorista identificado"))
+                .andExpect(jsonPath("$[2].cpf").value(nullValue()))
+                .andExpect(jsonPath("$[2].valorAPagar").value(0.00));
+    }
+
+    @Test
+    void pagamentoMotoristasSemMesRetorna400() throws Exception {
+        mvc.perform(get("/dashboard/pagamento-motoristas"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.erro").value("Informe o mês no formato AAAA-MM."));
+        verifyNoInteractions(repository);
+    }
+
+    @Test
+    void pagamentoMotoristasComMesInvalidoRetorna400() throws Exception {
+        for (String mes : List.of("", "2026-13", "08/2026", "2026-8")) {
+            mvc.perform(get("/dashboard/pagamento-motoristas").param("mes", mes))
+                    .andExpect(status().isBadRequest())
+                    .andExpect(jsonPath("$.erro").value("Informe o mês no formato AAAA-MM."));
+        }
     }
 
     @Test
