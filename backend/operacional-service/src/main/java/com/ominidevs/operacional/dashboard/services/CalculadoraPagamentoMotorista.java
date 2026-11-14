@@ -8,9 +8,9 @@ import com.ominidevs.operacional.dashboard.projections.ComponentesPagamentoMotor
 /**
  * Ponto único da fórmula de pagamento por motorista.
  *
- * <p>A fórmula ainda não foi definida pelo PO. Enquanto isso, o pagamento é a soma do
- * "Valor Frete" (sem S) das viagens do motorista no mês. Para trocá-la, altere apenas
- * {@link #calcular(ComponentesPagamentoMotorista)}.
+ * <p>Regra definida pelo PO (sem retorno do cliente): o pagamento (salário) do motorista
+ * é a soma do "Valor Frete" (sem S) de todas as viagens dele no mês. Se a regra mudar,
+ * altere apenas {@link #calcular(ComponentesPagamentoMotorista)}.
  */
 public final class CalculadoraPagamentoMotorista {
 
