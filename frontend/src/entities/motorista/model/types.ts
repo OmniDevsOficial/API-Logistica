@@ -79,6 +79,16 @@ export interface RankingMotorista {
   custos: number | null;
 }
 
+/** Valor a pagar a um motorista no mês (GET /dashboard/pagamento-motoristas). */
+export interface PagamentoMotorista {
+  motorista: string;
+  /** CPF só com dígitos; nulo para viagens sem motorista identificado. */
+  cpf: string | null;
+  quantidadeViagens: number;
+  /** Soma do "Valor Frete" (singular) das viagens do motorista no mês. */
+  valorAPagar: number;
+}
+
 /** Item do ranking com a posição que ele ocupa (1 = melhor rentabilidade). */
 export interface RankingColocacao {
   posicao: number;
