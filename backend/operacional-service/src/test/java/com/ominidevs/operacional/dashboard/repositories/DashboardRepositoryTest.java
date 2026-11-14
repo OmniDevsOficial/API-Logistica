@@ -12,6 +12,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.SingleConnectionDataSource;
 
 import com.ominidevs.operacional.dashboard.model.AgrupamentoSerie;
+import com.ominidevs.operacional.dashboard.projections.ComponentesPagamentoMotorista;
 import com.ominidevs.operacional.dashboard.projections.DestinoRentavel;
 import com.ominidevs.operacional.dashboard.projections.PontoRentabilidade;
 import com.ominidevs.operacional.dashboard.projections.PontoSerie;
@@ -63,6 +64,22 @@ class DashboardRepositoryTest {
             connection.rollback();
             connection.close();
         }
+    }
+
+    @Test
+    void componentesPagamentoSomamValorFretePorCpfNoMesComTodosOsStatus() {
+        var porChave = repository.consultarComponentesPagamento(PeriodoConsulta.doMesObrigatorio("2026-09")).stream()
+                .collect(java.util.stream.Collectors.toMap(ComponentesPagamentoMotorista::chave, c -> c));
+
+        assertEquals(3, porChave.size());
+        var ana = porChave.get("00123456789");
+        assertEquals("Ana", ana.motorista());
+        assertEquals(2, ana.viagens());
+        assertEquals(new BigDecimal("1500.00"), ana.valorFrete());
+        assertEquals(new BigDecimal("250.50"), porChave.get("11111111111").valorFrete());
+        var semCpf = porChave.get(DashboardRepository.SEM_IDENTIFICACAO);
+        assertEquals("Sem motorista identificado", semCpf.motorista());
+        assertEquals(new BigDecimal("249.50"), semCpf.valorFrete());
     }
 
     @Test
