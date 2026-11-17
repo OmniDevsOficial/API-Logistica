@@ -1,12 +1,22 @@
 import type { Perfil } from "./types";
 
 const ROTAS_POR_PERFIL: Record<Perfil, readonly string[]> = {
-  GESTOR: ["/", "/motoristas", "/motoristas/utilizacao", "/viagens"],
+  GESTOR: ["/", "/motoristas", "/motoristas/utilizacao", "/viagens", "/ranking"],
   OPERADOR: ["/viagens", "/motoristas"],
 };
 
+const AREAS_POR_PERFIL: Record<Perfil, readonly string[]> = {
+  GESTOR: ["/administracao"],
+  OPERADOR: [],
+};
+
 export function podeAcessar(perfil: Perfil, rota: string): boolean {
-  return ROTAS_POR_PERFIL[perfil].includes(rota);
+  return (
+    ROTAS_POR_PERFIL[perfil].includes(rota) ||
+    AREAS_POR_PERFIL[perfil].some(
+      (area) => rota === area || rota.startsWith(`${area}/`),
+    )
+  );
 }
 
 export function rotaInicial(perfil: Perfil): string {

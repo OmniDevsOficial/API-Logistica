@@ -1,6 +1,7 @@
 import { ArrowDownAZ, ArrowUpAZ, Calendar } from "lucide-react";
 import { SinoNotificacoes } from "@features/alerta-utilizacao";
 import { PageHeader } from "@shared/ui";
+import type { ReactNode } from "react";
 
 interface MotoristasTopbarProps {
   periodo: string;
@@ -8,10 +9,11 @@ interface MotoristasTopbarProps {
   onPeriodoChange: (periodo: string) => void;
   onOrdemChange: (ordem: "asc" | "desc") => void;
   onMenuClick: () => void;
+  notificacoes?: ReactNode;
 }
 
 const PILL_CLASS =
-  "flex items-center gap-2 whitespace-nowrap rounded-md bg-surface px-4 py-2.5 text-sm font-medium text-black";
+  "flex items-center gap-2 whitespace-nowrap rounded-md bg-surface px-4 py-2.5 text-sm font-medium text-fg";
 
 export function MotoristasTopbar({
   periodo,
@@ -19,13 +21,14 @@ export function MotoristasTopbar({
   onPeriodoChange,
   onOrdemChange,
   onMenuClick,
+  notificacoes,
 }: MotoristasTopbarProps) {
   return (
     <header className="mb-7 flex flex-col gap-5">
       <PageHeader
         title="Motoristas"
         onMenuClick={onMenuClick}
-        notificacoes={<SinoNotificacoes />}
+        notificacoes={notificacoes ?? <SinoNotificacoes />}
       />
 
       <div className="flex flex-wrap items-center gap-3">

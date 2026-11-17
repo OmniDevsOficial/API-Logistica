@@ -14,7 +14,7 @@ import type {
 } from "@entities/dashboard-metrics";
 import { formatCurrencyBRL } from "@shared/lib";
 import { GraficoSemDados } from "./GraficoSemDados";
-import { marcacoes, rotuloDoEixo, rotuloDoTooltip } from "../lib/eixoDoGrafico";
+import { marcacoes, moedaCompacta, rotuloDoEixo, rotuloDoTooltip } from "../lib/eixoDoGrafico";
 
 interface GraficoRentabilidadeViagensProps {
   serie: SerieRentabilidade;
@@ -34,15 +34,6 @@ const LEGENDA = [
   { nome: "Custo", cor: COR_CUSTO },
   { nome: "Rentabilidade", cor: COR_RENTABILIDADE },
 ];
-
-function moedaCompacta(valor: number): string {
-  return valor.toLocaleString("pt-BR", {
-    style: "currency",
-    currency: "BRL",
-    notation: "compact",
-    maximumFractionDigits: 1,
-  });
-}
 
 function viagensPorExtenso(viagens: number): string {
   return viagens === 1 ? "1 viagem" : `${viagens} viagens`;

@@ -53,3 +53,44 @@ export interface EquipeMotoristasData {
   indisponiveis: number;
   motoristas: MotoristaEquipe[];
 }
+
+/**
+ * Linha do ranking mensal de motoristas (US13). A ordenação vem do serviço:
+ * o primeiro item é o 1º colocado do mês consultado.
+ */
+export interface RankingMotorista {
+  /** Identificador repassado ao modal de detalhes (US17). */
+  motoristaId: number | null;
+  nome: string;
+  /** CPF sem pontuação; exibido sob o nome quando não há telefone. */
+  cpf: string | null;
+  /** Telefone exibido sob o nome na lista. */
+  telefone: string | null;
+  /** Tipo do veículo exibido no pódio e na lista ("Truck"). */
+  veiculo: string | null;
+  placa: string | null;
+  /** Viagens do motorista dentro do mês consultado. */
+  viagens: number;
+  /** Dias com viagem ÷ dias do mês × 100, em percentual (0 a 100). */
+  frequencia: number | null;
+  rentabilidadeMedia: number | null;
+  /** Frete e custos somados no mês, usados no card do 1º colocado. */
+  frete: number | null;
+  custos: number | null;
+}
+
+/** Valor a pagar a um motorista no mês (GET /dashboard/pagamento-motoristas). */
+export interface PagamentoMotorista {
+  motorista: string;
+  /** CPF só com dígitos; nulo para viagens sem motorista identificado. */
+  cpf: string | null;
+  quantidadeViagens: number;
+  /** Soma do "Valor Frete" (singular) das viagens do motorista no mês. */
+  valorAPagar: number;
+}
+
+/** Item do ranking com a posição que ele ocupa (1 = melhor rentabilidade). */
+export interface RankingColocacao {
+  posicao: number;
+  motorista: RankingMotorista;
+}

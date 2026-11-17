@@ -42,6 +42,13 @@ public record PeriodoConsulta(LocalDate inicio, LocalDate fim) {
         }
     }
 
+    public static PeriodoConsulta doMesObrigatorio(String mes) {
+        if (mes == null || mes.isBlank()) {
+            throw new IndicadorInvalidoException("Informe o mês no formato AAAA-MM.");
+        }
+        return doMes(mes);
+    }
+
     private static PeriodoConsulta doMes(YearMonth mes) {
         return new PeriodoConsulta(mes.atDay(1), mes.atEndOfMonth());
     }

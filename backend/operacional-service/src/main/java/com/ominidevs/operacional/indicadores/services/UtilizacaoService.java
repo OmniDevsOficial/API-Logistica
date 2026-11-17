@@ -1,7 +1,6 @@
 package com.ominidevs.operacional.indicadores.services;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.util.Comparator;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Value;
@@ -28,13 +27,11 @@ public class UtilizacaoService {
 
     public UtilizacaoPeriodoResponse consultar(PeriodoConsulta periodo, OrdenacaoUtilizacao ordenacao, String cpf) {
         String cpfFiltro = normalizarFiltroCpf(cpf);
-        // Regra acordada: participação nas viagens, NÃO dias operados/dias disponíveis.
         // Sem cache: cada chamada consulta novamente o período solicitado.
         var dados = repository.consultar(periodo);
         long total = dados.stream().mapToLong(d -> d.quantidadeViagens()).sum();
-        // Com o mesmo denominador, ordenar pela quantidade equivale ao percentual exato.
         Comparator<UtilizacaoMotoristaResponse> comparador =
-                Comparator.comparingLong(UtilizacaoMotoristaResponse::quantidadeViagens);
+                Comparator.comparing(UtilizacaoMotoristaResponse::porcentagem);
         if (ordenacao == OrdenacaoUtilizacao.DESC) comparador = comparador.reversed();
         comparador = comparador.thenComparing(UtilizacaoMotoristaResponse::nome, String.CASE_INSENSITIVE_ORDER)
                 .thenComparing(UtilizacaoMotoristaResponse::chave);
@@ -43,10 +40,10 @@ public class UtilizacaoService {
         var motoristas = dados.stream()
                 .filter(d -> cpfFiltro == null || cpfFiltro.equals(d.chave()))
                 .map(d -> {
-                    BigDecimal porcentagem = calcularPorcentagem(d.quantidadeViagens(), total);
+                    BigDecimal porcentagem = calcularPorcentagem(d.diasEmOperacao());
                     return new UtilizacaoMotoristaResponse(
                             d.chave(), d.motoristaId(), d.nome(), d.quantidadeViagens(), porcentagem,
-                            d.quantidadeViagens() == 0 ? "SEM_VIAGENS" : "COM_VIAGENS",
+                            d.diasEmOperacao() == 0 ? "SEM_VIAGENS" : "COM_VIAGENS",
                             ehBaixaUtilizacao(d.motoristaId(), porcentagem));
                 })
                 .sorted(comparador).toList();
@@ -54,7 +51,7 @@ public class UtilizacaoService {
         return new UtilizacaoPeriodoResponse(
                 periodo.inicio().format(PeriodoConsulta.FORMATO),
                 periodo.fim().format(PeriodoConsulta.FORMATO),
-                "PARTICIPACAO_NAS_VIAGENS", ordenacao.parametro(), total,
+                "DIAS_EM_OPERACAO", ordenacao.parametro(), total,
                 total == 0 ? "SEM_VIAGENS" : "COM_DADOS", motoristas);
     }
 
@@ -78,10 +75,7 @@ public class UtilizacaoService {
         return valor.replace(".", "").replace("-", "");
     }
 
-    private BigDecimal calcularPorcentagem(long quantidade, long total) {
-        if (total == 0) return new BigDecimal("0.00");
-        // Arredondamento individual: a soma exibida pode ser 99,99% ou 100,01%.
-        return BigDecimal.valueOf(quantidade).multiply(BigDecimal.valueOf(100))
-                .divide(BigDecimal.valueOf(total), 2, RoundingMode.HALF_UP);
+    private BigDecimal calcularPorcentagem(long diasEmOperacao) {
+        return Porcentagem.calcular(diasEmOperacao, 30);
     }
 }

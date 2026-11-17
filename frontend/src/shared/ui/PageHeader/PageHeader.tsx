@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
-import { Bell, Menu, Moon, User } from "lucide-react";
+import { Bell, Menu, Moon, Sun, User } from "lucide-react";
+import { alternarTema, useTema } from "@shared/lib";
 
 export interface PageHeaderProps {
   title: string;
@@ -10,12 +11,14 @@ export interface PageHeaderProps {
 }
 
 const ICON_BUTTON_CLASS =
-  "flex h-10 w-10 shrink-0 cursor-pointer items-center justify-center rounded-full bg-surface text-black hover:text-fg";
+  "flex h-10 w-10 shrink-0 cursor-pointer items-center justify-center rounded-full bg-surface text-fg hover:text-fg-muted";
 
 export function PageHeader({ title, onMenuClick, notificacoes, acoes }: PageHeaderProps) {
+  const escuro = useTema() === "escuro";
+
   return (
     <div className="flex items-center justify-between gap-4">
-      <div className="flex items-center gap-3">
+      <div className="flex min-w-0 items-center gap-3">
         <button
           type="button"
           className={`${ICON_BUTTON_CLASS} lg:hidden`}
@@ -24,17 +27,19 @@ export function PageHeader({ title, onMenuClick, notificacoes, acoes }: PageHead
         >
           <Menu size={18} />
         </button>
-        <h1 className="text-[28px] font-semibold text-fg">{title}</h1>
+        <h1 className="min-w-0 truncate text-2xl font-semibold text-fg sm:text-[28px]">{title}</h1>
       </div>
 
-      <div className="flex items-center gap-3">
+      <div className="flex shrink-0 items-center gap-3">
         {acoes && <div className="hidden sm:block">{acoes}</div>}
         <button
           type="button"
           className={ICON_BUTTON_CLASS}
-          aria-label="Alternar tema"
+          aria-label={escuro ? "Ativar modo claro" : "Ativar modo escuro"}
+          title={escuro ? "Modo claro" : "Modo escuro"}
+          onClick={alternarTema}
         >
-          <Moon size={18} />
+          {escuro ? <Sun size={18} /> : <Moon size={18} />}
         </button>
         {notificacoes ?? (
           <button

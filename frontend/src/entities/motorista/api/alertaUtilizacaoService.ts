@@ -26,8 +26,17 @@ function ehMotoristaValido(
 
 export async function buscarAlertasUtilizacao(
   signal?: AbortSignal,
+  dataInicio?: string,
+  dataFim?: string,
 ): Promise<AlertaUtilizacao[]> {
-  const resposta = await apiFetch(ENDPOINT, { signal });
+  const parametros = new URLSearchParams();
+  if (dataInicio && dataFim) {
+    parametros.set("dataInicio", dataInicio);
+    parametros.set("dataFim", dataFim);
+  }
+  const queryString = parametros.toString();
+  const query = queryString ? `?${queryString}` : "";
+  const resposta = await apiFetch(`${ENDPOINT}${query}`, { signal });
 
   if (!resposta.ok) {
     throw new Error("Não foi possível carregar os alertas de utilização.");

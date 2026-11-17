@@ -52,3 +52,13 @@ export interface SerieRentabilidade {
   agrupamento: "DIA" | "MES";
   pontos: PontoRentabilidade[];
 }
+
+export interface RentabilidadeTipoVeiculo {
+  tipo: string;
+  naoIdentificado: boolean;
+  viagens: number;
+  receita: number;
+  custo: number;
+  rentabilidade: number;
+  mediaPorViagem: number | null;
+}

@@ -6,7 +6,7 @@ import {
   ClipboardList,
   Truck,
   Trophy,
-  Settings,
+  ShieldCheck,
   LogOut,
   X,
 } from "lucide-react";
@@ -23,14 +23,16 @@ const MAIN_NAV_ITEMS: NavItem[] = [
   { label: "Motoristas", icon: User, path: "/motoristas" },
   { label: "Registros", icon: ClipboardList },
   { label: "Viagens", icon: Truck, path: "/viagens" },
-  { label: "Ranking", icon: Trophy },
+  { label: "Ranking", icon: Trophy, path: "/ranking" },
 ];
+
+const ROTA_ADMINISTRACAO = "/administracao";
 
 const NAV_ITEM_BASE_CLASS =
   "flex items-center gap-3 rounded-md px-3 py-[11px] text-sm font-medium";
-const NAV_ITEM_INACTIVE_CLASS = `${NAV_ITEM_BASE_CLASS} text-black`;
+const NAV_ITEM_INACTIVE_CLASS = `${NAV_ITEM_BASE_CLASS} text-fg`;
 const NAV_ITEM_ACTIVE_CLASS = `${NAV_ITEM_BASE_CLASS} bg-primary font-semibold text-white`;
-const NAV_ITEM_DISABLED_CLASS = `${NAV_ITEM_BASE_CLASS} cursor-default text-black`;
+const NAV_ITEM_DISABLED_CLASS = `${NAV_ITEM_BASE_CLASS} cursor-default text-fg`;
 
 interface SidebarProps {
   open: boolean;
@@ -43,6 +45,8 @@ export function Sidebar({ open, onClose }: SidebarProps) {
     ({ path }) =>
       !path || (usuario !== null && podeAcessar(usuario.perfil, path)),
   );
+  const podeVerAdministracao =
+    usuario !== null && podeAcessar(usuario.perfil, ROTA_ADMINISTRACAO);
 
   return (
     <>
@@ -104,10 +108,18 @@ export function Sidebar({ open, onClose }: SidebarProps) {
         </nav>
 
         <div className="flex flex-col gap-1">
-          <div className={NAV_ITEM_INACTIVE_CLASS}>
-            <Settings size={18} strokeWidth={2} />
-            <span>Settings</span>
-          </div>
+          {podeVerAdministracao && (
+            <NavLink
+              to={ROTA_ADMINISTRACAO}
+              onClick={onClose}
+              className={({ isActive }) =>
+                isActive ? NAV_ITEM_ACTIVE_CLASS : NAV_ITEM_INACTIVE_CLASS
+              }
+            >
+              <ShieldCheck size={18} strokeWidth={2} />
+              <span>Administração</span>
+            </NavLink>
+          )}
           <button
             type="button"
             onClick={encerrarSessao}

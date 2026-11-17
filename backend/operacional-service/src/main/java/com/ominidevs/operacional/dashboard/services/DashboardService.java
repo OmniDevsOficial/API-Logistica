@@ -2,6 +2,7 @@ package com.ominidevs.operacional.dashboard.services;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.Comparator;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
@@ -9,8 +10,10 @@ import org.springframework.stereotype.Service;
 import com.ominidevs.operacional.dashboard.dto.DashboardResponse;
 import com.ominidevs.operacional.dashboard.dto.DestinoMaisRentavelResponse;
 import com.ominidevs.operacional.dashboard.dto.MetricasDashboardResponse;
+import com.ominidevs.operacional.dashboard.dto.PagamentoMotoristaResponse;
 import com.ominidevs.operacional.dashboard.dto.PontoRentabilidadeResponse;
 import com.ominidevs.operacional.dashboard.dto.PontoSerieResponse;
+import com.ominidevs.operacional.dashboard.dto.RentabilidadePorTipoResponse;
 import com.ominidevs.operacional.dashboard.dto.SerieRentabilidadeResponse;
 import com.ominidevs.operacional.dashboard.dto.SeriesDashboardResponse;
 import com.ominidevs.operacional.dashboard.dto.ViagensPorStatusResponse;
@@ -18,6 +21,7 @@ import com.ominidevs.operacional.dashboard.model.AgrupamentoSerie;
 import com.ominidevs.operacional.dashboard.projections.DestinoRentavel;
 import com.ominidevs.operacional.dashboard.projections.PontoRentabilidade;
 import com.ominidevs.operacional.dashboard.projections.PontoSerie;
+import com.ominidevs.operacional.dashboard.projections.RentabilidadeTipoVeiculo;
 import com.ominidevs.operacional.dashboard.projections.ResumoViagens;
 import com.ominidevs.operacional.dashboard.projections.ValoresFinanceirosViagem;
 import com.ominidevs.operacional.dashboard.repositories.DashboardRepository;
@@ -25,6 +29,7 @@ import com.ominidevs.operacional.indicadores.dto.UtilizacaoMotoristaResponse;
 import com.ominidevs.operacional.indicadores.model.OrdenacaoUtilizacao;
 import com.ominidevs.operacional.indicadores.model.PeriodoConsulta;
 import com.ominidevs.operacional.indicadores.services.UtilizacaoService;
+import com.ominidevs.operacional.viagem.services.RentabilidadeService;
 
 @Service
 public class DashboardService {
@@ -57,6 +62,43 @@ public class DashboardService {
                 converterMetricas(resumo, periodo),
                 series,
                 utilizacao);
+    }
+
+    public List<RentabilidadePorTipoResponse> rentabilidadePorTipo(PeriodoConsulta periodo) {
+        return repository.consultarRentabilidadePorTipo(periodo).stream()
+                .map(this::converterTipo)
+                .toList();
+    }
+
+    /**
+     * Consolida o pagamento de cada motorista no período.
+     *
+     * @param periodo mês consultado.
+     * @return um item por motorista, do maior para o menor valor a pagar.
+     */
+    public List<PagamentoMotoristaResponse> pagamentoMotoristas(PeriodoConsulta periodo) {
+        return repository.consultarComponentesPagamento(periodo).stream()
+                .map(linha -> new PagamentoMotoristaResponse(
+                        linha.motorista(),
+                        DashboardRepository.SEM_IDENTIFICACAO.equals(linha.chave()) ? null : linha.chave(),
+                        linha.viagens(),
+                        CalculadoraPagamentoMotorista.calcular(linha)))
+                .sorted(Comparator.comparing(PagamentoMotoristaResponse::valorAPagar).reversed()
+                        .thenComparing(PagamentoMotoristaResponse::motorista))
+                .toList();
+    }
+
+    private RentabilidadePorTipoResponse converterTipo(RentabilidadeTipoVeiculo linha) {
+        BigDecimal receita = zeroSeNulo(linha.receita());
+        BigDecimal custo = zeroSeNulo(linha.custo());
+        BigDecimal rentabilidade = RentabilidadeService.calcular(receita, custo);
+        return new RentabilidadePorTipoResponse(
+                linha.tipo(),
+                linha.viagens(),
+                arredondar(receita),
+                arredondar(custo),
+                arredondar(rentabilidade),
+                mediaPorViagem(rentabilidade, linha.viagens()));
     }
 
     private MetricasDashboardResponse converterMetricas(ResumoViagens resumo, PeriodoConsulta periodo) {

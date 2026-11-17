@@ -1,12 +1,15 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { Sidebar } from "@widgets/sidebar";
 import { MotoristasTopbar, MotoristasList } from "@/widgets/motoristas-list";
+import { SinoNotificacoes } from "@features/alerta-utilizacao";
 import { useMotoristasUtilizacao } from "../model/useMotoristasUtilizacao";
+import { intervaloDoPeriodo } from "../lib/intervaloDoPeriodo";
 
 export function UtilizacaoMotoristasPage() {
   const [periodo, setPeriodo] = useState("30d");
   const [ordem, setOrdem] = useState<"asc" | "desc">("desc");
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const intervalo = useMemo(() => intervaloDoPeriodo(periodo), [periodo]);
   const { motoristas, carregando, erro } = useMotoristasUtilizacao(
     periodo,
     ordem,
@@ -23,6 +26,12 @@ export function UtilizacaoMotoristasPage() {
           onPeriodoChange={setPeriodo}
           onOrdemChange={setOrdem}
           onMenuClick={() => setSidebarOpen(true)}
+          notificacoes={
+            <SinoNotificacoes
+              dataInicio={intervalo.dataInicio}
+              dataFim={intervalo.dataFim}
+            />
+          }
         />
 
         <div className="lg:min-h-0 lg:flex-1">

@@ -5,8 +5,13 @@ import { useAlertasUtilizacao } from "../model/useAlertasUtilizacao";
 
 const LIMITE_CONTADOR = 99;
 
-export function SinoNotificacoes() {
-  const alertas = useAlertasUtilizacao();
+interface SinoNotificacoesProps {
+  dataInicio?: string;
+  dataFim?: string;
+}
+
+export function SinoNotificacoes({ dataInicio, dataFim }: SinoNotificacoesProps) {
+  const alertas = useAlertasUtilizacao(dataInicio, dataFim);
   const [aberto, setAberto] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -53,7 +58,7 @@ export function SinoNotificacoes() {
         aria-label={rotulo}
         aria-haspopup="dialog"
         aria-expanded={aberto}
-        className="relative flex h-10 w-10 shrink-0 cursor-pointer items-center justify-center rounded-full bg-surface text-black hover:text-fg"
+        className="relative flex h-10 w-10 shrink-0 cursor-pointer items-center justify-center rounded-full bg-surface text-fg hover:text-fg-muted"
       >
         <Bell size={18} />
         {total > 0 && (

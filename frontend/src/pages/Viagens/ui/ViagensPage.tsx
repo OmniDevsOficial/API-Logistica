@@ -96,7 +96,7 @@ export function ViagensPage() {
           filtroModal={filtroModal}
         />
         {!data && !erro && <p className="py-8 text-center text-sm text-fg-subtle">Carregando viagens…</p>}
-        {erro && <p className="py-8 text-center text-sm text-red-600">Não foi possível carregar as viagens.</p>}
+        {erro && <p className="py-8 text-center text-sm text-red-600 dark:text-red-400">Não foi possível carregar as viagens.</p>}
         {data && (
           <div className="grid grid-cols-1 gap-6 items-start lg:grid-cols-[minmax(0,1fr)_380px]">
             <ViagensList viagens={viagensFiltradas} />

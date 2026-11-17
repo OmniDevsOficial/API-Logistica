@@ -19,7 +19,7 @@ export interface ModalImportacaoProps {
   /** Texto do botão de envio (ex.: "Importar manifesto"). */
   rotuloConfirmar: string;
   /** Validação no cliente; arquivo inválido não é enviado. */
-  validarArquivo: (arquivo: File) => ValidacaoArquivo;
+  validarArquivo: (arquivo: File) => ValidacaoArquivo | Promise<ValidacaoArquivo>;
   /**
    * Envia o arquivo. Deve tratar os próprios erros e devolver `true` para
    * limpar a seleção (sucesso) ou `false` para mantê-la e permitir reenviar.
@@ -44,6 +44,7 @@ export interface ModalImportacaoProps {
   rotuloFechar?: string;
   /** Reduz a área de envio quando já há um resultado na tela. */
   areaCompacta?: boolean;
+  seletor?: (bloqueado: boolean) => ReactNode;
 }
 
 const FOCO_PRIMARIO =
@@ -69,6 +70,7 @@ export function ModalImportacao({
   instrucao = "Escolha um arquivo ou arraste e solte aqui.",
   rotuloFechar = "Cancelar",
   areaCompacta = false,
+  seletor,
 }: ModalImportacaoProps) {
   const [arrastando, setArrastando] = useState(false);
   const [arquivoSelecionado, setArquivoSelecionado] = useState<File | null>(null);
@@ -97,9 +99,9 @@ export function ModalImportacao({
     if (inputRef.current) inputRef.current.value = "";
   }
 
-  function tratarNovoArquivo(arquivo: File) {
+  async function tratarNovoArquivo(arquivo: File) {
     if (envioEmAndamentoRef.current) return;
-    const resultado = validarArquivo(arquivo);
+    const resultado = await validarArquivo(arquivo);
 
     if (!resultado.valido) {
       removerArquivo();
@@ -115,12 +117,12 @@ export function ModalImportacao({
     evento.preventDefault();
     setArrastando(false);
     const arquivo = evento.dataTransfer.files[0];
-    if (arquivo) tratarNovoArquivo(arquivo);
+    if (arquivo) void tratarNovoArquivo(arquivo);
   }
 
   function aoSelecionarPeloInput(evento: ChangeEvent<HTMLInputElement>) {
     const arquivo = evento.target.files?.[0];
-    if (arquivo) tratarNovoArquivo(arquivo);
+    if (arquivo) void tratarNovoArquivo(arquivo);
   }
 
   async function enviar() {
@@ -145,7 +147,7 @@ export function ModalImportacao({
       onClick={tentarFechar}
     >
       <div
-        className="flex max-h-[88vh] w-[92vw] max-w-[640px] flex-col gap-6 overflow-y-auto rounded-2xl bg-white p-5 text-left shadow-2xl sm:p-7"
+        className="flex max-h-[88vh] w-[92vw] max-w-[640px] flex-col gap-6 overflow-y-auto rounded-2xl bg-surface p-5 text-left shadow-2xl sm:p-7"
         role="dialog"
         aria-modal="true"
         aria-busy={enviando}
@@ -153,13 +155,13 @@ export function ModalImportacao({
         onClick={(evento) => evento.stopPropagation()}
       >
         <div className="flex items-center justify-between">
-          <h2 id="titulo-modal-importacao" className="m-0 text-xl font-bold text-gray-900">
+          <h2 id="titulo-modal-importacao" className="m-0 text-xl font-bold text-fg">
             {titulo}
           </h2>
 
           <button
             type="button"
-            className={`flex cursor-pointer border-0 bg-transparent p-1 text-gray-500 transition-colors hover:text-gray-700 ${FOCO_PRIMARIO}`}
+            className={`flex cursor-pointer border-0 bg-transparent p-1 text-fg-muted transition-colors hover:text-fg ${FOCO_PRIMARIO}`}
             onClick={tentarFechar}
             disabled={enviando}
             aria-label="Fechar"
@@ -168,12 +170,14 @@ export function ModalImportacao({
           </button>
         </div>
 
+        {seletor?.(enviando)}
+
         {conteudo}
 
         {tentarDeNovo && (
           <button
             type="button"
-            className={`inline-flex cursor-pointer items-center gap-2 self-end rounded-full border border-gray-300 bg-transparent px-4 py-2 text-sm font-semibold text-gray-700 transition-colors hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50 ${FOCO_PRIMARIO}`}
+            className={`inline-flex cursor-pointer items-center gap-2 self-end rounded-full border border-gray-300 dark:border-border bg-transparent px-4 py-2 text-sm font-semibold text-fg transition-colors hover:bg-background disabled:cursor-not-allowed disabled:opacity-50 ${FOCO_PRIMARIO}`}
             onClick={enviar}
             disabled={!arquivoSelecionado || enviando}
           >
@@ -186,7 +190,7 @@ export function ModalImportacao({
           <div
             className={`flex flex-col items-center gap-2 rounded-xl border-2 border-dashed px-6 transition-colors duration-150 ${
               areaCompacta ? "py-6" : "py-14"
-            } ${arrastando ? "border-[#3355FF] bg-[rgba(51,85,255,0.04)]" : "border-gray-300"}`}
+            } ${arrastando ? "border-[#3355FF] bg-[rgba(51,85,255,0.04)]" : "border-gray-300 dark:border-border"}`}
             onDragOver={(evento) => {
               evento.preventDefault();
               setArrastando(true);
@@ -194,15 +198,15 @@ export function ModalImportacao({
             onDragLeave={() => setArrastando(false)}
             onDrop={aoSoltarArquivo}
           >
-            <UploadCloud className="mb-2 h-10 w-10 text-gray-400" aria-hidden="true" />
+            <UploadCloud className="mb-2 h-10 w-10 text-fg-subtle" aria-hidden="true" />
 
-            <p className="m-0 text-center font-semibold text-gray-900">{instrucao}</p>
+            <p className="m-0 text-center font-semibold text-fg">{instrucao}</p>
 
-            <p className="mb-3 mt-0 text-center text-sm text-gray-400">{formatosAceitos}</p>
+            <p className="mb-3 mt-0 text-center text-sm text-fg-subtle">{formatosAceitos}</p>
 
             <button
               type="button"
-              className={`cursor-pointer rounded-lg border border-gray-300 bg-transparent px-5 py-2 text-sm text-gray-500 transition-colors hover:bg-gray-50 hover:text-gray-700 ${FOCO_PRIMARIO}`}
+              className={`cursor-pointer rounded-lg border border-gray-300 dark:border-border bg-transparent px-5 py-2 text-sm text-fg-muted transition-colors hover:bg-background hover:text-fg ${FOCO_PRIMARIO}`}
               onClick={() => inputRef.current?.click()}
             >
               Selecionar arquivo
@@ -217,21 +221,21 @@ export function ModalImportacao({
             />
           </div>
         ) : (
-          <div className="flex items-center gap-3 rounded-xl border border-gray-200 p-4">
-            <FileSpreadsheet size={28} className="shrink-0 text-gray-400" aria-hidden="true" />
+          <div className="flex items-center gap-3 rounded-xl border border-border p-4">
+            <FileSpreadsheet size={28} className="shrink-0 text-fg-subtle" aria-hidden="true" />
 
             <div className="flex min-w-0 flex-1 flex-col">
-              <span className="overflow-hidden text-ellipsis whitespace-nowrap font-semibold text-gray-900">
+              <span className="overflow-hidden text-ellipsis whitespace-nowrap font-semibold text-fg">
                 {arquivoSelecionado.name}
               </span>
-              <span className="text-[13px] text-gray-400">
+              <span className="text-[13px] text-fg-subtle">
                 {formatarTamanhoArquivo(arquivoSelecionado.size)}
               </span>
             </div>
 
             <button
               type="button"
-              className="shrink-0 cursor-pointer border-0 bg-transparent p-0 text-gray-400 transition-colors hover:text-red-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-500 disabled:cursor-not-allowed disabled:opacity-50"
+              className="shrink-0 cursor-pointer border-0 bg-transparent p-0 text-fg-subtle transition-colors hover:text-red-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-500 disabled:cursor-not-allowed disabled:opacity-50"
               onClick={removerArquivo}
               disabled={enviando}
               aria-label="Remover arquivo"
@@ -244,7 +248,7 @@ export function ModalImportacao({
         <div className="flex justify-end gap-3">
           <button
             type="button"
-            className="cursor-pointer rounded-full border border-gray-300 bg-transparent px-6 py-2.5 font-semibold text-gray-500 transition-colors hover:bg-gray-50 hover:text-gray-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-400"
+            className="cursor-pointer rounded-full border border-gray-300 dark:border-border bg-transparent px-6 py-2.5 font-semibold text-fg-muted transition-colors hover:bg-background hover:text-fg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg-subtle"
             onClick={tentarFechar}
             disabled={enviando}
           >
@@ -253,7 +257,7 @@ export function ModalImportacao({
 
           <button
             type="button"
-            className={`cursor-pointer rounded-full border-0 bg-[#3355FF] px-6 py-2.5 font-semibold text-white transition-colors enabled:hover:bg-[#2444E0] disabled:cursor-not-allowed disabled:bg-indigo-200 ${FOCO_PRIMARIO}`}
+            className={`cursor-pointer rounded-full border-0 bg-[#3355FF] px-6 py-2.5 font-semibold text-white transition-colors enabled:hover:bg-[#2444E0] disabled:cursor-not-allowed disabled:bg-indigo-200 dark:disabled:bg-[#3355FF]/30 ${FOCO_PRIMARIO}`}
             onClick={enviar}
             disabled={!arquivoSelecionado || enviando}
           >

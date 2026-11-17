@@ -10,8 +10,10 @@ import com.ominidevs.operacional.dashboard.projections.DestinoRentavel;
 import com.ominidevs.operacional.dashboard.model.AgrupamentoSerie;
 import com.ominidevs.operacional.dashboard.projections.PontoRentabilidade;
 import com.ominidevs.operacional.dashboard.projections.PontoSerie;
+import com.ominidevs.operacional.dashboard.projections.RentabilidadeTipoVeiculo;
 import com.ominidevs.operacional.dashboard.projections.ResumoViagens;
 import com.ominidevs.operacional.dashboard.projections.ValoresFinanceirosViagem;
+import com.ominidevs.operacional.dashboard.dto.RentabilidadePorTipoResponse;
 import com.ominidevs.operacional.dashboard.repositories.DashboardRepository;
 import com.ominidevs.operacional.indicadores.dto.UtilizacaoMotoristaResponse;
 import com.ominidevs.operacional.indicadores.dto.UtilizacaoPeriodoResponse;
@@ -332,5 +334,42 @@ class DashboardServiceTest {
         verify(repository).consultarSerieRentabilidade(periodo, AgrupamentoSerie.DIA);
         verify(repository).consultarSeriePorVeiculo(periodo);
         verify(utilizacaoService).consultar(periodo, OrdenacaoUtilizacao.DESC);
+    }
+
+    @Test
+    void rentabilidadePorTipoCalculaReceitaMenosCustoEMediaPorViagem() {
+        PeriodoConsulta janeiro = PeriodoConsulta.doMesObrigatorio("2026-01");
+        when(repository.consultarRentabilidadePorTipo(janeiro)).thenReturn(List.of(
+                new RentabilidadeTipoVeiculo("TRUCK", 3, new BigDecimal("1000.00"), new BigDecimal("900.00")),
+                new RentabilidadeTipoVeiculo("VAN", 2, new BigDecimal("100.00"), new BigDecimal("500.55"))));
+
+        List<RentabilidadePorTipoResponse> tipos = service.rentabilidadePorTipo(janeiro);
+
+        assertEquals(List.of(
+                new RentabilidadePorTipoResponse("TRUCK", 3, new BigDecimal("1000.00"), new BigDecimal("900.00"),
+                        new BigDecimal("100.00"), new BigDecimal("33.33")),
+                new RentabilidadePorTipoResponse("VAN", 2, new BigDecimal("100.00"), new BigDecimal("500.55"),
+                        new BigDecimal("-400.55"), new BigDecimal("-200.28"))), tipos);
+    }
+
+    @Test
+    void rentabilidadePorTipoTrataValoresAusentesComoZero() {
+        PeriodoConsulta janeiro = PeriodoConsulta.doMesObrigatorio("2026-01");
+        when(repository.consultarRentabilidadePorTipo(janeiro)).thenReturn(List.of(
+                new RentabilidadeTipoVeiculo(DashboardRepository.TIPO_NAO_IDENTIFICADO, 1, null, null)));
+
+        RentabilidadePorTipoResponse tipo = service.rentabilidadePorTipo(janeiro).get(0);
+
+        assertEquals(new BigDecimal("0.00"), tipo.receita());
+        assertEquals(new BigDecimal("0.00"), tipo.custo());
+        assertEquals(new BigDecimal("0.00"), tipo.rentabilidade());
+        assertEquals(new BigDecimal("0.00"), tipo.mediaPorViagem());
+    }
+
+    @Test
+    void rentabilidadePorTipoDeMesSemViagensEVazia() {
+        when(repository.consultarRentabilidadePorTipo(any())).thenReturn(List.of());
+
+        assertTrue(service.rentabilidadePorTipo(PeriodoConsulta.doMesObrigatorio("2026-01")).isEmpty());
     }
 }

@@ -28,3 +28,12 @@ export function marcacoes(maximo: number, inteiras: boolean): number[] {
   const meio = teto / 2;
   return inteiras && !Number.isInteger(meio) ? [0, teto] : [0, meio, teto];
 }
+
+export function moedaCompacta(valor: number): string {
+  return valor.toLocaleString("pt-BR", {
+    style: "currency",
+    currency: "BRL",
+    notation: "compact",
+    maximumFractionDigits: 1,
+  });
+}

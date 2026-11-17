@@ -7,9 +7,11 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import com.ominidevs.operacional.dashboard.model.AgrupamentoSerie;
+import com.ominidevs.operacional.dashboard.projections.ComponentesPagamentoMotorista;
 import com.ominidevs.operacional.dashboard.projections.DestinoRentavel;
 import com.ominidevs.operacional.dashboard.projections.PontoRentabilidade;
 import com.ominidevs.operacional.dashboard.projections.PontoSerie;
+import com.ominidevs.operacional.dashboard.projections.RentabilidadeTipoVeiculo;
 import com.ominidevs.operacional.dashboard.projections.ResumoViagens;
 import com.ominidevs.operacional.dashboard.projections.ValoresFinanceirosViagem;
 import com.ominidevs.operacional.indicadores.model.PeriodoConsulta;
@@ -66,6 +68,41 @@ public class DashboardRepository {
             LIMIT 1
             """;
 
+    public static final String TIPO_NAO_IDENTIFICADO = "NAO_IDENTIFICADO";
+
+    private static final String SQL_RENTABILIDADE_POR_TIPO = """
+            SELECT tipo, viagens, receita, custo
+            FROM (
+                SELECT COALESCE(NULLIF(UPPER(TRIM(ve.tipo)), ''), '%1$s') AS tipo,
+                       COUNT(*) AS viagens,
+                       COALESCE(SUM(v.receita_frete), 0) AS receita,
+                       COALESCE(SUM(v.vale_frete), 0) AS custo
+                FROM operacional.viagem v
+                LEFT JOIN operacional.veiculo ve
+                       ON ve.placa = UPPER(regexp_replace(v.veiculo, '[[:space:]-]', '', 'g'))
+                WHERE v.data >= ? AND v.data < ?
+                GROUP BY 1
+            ) por_tipo
+            ORDER BY tipo = '%1$s', receita - custo DESC, tipo
+            """.formatted(TIPO_NAO_IDENTIFICADO);
+
+    public static final String SEM_IDENTIFICACAO = "SEM_IDENTIFICACAO";
+
+    // CPF normalizado identifica o motorista; nomes variam de grafia entre manifestos.
+    // Todas as viagens do mês entram, independentemente do status.
+    private static final String SQL_COMPONENTES_PAGAMENTO = """
+            SELECT COALESCE(NULLIF(regexp_replace(cpf_motorista, '[^0-9]', '', 'g'), ''), '%1$s') AS chave,
+                   CASE WHEN NULLIF(regexp_replace(cpf_motorista, '[^0-9]', '', 'g'), '') IS NULL
+                        THEN 'Sem motorista identificado'
+                        ELSE COALESCE(MIN(NULLIF(TRIM(motorista), '')), 'Motorista sem nome')
+                   END AS motorista,
+                   COUNT(*) AS viagens,
+                   SUM(valor_frete) AS valor_frete
+            FROM operacional.viagem
+            WHERE data >= ? AND data < ?
+            GROUP BY NULLIF(regexp_replace(cpf_motorista, '[^0-9]', '', 'g'), '')
+            """.formatted(SEM_IDENTIFICACAO);
+
     private final JdbcTemplate jdbc;
 
     public DashboardRepository(JdbcTemplate jdbc) {
@@ -116,6 +153,28 @@ public class DashboardRepository {
                         rs.getString("destino"), rs.getLong("viagens"), rs.getBigDecimal("rentabilidade_total")),
                 Date.valueOf(periodo.inicio()), Date.valueOf(periodo.fim()))
                 .stream().findFirst().orElse(null);
+    }
+
+    public List<RentabilidadeTipoVeiculo> consultarRentabilidadePorTipo(PeriodoConsulta periodo) {
+        return jdbc.query(SQL_RENTABILIDADE_POR_TIPO,
+                (rs, row) -> new RentabilidadeTipoVeiculo(
+                        rs.getString("tipo"), rs.getLong("viagens"),
+                        rs.getBigDecimal("receita"), rs.getBigDecimal("custo")),
+                Date.valueOf(periodo.inicio()), Date.valueOf(periodo.fim().plusDays(1)));
+    }
+
+    /**
+     * Soma, por motorista, os valores que compõem o pagamento no período.
+     *
+     * @param periodo período consultado, com início e fim inclusivos.
+     * @return uma linha por motorista com viagens no período, sem ordem definida.
+     */
+    public List<ComponentesPagamentoMotorista> consultarComponentesPagamento(PeriodoConsulta periodo) {
+        return jdbc.query(SQL_COMPONENTES_PAGAMENTO,
+                (rs, row) -> new ComponentesPagamentoMotorista(
+                        rs.getString("chave"), rs.getString("motorista"),
+                        rs.getLong("viagens"), rs.getBigDecimal("valor_frete")),
+                Date.valueOf(periodo.inicio()), Date.valueOf(periodo.fim().plusDays(1)));
     }
 
     private org.springframework.jdbc.core.RowMapper<PontoSerie> pontoSerie() {

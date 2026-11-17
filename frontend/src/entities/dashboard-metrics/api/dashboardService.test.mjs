@@ -1,6 +1,6 @@
 import { test, afterEach } from 'node:test';
 import assert from 'node:assert/strict';
-import { buscarDashboard } from './dashboardService.ts';
+import { buscarDashboard, getRentabilidadePorTipo } from './dashboardService.ts';
 
 const fetchOriginal = globalThis.fetch;
 afterEach(() => { globalThis.fetch = fetchOriginal; });
@@ -191,3 +191,54 @@ test('cancelamento da tela nao vira mensagem de erro', async () => {
     (erro) => erro.name === 'AbortError',
   );
 });
+
+test('rentabilidade por tipo envia o mes e mapeia os tipos com negativos e nao identificado', async () => {
+  let urlRecebida = '';
+  globalThis.fetch = async (url) => {
+    urlRecebida = url;
+    return Response.json([
+      { tipo: 'FIORINO', viagens: 396, receita: 758313.94, custo: 436252.52, rentabilidade: 322061.42, mediaPorViagem: 813.29 },
+      { tipo: 'VAN', viagens: 2, receita: 100, custo: 500.55, rentabilidade: -400.55, mediaPorViagem: -200.28 },
+      { tipo: 'NAO_IDENTIFICADO', viagens: 1, receita: 0, custo: 0, rentabilidade: 0, mediaPorViagem: 0 },
+    ]);
+  };
+
+  const tipos = await getRentabilidadePorTipo('2026-08');
+
+  assert.equal(urlRecebida, '/api/operacional/dashboard/rentabilidade-por-tipo?mes=2026-08');
+  assert.equal(tipos.length, 3);
+  assert.deepEqual(tipos[1], {
+    tipo: 'VAN',
+    naoIdentificado: false,
+    viagens: 2,
+    receita: 100,
+    custo: 500.55,
+    rentabilidade: -400.55,
+    mediaPorViagem: -200.28,
+  });
+  assert.equal(tipos[2].naoIdentificado, true);
+});
+
+test('rentabilidade por tipo de mes sem viagens devolve lista vazia', async () => {
+  globalThis.fetch = async () => Response.json([]);
+
+  assert.deepEqual(await getRentabilidadePorTipo('2026-01'), []);
+});
+
+test('rentabilidade por tipo avisa quando o servico responde erro', async () => {
+  globalThis.fetch = async () => new Response(null, { status: 403 });
+
+  await assert.rejects(
+    getRentabilidadePorTipo('2026-08'),
+    { message: 'Não foi possível carregar a rentabilidade por tipo de veículo.' },
+  );
+});
+
+test('rentabilidade por tipo recusa resposta fora do contrato', async () => {
+  globalThis.fetch = async () => Response.json({ tipos: [] });
+  await assert.rejects(getRentabilidadePorTipo('2026-08'), { message: 'A resposta do serviço está inválida.' });
+
+  globalThis.fetch = async () => Response.json([{ tipo: 'VAN', viagens: 1, receita: '10', custo: 0, rentabilidade: 10 }]);
+  await assert.rejects(getRentabilidadePorTipo('2026-08'), { message: 'A resposta do serviço está inválida.' });
+});
+

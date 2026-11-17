@@ -24,7 +24,7 @@ public class IndicadorExceptionHandler {
 
     @ExceptionHandler(DataAccessException.class)
     public ResponseEntity<Map<String, String>> indisponivel(DataAccessException ex) {
-        LOG.error("Falha ao consultar o indicador de participação nas viagens", ex);
+        LOG.error("Falha ao consultar o indicador de utilização dos motoristas", ex);
         return ResponseEntity.status(503).body(Map.of("erro",
                 "Não foi possível consultar as viagens agora. Tente novamente em instantes."));
     }

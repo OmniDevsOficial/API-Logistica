@@ -35,13 +35,13 @@ export function ViagemCard({ viagem }: ViagemCardProps) {
         <span className="text-[13px] text-fg-subtle">frete estimado</span>
       </div>
       <span className="text-[13px] text-fg-subtle">
-        {viagem.veiculo} · {viagem.distanciaKm}km · estimativa {viagem.estimativaDias} dias
+        {viagem.veiculo} · {viagem.distanciaKm == null ? "-" : `${viagem.distanciaKm}km`}
       </span>
       <div className="mt-2 grid grid-cols-3 gap-3 border-t border-border pt-3">
         {(["receita", "custo", "rentabilidade"] as const).map((campo) => (
           <div key={campo}>
             <span className="block text-xs text-fg-subtle">{campo === "rentabilidade" ? "Rentabilidade" : campo[0].toUpperCase() + campo.slice(1)}</span>
-            <span className={`text-sm font-semibold ${campo === "rentabilidade" && (viagem.rentabilidade ?? 0) < 0 ? "text-red-600" : "text-fg"}`}>
+            <span className={`text-sm font-semibold ${campo === "rentabilidade" && (viagem.rentabilidade ?? 0) < 0 ? "text-red-600 dark:text-red-400" : "text-fg"}`}>
               {valorMonetario(viagem[campo])}
             </span>
           </div>

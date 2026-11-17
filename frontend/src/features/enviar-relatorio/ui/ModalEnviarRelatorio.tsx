@@ -1,132 +1,98 @@
 // src/features/enviar-relatorio/ui/ModalEnviarRelatorio.tsx
-import { useEffect, useRef, useState } from 'react';
+import { useState } from 'react';
+import type { ReactNode } from 'react';
 
-import { MensagemFeedbackUpload, ModalImportacao } from '@shared/ui';
-import type { TipoMensagemUpload } from '@shared/ui';
+import { MensagemFeedbackUpload, ModalImportacao, ResumoImportacao } from '@shared/ui';
+import type { ValidacaoArquivo } from '@shared/ui';
 
 // ALTERAÇÃO: endpoint operacional que salva viagens, sem simulação.
 import { importarManifesto, mensagemErroImportacao } from '../api/importarManifesto';
 import type { ResultadoImportacao } from '../api/importarManifesto';
+import { resumoImportacaoManifesto } from '../lib/resumoImportacaoManifesto';
 import { validarArquivoRelatorio } from '../lib/validarArquivoRelatorio';
 
 interface Propriedades {
   onFechar: () => void;
   onImportado?: (resultado: ResultadoImportacao) => void;
+  titulo?: string;
+  validarArquivo?: (arquivo: File) => ValidacaoArquivo | Promise<ValidacaoArquivo>;
+  seletor?: (bloqueado: boolean) => ReactNode;
 }
 
-interface Feedback {
-  tipo: TipoMensagemUpload;
+interface ErroTela {
   mensagem: string;
   chave: number;
 }
 
-const DURACAO_MENSAGEM_MS = 5000;
-
-/** Importação do manifesto sobre a estrutura comum de `ModalImportacao`. */
+/**
+ * Importação do manifesto sobre a estrutura comum de `ModalImportacao`, no
+ * mesmo padrão do modal de veículos: depois do envio mostra o resumo (cards e
+ * tabelas de rejeitadas/já existentes) em vez de fechar.
+ */
 export function ModalEnviarRelatorio({
   onFechar,
   onImportado,
+  titulo = 'Importar manifesto',
+  validarArquivo = validarArquivoRelatorio,
+  seletor,
 }: Propriedades) {
-  const [feedback, setFeedback] = useState<Feedback | null>(null);
+  const [erro, setErro] = useState<ErroTela | null>(null);
+  const [resultado, setResultado] = useState<ResultadoImportacao | null>(null);
 
-  const timeoutFeedbackRef =
-    useRef<ReturnType<typeof setTimeout> | null>(null);
-  const proximaChaveFeedbackRef = useRef(0);
-
-  useEffect(() => {
-    return () => {
-      if (timeoutFeedbackRef.current) {
-        clearTimeout(timeoutFeedbackRef.current);
-      }
-    };
-  }, []);
-
-  function fecharFeedback() {
-    if (timeoutFeedbackRef.current) {
-      clearTimeout(timeoutFeedbackRef.current);
-      timeoutFeedbackRef.current = null;
-    }
-
-    setFeedback(null);
-  }
-
-  function exibirFeedback(
-    tipo: TipoMensagemUpload,
-    mensagem: string
-  ) {
-    if (timeoutFeedbackRef.current) {
-      clearTimeout(timeoutFeedbackRef.current);
-    }
-
-    proximaChaveFeedbackRef.current += 1;
-
-    setFeedback({
-      tipo,
-      mensagem,
-      chave: proximaChaveFeedbackRef.current,
-    });
-
-    // Erros permanecem visíveis para o usuário ler as orientações de recuperação.
-    if (tipo === 'sucesso') {
-      timeoutFeedbackRef.current = setTimeout(() => {
-        setFeedback(null);
-        timeoutFeedbackRef.current = null;
-      }, DURACAO_MENSAGEM_MS);
-    }
+  function exibirErro(mensagem: string) {
+    setErro((anterior) => ({ mensagem, chave: (anterior?.chave ?? 0) + 1 }));
   }
 
   async function enviar(arquivo: File): Promise<boolean> {
-    fecharFeedback();
+    setErro(null);
+    setResultado(null);
 
     try {
-      const resultado = await importarManifesto(arquivo);
-
-      const mensagemImportadas = resultado.viagensImportadas === 1
-        ? '1 viagem importada com sucesso.'
-        : `${resultado.viagensImportadas} viagens importadas com sucesso.`;
-      const duplicadas = resultado.manifestosDuplicados;
-      // Só a contagem: a lista de manifestos pode ter milhares de itens e quebra o layout.
-      const mensagemDuplicadas = duplicadas.length > 0
-        ? ` ${duplicadas.length} ${duplicadas.length === 1 ? 'manifesto já existia' : 'manifestos já existiam'} no banco.`
-        : '';
-
-      exibirFeedback(
-        duplicadas.length > 0 ? 'aviso' : 'sucesso',
-        `${mensagemImportadas}${mensagemDuplicadas}`
-      );
-
-      onImportado?.(resultado);
+      const resposta = await importarManifesto(arquivo);
+      setResultado(resposta);
+      onImportado?.(resposta);
       return true;
-    } catch (erro) {
-      exibirFeedback(
-        'erro',
-        mensagemErroImportacao(erro)
-      );
+    } catch (falha) {
+      // Sem "Tentar de novo": o resultado pode ser incerto e reenviar duplicaria viagens.
+      exibirErro(mensagemErroImportacao(falha));
       return false;
     }
   }
 
+  const conteudo = (
+    <>
+      {erro && (
+        <MensagemFeedbackUpload
+          key={erro.chave}
+          tipo="erro"
+          mensagem={erro.mensagem}
+          onFechar={() => setErro(null)}
+        />
+      )}
+
+      {resultado && <ResumoImportacao {...resumoImportacaoManifesto(resultado)} />}
+    </>
+  );
+
   return (
     <ModalImportacao
-      titulo="Importar manifesto"
+      titulo={titulo}
       formatosAceitos=".csv ou .xlsx de até 10MB."
       accept=".csv,.xlsx"
       rotuloConfirmar="Importar manifesto"
-      validarArquivo={validarArquivoRelatorio}
+      rotuloFechar={resultado ? 'Fechar' : 'Cancelar'}
+      instrucao={resultado ? 'Importar outra planilha' : undefined}
+      areaCompacta={resultado !== null}
+      validarArquivo={validarArquivo}
+      seletor={seletor}
       onEnviar={enviar}
-      onArquivoInvalido={(mensagem) => exibirFeedback('erro', mensagem)}
-      onArquivoSelecionado={fecharFeedback}
+      onArquivoInvalido={(mensagem) => {
+        setResultado(null);
+        exibirErro(mensagem);
+      }}
+      onArquivoSelecionado={() => setErro(null)}
       onFechar={onFechar}
-      conteudo={
-        feedback && (
-          <MensagemFeedbackUpload
-            key={feedback.chave}
-            tipo={feedback.tipo}
-            mensagem={feedback.mensagem}
-            onFechar={fecharFeedback}
-          />
-        )
-      }
+      conteudo={conteudo}
     />
   );
 }
