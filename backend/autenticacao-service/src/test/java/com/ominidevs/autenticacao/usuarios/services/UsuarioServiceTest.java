@@ -4,6 +4,7 @@ import java.time.Clock;
 import java.time.Instant;
 import java.time.ZoneOffset;
 import java.util.List;
+import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -16,12 +17,16 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import com.ominidevs.autenticacao.auth.entities.Perfil;
 import com.ominidevs.autenticacao.auth.entities.Usuario;
 import com.ominidevs.autenticacao.auth.repositories.UsuarioRepository;
+import com.ominidevs.autenticacao.usuarios.dto.AlterarStatusRequest;
 import com.ominidevs.autenticacao.usuarios.dto.CriarUsuarioRequest;
 import com.ominidevs.autenticacao.usuarios.dto.UsuarioResponse;
+import com.ominidevs.autenticacao.usuarios.exceptions.AutoDesativacaoException;
 import com.ominidevs.autenticacao.usuarios.exceptions.CamposInvalidosException;
 import com.ominidevs.autenticacao.usuarios.exceptions.EmailEmUsoException;
+import com.ominidevs.autenticacao.usuarios.exceptions.UsuarioNaoEncontradoException;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -126,5 +131,47 @@ class UsuarioServiceTest {
         assertTrue(porNome.isAscending());
         assertTrue(porNome.isIgnoreCase());
         assertEquals("Ana", usuarios.get(0).nome());
+    }
+
+    @Test
+    void desativaOUsuarioEGravaONovoStatus() {
+        Usuario ana = new Usuario("Ana", "ana@newe.com.br", "hash", Perfil.OPERADOR, AGORA);
+        when(repository.findById(3)).thenReturn(Optional.of(ana));
+
+        UsuarioResponse resposta = service.alterarStatus(3, new AlterarStatusRequest(false), "gestor@newe.com.br");
+
+        assertFalse(resposta.ativo());
+        assertFalse(usuarioGravado().isAtivo());
+    }
+
+    @Test
+    void reativaUmUsuarioDesativado() {
+        Usuario ana = new Usuario("Ana", "ana@newe.com.br", "hash", Perfil.OPERADOR, AGORA);
+        ana.alterarAtivo(false);
+        when(repository.findById(3)).thenReturn(Optional.of(ana));
+
+        UsuarioResponse resposta = service.alterarStatus(3, new AlterarStatusRequest(true), "gestor@newe.com.br");
+
+        assertTrue(resposta.ativo());
+    }
+
+    @Test
+    void usuarioInexistenteNaoTemStatusAlterado() {
+        when(repository.findById(99)).thenReturn(Optional.empty());
+
+        assertThrows(UsuarioNaoEncontradoException.class, () ->
+                service.alterarStatus(99, new AlterarStatusRequest(false), "gestor@newe.com.br"));
+        verify(repository, never()).saveAndFlush(any(Usuario.class));
+    }
+
+    @Test
+    void gestorNaoDesativaOProprioUsuario() {
+        Usuario gestor = new Usuario("Gestor", "gestor@newe.com.br", "hash", Perfil.GESTOR, AGORA);
+        when(repository.findById(1)).thenReturn(Optional.of(gestor));
+
+        assertThrows(AutoDesativacaoException.class, () ->
+                service.alterarStatus(1, new AlterarStatusRequest(false), "Gestor@Newe.com.br"));
+        assertTrue(gestor.isAtivo());
+        verify(repository, never()).saveAndFlush(any(Usuario.class));
     }
 }

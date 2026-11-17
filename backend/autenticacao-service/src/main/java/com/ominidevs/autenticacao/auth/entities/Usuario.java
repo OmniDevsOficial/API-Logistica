@@ -78,6 +78,10 @@ public class Usuario {
         return ativo;
     }
 
+    public void alterarAtivo(boolean ativo) {
+        this.ativo = ativo;
+    }
+
     public Instant getDataCriacao() {
         return dataCriacao;
     }
