@@ -4,6 +4,7 @@ import { LoginPage } from "@pages/Login";
 import { RankingPage } from "@pages/Ranking";
 import { ViagensPage } from "@pages/Viagens";
 import { MotoristasPage, UtilizacaoMotoristasPage } from "@/pages/Motoristas";
+import { RegistrosPage } from "@pages/Registros";
 import { RotaProtegida } from "./RotaProtegida";
 import { RotaPublica } from "./RotaPublica";
 
@@ -20,6 +21,7 @@ export function AppRouter() {
           <Route path="/motoristas" element={<MotoristasPage />} />
           <Route path="/motoristas/utilizacao" element={<UtilizacaoMotoristasPage />} />
           <Route path="/viagens" element={<ViagensPage />} />
+          <Route path="/registros" element={<RegistrosPage />} />
           <Route path="/ranking" element={<RankingPage />} />
         </Route>
 

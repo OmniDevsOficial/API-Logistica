@@ -1,6 +1,7 @@
 package com.ominidevs.operacional.veiculo.services;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -18,6 +19,10 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.ominidevs.operacional.importacao.entities.ImportacaoHistorico;
+import com.ominidevs.operacional.importacao.entities.StatusImportacao;
+import com.ominidevs.operacional.importacao.entities.TipoImportacao;
+import com.ominidevs.operacional.importacao.repositories.ImportacaoHistoricoRepository;
 import com.ominidevs.operacional.motorista.dto.MotoristaResponseDTO;
 import com.ominidevs.operacional.motorista.services.MotoristaService;
 import com.ominidevs.operacional.veiculo.dto.FiltroVeiculo;
@@ -46,6 +51,7 @@ import jakarta.persistence.EntityManager;
 class ImportacaoVeiculoIntegrationTest {
 
     @Autowired private ImportacaoVeiculoService service;
+    @Autowired private ImportacaoHistoricoRepository historicoRepository;
     @Autowired private VeiculoConsultaService consulta;
     @Autowired private MotoristaService motoristaService;
     @Autowired private JdbcTemplate jdbc;
@@ -108,6 +114,47 @@ class ImportacaoVeiculoIntegrationTest {
         assertEquals(true, veiculo("EKO2F09").get("ativo"));
         assertEquals("1114", veiculo("AAJ3354").get("modelo"));
         assertEquals(false, veiculo("HNF5D31").get("ativo"));
+    }
+
+    @Test
+    void registraNoHistoricoResumoEStatusDaImportacao() {
+        ImportacaoVeiculoResponse resposta = importarEmNovaRequisicao(CSV_PADRAO);
+
+        List<ImportacaoHistorico> registros = historicoRepository.findAll();
+        assertEquals(1, registros.size());
+
+        ImportacaoHistorico registro = registros.getFirst();
+        assertEquals(TipoImportacao.VEICULO, registro.getTipo());
+        assertEquals(StatusImportacao.SUCESSO, registro.getStatus());
+        assertEquals("veiculos.csv", registro.getArquivo());
+        assertEquals(resposta.veiculosCadastrados(), registro.getCriados());
+        assertEquals(resposta.veiculosAtualizados(), registro.getAtualizados());
+        assertEquals(0, registro.getIgnorados());
+        assertEquals(resposta.linhasComErro(), registro.getRejeitados());
+        assertNotNull(registro.getHashArquivo());
+        assertNull(registro.getReimportacaoDe());
+    }
+
+    @Test
+    void reimportarOMesmoArquivoContaLinhasIgnoradasEMarcaReimportacao() {
+        importarEmNovaRequisicao(CSV_PADRAO);
+        importarEmNovaRequisicao(CSV_PADRAO);
+
+        List<ImportacaoHistorico> registros = historicoRepository.findAll();
+        assertEquals(2, registros.size());
+
+        ImportacaoHistorico primeira = registros.stream().filter(item -> item.getCriados() > 0)
+                .findFirst().orElseThrow();
+        ImportacaoHistorico segunda = registros.stream().filter(item -> item.getCriados() == 0)
+                .findFirst().orElseThrow();
+
+        // Nada mudou na segunda importação: as quatro linhas foram ignoradas.
+        assertEquals(0, segunda.getAtualizados());
+        assertEquals(4, segunda.getIgnorados());
+        assertEquals(0, segunda.getRejeitados());
+        assertEquals(StatusImportacao.SUCESSO, segunda.getStatus());
+        assertNotNull(segunda.getReimportacaoDe());
+        assertEquals(primeira.getDataHora(), segunda.getReimportacaoDe());
     }
 
     @Test
