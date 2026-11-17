@@ -37,9 +37,10 @@ test('manda tipo, status e período como parâmetros do back', async () => {
     ate: '2026-11-17',
   });
 
+  // O tipo da UI ("veiculos") é convertido para o nome do enum do back.
   assert.equal(
     chamadas[0],
-    '/api/operacional/importacoes?tipo=veiculos&status=parcial&de=2026-11-01&ate=2026-11-17',
+    '/api/operacional/importacoes?tipo=VEICULO&status=parcial&de=2026-11-01&ate=2026-11-17',
   );
 });
 
@@ -48,7 +49,7 @@ test('sem status e sem período manda só o tipo da origem', async () => {
 
   await buscarImportacoes({ tipo: 'manifesto' });
 
-  assert.equal(chamadas[0], '/api/operacional/importacoes?tipo=manifesto');
+  assert.equal(chamadas[0], '/api/operacional/importacoes?tipo=MANIFESTO');
 });
 
 test('converte a linha: chave tipo:id, status em minúsculas e datas reais', async () => {

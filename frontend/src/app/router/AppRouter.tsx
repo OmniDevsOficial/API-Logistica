@@ -2,6 +2,7 @@ import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import { DashboardPage } from "@pages/Dashboard";
 import { LoginPage } from "@pages/Login";
 import { RankingPage } from "@pages/Ranking";
+import { AdministracaoPage } from "@pages/Administracao";
 import { ViagensPage } from "@pages/Viagens";
 import { MotoristasPage, UtilizacaoMotoristasPage } from "@/pages/Motoristas";
 import { RegistrosPage } from "@pages/Registros";
@@ -23,6 +24,7 @@ export function AppRouter() {
           <Route path="/viagens" element={<ViagensPage />} />
           <Route path="/registros" element={<RegistrosPage />} />
           <Route path="/ranking" element={<RankingPage />} />
+          <Route path="/administracao/:secao?" element={<AdministracaoPage />} />
         </Route>
 
         <Route path="*" element={<Navigate to="/" replace />} />

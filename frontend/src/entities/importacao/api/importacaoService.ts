@@ -12,7 +12,8 @@ const ENDPOINT = "/api/operacional/importacoes";
 export interface FiltroConsultaImportacoes {
   /**
    * Cada origem é consultada em uma chamada própria, para que a falha de um
-   * serviço não esconda as importações do outro.
+   * serviço não esconda as importações do outro. É o tipo da UI; a conversão
+   * para o valor do enum do back acontece em {@link buscarImportacoes}.
    */
   tipo: TipoImportacao;
   /** "todos" fica de fora do parâmetro. */
@@ -39,6 +40,19 @@ const STATUS: Record<string, StatusImportacao> = {
   PARCIAL: "parcial",
   erro: "erro",
   ERRO: "erro",
+};
+
+/**
+ * Valor que o back espera em `?tipo=` (nome do enum `TipoImportacao`).
+ *
+ * O tipo "veiculos" continua existindo na UI, nas chaves e nos filtros; a
+ * conversão para o formato da API acontece só aqui, na hora de montar a
+ * requisição. Se entrar um tipo novo sem o valor de API correspondente, o
+ * TypeScript acusa na hora.
+ */
+const TIPO_API: Record<TipoImportacao, string> = {
+  manifesto: "MANIFESTO",
+  veiculos: "VEICULO",
 };
 
 function texto(valor: unknown): string | null {
@@ -109,7 +123,7 @@ export async function buscarImportacoes(
   signal?: AbortSignal,
 ): Promise<ImportacaoHistorico[]> {
   const parametros = new URLSearchParams();
-  parametros.set("tipo", filtro.tipo);
+  parametros.set("tipo", TIPO_API[filtro.tipo]);
   if (filtro.status) parametros.set("status", filtro.status);
   if (filtro.de) parametros.set("de", filtro.de);
   if (filtro.ate) parametros.set("ate", filtro.ate);
