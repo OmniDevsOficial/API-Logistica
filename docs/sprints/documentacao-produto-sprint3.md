@@ -1,4 +1,4 @@
-<h1 align="center"> Documentação do Produto da Sprint 2 </h1>
+<h1 align="center"> Documentação do Produto da Sprint 3 </h1>
 
 <div align="center">
     <img src="https://i.imgur.com/VbBN3Tk.jpeg" width="170x" height="170x" style="border-radius:20%;">
@@ -6,8 +6,8 @@
 
 <p align="center">|
   <a href="#visao-geral"> Visão Geral </a> |
-  <a href="#sprint-2-meta"> Metas </a> |
-  <a href="#backlog-sprint-2"> Backlog </a> |
+  <a href="#sprint-3-meta"> Metas </a> |
+  <a href="#backlog-sprint-3"> Backlog </a> |
   <a href="#dor-dod"> DoR e DoD </a> |
   <a href="#desenvolvimento"> Desenvolvimento </a> |
   <a href="#retrospectiva"> Retrospectiva </a> |
@@ -18,32 +18,32 @@
 
 ## Visão geral <a id="visao-geral"></a>
 
-A Sprint 2 concentrou-se na estruturação do núcleo financeiro, segurança e alertas operacionais da plataforma: apuração de rentabilidade das viagens via importação de manifesto, média de rentabilidade por motorista, painel de motoristas disponíveis, ranking de destinos com maior retorno financeiro, alertas de baixa utilização (ociosidade), login seguro com JWT (perfis Operador e Gestor) e consolidação do dashboard com dados reais.
+A Sprint 3 concentra-se em fechar as pendências da Sprint 2 e completar o núcleo de veículos e rentabilidade da plataforma: importação da planilha de veículos, comparativo de rentabilidade por tipo de veículo, ranking mensal de motoristas, histórico de viagens por motorista e pagamento consolidado por motorista (dependente de definição do cliente).
+
+Também entram tarefas de complemento em telas já existentes, como gerenciamento de usuários, tela de administração, histórico de importações, página de veículos e ajustes do ranking.
 
 ## 📅 Cronograma da Sprint
 
-|    Período    |    Status    |
-| :-----------: | :----------: |
+|    Período    |     Status      |
+| :-----------: | :-------------: |
 | 02/11 - 22/11 | 🟡 Em andamento |
 
-## 🎯 Metas da Sprint 2 <a id="sprint-2-meta"></a>
+## 🎯 Metas da Sprint 3 <a id="sprint-3-meta"></a>
 
-| Foco | User Story Meta                                                                                                       |
-| :--: | :-------------------------------------------------------------------------------------------------------------------- |
-|  🥇  | **US08:** Como gestor, quero registrar frete e custos de cada viagem, para calcular a rentabilidade.                  |
-|  🥈  | **US09:** Como gestor, quero visualizar a rentabilidade média por viagem de cada motorista, para comparar desempenho. |
+| Foco | User Story Meta                                                                                                    |
+| :--: | :----------------------------------------------------------------------------------------------------------------- |
+|  🥇  | **US12:** Importação automática da planilha de veículos, base para a rentabilidade por tipo de veículo.            |
+|  🥈  | **US11:** Como gestor, quero comparar a rentabilidade entre tipos de veículo, para decisões estratégicas de frota. |
 
-## 📋 Backlog da Sprint 2 <a id="backlog-sprint-2"></a>
+## 📋 Backlog da Sprint 3 <a id="backlog-sprint-3"></a>
 
-| Rank  |  ID  | Prioridade | User Story                                                                                                                  | Estimativa | Sprint |  Situação   |
-| :---: | :--: | :--------: | :-------------------------------------------------------------------------------------------------------------------------- | :--------: | :----: | :---------: |
-| 🎗 6  | US08 |   Média    | Como gestor, quero registrar frete e custos de cada viagem, para calcular a rentabilidade.                                  |     3      |   2    | 🟢 Entregue |
-| 🎗 7  | US09 |   Média    | Como gestor, quero visualizar a rentabilidade média por viagem de cada motorista, para comparar desempenho.                 |     4      |   2    | 🟢 Entregue |
-| 🎗 8  | US05 |   Média    | Como operador, quero ver em uma tela única quais motoristas estão disponíveis, para direcionar novas viagens rapidamente.   |     5      |   2    | 🟢 Entregue |
-| 🎗 9  | US14 |   Baixa    | Como gestor, quero identificar as rotas mais concorridas do mês, para criar campanhas de engajamento de motoristas.         |     4      |   2    | 🟢 Entregue |
-| 🎗 10 | US15 |   Média    | Como gestor, quero realizar login seguro na plataforma, para garantir a segurança dos dados no sistema.                     |     4      |   2    | 🟢 Entregue |
-| 🎗 11 | US16 |   Média    | Como gestor, quero ver na tela dashboard apenas os dados considerados essenciais, para garantir uma visão clara e objetiva. |     5      |   2    | 🟢 Entregue |
-| 🎗 12 | US07 |   Média    | Como gestor, quero receber um alerta de motoristas com baixa utilização no mês, para agir sobre ociosidade.                 |     5      |   2    | 🟢 Entregue |
+| Rank  |  ID  | Prioridade | User Story                                                                                                                   | Estimativa | Sprint |  Situação  |
+| :---: | :--: | :--------: | :--------------------------------------------------------------------------------------------------------------------------- | :--------: | :----: | :--------: |
+| 🎗 3  | US11 |   Média    | Como gestor, quero comparar a rentabilidade entre tipos de veículo, para decisões estratégicas de frota.                     |     3      |   3    | 🟢 Entregue |
+| 🎗 4  | US17 |   Média    | Como operador, quero visualizar o histórico detalhado de viagens de um motorista, para consultar as suas operações passadas. |     5      |   3    | 🟢 Entregue |
+| 🎗 6  | US10 |   Média    | Como gestor, quero ver quanto cada motorista recebeu no mês, para controle de pagamento. _(aguardando definição)_            |     3      |   3    | 🟢 Entregue |
+| 🎗 2  | US12 |   Baixa    | Como operador, quero importar a planilha de veículos para cadastrar a frota automaticamente.                                 |     3      |   3    | 🟢 Entregue |
+| 🎗 5  | US13 |   Baixa    | Como gestor, quero um ranking mensal de motoristas, para identificar os melhores resultados.                                 |     3      |   3    | 🟢 Entregue |
 
 ## ✅ DoR e DoD da Sprint <a id="dor-dod"></a>
 
@@ -57,231 +57,269 @@ A Sprint 2 concentrou-se na estruturação do núcleo financeiro, segurança e a
 **✔️ Definition of Done (DoD)** — quando uma história está concluída:
 
 - O código foi implementado e atende a todos os critérios de aceitação.
-- O código passou por Code Review (Pull Request aprovado por no mínimo 1 membro da equipe).
+- O código passou por Code Review (Pull Request aprovado por no mínimo 1 membro da equipe, sem aprovação do próprio autor).
 - Os testes foram executados e validados no backend.
 - A nova funcionalidade não quebrou funcionalidades anteriores.
 - A documentação da sprint foi atualizada.
 
 ## 🛠️ Desenvolvimento da Sprint <a id="desenvolvimento"></a>
 
-Resumo de tudo o que foi desenvolvido na sprint, organizado por User Story e vinculado às respectivas issues do Jira.
+Resumo de tudo o que será desenvolvido na sprint, organizado por User Story e vinculado às respectivas issues do Jira.
 
 ### Visão geral das tasks
 
-|   US    | Story Jira | Issue (Subtask) |    Tipo    | O que foi feito                                                                                                                   |     Responsável     |    Status    |                                   Jira                                    |
-| :-----: | :--------: | :-------------: | :--------: | :-------------------------------------------------------------------------------------------------------------------------------- | :-----------------: | :----------: | :-----------------------------------------------------------------------: |
-| Ajustes |   OM-99    |     OM-114      |    Back    | Testes do Operacional (pasta de motorista) e do Relatório alinhados com o `main/java`, sem testes quebrados ou incompletos        |   Yuri Gonçalves    | 🟢 Concluída | [OM-114](https://vinnismoreira-1787621786306.atlassian.net/browse/OM-114) |
-| Ajustes |   OM-99    |     OM-102      |  Back/BD   | Filtro da tela de viagem passa a enviar origem e destino e aceita mais de um filtro do mesmo tipo (ex.: finalizado e em trânsito) |  Henrique Martins   | 🟢 Concluída | [OM-102](https://vinnismoreira-1787621786306.atlassian.net/browse/OM-102) |
-| Ajustes |   OM-99    |     OM-101      | Front/Back | Correção do % de utilização na tela de motorista ao importar manifestos diferentes, sem duplicar viagens na reimportação          | Guilherme Alvarenga | 🟢 Concluída | [OM-101](https://vinnismoreira-1787621786306.atlassian.net/browse/OM-101) |
-|  US16   |   OM-110   |     OM-100      |    Back    | Prover endpoint com os dados reais e indicadores consolidados do dashboard                                                        |   Thomaz De Mello   | 🟢 Concluída | [OM-100](https://vinnismoreira-1787621786306.atlassian.net/browse/OM-100) |
-|  US16   |   OM-110   |     OM-111      | Integração | Popular os cards e indicadores do dashboard com os dados reais da API                                                             |   Thomaz De Mello   | 🟢 Concluída | [OM-111](https://vinnismoreira-1787621786306.atlassian.net/browse/OM-111) |
-|  US05   |    OM-5    |     OM-103      |    Back    | Endpoint de listagem, resumo e atualização de status de motoristas disponíveis                                                    |  Vinicius Moreira   | 🟢 Concluída | [OM-103](https://vinnismoreira-1787621786306.atlassian.net/browse/OM-103) |
-|  US05   |    OM-5    |     OM-104      | Integração | Conectar o card "Disponíveis" do dashboard ao KPI de motoristas disponíveis (valor igual ao da tela de motorista)                 |  Vinicius Moreira   | 🟢 Concluída | [OM-104](https://vinnismoreira-1787621786306.atlassian.net/browse/OM-104) |
-|  US05   |    OM-5    |     OM-105      |   Front    | Interface de tela única exibindo os motoristas disponíveis e seus status                                                          |  Vinicius Moreira   | 🟢 Concluída | [OM-105](https://vinnismoreira-1787621786306.atlassian.net/browse/OM-105) |
-|  US15   |   OM-109   |     OM-107      |   Front    | Tela de login e validação de formulário de acesso                                                                                 |     Pedro Lucas     | 🟢 Concluída | [OM-107](https://vinnismoreira-1787621786306.atlassian.net/browse/OM-107) |
-|  US15   |   OM-109   |     OM-112      |    Back    | Serviço de autenticação (`autenticacao-service`), geração de token JWT e criptografia                                             |     Pedro Lucas     | 🟢 Concluída | [OM-112](https://vinnismoreira-1787621786306.atlassian.net/browse/OM-112) |
-|  US15   |   OM-109   |     OM-113      | Integração | Integração do fluxo de login, controle de sessão (401/403), CORS e proteção de rotas privadas por perfil                          |     Pedro Lucas     | 🟢 Concluída | [OM-113](https://vinnismoreira-1787621786306.atlassian.net/browse/OM-113) |
-|  US08   |    OM-8    |     OM-106      |     BD     | Ajuste de tipos monetários e estrutura de banco para custos, vale-frete e rentabilidade                                           | Guilherme Alvarenga | 🟢 Concluída | [OM-106](https://vinnismoreira-1787621786306.atlassian.net/browse/OM-106) |
-|  US08   |    OM-8    |     OM-108      |    Back    | Importação de custos pelo manifesto e cálculo automático da rentabilidade de cada viagem                                          | Guilherme Alvarenga | 🟢 Concluída | [OM-108](https://vinnismoreira-1787621786306.atlassian.net/browse/OM-108) |
-|  US08   |    OM-8    |     OM-117      |   Front    | Exibição de frete, custos e rentabilidade por viagem na interface (restrito ao perfil Gestor)                                     | Guilherme Alvarenga | 🟢 Concluída | [OM-117](https://vinnismoreira-1787621786306.atlassian.net/browse/OM-117) |
-|  US09   |    OM-9    |     OM-115      |   Front    | Interface para visualização e ordenação da rentabilidade média por motorista (acesso apenas Gestor)                               | Guilherme Alvarenga | 🟢 Concluída | [OM-115](https://vinnismoreira-1787621786306.atlassian.net/browse/OM-115) |
-|  US09   |    OM-9    |     OM-116      |    Back    | Endpoint de cálculo da rentabilidade média por viagem de cada motorista (`AVG`)                                                   | Guilherme Alvarenga | 🟢 Concluída | [OM-116](https://vinnismoreira-1787621786306.atlassian.net/browse/OM-116) |
-|  US14   |   OM-14    |     OM-118      |    Back    | Endpoint de ranking dos 10 destinos com maior média de rentabilidade no mês                                                       |   Yuri Gonçalves    | 🟢 Concluída | [OM-118](https://vinnismoreira-1787621786306.atlassian.net/browse/OM-118) |
-|  US07   |    OM-7    |     OM-120      |   Front    | Endpoint `GET /motoristas/baixa-utilizacao?mes=YYYY-MM` (limite padrão 30%, configurável por variável de ambiente)                |     Pedro Lucas     | 🟢 Concluída | [OM-120](https://vinnismoreira-1787621786306.atlassian.net/browse/OM-120) |
-|  US07   |    OM-7    |     OM-121      |    Back    | Alerta de baixa utilização no sino de notificações e destaque em vermelho na tela de motorista                                    |     Pedro Lucas     | 🟢 Concluída | [OM-121](https://vinnismoreira-1787621786306.atlassian.net/browse/OM-121) |
+|       US       | Story Jira | Issue (Subtask) |    Tipo    | O que será feito                                                                                                                                          | Responsável |   Status   | Jira |
+| :------------: | :--------: | :-------------: | :--------: | :-------------------------------------------------------------------------------------------------------------------------------------------------------- | :---------: | :--------: | :--: |
+|    Ajustes     |     OM-122      |        OM-135        |    Front   | Remover campos de estimativa na tela de viagens                                                     |      Guilherme Alvarenga      | 🟢 Concluída | [OM-135](https://vinnismoreira-1787621786306.atlassian.net/jira/browse/OM-135)   |
+|    Ajustes     |     OM-122      |        OM-136        |    Back    | Ajustar o cálculo da quilometragem na tela de viagens                                               |      Guilherme Alvarenga      | 🟢 Concluída |  [OM-136](https://vinnismoreira-1787621786306.atlassian.net/jira/browse/OM-136)   |
+|    Ajustes     |     OM-122      |        OM-137        |    Back    | Arrumar o cálculo de frequência na tela motorista                                                   |      Guilherme Alvarenga      | 🟢 Concluída |  [OM-137](https://vinnismoreira-1787621786306.atlassian.net/jira/browse/OM-137)   |
+|    Ajustes     |     OM-122      |        OM-138        |    Front   | Implementar o modo escuro manual                                                                    |      Thomaz Mello      | 🟢 Concluída |  [OM-138](https://vinnismoreira-1787621786306.atlassian.net/jira/browse/OM-138)   |
+|      US12      |     OM-124      |        OM-126        |    Back    | Import do manifesto de veículo                                                                      |      Yuri Gonçalves      | 🟢 Concluída |  [OM-125](https://vinnismoreira-1787621786306.atlassian.net/jira/browse/OM-125)   |
+|      US12      |     OM-124      |        OM-126        |    Front   | Tela de upload da planilha de veículos, com estados de carregamento e feedback                                                                            |      Yuri Gonçalves      | 🟢 Concluída |  [OM-126](https://vinnismoreira-1787621786306.atlassian.net/jira/browse/OM-126)   |
+|      US11      |     —      |        —        |    Back    | Endpoint de rentabilidade agrupada por tipo de veículo, com filtro mensal e acesso restrito ao Gestor                                                     |      —      | 🟢 Concluída |  —   |
+|      US11      |     —      |        —        |   Front    | Card de rentabilidade por tipo de veículo no dashboard principal                                                                                          |      —      | 🟢 Concluída |  —   |
+|      US17      |     —      |        —        |    Back    | Endpoint de histórico de viagens por motorista, paginado e com status derivado                                                                            |      —      | 🟢 Concluída |  —   |
+|      US17      |     —      |        —        |   Front    | Modal de histórico de viagens do motorista, aberto pela listagem de disponibilidade e pelo ranking                                                        |      —      | 🟢 Concluída |  —   |
+|      US13      |     —      |        —        |    Back    | Endpoint do ranking mensal de motoristas, com ordenação em um único ponto                                                                                 |      —      | 🟢 Concluída |  —   |
+|      US13      |     —      |        —        |   Front    | Interface do ranking com pódio e lista, e acesso ao modal da US17                                                                                         |      —      | 🟢 Concluída |  —   |
+|      US10      |     —      |        —        |    Back    | Endpoint de pagamento consolidado por motorista (preliminar, fórmula pendente)                                                                            |      —      | 🟢 Concluída |  —   |
+|      US10      |     —      |        —        |   Front    | Dado de pagamento na visão financeira do Gestor (preliminar)                                                                                              |      —      | 🟢 Concluída |  —   |
+|  Compl. US13   |     —      |        —        |    Back    | Filtros do ranking (rentabilidade, faturamento, viagens e tipo de veículo), remoção da frequência                                                         |      —      | 🟢 Concluída |  —   |
+|  Compl. US13   |     —      |        —        |   Front    | Botão de filtro de seleção única no ranking                                                                                                               |      —      | 🟢 Concluída |  —   |
+|  Compl. US13   |     —      |        —        |   Front    | Ajustes de layout dos cards e da tabela, numeração de posição e remoção da frequência                                                                     |      —      | 🟢 Concluída |  —   |
+|  Compl. US15   |     —      |        —        |    Back    | Cadastro e listagem de usuários no serviço de autenticação                                                                                                |      —      | 🟢 Concluída |  —   |
+|  Compl. US15   |     —      |        —        |   Front    | Tela de Configurações (estrutura geral, com seções registradas)                                                                                           |      —      | 🟢 Concluída |  —   |
+|  Compl. US15   |     —      |        —        |   Front    | Configurações > Usuários (lista e cadastro)                                                                                                               |      —      | 🟢 Concluída |  —   |
+|  Compl. US12   |     —      |        —        |    Back    | Endpoints de listagem e resumo de veículos para a página de veículos                                                                                      |      —      | 🟢 Concluída |  —   |
+|  Compl. US12   |     —      |        —        |   Front    | Guia de veículos no dashboard, com upload movido para a sidebar                                                                                           |      —      | 🟢 Concluída |  —   |
+|  Compl. US12   |     —      |        —        |    Back    | Histórico de importações do manifesto (serviço Relatório)                                                                                                 |      —      | 🟢 Concluída |  —   |
+|  Compl. US12   |     —      |        —        |    Back    | Histórico de importações de veículos (serviço Operacional)                                                                                                |      —      | 🟢 Concluída |  —   |
+|  Compl. US12   |     —      |        —        |   Front    | Seção Registros: lista de importações com cards, filtros e tabela                                                                                         |      —      | 🟢 Concluída |  —   |
+|  Compl. US12   |     —      |        —        |   Front    | Detalhe da importação, com ocorrências e download em CSV                                                                                                  |      —      | 🟢 Concluída |  —   |
+| Compl. viagens |     —      |        —        |    Back    | Localidades com geocodificação e cache                                                                                                                    |      —      | ⚪ A fazer |  —   |
+| Compl. viagens |     —      |        —        |    Back    | Endpoint de detalhe da viagem com rota                                                                                                                    |      —      | ⚪ A fazer |  —   |
+| Compl. viagens |     —      |        —        |   Front    | Modal de mapa da viagem, com dados principais                                                                                                             |      —      | ⚪ A fazer |  —   |
 
 ### Detalhamento por User Story
 
-#### Ajustes da Sprint 2 — Fechamento das pendências da Sprint 1 (story OM-99)
+#### Ajustes da Sprint 2 — Fechamento das pendências
 
-A Sprint 1 terminou com histórias pendentes, uma task de dashboard grande demais e lacunas de integração em outras histórias. Esta task reúne o que precisava ser corrigido antes de iniciar as histórias da Sprint 2.
+A Sprint 2 terminou com tarefas em revisão e pendências de fórmula e integração. Esta frente fecha essas pendências antes de puxar novas histórias.
 
-> **Objetivo:** fechar as pendências da Sprint 1 e deixar o escopo da Sprint 2 definido.
-> **Critério de aceite:** todas as subtasks concluídas.
-
-- **Testes (OM-114):** criação da pasta de testes de motorista no serviço Operacional e verificação de que todas as funcionalidades, no Operacional e no Relatório, têm testes alinhados com o `main/java` e retornando o resultado esperado.
-- **Filtro de viagens (OM-102):** o filtro passa a enviar origem e destino e o backend filtra pelos dois; ao selecionar mais de um filtro do mesmo tipo, são retornadas as viagens de todos eles.
-- **% de utilização (OM-101):** reimportar o mesmo manifesto mantém o percentual e não duplica viagens; um segundo manifesto, com viagens novas, altera o percentual de acordo com o CSV. O número do manifesto identifica cada viagem de forma única.
+- **US07:** confirmar com o cliente a fórmula da baixa utilização e finalizar o cálculo do alerta.
+- **US14:** integrar o ranking de destinos ao componente visual e ajustar o rótulo de exibição.
+- **Revisão:** fazer o merge dos PRs abertos (card Disponíveis e ordenação de rentabilidade por motorista).
 
 <details>
-<summary><b>Critérios de aceite dos Ajustes (OM-99)</b></summary>
+<summary><b>Critérios de aceite dos ajustes da Sprint 2</b></summary>
 
-|     | Critério                                                                                               |
-| :-: | :----------------------------------------------------------------------------------------------------- |
-| ✅  | Todas as subtasks concluídas (OM-101, OM-102 e OM-114).                                                |
-| ✅  | O filtro da tela de viagem envia origem e destino, e o backend filtra pelos dois.                      |
-| ✅  | Retorna as viagens de todos os filtros quando há mais de um do mesmo tipo selecionado.                 |
-| ✅  | Reimportar o mesmo manifesto mantém o % de utilização e não duplica viagens.                           |
-| ✅  | Um segundo manifesto, com viagens novas, altera o % de forma coerente com o CSV.                       |
-| ✅  | O número do manifesto identifica cada viagem de forma única.                                           |
-| ✅  | Testes do Operacional e do Relatório alinhados com o `main/java`, sem testes quebrados ou incompletos. |
+|     | Critério                                                                           |
+| :-: | :--------------------------------------------------------------------------------- |
+| ⬜  | Fórmula da baixa utilização confirmada com o cliente e aplicada no alerta da US07. |
+| ⬜  | Ranking de destinos integrado ao componente visual, com rótulo ajustado (US14).    |
+| ⬜  | Todos os PRs abertos da Sprint 2 revisados e mesclados.                            |
 
 </details>
 
-#### US08 — Apuração de frete, custos e cálculo de rentabilidade (story OM-8)
+#### US12 — Importação automática da planilha de veículos
 
-Permite apurar o valor do frete e os custos operacionais de cada viagem para calcular a rentabilidade real da operação. Os valores são obtidos diretamente pela importação/reimportação da planilha de manifesto (sem tela de cadastro ou edição manual), sendo as informações de rentabilidade visíveis apenas para o perfil de Gestor.
+Permite cadastrar a frota em lote pela planilha de veículos, com atualização da base sem inserção manual. É a base da US11 e da página de veículos.
 
-- **BD (OM-106):** Modelagem de colunas monetárias precisas para suportar valores de frete, vale-frete, pedágio e rentabilidade.
-- **Back (OM-108):** Processamento da fórmula de rentabilidade durante a importação do manifesto via UPSERT (evitando duplicidade quando um manifesto é reimportado para correção) e tratamento de valores nulos.
-- **Front (OM-117):** Exibição das receitas, despesas e saldo final de rentabilidade restrita aos gestores, com destaque visual em vermelho para viagens deficitárias.
+- **Back (serviço Operacional):** endpoint de upload do CSV com parse e UPSERT por placa, criando veículos e motoristas ausentes e relacionando placa e tipo ao motorista.
+- **Front:** interface de upload com estado de carregamento e feedback de sucesso ou erro.
 
 <details>
-<summary><b>Critérios de aceite da US08</b></summary>
+<summary><b>Critérios de aceite da US12</b></summary>
 
-|     | Critério                                                                                 |
-| :-: | :--------------------------------------------------------------------------------------- |
-| ✅  | Frete, vale-frete, pedágio e rentabilidade em colunas monetárias precisas.               |
-| ✅  | Valores obtidos pela importação do manifesto, sem tela de cadastro ou edição manual.     |
-| ✅  | Reimportar um manifesto corrigido atualiza as viagens sem duplicá-las (UPSERT).          |
-| ✅  | Valores nulos tratados no cálculo da rentabilidade.                                      |
-| ✅  | Rentabilidade visível apenas para o perfil Gestor, com viagens deficitárias em vermelho. |
+|     | Critério                                                                        |
+| :-: | :------------------------------------------------------------------------------ |
+| ⬜  | O sistema lê o CSV padrão de veículos.                                          |
+| ⬜  | Veículos e motoristas ausentes são cadastrados automaticamente.                 |
+| ⬜  | Placa e tipo de veículo ficam relacionados ao motorista correto.                |
+| ⬜  | Reimportar a planilha atualiza os dados sem duplicar motoristas ou veículos.    |
+| ⬜  | Feedback visual claro em caso de sucesso, erro no arquivo ou linhas rejeitadas. |
 
 </details>
 
-#### US09 — Rentabilidade média por motorista (story OM-9)
+#### US11 — Comparação de rentabilidade entre tipos de veículo
 
-Exibe a rentabilidade média obtida por viagem de cada motorista, permitindo ao Gestor comparar o desempenho financeiro da frota agregada.
+Consolida a rentabilidade agrupada por categoria de veículo (ex.: Fiorino, Van, VUC, Truck, Carreta), para apoiar decisões estratégicas de frota. Não tem tela própria: vira um card no dashboard principal.
 
-- **Back (OM-116):** Cálculo da média (`AVG`) agrupada por motorista no período filtrado, desconsiderando viagens com valores financeiros nulos.
-- **Front (OM-115):** Listagem comparativa restrita ao perfil Gestor, com suporte a ordenação crescente/decrescente e tratamento para motoristas sem viagens no mês.
+- **Back (serviço Operacional):** endpoint que agrupa as viagens do mês pelo tipo do veículo e devolve receita, custo, rentabilidade e média por viagem. Viagens de placa sem tipo cadastrado entram em "Não identificado".
+- **Front:** card de barras no dashboard, restrito ao perfil Gestor, com tooltip e estados de carregamento, vazio e erro.
 
 <details>
-<summary><b>Critérios de aceite da US09</b></summary>
+<summary><b>Critérios de aceite da US11</b></summary>
 
-|     | Critério                                                                                                     |
-| :-: | :----------------------------------------------------------------------------------------------------------- |
-| ✅  | Média (`AVG`) da rentabilidade por viagem de cada motorista no período, ignorando viagens com valores nulos. |
-| ✅  | Acesso restrito ao perfil Gestor.                                                                            |
-| ✅  | Ordenação crescente e decrescente e tratamento de motoristas sem viagens no mês (OM-115).        |
+|     | Critério                                                                              |
+| :-: | :------------------------------------------------------------------------------------ |
+| ⬜  | Rentabilidade (receitas − custos) agrupada corretamente por tipo de veículo.          |
+| ⬜  | A consolidação respeita o filtro mensal do dashboard.                                 |
+| ⬜  | Viagens sem tipo cadastrado aparecem em "Não identificado" e não somem da soma total. |
+| ⬜  | Visualização restrita ao perfil Gestor.                                               |
 
 </details>
 
-#### US05 — Tela única de motoristas disponíveis (story OM-5)
+#### US17 — Histórico de viagens e modal do motorista
 
-Centraliza em uma única visualização os motoristas disponíveis para agilizar o direcionamento de novas cargas pelo operador.
+Permite consultar o histórico detalhado de viagens de um motorista específico, para analisar o desempenho e as operações passadas.
 
-- **Back (OM-103):** Endpoints de consulta e alteração manual de status (`PATCH /motoristas/{id}/status`), preservando a alteração manual mesmo após novas importações de manifesto.
-- **Front (OM-105):** Interface dedicada listando os motoristas e seus respectivos status operacionais.
-- **Integração (OM-104):** Conexão do card "Disponíveis" do dashboard ao KPI da US05, garantindo que o valor exibido coincida exatamente com a contagem da tela de motoristas.
+- **Back (serviço Operacional):** endpoint paginado com as viagens (concluídas e em andamento) vinculadas ao motorista, ordenadas da mais recente para a mais antiga.
+- **Front:** modal compartilhado, aberto pelo card do motorista na listagem de disponibilidade (US05) e pelo ranking (US13).
 
 <details>
-<summary><b>Critérios de aceite da US05</b></summary>
+<summary><b>Critérios de aceite da US17</b></summary>
 
-|     | Critério                                                                                               |
-| :-: | :----------------------------------------------------------------------------------------------------- |
-| ✅  | Endpoints de consulta e de alteração manual do status do motorista.                                    |
-| ✅  | A alteração manual de status é preservada após novas importações de manifesto.                         |
-| ✅  | Tela única lista os motoristas e seus status operacionais.                                             |
-| ✅  | Card "Disponíveis" do dashboard com valor igual à contagem da tela de motoristas (OM-104), em revisão. |
+|     | Critério                                                                      |
+| :-: | :---------------------------------------------------------------------------- |
+| ⬜  | O modal abre ao clicar no nome ou card do motorista.                          |
+| ⬜  | Lista origem, destino, datas e status das viagens, incluindo as em andamento. |
+| ⬜  | Acesso liberado para Operador e Gestor.                                       |
 
 </details>
 
-#### US14 — Identificação das rotas de maior retorno no mês (story OM-14)
+#### US13 — Ranking mensal de motoristas
 
-Identifica os destinos com maior retorno financeiro no mês para embasar campanhas de engajamento de motoristas.
+Gera um ranking gerencial dos motoristas no mês, com pódio para os primeiros e lista para os demais, na visão de gamificação pedida pelo cliente.
 
-- **Back (OM-118):** Agrupamento por destino gerando o ranking dos 10 destinos com maior média de rentabilidade no mês, ordenados de forma decrescente.
-- **Front / Integração:** A integração do ranking com o componente visual no frontend e o ajuste do rótulo de exibição ficaram pendentes para finalização.
+- **Back (serviço Operacional):** endpoint com rentabilidade média (US09), número de viagens e frequência, ordenado em um único ponto. Após a US13 ser entregue, a regra de ordenação pode ser trocada sem alterar a API.
+- **Front:** pódio (1º, 2º, 3º) e lista dos demais, restritos ao Gestor, com clique que abre o modal da US17.
+- **Complemento (ajustes):** botão de filtro de seleção única (rentabilidade, faturamento, número de viagens e tipo de veículo), com ordenação do maior para o menor; remoção do campo de frequência; e ajustes de layout e numeração de posição.
 
 <details>
-<summary><b>Critérios de aceite da US14</b></summary>
+<summary><b>Critérios de aceite da US13</b></summary>
 
-|     | Critério                                                                                      |
-| :-: | :-------------------------------------------------------------------------------------------- |
-| ✅  | Ranking dos 10 destinos com maior média de rentabilidade no mês, em ordem decrescente (back). |
-| ✅  | Integração do ranking com o componente visual e ajuste do rótulo de exibição, pendentes.      |
+|     | Critério                                                     |
+| :-: | :----------------------------------------------------------- |
+| ⬜  | Ranking gerado e filtrado pelo mês selecionado.              |
+| ⬜  | Motoristas ordenados de forma decrescente pelo filtro ativo. |
+| ⬜  | Apenas um filtro selecionado por vez.                        |
+| ⬜  | Pódio e listagem com posição visível de cada motorista.      |
+| ⬜  | Campo de frequência removido da tela de ranking.             |
+| ⬜  | Visualização e acesso restritos ao perfil Gestor.            |
 
 </details>
 
-#### US15 — Login seguro e controle de acesso por perfil (story OM-109)
+#### US10 — Controle de pagamento do motorista _(aguardando definição)_
 
-Garante a proteção dos dados operacionais e financeiros através de autenticação JWT e separação de permissões entre os perfis **Operador** e **Gestor**.
+Apresenta o valor total a ser pago a cada motorista no mês, para controle financeiro e repasse. A fórmula exata ainda depende de validação com o cliente, então esta frente é preliminar.
 
-- **Back (OM-112):** Microsserviço dedicado (`autenticacao-service`), validação de credenciais com senhas criptografadas (Bcrypt) e emissão de token JWT com expiração de 8 horas.
-- **Front (OM-107):** Tela de login com validação de campos e exibição de mensagens genéricas para credenciais inválidas.
-- **Integração (OM-113):** Configuração de CORS, interceptação de respostas `401` (não autenticado) e `403` (acesso negado para perfil Operador em telas financeiras) e proteção de rotas privadas.
+- **Back (serviço Operacional):** endpoint que soma o valor devido por motorista no período. A fórmula fica isolada em um único método para ser trocada quando for definida.
+- **Front:** valor a pagar por motorista na visão financeira do Gestor.
 
 <details>
-<summary><b>Critérios de aceite da US15</b></summary>
+<summary><b>Critérios de aceite da US10</b></summary>
 
-|     | Critério                                                                                                             |
-| :-: | :------------------------------------------------------------------------------------------------------------------- |
-| ✅  | Senhas criptografadas com Bcrypt e token JWT com expiração de 8 horas.                                               |
-| ✅  | Credenciais inválidas exibem mensagem genérica.                                                                      |
-| ✅  | Respostas `401` (não autenticado) e `403` (acesso negado) tratadas; perfil Operador sem acesso às telas financeiras. |
-| ✅  | CORS configurado e rotas privadas protegidas por perfil.                                                             |
+|     | Critério                                                                  |
+| :-: | :------------------------------------------------------------------------ |
+| ⬜  | Soma consolidada por motorista dentro do mês selecionado.                 |
+| ⬜  | Fórmula do pagamento validada com o cliente e aplicada em um único ponto. |
+| ⬜  | Acesso restrito ao perfil Gestor.                                         |
 
 </details>
 
-#### US16 — Dashboard com dados essenciais (story OM-110)
+#### Complementos da US15 — Gerenciamento de usuários e Configurações
 
-Apresenta no painel principal apenas os indicadores essenciais da operação para garantir uma leitura rápida e objetiva pelo gestor.
+Cadastro simples de usuários para o Gestor e a tela de Configurações que o abriga. Complementa a US15 (login e perfis), sem alterar seu escopo.
 
-- **Back (OM-100):** Endpoint consolidado (`GET /dashboard`) reunindo as métricas principais do período.
-- **Integração (OM-111):** Conexão dos quadrantes do dashboard aos dados reais, atualização automática após upload de planilhas e tratamento de estados vazios (_Empty State_).
+- **Back (serviço de autenticação):** `POST /usuarios` e `GET /usuarios`, restritos ao Gestor. Senha com BCrypt, login único sem diferença de maiúsculas, sem edição, exclusão ou redefinição de senha nesta sprint.
+- **Front:** página `/configuracoes` com navegação por seções (visível só ao Gestor). A seção Usuários lista os usuários e abre um modal de cadastro com validação no cliente.
 
 <details>
-<summary><b>Critérios de aceite da US16</b></summary>
+<summary><b>Critérios de aceite dos complementos da US15</b></summary>
 
-|     | Critério                                                                     |
-| :-: | :--------------------------------------------------------------------------- |
-| ✅  | Endpoint consolidado `GET /dashboard` com as métricas principais do período. |
-| ✅  | Quadrantes do dashboard alimentados por dados reais da API.                  |
-| ✅  | Dashboard atualizado automaticamente após o upload de planilhas.             |
-| ✅  | Estados vazios (_Empty State_) tratados.                                     |
+|     | Critério                                                                                             |
+| :-: | :--------------------------------------------------------------------------------------------------- |
+| ⬜  | Gestor cadastra usuário com nome, login, perfil e senha, e a senha nunca aparece em resposta ou log. |
+| ⬜  | Login repetido (sem diferença de maiúsculas) retorna erro claro.                                     |
+| ⬜  | Tela de Configurações acessível só ao Gestor, com URL própria por seção.                             |
+| ⬜  | Operador recebe 403 nos endpoints e é redirecionado da tela.                                         |
 
 </details>
 
-#### US07 — Alerta de motoristas com baixa utilização no mês (story OM-7)
+#### Complementos da US12 — Página de veículos no dashboard
 
-Auxilia o gestor a identificar proativamente motoristas agregados com baixa taxa de ocupação no mês para agir sobre a ociosidade da frota.
+Página com a lista completa dos veículos e o resumo por tipo, dentro do dashboard, para que o Gestor consulte os dados do CSV sem uma página separada. O upload sai do dashboard e passa para a sidebar.
 
-- **Back (OM-XXX):** Endpoint `GET /motoristas/baixa-utilizacao?mes=YYYY-MM` identificando motoristas abaixo do limite mínimo de utilização (padrão de 30%, configurável por variável de ambiente), incluindo motoristas sem viagens no período com `0%`.
-- **Front (OM-YYY):** Exibição de alerta no sino de notificações no formato _"Alerta motorista: {nome}, baixa frequência: {percentual}%"_ e destaque da frequência em vermelho com ícone de alerta na tela de motoristas.
+- **Back (serviço Operacional):** `GET /veiculos` (paginado, com filtro por tipo e busca por placa ou motorista) e `GET /veiculos/resumo` (totais e contagem por tipo). Sem dados, ambos respondem 200.
+- **Front:** guia de veículos no dashboard, sempre visível, com o mesmo estado vazio da tela atual quando não há dados. Responsiva.
 
 <details>
-<summary><b>Critérios de aceite da US07</b></summary>
+<summary><b>Critérios de aceite dos complementos da US12 (página de veículos)</b></summary>
 
-|     | Critério                                                                                                                                                 |
-| :-: | :------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| ✅  | Endpoint `GET /motoristas/baixa-utilizacao` com limite padrão de 30% (configurável por variável de ambiente), incluindo motoristas sem viagens com `0%`. |
-| ✅  | Alerta no sino de notificações e destaque em vermelho, com ícone, na tela de motoristas.                                                                 |
+|     | Critério                                                                         |
+| :-: | :------------------------------------------------------------------------------- |
+| ⬜  | Sem veículos cadastrados, a página mostra o mesmo tratamento do dashboard atual. |
+| ⬜  | O guia é fixo, independente dos dados na plataforma.                             |
+| ⬜  | A página de veículos é responsiva.                                               |
+| ⬜  | O botão de upload fica na sidebar e o endpoint de upload não muda.               |
+
+</details>
+
+#### Complementos da US12 — Registros (histórico de importações)
+
+Seção Registros com o histórico de cada importação de manifesto e de veículos, com status, contadores, usuário, filtros e detalhe das linhas rejeitadas e duplicadas.
+
+- **Back:** cada serviço grava o próprio histórico (Relatório para o manifesto, Operacional para veículos), com hash do arquivo para detectar reimportações.
+- **Front:** lista com cards da última importação, filtros e tabela; detalhe com ocorrências e download em CSV.
+
+<details>
+<summary><b>Critérios de aceite dos complementos da US12 (Registros)</b></summary>
+
+|     | Critério                                                                                    |
+| :-: | :------------------------------------------------------------------------------------------ |
+| ⬜  | Toda importação gera um registro, e falha ao gravar o registro não interrompe a importação. |
+| ⬜  | Reimportação do mesmo arquivo é identificada.                                               |
+| ⬜  | Detalhe lista as ocorrências, e o CSV baixado abre com acentos corretos no Excel.           |
+| ⬜  | Falha de um dos serviços não esconde os dados do outro.                                     |
+
+</details>
+
+#### Complementos das telas de viagem — Mapa da rota
+
+Modal com mini mapa da rota de origem e destino da viagem, com os dados principais da viagem na descrição.
+
+- **Back (serviço Operacional):** localidades com geocodificação e cache, e endpoint de detalhe da viagem com a rota por estradas (com degradação para linha reta).
+- **Front:** modal com Leaflet e OpenStreetMap, dados da viagem e estados de carregamento, erro e rota aproximada.
+
+<details>
+<summary><b>Critérios de aceite dos complementos das viagens (mapa)</b></summary>
+
+|     | Critério                                                                                   |
+| :-: | :----------------------------------------------------------------------------------------- |
+| ⬜  | Modal mostra origem, destino e a rota no lugar certo.                                      |
+| ⬜  | Rota aproximada e localidade não encontrada são sinalizadas sem perder os dados da viagem. |
+| ⬜  | Dados financeiros aparecem só para o Gestor.                                               |
+| ⬜  | Atribuição do OpenStreetMap visível.                                                       |
 
 </details>
 
 ## 🔍 Retrospectiva <a id="retrospectiva"></a>
 
+_A preencher ao fim da Sprint 3._
+
 **O que deu certo**
 
-- Entrega majoritária do escopo planejado, com conclusão integral das histórias centrais de negócio (US08, US15 e US16) e do backend de todas as demais histórias (US05, US09 e US14).
-- Criação do microsserviço dedicado de autenticação (`autenticacao-service`) com controle de acesso por perfil (Operador e Gestor).
-- Pagamento das pendências técnicas da Sprint 1 com a integração real dos quadrantes do dashboard (OM-100 e OM-111).
-- Task de ajustes (OM-99) concluída: filtro de viagens corrigido (OM-102), % de utilização corrigido (OM-101) e testes do back-end alinhados (OM-114).
-- Integração do card "Disponíveis" do dashboard em revisão.
-- Interface de ordenação da rentabilidade média por motorista em revisão.
-- Backend concluído (OM-118), junto com a integração visual no frontend e ajuste de título.
-  
+-
+
 **O que não deu certo / Pendências no fechamento**
 
-- Algumas tarefas entraram na reta final da sprint em fase de revisão (Pull Request aberto) ou finalização:
-- **US07:** Backend do alerta de baixa utilização em andamento e frontend em revisão, ainda há calculos que não podem ser feitos com precisão por falta de confirmação da fórmula com o cliente.
+-
 
-**O que muda na Sprint 3**
+**O que muda na Sprint 4**
 
-- Priorizar o merge e validação das tasks em revisão logo no início da Sprint 3 antes de puxar novas histórias.
-- Antecipar a integração entre Front e Back assim que os contratos de endpoint forem definidos, reduzindo o acúmulo de revisões nos últimos dias da sprint.
+-
 
 ## 📂 Documentos e anexos <a id="documentos"></a>
 
-- [Cenários de User Stories](../documentacao-produto/Cenarios_sprint2.pdf)
-- [Backlog completo](../documentacao-produto/Backlog.pdf)
+- [Cenários de User Stories]()
+- [Backlog completo]()
 
 ## 🎥 Link do Vídeo <a id="link-do-video"></a>
 
-Neste vídeo é mostrado o desenvolvimento da **Plataforma de Controle de Motoristas Agregados**, feito pela equipe **OmniDevs** ao decorrer do ciclo da 2ª (segunda) Sprint.
+Neste vídeo é mostrado o desenvolvimento da **Plataforma de Controle de Motoristas Agregados**, feito pela equipe **OmniDevs** ao decorrer do ciclo da 3ª (terceira) Sprint.
 
-<a href="https://youtu.be/eVJscMSMfT4"><img src="https://img.shields.io/badge/YouTube-FF0000?style=for-the-badge&logo=youtube&logoColor=white"/></a>
+<a href="#"><img src="https://img.shields.io/badge/YouTube-FF0000?style=for-the-badge&logo=youtube&logoColor=white"/></a>
 
 ## 👥 **Equipe** <a id="equipe"></a>
 
