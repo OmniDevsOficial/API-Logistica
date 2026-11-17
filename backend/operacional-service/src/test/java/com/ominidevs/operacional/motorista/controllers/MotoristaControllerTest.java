@@ -33,6 +33,8 @@ import com.ominidevs.operacional.indicadores.services.UtilizacaoService;
 import com.ominidevs.operacional.motorista.dto.MotoristaResumoResponse;
 import com.ominidevs.operacional.motorista.dto.MotoristaResponseDTO;
 import com.ominidevs.operacional.motorista.dto.RankingMotoristaResponse;
+import com.ominidevs.operacional.motorista.dto.RankingMotoristasResultado;
+import com.ominidevs.operacional.motorista.services.FiltroRankingMotorista;
 import com.ominidevs.operacional.motorista.entities.StatusMotorista;
 import com.ominidevs.operacional.motorista.exceptions.MotoristaExceptionHandler;
 import com.ominidevs.operacional.motorista.exceptions.MotoristaNaoEncontradoException;
@@ -76,16 +78,16 @@ class MotoristaControllerTest {
 
         mvc.perform(get("/motoristas"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].id").value(1))
-                .andExpect(jsonPath("$[0].nome").value("Ana"))
-                .andExpect(jsonPath("$[0].cpf").value("00123456789"))
-                .andExpect(jsonPath("$[0].tipoVeiculo").value("Caminhão"))
-                .andExpect(jsonPath("$[0].placa").value("ABC1D23"))
-                .andExpect(jsonPath("$[0].status").value("DISPONIVEL"))
-                .andExpect(jsonPath("$[0].localizacao").value("Curitiba"))
-                .andExpect(jsonPath("$[0].ultimaOperacao").value("2026-09-10"))
-                .andExpect(jsonPath("$[0].previsaoDisponibilidade").doesNotExist())
-                .andExpect(jsonPath("$[0].quantidadeViagens").value(3));
+                .andExpect(jsonPath("$.ranking[0].id").value(1))
+                .andExpect(jsonPath("$.ranking[0].nome").value("Ana"))
+                .andExpect(jsonPath("$.ranking[0].cpf").value("00123456789"))
+                .andExpect(jsonPath("$.ranking[0].tipoVeiculo").value("Caminhão"))
+                .andExpect(jsonPath("$.ranking[0].placa").value("ABC1D23"))
+                .andExpect(jsonPath("$.ranking[0].status").value("DISPONIVEL"))
+                .andExpect(jsonPath("$.ranking[0].localizacao").value("Curitiba"))
+                .andExpect(jsonPath("$.ranking[0].ultimaOperacao").value("2026-09-10"))
+                .andExpect(jsonPath("$.ranking[0].previsaoDisponibilidade").doesNotExist())
+                .andExpect(jsonPath("$.ranking[0].quantidadeViagens").value(3));
     }
 
     @Test
@@ -246,66 +248,113 @@ class MotoristaControllerTest {
 
     private RankingMotoristaResponse itemRanking() {
         return new RankingMotoristaResponse(1, 7, "Ana", "00123456789", null, "Truck", "ABC1D23",
-                7, 5, new BigDecimal("25.00"), new BigDecimal("333.33"),
-                new BigDecimal("1000.00"), new BigDecimal("1500.00"), new BigDecimal("500.00"));
+                7, 5, new BigDecimal("333.33"), new BigDecimal("1000.00"),
+                new BigDecimal("1500.00"), new BigDecimal("500.00"));
     }
 
     @Test
     @DisplayName("GET /motoristas/ranking calcula o ranking do mês informado")
     void deveCalcularRankingDoMesInformado() throws Exception {
-        when(rankingService.ranking(any())).thenReturn(List.of(itemRanking()));
+        when(rankingService.ranking(any(), any(), isNull())).thenReturn(new RankingMotoristasResultado(List.of(itemRanking()), List.of("Truck")));
 
         mvc.perform(get("/motoristas/ranking").param("mes", "2026-02"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].posicao").value(1))
-                .andExpect(jsonPath("$[0].nome").value("Ana"))
-                .andExpect(jsonPath("$[0].cpf").value("00123456789"))
-                .andExpect(jsonPath("$[0].rentabilidadeMedia").value(333.33))
-                .andExpect(jsonPath("$[0].rentabilidadeTotal").value(1000.00))
-                .andExpect(jsonPath("$[0].quantidadeViagens").value(5))
-                .andExpect(jsonPath("$[0].viagens").value(7))
-                .andExpect(jsonPath("$[0].frequencia").value(25.00));
+                .andExpect(jsonPath("$.ranking[0].posicao").value(1))
+                .andExpect(jsonPath("$.ranking[0].nome").value("Ana"))
+                .andExpect(jsonPath("$.ranking[0].cpf").value("00123456789"))
+                .andExpect(jsonPath("$.ranking[0].rentabilidadeMedia").value(333.33))
+                .andExpect(jsonPath("$.ranking[0].rentabilidadeTotal").value(1000.00))
+                .andExpect(jsonPath("$.ranking[0].quantidadeViagens").value(5))
+                .andExpect(jsonPath("$.ranking[0].viagens").value(7))
+                .andExpect(jsonPath("$.ranking[0].faturamento").value(1500.00))
+                .andExpect(jsonPath("$.ranking[0].frequencia").doesNotExist())
+                .andExpect(jsonPath("$.tiposDisponiveis[0]").value("Truck"));
 
         verify(rankingService).ranking(
-                new PeriodoConsulta(LocalDate.of(2026, 2, 1), LocalDate.of(2026, 2, 28)));
+                new PeriodoConsulta(LocalDate.of(2026, 2, 1), LocalDate.of(2026, 2, 28)),
+                FiltroRankingMotorista.RENTABILIDADE, null);
     }
 
     @Test
     @DisplayName("GET /motoristas/ranking aceita dataInicio/dataFim em dd/MM/aaaa (formato do front)")
     void deveAceitarDataInicioEDataFim() throws Exception {
-        when(rankingService.ranking(any())).thenReturn(List.of());
+        when(rankingService.ranking(any(), any(), isNull())).thenReturn(new RankingMotoristasResultado(List.of(), List.of()));
 
         mvc.perform(get("/motoristas/ranking")
                         .param("dataInicio", "01/11/2026")
                         .param("dataFim", "30/11/2026"))
                 .andExpect(status().isOk())
-                .andExpect(content().json("[]"));
+                .andExpect(jsonPath("$.ranking").isEmpty());
 
         verify(rankingService).ranking(
-                new PeriodoConsulta(LocalDate.of(2026, 11, 1), LocalDate.of(2026, 11, 30)));
+                new PeriodoConsulta(LocalDate.of(2026, 11, 1), LocalDate.of(2026, 11, 30)),
+                FiltroRankingMotorista.RENTABILIDADE, null);
     }
 
     @Test
     @DisplayName("GET /motoristas/ranking sem parâmetro usa o mês atual")
     void deveUsarMesAtualSemParametros() throws Exception {
-        when(rankingService.ranking(any())).thenReturn(List.of());
+        when(rankingService.ranking(any(), any(), isNull())).thenReturn(new RankingMotoristasResultado(List.of(), List.of()));
         YearMonth atual = YearMonth.now();
 
         mvc.perform(get("/motoristas/ranking"))
                 .andExpect(status().isOk());
 
         verify(rankingService).ranking(
-                new PeriodoConsulta(atual.atDay(1), atual.atEndOfMonth()));
+                new PeriodoConsulta(atual.atDay(1), atual.atEndOfMonth()),
+                FiltroRankingMotorista.RENTABILIDADE, null);
     }
 
     @Test
     @DisplayName("GET /motoristas/ranking retorna 200 com lista vazia quando o mês não tem viagens")
     void deveRetornarListaVaziaQuandoMesSemViagens() throws Exception {
-        when(rankingService.ranking(any())).thenReturn(List.of());
+        when(rankingService.ranking(any(), any(), isNull())).thenReturn(new RankingMotoristasResultado(List.of(), List.of()));
 
         mvc.perform(get("/motoristas/ranking").param("mes", "2026-12"))
                 .andExpect(status().isOk())
-                .andExpect(content().json("[]"));
+                .andExpect(jsonPath("$.ranking").isEmpty());
+    }
+
+    @Test
+    void deveAplicarFiltroFaturamento() throws Exception {
+        when(rankingService.ranking(any(), eq(FiltroRankingMotorista.FATURAMENTO), isNull()))
+                .thenReturn(new RankingMotoristasResultado(List.of(itemRanking()), List.of("Truck")));
+
+        mvc.perform(get("/motoristas/ranking").param("mes", "2026-02").param("filtro", "FATURAMENTO"))
+                .andExpect(status().isOk());
+
+        verify(rankingService).ranking(
+                new PeriodoConsulta(LocalDate.of(2026, 2, 1), LocalDate.of(2026, 2, 28)),
+                FiltroRankingMotorista.FATURAMENTO, null);
+    }
+
+    @Test
+    void deveAceitarFiltroTipoVeiculoComTipo() throws Exception {
+        when(rankingService.ranking(any(), eq(FiltroRankingMotorista.TIPO_VEICULO), eq("Truck")))
+                .thenReturn(new RankingMotoristasResultado(List.of(), List.of("Truck")));
+
+        mvc.perform(get("/motoristas/ranking").param("filtro", "TIPO_VEICULO")
+                        .param("tipoVeiculo", "Truck"))
+                .andExpect(status().isOk());
+
+        verify(rankingService).ranking(any(), eq(FiltroRankingMotorista.TIPO_VEICULO), eq("Truck"));
+    }
+
+    @Test
+    void deveRejeitarFiltroDesconhecido() throws Exception {
+        mvc.perform(get("/motoristas/ranking").param("filtro", "PRECO"))
+                .andExpect(status().isBadRequest());
+        verifyNoInteractions(rankingService);
+    }
+
+    @Test
+    void deveRejeitarTipoAusenteOuComOutroFiltro() throws Exception {
+        mvc.perform(get("/motoristas/ranking").param("filtro", "TIPO_VEICULO"))
+                .andExpect(status().isBadRequest());
+        mvc.perform(get("/motoristas/ranking").param("filtro", "VIAGENS")
+                        .param("tipoVeiculo", "Truck"))
+                .andExpect(status().isBadRequest());
+        verifyNoInteractions(rankingService);
     }
 
     @ParameterizedTest
