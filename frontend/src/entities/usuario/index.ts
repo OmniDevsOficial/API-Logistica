@@ -12,4 +12,6 @@ export {
   type MotivoErroCadastro,
 } from "./api/usuarioService";
 export { formatarDataCriacao } from "./lib/formatarDataCriacao";
+export { resumirUsuarios, type ResumoUsuarios } from "./lib/resumoUsuarios";
 export { PerfilBadge } from "./ui/PerfilBadge";
+export { StatusUsuarioBadge } from "./ui/StatusUsuarioBadge";

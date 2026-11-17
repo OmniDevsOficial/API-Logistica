@@ -7,7 +7,7 @@ const ROTULO: Record<Perfil, string> = {
 
 const ESTILO: Record<Perfil, string> = {
   GESTOR: "bg-primary/10 text-primary dark:bg-primary/20 dark:text-grafico-claro",
-  OPERADOR: "bg-success/15 text-success",
+  OPERADOR: "bg-amber-400/15 text-amber-600 dark:text-amber-400",
 };
 
 export function PerfilBadge({ perfil }: { perfil: Perfil }) {

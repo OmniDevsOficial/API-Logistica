@@ -5,6 +5,7 @@ export interface Usuario {
   nome: string;
   email: string;
   perfil: Perfil;
+  ativo: boolean;
   criadoEm: string;
 }
 

@@ -1,4 +1,9 @@
-import { formatarDataCriacao, PerfilBadge, type Usuario } from "@entities/usuario";
+import {
+  formatarDataCriacao,
+  PerfilBadge,
+  StatusUsuarioBadge,
+  type Usuario,
+} from "@entities/usuario";
 
 const HEADER_CELL = "whitespace-nowrap py-3 pr-6 text-left text-xs font-semibold text-fg-muted";
 const CELL = "py-4 pr-6 align-middle";
@@ -13,18 +18,20 @@ function iniciais(nome: string): string {
 export function UsuariosTabela({ usuarios }: { usuarios: Usuario[] }) {
   return (
     <div className="overflow-x-auto">
-      <table className="w-full min-w-[640px] table-fixed">
+      <table className="w-full min-w-[760px] table-fixed">
         <colgroup>
-          <col className="w-[34%]" />
-          <col className="w-[32%]" />
-          <col className="w-[17%]" />
-          <col className="w-[17%]" />
+          <col className="w-[30%]" />
+          <col className="w-[30%]" />
+          <col className="w-[14%]" />
+          <col className="w-[12%]" />
+          <col className="w-[14%]" />
         </colgroup>
         <thead>
           <tr className="border-y border-border">
             <th scope="col" className={`${HEADER_CELL} pl-6`}>Nome</th>
             <th scope="col" className={HEADER_CELL}>E-mail</th>
             <th scope="col" className={HEADER_CELL}>Perfil</th>
+            <th scope="col" className={HEADER_CELL}>Status</th>
             <th scope="col" className={HEADER_CELL}>Criado em</th>
           </tr>
         </thead>
@@ -51,6 +58,9 @@ export function UsuariosTabela({ usuarios }: { usuarios: Usuario[] }) {
               </td>
               <td className={CELL}>
                 <PerfilBadge perfil={usuario.perfil} />
+              </td>
+              <td className={CELL}>
+                <StatusUsuarioBadge ativo={usuario.ativo} />
               </td>
               <td className={CELL}>
                 <span className="text-sm text-fg">{formatarDataCriacao(usuario.criadoEm)}</span>
