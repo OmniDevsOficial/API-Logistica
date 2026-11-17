@@ -63,7 +63,7 @@ Parceiro: <strong>Newelog</strong>
 |:---:|:---:|:---:|:---:|:---:|
 | **SPRINT 1** | 07/09 - 27/09 | [Sprint 1 docs](docs/sprints/sprint-1.md) | 🟢 Concluído | [🎥 Assistir](https://www.youtube.com/watch?v=BLwNPkoQqVA) |
 | **SPRINT 2** | 05/10 - 25/10 | [Sprint 2 docs](docs/sprints/sprint-2.md) | 🟢 Concluído | [🎥 Assistir](https://youtu.be/eVJscMSMfT4) |
-| **SPRINT 3** | 02/11 - 22/11 | [Sprint 3 docs](docs/sprints/sprint-3.md) | ⚪ Não iniciada | |
+| **SPRINT 3** | 02/11 - 22/11 | [Sprint 3 docs](docs/sprints/sprint-3.md) | 🟡 Em andamento | |
 
 ### 📋Definition of Ready (DoR) <a id="definition-of-ready-dor"></a>
 
