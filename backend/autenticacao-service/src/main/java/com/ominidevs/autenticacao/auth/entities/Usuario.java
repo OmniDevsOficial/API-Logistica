@@ -1,5 +1,7 @@
 package com.ominidevs.autenticacao.auth.entities;
 
+import java.time.Instant;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -17,7 +19,7 @@ public class Usuario {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(name = "nome", nullable = false, length = 80)
+    @Column(name = "nome", nullable = false, length = 120)
     private String nome;
 
     @Column(name = "email", nullable = false, unique = true, length = 120)
@@ -30,14 +32,26 @@ public class Usuario {
     @Column(name = "perfil", nullable = false, length = 10)
     private Perfil perfil;
 
+    @Column(name = "ativo", nullable = false)
+    private boolean ativo;
+
+    @Column(name = "data_criacao", nullable = false, updatable = false)
+    private Instant dataCriacao;
+
     protected Usuario() {
     }
 
     public Usuario(String nome, String email, String senhaHash, Perfil perfil) {
+        this(nome, email, senhaHash, perfil, Instant.now());
+    }
+
+    public Usuario(String nome, String email, String senhaHash, Perfil perfil, Instant dataCriacao) {
         this.nome = nome;
         this.email = email;
         this.senhaHash = senhaHash;
         this.perfil = perfil;
+        this.ativo = true;
+        this.dataCriacao = dataCriacao;
     }
 
     public Integer getId() {
@@ -58,5 +72,13 @@ public class Usuario {
 
     public Perfil getPerfil() {
         return perfil;
+    }
+
+    public boolean isAtivo() {
+        return ativo;
+    }
+
+    public Instant getDataCriacao() {
+        return dataCriacao;
     }
 }
