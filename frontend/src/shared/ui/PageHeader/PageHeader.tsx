@@ -18,7 +18,7 @@ export function PageHeader({ title, onMenuClick, notificacoes, acoes }: PageHead
 
   return (
     <div className="flex items-center justify-between gap-4">
-      <div className="flex items-center gap-3">
+      <div className="flex min-w-0 items-center gap-3">
         <button
           type="button"
           className={`${ICON_BUTTON_CLASS} lg:hidden`}
@@ -27,10 +27,10 @@ export function PageHeader({ title, onMenuClick, notificacoes, acoes }: PageHead
         >
           <Menu size={18} />
         </button>
-        <h1 className="text-[28px] font-semibold text-fg">{title}</h1>
+        <h1 className="min-w-0 truncate text-2xl font-semibold text-fg sm:text-[28px]">{title}</h1>
       </div>
 
-      <div className="flex items-center gap-3">
+      <div className="flex shrink-0 items-center gap-3">
         {acoes && <div className="hidden sm:block">{acoes}</div>}
         <button
           type="button"

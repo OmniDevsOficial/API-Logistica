@@ -15,12 +15,12 @@ const OPCOES: readonly OpcaoPerfil[] = [
     valor: "OPERADOR",
     rotulo: "Operador",
     descricao: "Acessa viagens e motoristas",
-    ponto: "bg-success",
+    ponto: "bg-amber-400",
   },
   {
     valor: "GESTOR",
     rotulo: "Gestor",
-    descricao: "Acesso completo, incluindo configurações",
+    descricao: "Acesso completo, incluindo a administração",
     ponto: "bg-primary dark:bg-grafico-claro",
   },
 ];

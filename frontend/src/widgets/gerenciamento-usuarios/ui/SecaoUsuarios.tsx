@@ -1,9 +1,10 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { Loader2, RotateCcw, UserPlus, Users } from "lucide-react";
-import type { Usuario } from "@entities/usuario";
+import { resumirUsuarios, type Usuario } from "@entities/usuario";
 import { ModalCadastroUsuario } from "@features/cadastrar-usuario";
 import { MensagemFeedbackUpload } from "@shared/ui";
 import { useUsuarios } from "../model/useUsuarios";
+import { UsuariosKpis } from "./UsuariosKpis";
 import { UsuariosTabela } from "./UsuariosTabela";
 
 const DURACAO_AVISO_MS = 5000;
@@ -37,6 +38,8 @@ export function SecaoUsuarios() {
     [recarregar],
   );
 
+  const resumo = useMemo(() => (dados ? resumirUsuarios(dados) : null), [dados]);
+
   const subtitulo =
     dados && !erro ? descreverQuantidade(dados.length) : "Pessoas com acesso à plataforma";
 
@@ -50,6 +53,8 @@ export function SecaoUsuarios() {
           onFechar={() => setAviso(null)}
         />
       )}
+
+      <UsuariosKpis resumo={resumo} />
 
       <div className="overflow-hidden rounded-lg bg-surface">
         <div className="flex flex-col gap-4 px-6 pt-5 pb-4 sm:flex-row sm:items-center sm:justify-between">

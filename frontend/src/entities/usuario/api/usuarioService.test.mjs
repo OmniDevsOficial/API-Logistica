@@ -18,6 +18,7 @@ const usuarioDaApi = {
   nome: 'Ana Souza',
   email: 'ana@newe.com.br',
   perfil: 'OPERADOR',
+  ativo: true,
   criadoEm: '2026-11-17T12:00:00Z',
 };
 
@@ -47,6 +48,12 @@ test('lista os usuários pelo serviço de autenticação', async () => {
 
 test('recusa a lista quando algum item vem incompleto', async () => {
   globalThis.fetch = async () => resposta([{ ...usuarioDaApi, perfil: 'ADMIN' }]);
+
+  await assert.rejects(listarUsuarios(), /inválida/);
+});
+
+test('recusa a lista quando o status ativo não vem como booleano', async () => {
+  globalThis.fetch = async () => resposta([{ ...usuarioDaApi, ativo: 'sim' }]);
 
   await assert.rejects(listarUsuarios(), /inválida/);
 });

@@ -54,6 +54,7 @@ function lerUsuario(item: unknown): Usuario | null {
     typeof registro.email !== "string" ||
     typeof registro.perfil !== "string" ||
     !PERFIS.includes(registro.perfil) ||
+    typeof registro.ativo !== "boolean" ||
     typeof registro.criadoEm !== "string"
   ) {
     return null;
@@ -64,6 +65,7 @@ function lerUsuario(item: unknown): Usuario | null {
     nome: registro.nome,
     email: registro.email,
     perfil: registro.perfil as Usuario["perfil"],
+    ativo: registro.ativo,
     criadoEm: registro.criadoEm,
   };
 }
