@@ -24,19 +24,26 @@ import com.ominidevs.autenticacao.auth.entities.Usuario;
 import com.ominidevs.autenticacao.auth.services.AuthService;
 import com.ominidevs.autenticacao.auth.services.TokenService;
 import com.ominidevs.autenticacao.seguranca.SegurancaConfig;
+import com.ominidevs.autenticacao.usuarios.dto.AlterarStatusRequest;
 import com.ominidevs.autenticacao.usuarios.dto.CriarUsuarioRequest;
 import com.ominidevs.autenticacao.usuarios.dto.UsuarioResponse;
+import com.ominidevs.autenticacao.usuarios.exceptions.AutoDesativacaoException;
 import com.ominidevs.autenticacao.usuarios.exceptions.EmailEmUsoException;
+import com.ominidevs.autenticacao.usuarios.exceptions.UsuarioNaoEncontradoException;
 import com.ominidevs.autenticacao.usuarios.services.UsuarioService;
 
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.not;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -80,6 +87,13 @@ class UsuarioControllerTest {
 
     private ResultActions cadastrar(String autorizacao, String corpo) throws Exception {
         return mvc.perform(post("/usuarios")
+                .header(HttpHeaders.AUTHORIZATION, autorizacao)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(corpo));
+    }
+
+    private ResultActions alterarStatus(String autorizacao, int id, String corpo) throws Exception {
+        return mvc.perform(patch("/usuarios/{id}/status", id)
                 .header(HttpHeaders.AUTHORIZATION, autorizacao)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(corpo));
@@ -210,5 +224,59 @@ class UsuarioControllerTest {
                         .content("{\"email\":\"gestor@newe.com.br\",\"senha\":\"x\"}"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.token").value("token"));
+    }
+
+    @Test
+    void gestorDesativaUsuarioERecebeOStatusNovo() throws Exception {
+        UsuarioResponse desativada = new UsuarioResponse(
+                3, "Ana Souza", "ana@newe.com.br", Perfil.OPERADOR, false, CRIADO_EM);
+        when(usuarioService.alterarStatus(eq(3), any(), anyString())).thenReturn(desativada);
+
+        alterarStatus(gestor(), 3, "{\"ativo\":false}")
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(3))
+                .andExpect(jsonPath("$.ativo").value(false));
+
+        ArgumentCaptor<AlterarStatusRequest> captor = ArgumentCaptor.forClass(AlterarStatusRequest.class);
+        verify(usuarioService).alterarStatus(eq(3), captor.capture(), eq("teste@newe.com.br"));
+        assertEquals(false, captor.getValue().ativo());
+    }
+
+    @Test
+    void operadorESemTokenNaoAlteramStatus() throws Exception {
+        alterarStatus(operador(), 3, "{\"ativo\":false}").andExpect(status().isForbidden());
+        mvc.perform(patch("/usuarios/3/status")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"ativo\":false}"))
+                .andExpect(status().isUnauthorized());
+
+        verify(usuarioService, never()).alterarStatus(anyInt(), any(), anyString());
+    }
+
+    @Test
+    void statusAusenteRetorna400() throws Exception {
+        alterarStatus(gestor(), 3, "{}")
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.campos.ativo").value("Informe o status."));
+
+        verify(usuarioService, never()).alterarStatus(anyInt(), any(), anyString());
+    }
+
+    @Test
+    void usuarioInexistenteRetorna404() throws Exception {
+        when(usuarioService.alterarStatus(eq(99), any(), anyString())).thenThrow(new UsuarioNaoEncontradoException());
+
+        alterarStatus(gestor(), 99, "{\"ativo\":false}")
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.erro").value("Usuário não encontrado."));
+    }
+
+    @Test
+    void desativarOProprioUsuarioRetorna409() throws Exception {
+        when(usuarioService.alterarStatus(eq(1), any(), anyString())).thenThrow(new AutoDesativacaoException());
+
+        alterarStatus(gestor(), 1, "{\"ativo\":false}")
+                .andExpect(status().isConflict())
+                .andExpect(jsonPath("$.erro").value("Você não pode desativar o seu próprio usuário."));
     }
 }

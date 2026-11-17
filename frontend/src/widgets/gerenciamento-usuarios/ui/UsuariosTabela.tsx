@@ -1,9 +1,5 @@
-import {
-  formatarDataCriacao,
-  PerfilBadge,
-  StatusUsuarioBadge,
-  type Usuario,
-} from "@entities/usuario";
+import { formatarDataCriacao, PerfilBadge, type Usuario } from "@entities/usuario";
+import { ToggleStatusUsuario } from "@features/alterar-status-usuario";
 
 const HEADER_CELL = "whitespace-nowrap py-3 pr-6 text-left text-xs font-semibold text-fg-muted";
 const CELL = "py-4 pr-6 align-middle";
@@ -15,15 +11,24 @@ function iniciais(nome: string): string {
   return `${primeira}${ultima}`.toUpperCase() || "?";
 }
 
-export function UsuariosTabela({ usuarios }: { usuarios: Usuario[] }) {
+interface Propriedades {
+  usuarios: Usuario[];
+  emailSessao: string | null;
+  onStatusAlterado: (usuario: Usuario) => void;
+  onErroStatus: (mensagem: string) => void;
+}
+
+export function UsuariosTabela({ usuarios, emailSessao, onStatusAlterado, onErroStatus }: Propriedades) {
+  const sessao = emailSessao?.toLowerCase() ?? null;
+
   return (
     <div className="overflow-x-auto">
       <table className="w-full min-w-[760px] table-fixed">
         <colgroup>
-          <col className="w-[30%]" />
-          <col className="w-[30%]" />
+          <col className="w-[28%]" />
+          <col className="w-[29%]" />
           <col className="w-[14%]" />
-          <col className="w-[12%]" />
+          <col className="w-[15%]" />
           <col className="w-[14%]" />
         </colgroup>
         <thead>
@@ -60,7 +65,12 @@ export function UsuariosTabela({ usuarios }: { usuarios: Usuario[] }) {
                 <PerfilBadge perfil={usuario.perfil} />
               </td>
               <td className={CELL}>
-                <StatusUsuarioBadge ativo={usuario.ativo} />
+                <ToggleStatusUsuario
+                  usuario={usuario}
+                  proprioUsuario={usuario.email.toLowerCase() === sessao}
+                  onAlterado={onStatusAlterado}
+                  onErro={onErroStatus}
+                />
               </td>
               <td className={CELL}>
                 <span className="text-sm text-fg">{formatarDataCriacao(usuario.criadoEm)}</span>

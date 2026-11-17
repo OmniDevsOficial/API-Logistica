@@ -1,6 +1,7 @@
 import { test, afterEach } from 'node:test';
 import assert from 'node:assert/strict';
 import {
+  alterarStatusUsuario,
   cadastrarUsuario,
   ErroCadastroUsuario,
   listarUsuarios,
@@ -137,4 +138,44 @@ test('a resposta do cadastro nunca expõe senha nem hash', async () => {
 
   assert.equal('senha' in usuario, false);
   assert.equal('senhaHash' in usuario, false);
+});
+
+test('envia o novo status com PATCH na rota do usuário', async () => {
+  let chamada;
+  globalThis.fetch = async (url, opcoes) => {
+    chamada = { url: String(url), metodo: opcoes.method, corpo: JSON.parse(opcoes.body) };
+    return resposta({ ...usuarioDaApi, ativo: false });
+  };
+
+  const usuario = await alterarStatusUsuario(3, false);
+
+  assert.deepEqual(chamada, {
+    url: '/api/autenticacao/usuarios/3/status',
+    metodo: 'PATCH',
+    corpo: { ativo: false },
+  });
+  assert.equal(usuario.ativo, false);
+});
+
+test('a troca de status explica cada falha', async () => {
+  globalThis.fetch = async () => { throw new TypeError('rede'); };
+  await assert.rejects(alterarStatusUsuario(3, false), /conectar ao servidor/);
+
+  globalThis.fetch = async () => resposta({ erro: 'x' }, 404);
+  await assert.rejects(alterarStatusUsuario(3, false), /não existe mais/);
+
+  globalThis.fetch = async () => resposta({ erro: 'Você não pode desativar o seu próprio usuário.' }, 409);
+  await assert.rejects(alterarStatusUsuario(1, false), /próprio usuário/);
+
+  globalThis.fetch = async () => resposta({ erro: 'x' }, 403);
+  await assert.rejects(alterarStatusUsuario(3, false), /permissão/);
+
+  globalThis.fetch = async () => resposta(null, 500);
+  await assert.rejects(alterarStatusUsuario(3, false), /alterar o status/);
+});
+
+test('recusa a resposta da troca de status quando vem incompleta', async () => {
+  globalThis.fetch = async () => resposta({ id: 3 });
+
+  await assert.rejects(alterarStatusUsuario(3, true), /alterar o status/);
 });
