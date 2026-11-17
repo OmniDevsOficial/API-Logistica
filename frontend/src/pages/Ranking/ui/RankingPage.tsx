@@ -1,6 +1,11 @@
-import { useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { Search } from "lucide-react";
-import type { RankingMotorista } from "@entities/motorista";
+import {
+  faturamentoDoMotorista,
+  indexarFaturamento,
+  type RankingMotorista,
+} from "@entities/motorista";
+import { podeVerValoresMonetarios, useSessao } from "@entities/sessao";
 import { Sidebar } from "@widgets/sidebar";
 import { RankingList } from "@widgets/ranking-list";
 import { RankingPodium } from "@widgets/ranking-podium";
@@ -13,7 +18,8 @@ import {
 } from "@features/period-filter";
 import { PageHeader } from "@shared/ui";
 import { distribuirRanking } from "../lib/distribuirRanking";
-import { rotuloMes } from "../lib/rotuloMes";
+import { mesDaReferencia, rotuloMes } from "../lib/rotuloMes";
+import { usePagamentoMotoristas } from "../model/usePagamentoMotoristas";
 import { useRankingMotoristas } from "../model/useRankingMotoristas";
 
 const MENSAGEM_CLASS =
@@ -49,6 +55,20 @@ export function RankingPage() {
   const { dados, carregando, erro, recarregar } = useRankingMotoristas(
     intervalo.dataInicio,
     intervalo.dataFim,
+  );
+
+  // Faturamento (valor a pagar) é exclusivo do Gestor: para os demais nem há consulta.
+  const { usuario } = useSessao();
+  const ehGestor = usuario !== null && podeVerValoresMonetarios(usuario.perfil);
+  const pagamentos = usePagamentoMotoristas(mesDaReferencia(referencia), ehGestor);
+  const indiceFaturamento = useMemo(
+    () => indexarFaturamento(pagamentos.dados ?? []),
+    [pagamentos.dados],
+  );
+  const faturamentoDe = useCallback(
+    (motorista: RankingMotorista) =>
+      faturamentoDoMotorista(indiceFaturamento, motorista),
+    [indiceFaturamento],
   );
 
   const { podio, lista } = useMemo(
@@ -134,9 +154,32 @@ export function RankingPage() {
           </p>
         ) : (
           <div className="flex flex-col gap-6">
-            <RankingPodium podio={podioVisivel} />
+            {ehGestor && pagamentos.erro && (
+              <div
+                role="alert"
+                className="flex flex-wrap items-center justify-between gap-3 rounded-md bg-surface px-4 py-3 text-sm text-fg-subtle"
+              >
+                <span>{pagamentos.erro}</span>
+                <button
+                  type="button"
+                  onClick={pagamentos.recarregar}
+                  className="cursor-pointer rounded-md bg-primary px-3 py-1.5 text-xs font-medium text-white transition-colors hover:bg-primary-dark"
+                >
+                  Tentar de novo
+                </button>
+              </div>
+            )}
+            <RankingPodium
+              podio={podioVisivel}
+              faturamentoDe={ehGestor ? faturamentoDe : undefined}
+            />
             {/* Com 3 motoristas ou menos não há lista: só o pódio. */}
-            {lista.length > 0 && <RankingList motoristas={listaVisivel} />}
+            {lista.length > 0 && (
+              <RankingList
+                motoristas={listaVisivel}
+                faturamentoDe={ehGestor ? faturamentoDe : undefined}
+              />
+            )}
           </div>
         )}
       </main>

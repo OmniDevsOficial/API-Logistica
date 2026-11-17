@@ -2,6 +2,7 @@ package com.ominidevs.operacional.dashboard.services;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.Comparator;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
@@ -9,6 +10,7 @@ import org.springframework.stereotype.Service;
 import com.ominidevs.operacional.dashboard.dto.DashboardResponse;
 import com.ominidevs.operacional.dashboard.dto.DestinoMaisRentavelResponse;
 import com.ominidevs.operacional.dashboard.dto.MetricasDashboardResponse;
+import com.ominidevs.operacional.dashboard.dto.PagamentoMotoristaResponse;
 import com.ominidevs.operacional.dashboard.dto.PontoRentabilidadeResponse;
 import com.ominidevs.operacional.dashboard.dto.PontoSerieResponse;
 import com.ominidevs.operacional.dashboard.dto.RentabilidadePorTipoResponse;
@@ -65,6 +67,24 @@ public class DashboardService {
     public List<RentabilidadePorTipoResponse> rentabilidadePorTipo(PeriodoConsulta periodo) {
         return repository.consultarRentabilidadePorTipo(periodo).stream()
                 .map(this::converterTipo)
+                .toList();
+    }
+
+    /**
+     * Consolida o pagamento de cada motorista no período.
+     *
+     * @param periodo mês consultado.
+     * @return um item por motorista, do maior para o menor valor a pagar.
+     */
+    public List<PagamentoMotoristaResponse> pagamentoMotoristas(PeriodoConsulta periodo) {
+        return repository.consultarComponentesPagamento(periodo).stream()
+                .map(linha -> new PagamentoMotoristaResponse(
+                        linha.motorista(),
+                        DashboardRepository.SEM_IDENTIFICACAO.equals(linha.chave()) ? null : linha.chave(),
+                        linha.viagens(),
+                        CalculadoraPagamentoMotorista.calcular(linha)))
+                .sorted(Comparator.comparing(PagamentoMotoristaResponse::valorAPagar).reversed()
+                        .thenComparing(PagamentoMotoristaResponse::motorista))
                 .toList();
     }
 

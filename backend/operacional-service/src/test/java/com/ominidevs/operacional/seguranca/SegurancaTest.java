@@ -197,6 +197,27 @@ class SegurancaTest {
     }
 
     @Test
+    void gestorConsultaOPagamentoDosMotoristas() throws Exception {
+        mvc.perform(get("/dashboard/pagamento-motoristas").param("mes", "2026-08")
+                        .header(HttpHeaders.AUTHORIZATION, bearer(TokensDeTeste.valido("GESTOR"))))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    void operadorNaoConsultaOPagamentoDosMotoristas() throws Exception {
+        mvc.perform(get("/dashboard/pagamento-motoristas").param("mes", "2026-08")
+                        .header(HttpHeaders.AUTHORIZATION, bearer(TokensDeTeste.valido("OPERADOR"))))
+                .andExpect(status().isForbidden())
+                .andExpect(jsonPath("$.erro").value("Seu perfil não tem permissão para acessar este recurso."));
+    }
+
+    @Test
+    void semTokenNaoConsultaOPagamentoDosMotoristas() throws Exception {
+        mvc.perform(get("/dashboard/pagamento-motoristas").param("mes", "2026-08"))
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
     void gestorConsultaORanking() throws Exception {
         mvc.perform(get("/motoristas/ranking").param("mes", "2026-09")
                         .header(HttpHeaders.AUTHORIZATION, bearer(TokensDeTeste.valido("GESTOR"))))

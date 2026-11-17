@@ -1,12 +1,16 @@
-import type { RankingColocacao } from "@entities/motorista";
+import type { RankingColocacao, RankingMotorista } from "@entities/motorista";
 import { ValorMonetario } from "@entities/sessao";
 import { formatCurrencyBRL, formatFrequencia } from "@shared/lib";
+
+type FaturamentoDe = (motorista: RankingMotorista) => number | null;
 
 interface RankingPodiumProps {
   /** Os 3 primeiros colocados, em ordem de posição (1º, 2º, 3º). */
   podio: RankingColocacao[];
   /** US17: abre o modal de detalhes do motorista. Sem ele o card não é clicável. */
   onMotoristaClick?: (motoristaId: number) => void;
+  /** Valor a pagar no mês. Sem ele o card não mostra o Faturamento. */
+  faturamentoDe?: FaturamentoDe;
 }
 
 /** Ordem visual do Figma na tela larga: 2º, 1º (centralizado e mais alto) e 3º.
@@ -24,9 +28,15 @@ interface CardPodiumProps {
   colocacao: RankingColocacao;
   primeiro: boolean;
   onMotoristaClick?: (motoristaId: number) => void;
+  faturamentoDe?: FaturamentoDe;
 }
 
-function CardPodium({ colocacao, primeiro, onMotoristaClick }: CardPodiumProps) {
+function CardPodium({
+  colocacao,
+  primeiro,
+  onMotoristaClick,
+  faturamentoDe,
+}: CardPodiumProps) {
   const { posicao, motorista } = colocacao;
   const id = motorista.motoristaId;
   const espacamento = primeiro ? "gap-2 py-9" : "gap-1.5 py-7";
@@ -35,6 +45,8 @@ function CardPodium({ colocacao, primeiro, onMotoristaClick }: CardPodiumProps) 
     motorista.frequencia === null
       ? "—"
       : `${formatFrequencia(motorista.frequencia)} Frequência`;
+
+  const faturamentoMotorista = faturamentoDe ? faturamentoDe(motorista) : null;
 
   const temFinanceiro =
     motorista.frete !== null || motorista.custos !== null;
@@ -65,6 +77,17 @@ function CardPodium({ colocacao, primeiro, onMotoristaClick }: CardPodiumProps) 
         <span>{motorista.viagens} Viagens</span>
         <span>{frequencia}</span>
       </span>
+
+      {faturamentoDe && (
+        <span className="flex items-center justify-center gap-1 text-xs font-semibold text-fg">
+          <span>Faturamento:</span>
+          <ValorMonetario>
+            {faturamentoMotorista === null
+              ? null
+              : formatCurrencyBRL(faturamentoMotorista, 2)}
+          </ValorMonetario>
+        </span>
+      )}
 
       {temFinanceiro && (
         <span className="flex flex-wrap items-center justify-center gap-x-3 text-[11px] text-fg-subtle">
@@ -99,7 +122,11 @@ function CardPodium({ colocacao, primeiro, onMotoristaClick }: CardPodiumProps) 
  * Pódio do mês: os 3 primeiros colocados com nome e rentabilidade média.
  * Com menos de 3 motoristas só as posições existentes são renderizadas.
  */
-export function RankingPodium({ podio, onMotoristaClick }: RankingPodiumProps) {
+export function RankingPodium({
+  podio,
+  onMotoristaClick,
+  faturamentoDe,
+}: RankingPodiumProps) {
   if (podio.length === 0) return null;
 
   return (
@@ -115,6 +142,7 @@ export function RankingPodium({ podio, onMotoristaClick }: RankingPodiumProps) {
               colocacao={colocacao}
               primeiro={colocacao.posicao === 1}
               onMotoristaClick={onMotoristaClick}
+              faturamentoDe={faturamentoDe}
             />
           </li>
         ))}
