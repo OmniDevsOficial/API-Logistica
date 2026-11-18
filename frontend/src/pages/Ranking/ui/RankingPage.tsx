@@ -183,12 +183,14 @@ export function RankingPage() {
             <RankingPodium
               podio={podioVisivel}
               faturamentoDe={ehGestor ? faturamentoDe : undefined}
+              onMotoristaClick={abrirHistorico}
             />
             {/* Com 3 motoristas ou menos não há lista: só o pódio. */}
             {lista.length > 0 && (
               <RankingList
                 motoristas={listaVisivel}
                 faturamentoDe={ehGestor ? faturamentoDe : undefined}
+                onMotoristaClick={abrirHistorico}
               />
             )}
           </div>
