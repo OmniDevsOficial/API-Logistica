@@ -1,6 +1,7 @@
 package com.ominidevs.operacional.veiculo.services;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -43,6 +44,7 @@ public class ImportacaoVeiculoService {
     private static final int TAMANHO_MAXIMO_TIPO = 50;
     private static final int TAMANHO_MAXIMO_NOME = 255;
     private static final int TAMANHO_MAXIMO_MARCA_MODELO = 100;
+    private static final int TAMANHO_MAXIMO_COMBUSTIVEL = 50;
 
     private final LeitorCsvVeiculo leitor;
     private final VeiculoRepository veiculoRepository;
@@ -88,6 +90,7 @@ public class ImportacaoVeiculoService {
         List<Veiculo> veiculos = new ArrayList<>();
         int cadastrados = 0;
         int semMotorista = 0;
+        LocalDateTime importadoEm = LocalDateTime.now();
 
         for (LinhaCsvVeiculo linha : validas) {
             Veiculo veiculo = existentes.get(linha.placa());
@@ -105,6 +108,7 @@ public class ImportacaoVeiculoService {
             veiculo.setTipo(linha.tipo());
             veiculo.setMotorista(motorista);
             aplicarColunasOpcionais(planilha, linha, veiculo, avisos);
+            veiculo.setAtualizadoEm(importadoEm);
             veiculos.add(veiculo);
         }
 
@@ -204,6 +208,17 @@ public class ImportacaoVeiculoService {
                 avisos.add(new OcorrenciaLinhaVeiculo(linha.numero(), linha.placa(),
                         "Status do veículo \"" + linha.status() + "\" não reconhecido. Use Ativo ou Inativo."));
             }
+        }
+        if (planilha.possuiCombustivel()) {
+            if (linha.combustivel() == null || linha.combustivel().length() <= TAMANHO_MAXIMO_COMBUSTIVEL) {
+                veiculo.setCombustivel(linha.combustivel());
+            } else {
+                avisos.add(new OcorrenciaLinhaVeiculo(linha.numero(), linha.placa(),
+                        "Combustível excede " + TAMANHO_MAXIMO_COMBUSTIVEL + " caracteres e não foi gravado."));
+            }
+        }
+        if (planilha.possuiDadosAdicionais()) {
+            veiculo.setDadosAdicionais(linha.dadosAdicionais());
         }
     }
 

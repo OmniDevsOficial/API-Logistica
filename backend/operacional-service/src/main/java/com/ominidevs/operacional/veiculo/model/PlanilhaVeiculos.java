@@ -19,4 +19,12 @@ public record PlanilhaVeiculos(
         List<LinhaCsvVeiculo> linhas,
         boolean possuiMarca,
         boolean possuiModelo,
-        boolean possuiStatus) {}
+        boolean possuiStatus,
+        boolean possuiCombustivel,
+        boolean possuiDadosAdicionais) {
+
+    public PlanilhaVeiculos(List<LinhaCsvVeiculo> linhas, boolean possuiMarca, boolean possuiModelo,
+            boolean possuiStatus) {
+        this(linhas, possuiMarca, possuiModelo, possuiStatus, false, false);
+    }
+}
