@@ -21,6 +21,11 @@ public class AuthExceptionHandler {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("erro", ex.getMessage()));
     }
 
+    @ExceptionHandler(UsuarioInativoException.class)
+    public ResponseEntity<Map<String, String>> usuarioInativo(UsuarioInativoException ex) {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("erro", ex.getMessage()));
+    }
+
     @ExceptionHandler(TokenInvalidoException.class)
     public ResponseEntity<Map<String, String>> tokenInvalido(TokenInvalidoException ex) {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("erro", ex.getMessage()));

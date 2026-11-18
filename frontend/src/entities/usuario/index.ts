@@ -5,6 +5,7 @@ export type {
   Usuario,
 } from "./model/types";
 export {
+  alterarStatusUsuario,
   cadastrarUsuario,
   ErroCadastroUsuario,
   listarUsuarios,

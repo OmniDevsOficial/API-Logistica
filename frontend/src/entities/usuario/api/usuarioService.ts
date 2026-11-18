@@ -19,6 +19,9 @@ const MENSAGEM_SERVIDOR = "Não foi possível cadastrar o usuário agora. Tente 
 const MENSAGEM_CAMPOS = "Revise os campos destacados.";
 const MENSAGEM_LISTA = "Não foi possível carregar os usuários.";
 const MENSAGEM_LISTA_INVALIDA = "A resposta da lista de usuários está inválida.";
+const MENSAGEM_STATUS = "Não foi possível alterar o status do usuário agora. Tente de novo em instantes.";
+const MENSAGEM_USUARIO_NAO_ENCONTRADO = "Esse usuário não existe mais. Atualize a lista.";
+const MENSAGEM_AUTO_DESATIVACAO = "Você não pode desativar o seu próprio usuário.";
 
 export type MotivoErroCadastro =
   | "campos"
@@ -153,6 +156,33 @@ export async function cadastrarUsuario(novo: NovoUsuario): Promise<Usuario> {
 
   const usuario = lerUsuario(corpo);
   if (!usuario) throw new ErroCadastroUsuario("servidor", MENSAGEM_SERVIDOR);
+
+  return usuario;
+}
+
+export async function alterarStatusUsuario(id: number, ativo: boolean): Promise<Usuario> {
+  let resposta: Response;
+
+  try {
+    resposta = await apiFetch(`${ENDPOINT}/${id}/status`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ ativo }),
+    });
+  } catch {
+    throw new Error(MENSAGEM_REDE);
+  }
+
+  const corpo: unknown = await resposta.json().catch(() => null);
+
+  if (resposta.status === 401) throw new Error(MENSAGEM_SESSAO_EXPIRADA);
+  if (resposta.status === 403) throw new Error(MENSAGEM_SEM_PERMISSAO);
+  if (resposta.status === 404) throw new Error(MENSAGEM_USUARIO_NAO_ENCONTRADO);
+  if (resposta.status === 409) throw new Error(lerMensagem(corpo) ?? MENSAGEM_AUTO_DESATIVACAO);
+  if (!resposta.ok) throw new Error(MENSAGEM_STATUS);
+
+  const usuario = lerUsuario(corpo);
+  if (!usuario) throw new Error(MENSAGEM_STATUS);
 
   return usuario;
 }
