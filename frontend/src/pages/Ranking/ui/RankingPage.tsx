@@ -21,6 +21,7 @@ import { distribuirRanking } from "../lib/distribuirRanking";
 import { mesDaReferencia, rotuloMes } from "../lib/rotuloMes";
 import { usePagamentoMotoristas } from "../model/usePagamentoMotoristas";
 import { useRankingMotoristas } from "../model/useRankingMotoristas";
+import { MenuPerfil } from "@features/menu-perfil";
 
 const MENSAGEM_CLASS =
   "rounded-md bg-surface p-6 text-center text-sm text-fg-subtle";
@@ -100,6 +101,7 @@ export function RankingPage() {
           <PageHeader
             title="Ranking"
             onMenuClick={() => setSidebarOpen(true)}
+            perfil={<MenuPerfil />}
             notificacoes={<SinoNotificacoes />}
           />
 
