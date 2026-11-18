@@ -10,9 +10,14 @@ import java.nio.charset.StandardCharsets;
 import java.text.Normalizer;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
@@ -48,6 +53,17 @@ public class LeitorCsvVeiculo {
     private static final String COLUNA_MARCA = "Marca";
     private static final String COLUNA_MODELO = "Modelo";
     private static final List<String> COLUNAS_STATUS = List.of("Status do Veículo", "Status");
+    private static final String COLUNA_COMBUSTIVEL = "Combustível";
+    private static final Set<String> COLUNAS_COM_CAMPO_PROPRIO = Stream.of(
+                    List.of(COLUNA_PLACA, COLUNA_TIPO, COLUNA_MARCA, COLUNA_MODELO, COLUNA_COMBUSTIVEL),
+                    COLUNAS_MOTORISTA,
+                    COLUNAS_STATUS)
+            .flatMap(List::stream)
+            .map(LeitorCsvVeiculo::chaveColuna)
+            .collect(Collectors.toUnmodifiableSet());
+    private static final Set<String> COLUNAS_SENSIVEIS = Stream.of("Renavam", "Chassi", "Valor Compra", "Valor Venda")
+            .map(LeitorCsvVeiculo::chaveColuna)
+            .collect(Collectors.toUnmodifiableSet());
 
     /** Excel no Windows grava em windows-1252 (superconjunto do ISO-8859-1). */
     private static final Charset CHARSET_EXCEL = Charset.forName("windows-1252");
@@ -84,6 +100,8 @@ public class LeitorCsvVeiculo {
             Integer colunaMarca = primeiraColunaPresente(indices, List.of(COLUNA_MARCA));
             Integer colunaModelo = primeiraColunaPresente(indices, List.of(COLUNA_MODELO));
             Integer colunaStatus = primeiraColunaPresente(indices, COLUNAS_STATUS);
+            Integer colunaCombustivel = primeiraColunaPresente(indices, List.of(COLUNA_COMBUSTIVEL));
+            Map<Integer, String> colunasAdicionais = colunasAdicionais(cabecalho);
 
             List<LinhaCsvVeiculo> linhas = new ArrayList<>();
             int numero = 1;
@@ -100,13 +118,16 @@ public class LeitorCsvVeiculo {
                         texto(campos, colunaMotorista),
                         texto(campos, colunaMarca),
                         texto(campos, colunaModelo),
-                        texto(campos, colunaStatus)));
+                        texto(campos, colunaStatus),
+                        normalizarTipo(colunaCombustivel == null ? null : campo(campos, colunaCombustivel)),
+                        dadosAdicionais(campos, colunasAdicionais)));
             }
 
             if (linhas.isEmpty()) {
                 throw new ArquivoVeiculoInvalidoException("O arquivo não possui veículos para importar.");
             }
-            return new PlanilhaVeiculos(linhas, colunaMarca != null, colunaModelo != null, colunaStatus != null);
+            return new PlanilhaVeiculos(linhas, colunaMarca != null, colunaModelo != null, colunaStatus != null,
+                    colunaCombustivel != null, !colunasAdicionais.isEmpty());
 
         } catch (CsvValidationException | IOException ex) {
             throw new ArquivoVeiculoInvalidoException("Não foi possível ler o arquivo CSV.", ex);
@@ -220,6 +241,31 @@ public class LeitorCsvVeiculo {
             throw new ArquivoVeiculoInvalidoException(
                     "Colunas obrigatórias ausentes: " + String.join(", ", ausentes) + ".");
         }
+    }
+
+    private static Map<Integer, String> colunasAdicionais(String[] cabecalho) {
+        Map<Integer, String> colunas = new LinkedHashMap<>();
+        Set<String> vistas = new HashSet<>();
+        for (int i = 0; i < cabecalho.length; i++) {
+            String chave = chaveColuna(cabecalho[i]);
+            if (chave.isEmpty() || COLUNAS_COM_CAMPO_PROPRIO.contains(chave) || COLUNAS_SENSIVEIS.contains(chave)
+                    || !vistas.add(chave)) {
+                continue;
+            }
+            colunas.put(i, NomeMotorista.limpar(cabecalho[i].replace("﻿", "")));
+        }
+        return colunas;
+    }
+
+    private static Map<String, String> dadosAdicionais(String[] campos, Map<Integer, String> colunas) {
+        Map<String, String> dados = new LinkedHashMap<>();
+        colunas.forEach((indice, nome) -> {
+            String valor = texto(campos, indice);
+            if (valor != null && !valor.isEmpty()) {
+                dados.put(nome, valor);
+            }
+        });
+        return dados;
     }
 
     private static Integer primeiraColunaPresente(Map<String, Integer> indices, List<String> nomes) {

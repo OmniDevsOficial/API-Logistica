@@ -11,6 +11,7 @@ import static org.mockito.Mockito.when;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.Map;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -51,10 +52,34 @@ class LeitorCsvVeiculoTest {
         PlanilhaVeiculos planilha = leitor.ler(csv(conteudo));
 
         assertEquals(List.of(new LinhaCsvVeiculo(2, "AAJ3354", "CAVALO MECÂNICO", "JOSE HILTON MENDES",
-                "Mercedes Benz", "1114", "Ativo")), planilha.linhas());
+                "Mercedes Benz", "1114", "Ativo", "DIESEL S10", Map.ofEntries(
+                        Map.entry("Cor", "BRANCA"),
+                        Map.entry("Ano Fabricação", "1987"),
+                        Map.entry("Ano Modelo", "1988"),
+                        Map.entry("Cidade Licenciamento", "Astorga - PR"),
+                        Map.entry("Tipo Proprietário", "Agregado"),
+                        Map.entry("Proprietário", "A. F. L. LIMA"),
+                        Map.entry("Agregado", "A. F. L. LIMA"),
+                        Map.entry("PBT (Peso Bruto Total)", "1,00"),
+                        Map.entry("Tara (kg)", "1,00"),
+                        Map.entry("Capacidade (m3)", "1,00"),
+                        Map.entry("Capacidade Lotação", "0,00")))), planilha.linhas());
         assertTrue(planilha.possuiMarca());
         assertTrue(planilha.possuiModelo());
         assertTrue(planilha.possuiStatus());
+        assertTrue(planilha.possuiCombustivel());
+        assertTrue(planilha.possuiDadosAdicionais());
+    }
+
+    @Test
+    void dadosAdicionaisNaoGuardamColunasSensiveisNemCamposProprios() {
+        String conteudo = "Placa;Tipo Veículo;Combustível;Renavam;Chassi;Valor Compra;Valor Venda;Cor;Nº Frota\n"
+                + "ABC1234;Van; flex ;123;9BM;10,00;20,00;Prata;\n";
+
+        LinhaCsvVeiculo linha = leitor.ler(csv(conteudo)).linhas().getFirst();
+
+        assertEquals("FLEX", linha.combustivel());
+        assertEquals(Map.of("Cor", "Prata"), linha.dadosAdicionais());
     }
 
     @Test
@@ -64,6 +89,8 @@ class LeitorCsvVeiculoTest {
         assertFalse(planilha.possuiMarca());
         assertFalse(planilha.possuiModelo());
         assertFalse(planilha.possuiStatus());
+        assertFalse(planilha.possuiCombustivel());
+        assertFalse(planilha.possuiDadosAdicionais());
     }
 
     @Test

@@ -1,5 +1,7 @@
 package com.ominidevs.operacional.veiculo.model;
 
+import java.util.Map;
+
 /**
  * Linha do CSV de veículos já normalizada, ainda não validada.
  *
@@ -18,7 +20,18 @@ public record LinhaCsvVeiculo(
         String motorista,
         String marca,
         String modelo,
-        String status) {
+        String status,
+        String combustivel,
+        Map<String, String> dadosAdicionais) {
+
+    public LinhaCsvVeiculo {
+        dadosAdicionais = dadosAdicionais == null ? Map.of() : dadosAdicionais;
+    }
+
+    public LinhaCsvVeiculo(
+            int numero, String placa, String tipo, String motorista, String marca, String modelo, String status) {
+        this(numero, placa, tipo, motorista, marca, modelo, status, null, Map.of());
+    }
 
     /** Linha só com as colunas obrigatórias e o motorista. */
     public LinhaCsvVeiculo(int numero, String placa, String tipo, String motorista) {

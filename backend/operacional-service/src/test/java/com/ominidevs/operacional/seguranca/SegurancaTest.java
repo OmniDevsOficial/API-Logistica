@@ -21,6 +21,7 @@ import com.ominidevs.operacional.viagem.controllers.ViagemController;
 import com.ominidevs.operacional.viagem.services.ViagemService;
 import com.ominidevs.operacional.indicadores.services.UtilizacaoService;
 import com.ominidevs.operacional.veiculo.controllers.VeiculoController;
+import com.ominidevs.operacional.veiculo.services.FrotaService;
 import com.ominidevs.operacional.veiculo.services.ImportacaoVeiculoService;
 import com.ominidevs.operacional.veiculo.services.VeiculoConsultaService;
 
@@ -67,6 +68,9 @@ class SegurancaTest {
 
     @MockitoBean
     private VeiculoConsultaService veiculoConsultaService;
+
+    @MockitoBean
+    private FrotaService frotaService;
 
     private MockHttpServletRequestBuilder dashboard() {
         return get("/dashboard").param("dataInicio", "01/09/2026").param("dataFim", "30/09/2026");
@@ -289,6 +293,30 @@ class SegurancaTest {
     @Test
     void semTokenNaoConsultaVeiculos() throws Exception {
         mvc.perform(get("/veiculos")).andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    void gestorConsultaFrotaEResumo() throws Exception {
+        for (String rota : new String[] {"/veiculos/frota", "/veiculos/resumo"}) {
+            mvc.perform(get(rota).header(HttpHeaders.AUTHORIZATION, bearer(TokensDeTeste.valido("GESTOR"))))
+                    .andExpect(status().isOk());
+        }
+    }
+
+    @Test
+    void operadorNaoConsultaFrotaNemResumo() throws Exception {
+        for (String rota : new String[] {"/veiculos/frota", "/veiculos/resumo"}) {
+            mvc.perform(get(rota).header(HttpHeaders.AUTHORIZATION, bearer(TokensDeTeste.valido("OPERADOR"))))
+                    .andExpect(status().isForbidden())
+                    .andExpect(jsonPath("$.erro").value("Seu perfil não tem permissão para acessar este recurso."));
+        }
+    }
+
+    @Test
+    void semTokenNaoConsultaFrotaNemResumo() throws Exception {
+        for (String rota : new String[] {"/veiculos/frota", "/veiculos/resumo"}) {
+            mvc.perform(get(rota)).andExpect(status().isUnauthorized());
+        }
     }
 
     private static MockMultipartFile csvVeiculos() {
