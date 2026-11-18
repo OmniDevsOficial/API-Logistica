@@ -11,7 +11,8 @@ public record UsuarioResponse(
         String email,
         Perfil perfil,
         boolean ativo,
-        Instant criadoEm) {
+        Instant criadoEm,
+        String foto) {
 
     public static UsuarioResponse de(Usuario usuario) {
         return new UsuarioResponse(
@@ -20,6 +21,7 @@ public record UsuarioResponse(
                 usuario.getEmail(),
                 usuario.getPerfil(),
                 usuario.isAtivo(),
-                usuario.getDataCriacao());
+                usuario.getDataCriacao(),
+                usuario.getFoto());
     }
 }

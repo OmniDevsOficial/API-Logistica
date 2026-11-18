@@ -4,6 +4,7 @@ import { BotaoUpload } from "@features/importar-dados";
 import { NavegacaoPeriodo, PeriodFilter } from "@features/period-filter";
 import { SinoNotificacoes } from "@features/alerta-utilizacao";
 import { PageHeader } from "@shared/ui";
+import { MenuPerfil } from "@features/menu-perfil";
 
 interface DashboardTopbarProps {
   period: PeriodOption;
@@ -37,6 +38,7 @@ export function DashboardTopbar({
       <PageHeader
         title="Dashboard"
         onMenuClick={onMenuClick}
+        perfil={<MenuPerfil />}
         notificacoes={<SinoNotificacoes />}
       />
 

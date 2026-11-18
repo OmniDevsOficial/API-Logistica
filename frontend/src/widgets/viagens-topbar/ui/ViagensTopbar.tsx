@@ -6,6 +6,7 @@ import { PageHeader } from "@shared/ui";
 import { FiltrarViagensButton } from "./FiltrarViagensButton";
 import type { Viagem } from "@/entities/viagem";
 import type { FiltroViagens } from "../model/types";
+import { MenuPerfil } from "@features/menu-perfil";
 
 interface ViagensTopbarProps {
   search: string;
@@ -50,6 +51,7 @@ export function ViagensTopbar({
       <PageHeader
         title="Viagens"
         onMenuClick={onMenuClick}
+        perfil={<MenuPerfil />}
         notificacoes={<SinoNotificacoes />}
       />
 

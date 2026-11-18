@@ -35,5 +35,11 @@ export function useUsuarios() {
 
   const recarregar = useCallback(() => setVersao((valor) => valor + 1), []);
 
-  return { dados, carregando, erro, recarregar };
+  const substituir = useCallback((atualizado: Usuario) => {
+    setDados((atuais) =>
+      atuais ? atuais.map((usuario) => (usuario.id === atualizado.id ? atualizado : usuario)) : atuais,
+    );
+  }, []);
+
+  return { dados, carregando, erro, recarregar, substituir };
 }
