@@ -14,6 +14,7 @@ import {
   chaveNomeMotorista,
   useRentabilidadeMotoristas,
 } from "../model/useRentabilidadeMotoristas";
+import { MenuPerfil } from "@features/menu-perfil";
 
 const ESTADO_LISTA =
   "rounded-md bg-surface p-6 text-center text-sm text-fg-subtle";
@@ -75,6 +76,7 @@ export function MotoristasPage() {
           <PageHeader
             title="Motoristas"
             onMenuClick={() => setSidebarOpen(true)}
+            perfil={<MenuPerfil />}
             notificacoes={<SinoNotificacoes />}
           />
 

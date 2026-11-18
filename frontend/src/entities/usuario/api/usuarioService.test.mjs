@@ -21,6 +21,7 @@ const usuarioDaApi = {
   perfil: 'OPERADOR',
   ativo: true,
   criadoEm: '2026-11-17T12:00:00Z',
+  foto: null,
 };
 
 const novo = { nome: '  Ana Souza ', email: ' Ana@Newe.com.br ', perfil: 'OPERADOR', senha: 'segredo123' };
@@ -50,6 +51,15 @@ test('lista os usuários pelo serviço de autenticação', async () => {
 test('recusa a lista quando algum item vem incompleto', async () => {
   globalThis.fetch = async () => resposta([{ ...usuarioDaApi, perfil: 'ADMIN' }]);
 
+  await assert.rejects(listarUsuarios(), /inválida/);
+});
+
+test('traz a foto de cada usuário e recusa foto fora do formato', async () => {
+  const foto = 'data:image/jpeg;base64,/9j/4AAQ';
+  globalThis.fetch = async () => resposta([{ ...usuarioDaApi, foto }]);
+  assert.equal((await listarUsuarios())[0].foto, foto);
+
+  globalThis.fetch = async () => resposta([{ ...usuarioDaApi, foto: 42 }]);
   await assert.rejects(listarUsuarios(), /inválida/);
 });
 

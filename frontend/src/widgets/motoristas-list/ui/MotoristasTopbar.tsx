@@ -2,6 +2,7 @@ import { ArrowDownAZ, ArrowUpAZ, Calendar } from "lucide-react";
 import { SinoNotificacoes } from "@features/alerta-utilizacao";
 import { PageHeader } from "@shared/ui";
 import type { ReactNode } from "react";
+import { MenuPerfil } from "@features/menu-perfil";
 
 interface MotoristasTopbarProps {
   periodo: string;
@@ -28,6 +29,7 @@ export function MotoristasTopbar({
       <PageHeader
         title="Motoristas"
         onMenuClick={onMenuClick}
+        perfil={<MenuPerfil />}
         notificacoes={notificacoes ?? <SinoNotificacoes />}
       />
 

@@ -7,6 +7,7 @@ export interface Usuario {
   perfil: Perfil;
   ativo: boolean;
   criadoEm: string;
+  foto: string | null;
 }
 
 export interface NovoUsuario {
