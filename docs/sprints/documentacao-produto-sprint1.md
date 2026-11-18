@@ -1,4 +1,4 @@
-<h1 align="center"> Documentação do Produto da Sprint 1 </h1>
+<h1 align="center"> Documentação da Sprint 1 </h1>
 
 <div align="center">
     <img src="https://i.imgur.com/VbBN3Tk.jpeg" width="170x" height="170x" style="border-radius:20%;">
@@ -220,8 +220,8 @@ Durante a sprint, a arquitetura foi refatorada para microsserviços, com cada pa
 
 ## 📂 Documentos e anexos <a id="documentos"></a>
 
-- [Cenários de User Stories](../documentacao-produto/Cenarios_sprint1.pdf)
-- [Backlog completo](../documentacao-produto/Backlog.pdf)
+- [Cenários de User Stories](../documentacao-processo/Cenarios_sprint1.pdf)
+- [Backlog completo](../documentacao-processo/Backlog.pdf)
 
 ## 🎥 Link do Vídeo <a id="link-do-Video"></a>
 
