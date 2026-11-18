@@ -1,9 +1,10 @@
 import { useEffect, useMemo, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import type { PeriodOption } from "@entities/dashboard-metrics";
 import type { ResultadoImportacao } from "@features/enviar-relatorio/api/importarManifesto";
 import { podeVerValoresMonetarios, useSessao } from "@entities/sessao";
 import { Sidebar } from "@widgets/sidebar";
-import { DashboardTopbar } from "@widgets/dashboard-topbar";
+import { DashboardTopbar, type GuiaDashboard } from "@widgets/dashboard-topbar";
 import { DashboardOverview } from "@widgets/dashboard-overview";
 import { formatDateRange } from "@shared/lib";
 import {
@@ -16,6 +17,9 @@ import { lerFiltroSalvo, salvarFiltro } from "../lib/filtroSalvo";
 import { mesDaReferencia, rotuloDoMes } from "../lib/mesDaReferencia";
 import { useDashboard } from "../model/useDashboard";
 import { useRentabilidadePorTipo } from "../model/useRentabilidadePorTipo";
+import { PainelVeiculos } from "./PainelVeiculos";
+
+const PARAMETRO_GUIA = "guia";
 
 const MENSAGEM_CLASS =
   "rounded-md bg-surface p-6 text-center text-sm text-fg-subtle";
@@ -29,6 +33,16 @@ export function DashboardPage() {
     () => filtroSalvo?.referencia ?? new Date(),
   );
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [versaoFrota, setVersaoFrota] = useState(0);
+  const [parametros, setParametros] = useSearchParams();
+  const guia: GuiaDashboard =
+    parametros.get(PARAMETRO_GUIA) === "veiculos" ? "veiculos" : "inicio";
+
+  function aoTrocarGuia(proxima: GuiaDashboard) {
+    setParametros(proxima === "veiculos" ? { [PARAMETRO_GUIA]: proxima } : {}, {
+      replace: true,
+    });
+  }
 
   useEffect(() => {
     salvarFiltro({ periodo: period, referencia });
@@ -60,11 +74,23 @@ export function DashboardPage() {
     rentabilidadePorTipo.recarregar();
   }
 
+  function aoImportarVeiculos() {
+    rentabilidadePorTipo.recarregar();
+    setVersaoFrota((versao) => versao + 1);
+  }
+
   return (
     <div className="min-h-screen">
-      <Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
+      <Sidebar
+        open={sidebarOpen}
+        onClose={() => setSidebarOpen(false)}
+        onManifestoImportado={aoImportarManifesto}
+        onVeiculosImportados={aoImportarVeiculos}
+      />
       <main className="min-w-0 px-4 py-6 sm:px-10 sm:py-8 lg:ml-sidebar">
         <DashboardTopbar
+          guia={guia}
+          onGuiaChange={aoTrocarGuia}
           period={period}
           onPeriodChange={setPeriod}
           dateRangeLabel={formatDateRange(
@@ -81,11 +107,13 @@ export function DashboardPage() {
           referencia={referencia}
           onSelecionarData={setReferencia}
           onMenuClick={() => setSidebarOpen(true)}
-          onManifestoImportado={aoImportarManifesto}
-          onVeiculosImportados={rentabilidadePorTipo.recarregar}
         />
 
-        {erro ? (
+        {guia === "veiculos" ? (
+          <section id="painel-veiculos" role="tabpanel" aria-labelledby="guia-veiculos">
+            <PainelVeiculos periodo={intervalo} versao={versaoFrota} />
+          </section>
+        ) : erro ? (
           <p role="alert" className={MENSAGEM_CLASS}>
             {erro}
           </p>
