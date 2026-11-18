@@ -1,4 +1,4 @@
-<h1 align="center"> Documentação do Produto da Sprint 3 </h1>
+<h1 align="center"> Documentação da Sprint 3 </h1>
 
 <div align="center">
     <img src="https://i.imgur.com/VbBN3Tk.jpeg" width="170x" height="170x" style="border-radius:20%;">
@@ -76,29 +76,22 @@ Resumo de tudo o que será desenvolvido na sprint, organizado por User Story e v
 |    Ajustes     |     OM-122      |        OM-138        |    Front   | Implementar o modo escuro manual                                                                    |      Thomaz Mello      | 🟢 Concluída |  [OM-138](https://vinnismoreira-1787621786306.atlassian.net/jira/browse/OM-138)   |
 |      US12      |     OM-124      |        OM-126        |    Back    | Import do manifesto de veículo                                                                      |      Yuri Gonçalves      | 🟢 Concluída |  [OM-125](https://vinnismoreira-1787621786306.atlassian.net/jira/browse/OM-125)   |
 |      US12      |     OM-124      |        OM-126        |    Front   | Tela de upload da planilha de veículos, com estados de carregamento e feedback                                                                            |      Yuri Gonçalves      | 🟢 Concluída |  [OM-126](https://vinnismoreira-1787621786306.atlassian.net/jira/browse/OM-126)   |
-|      US11      |     —      |        —        |    Back    | Endpoint de rentabilidade agrupada por tipo de veículo, com filtro mensal e acesso restrito ao Gestor                                                     |      —      | 🟢 Concluída |  —   |
-|      US11      |     —      |        —        |   Front    | Card de rentabilidade por tipo de veículo no dashboard principal                                                                                          |      —      | 🟢 Concluída |  —   |
-|      US17      |     —      |        —        |    Back    | Endpoint de histórico de viagens por motorista, paginado e com status derivado                                                                            |      —      | 🟢 Concluída |  —   |
-|      US17      |     —      |        —        |   Front    | Modal de histórico de viagens do motorista, aberto pela listagem de disponibilidade e pelo ranking                                                        |      —      | 🟢 Concluída |  —   |
-|      US13      |     —      |        —        |    Back    | Endpoint do ranking mensal de motoristas, com ordenação em um único ponto                                                                                 |      —      | 🟢 Concluída |  —   |
-|      US13      |     —      |        —        |   Front    | Interface do ranking com pódio e lista, e acesso ao modal da US17                                                                                         |      —      | 🟢 Concluída |  —   |
-|      US10      |     —      |        —        |    Back    | Endpoint de pagamento consolidado por motorista (preliminar, fórmula pendente)                                                                            |      —      | 🟢 Concluída |  —   |
-|      US10      |     —      |        —        |   Front    | Dado de pagamento na visão financeira do Gestor (preliminar)                                                                                              |      —      | 🟢 Concluída |  —   |
-|  Compl. US13   |     —      |        —        |    Back    | Filtros do ranking (rentabilidade, faturamento, viagens e tipo de veículo), remoção da frequência                                                         |      —      | 🟢 Concluída |  —   |
-|  Compl. US13   |     —      |        —        |   Front    | Botão de filtro de seleção única no ranking                                                                                                               |      —      | 🟢 Concluída |  —   |
-|  Compl. US13   |     —      |        —        |   Front    | Ajustes de layout dos cards e da tabela, numeração de posição e remoção da frequência                                                                     |      —      | 🟢 Concluída |  —   |
-|  Compl. US15   |     —      |        —        |    Back    | Cadastro e listagem de usuários no serviço de autenticação                                                                                                |      —      | 🟢 Concluída |  —   |
-|  Compl. US15   |     —      |        —        |   Front    | Tela de Configurações (estrutura geral, com seções registradas)                                                                                           |      —      | 🟢 Concluída |  —   |
-|  Compl. US15   |     —      |        —        |   Front    | Configurações > Usuários (lista e cadastro)                                                                                                               |      —      | 🟢 Concluída |  —   |
-|  Compl. US12   |     —      |        —        |    Back    | Endpoints de listagem e resumo de veículos para a página de veículos                                                                                      |      —      | 🟢 Concluída |  —   |
-|  Compl. US12   |     —      |        —        |   Front    | Guia de veículos no dashboard, com upload movido para a sidebar                                                                                           |      —      | 🟢 Concluída |  —   |
-|  Compl. US12   |     —      |        —        |    Back    | Histórico de importações do manifesto (serviço Relatório)                                                                                                 |      —      | 🟢 Concluída |  —   |
-|  Compl. US12   |     —      |        —        |    Back    | Histórico de importações de veículos (serviço Operacional)                                                                                                |      —      | 🟢 Concluída |  —   |
-|  Compl. US12   |     —      |        —        |   Front    | Seção Registros: lista de importações com cards, filtros e tabela                                                                                         |      —      | 🟢 Concluída |  —   |
-|  Compl. US12   |     —      |        —        |   Front    | Detalhe da importação, com ocorrências e download em CSV                                                                                                  |      —      | 🟢 Concluída |  —   |
-| Compl. viagens |     —      |        —        |    Back    | Localidades com geocodificação e cache                                                                                                                    |      —      | ⚪ A fazer |  —   |
-| Compl. viagens |     —      |        —        |    Back    | Endpoint de detalhe da viagem com rota                                                                                                                    |      —      | ⚪ A fazer |  —   |
-| Compl. viagens |     —      |        —        |   Front    | Modal de mapa da viagem, com dados principais                                                                                                             |      —      | ⚪ A fazer |  —   |
+|      US11      |     OM-11      |        OM-127        |    Back    | Endpoint de rentabilidade agrupada por tipo de veículo, com filtro mensal e acesso restrito ao Gestor                                                     |      Thomaz Mello      | 🟢 Concluída |  [OM-127](https://vinnismoreira-1787621786306.atlassian.net/jira/browse/OM-127)   |
+|      US11      |     OM-11      |        OM-128        |   Front    | Card de rentabilidade por tipo de veículo no dashboard principal                                                                                          |      Thomaz Mello      | 🟢 Concluída |  [OM-128](https://vinnismoreira-1787621786306.atlassian.net/jira/browse/OM-128)   |
+|      US17      |     OM-123      |        OM-133        |    Back    | Endpoint de histórico de viagens por motorista, paginado e com status derivado                                                                            |      Pedro Lucas      | 🟢 Concluída |  [OM-133](https://vinnismoreira-1787621786306.atlassian.net/jira/browse/OM-133)   |
+|      US17      |     OM-123      |        OM-134        |   Front    | Modal de histórico de viagens do motorista, aberto pela listagem de disponibilidade e pelo ranking                                                        |      Pedro Lucas      | 🟢 Concluída |  [OM-134](https://vinnismoreira-1787621786306.atlassian.net/jira/browse/OM-134)   |
+|      US13      |     OM-13      |        OM-129        |    Back    | Endpoint do ranking mensal de motoristas, com ordenação em um único ponto                                                                                 |      Vinicíus Moreira      | 🟢 Concluída |  [OM-129](https://vinnismoreira-1787621786306.atlassian.net/jira/browse/OM-129)   |
+|      US13      |     OM-13      |        OM-130        |   Front    | Interface do ranking com pódio e lista, e acesso ao modal da US17                                                                                         |      Vinicíus Moreira      | 🟢 Concluída |  [OM-130](https://vinnismoreira-1787621786306.atlassian.net/jira/browse/OM-130)   |
+|      US10      |     OM-10      |        OM-131        |    Back    | Endpoint de pagamento consolidado por motorista                                                                        |      Yuri Gonçalves      | 🟢 Concluída |  [OM-131](https://vinnismoreira-1787621786306.atlassian.net/jira/browse/OM-131)   |
+|      US10      |     OM-10      |        OM-132        |   Front    | Dado de pagamento na visão financeira do Gestor                                                                                           |      Yuri Gonçalves      | 🟢 Concluída |  [OM-132](https://vinnismoreira-1787621786306.atlassian.net/jira/browse/OM-132)   |
+|  Compl. US15   |     OM-12      |        OM-139        |    Back    | Cadastro e listagem de usuários no serviço de autenticação                                                                                                |      Thomaz Mello      | 🟢 Concluída |  [OM-139](https://vinnismoreira-1787621786306.atlassian.net/jira/browse/OM-139)   |
+|  Compl. US15   |     OM-12      |        OM-140        |   Front    | Tela de Configurações (estrutura geral, com seções registradas)                                                                                           |      Thomaz Mello      | 🟢 Concluída |  [OM-140](https://vinnismoreira-1787621786306.atlassian.net/jira/browse/OM-140)   |
+|  Compl. US15   |     OM-12      |        OM-141        |   Front    | Configurações > Usuários (lista e cadastro)                                                                                                               |      Thomaz Mello      | 🟢 Concluída |  [OM-141](https://vinnismoreira-1787621786306.atlassian.net/jira/browse/OM-141)   |
+|  Compl. US12   |     OM-146      |        OM-147        |    Back    | Endpoints de listagem e resumo de veículos para a página de veículos                                                                                      |      Thomaz Mello      | 🟢 Concluída |  [OM-147](https://vinnismoreira-1787621786306.atlassian.net/jira/browse/OM-147)   |
+|  Compl. US12   |     OM-146      |        OM-148        |   Front    | Guia de veículos no dashboard, com upload movido para a sidebar                                                                                           |      Thomaz Mello      | 🟢 Concluída |  [OM-148](https://vinnismoreira-1787621786306.atlassian.net/jira/browse/OM-148)   |
+|  Compl. US12   |     OM-142      |        OM-143        |    Back    | Histórico de importações do manifesto (serviço Relatório)                                                                                                 |      Vinicíus Moreira      | 🟢 Concluída |  [OM-143](https://vinnismoreira-1787621786306.atlassian.net/jira/browse/OM-143)   |
+|  Compl. US12   |     OM-142      |        OM-144        |    Back    | Histórico de importações de veículos (serviço Operacional)                                                                                                |      Vinicíus Moreira      | 🟢 Concluída |  [OM-144](https://vinnismoreira-1787621786306.atlassian.net/jira/browse/OM-144)   |
+|  Compl. US12   |     OM-142      |        OM-145        |   Front    | Seção Registros: lista de importações com cards, filtros e tabela                                                                                         |      Vinicíus Moreira      | 🟢 Concluída |  [OM-145](https://vinnismoreira-1787621786306.atlassian.net/jira/browse/OM-145)   |
 
 ### Detalhamento por User Story
 
@@ -115,9 +108,9 @@ A Sprint 2 terminou com tarefas em revisão e pendências de fórmula e integra�
 
 |     | Critério                                                                           |
 | :-: | :--------------------------------------------------------------------------------- |
-| ⬜  | Fórmula da baixa utilização confirmada com o cliente e aplicada no alerta da US07. |
-| ⬜  | Ranking de destinos integrado ao componente visual, com rótulo ajustado (US14).    |
-| ⬜  | Todos os PRs abertos da Sprint 2 revisados e mesclados.                            |
+| ✅  | Fórmula da baixa utilização confirmada com o cliente e aplicada no alerta da US07. |
+| ✅  | Ranking de destinos integrado ao componente visual, com rótulo ajustado (US14).    |
+| ✅  | Todos os PRs abertos da Sprint 2 revisados e mesclados.                            |
 
 </details>
 
@@ -133,11 +126,11 @@ Permite cadastrar a frota em lote pela planilha de veículos, com atualização 
 
 |     | Critério                                                                        |
 | :-: | :------------------------------------------------------------------------------ |
-| ⬜  | O sistema lê o CSV padrão de veículos.                                          |
-| ⬜  | Veículos e motoristas ausentes são cadastrados automaticamente.                 |
-| ⬜  | Placa e tipo de veículo ficam relacionados ao motorista correto.                |
-| ⬜  | Reimportar a planilha atualiza os dados sem duplicar motoristas ou veículos.    |
-| ⬜  | Feedback visual claro em caso de sucesso, erro no arquivo ou linhas rejeitadas. |
+| ✅  | O sistema lê o CSV padrão de veículos.                                          |
+| ✅  | Veículos e motoristas ausentes são cadastrados automaticamente.                 |
+| ✅  | Placa e tipo de veículo ficam relacionados ao motorista correto.                |
+| ✅  | Reimportar a planilha atualiza os dados sem duplicar motoristas ou veículos.    |
+| ✅  | Feedback visual claro em caso de sucesso, erro no arquivo ou linhas rejeitadas. |
 
 </details>
 
@@ -153,10 +146,10 @@ Consolida a rentabilidade agrupada por categoria de veículo (ex.: Fiorino, Van,
 
 |     | Critério                                                                              |
 | :-: | :------------------------------------------------------------------------------------ |
-| ⬜  | Rentabilidade (receitas − custos) agrupada corretamente por tipo de veículo.          |
-| ⬜  | A consolidação respeita o filtro mensal do dashboard.                                 |
-| ⬜  | Viagens sem tipo cadastrado aparecem em "Não identificado" e não somem da soma total. |
-| ⬜  | Visualização restrita ao perfil Gestor.                                               |
+| ✅  | Rentabilidade (receitas − custos) agrupada corretamente por tipo de veículo.          |
+| ✅  | A consolidação respeita o filtro mensal do dashboard.                                 |
+| ✅  | Viagens sem tipo cadastrado aparecem em "Não identificado" e não somem da soma total. |
+| ✅  | Visualização restrita ao perfil Gestor.                                               |
 
 </details>
 
@@ -172,9 +165,9 @@ Permite consultar o histórico detalhado de viagens de um motorista específico,
 
 |     | Critério                                                                      |
 | :-: | :---------------------------------------------------------------------------- |
-| ⬜  | O modal abre ao clicar no nome ou card do motorista.                          |
-| ⬜  | Lista origem, destino, datas e status das viagens, incluindo as em andamento. |
-| ⬜  | Acesso liberado para Operador e Gestor.                                       |
+| ✅  | O modal abre ao clicar no nome ou card do motorista.                          |
+| ✅  | Lista origem, destino, datas e status das viagens, incluindo as em andamento. |
+| ✅  | Acesso liberado para Operador e Gestor.                                       |
 
 </details>
 
@@ -191,16 +184,16 @@ Gera um ranking gerencial dos motoristas no mês, com pódio para os primeiros e
 
 |     | Critério                                                     |
 | :-: | :----------------------------------------------------------- |
-| ⬜  | Ranking gerado e filtrado pelo mês selecionado.              |
-| ⬜  | Motoristas ordenados de forma decrescente pelo filtro ativo. |
-| ⬜  | Apenas um filtro selecionado por vez.                        |
-| ⬜  | Pódio e listagem com posição visível de cada motorista.      |
-| ⬜  | Campo de frequência removido da tela de ranking.             |
-| ⬜  | Visualização e acesso restritos ao perfil Gestor.            |
+| ✅  | Ranking gerado e filtrado pelo mês selecionado.              |
+| ✅  | Motoristas ordenados de forma decrescente pelo filtro ativo. |
+| ✅  | Apenas um filtro selecionado por vez.                        |
+| ✅  | Pódio e listagem com posição visível de cada motorista.      |
+| ✅  | Campo de frequência removido da tela de ranking.             |
+| ✅  | Visualização e acesso restritos ao perfil Gestor.            |
 
 </details>
 
-#### US10 — Controle de pagamento do motorista _(aguardando definição)_
+#### US10 — Controle de pagamento do motorista
 
 Apresenta o valor total a ser pago a cada motorista no mês, para controle financeiro e repasse. A fórmula exata ainda depende de validação com o cliente, então esta frente é preliminar.
 
@@ -212,9 +205,9 @@ Apresenta o valor total a ser pago a cada motorista no mês, para controle finan
 
 |     | Critério                                                                  |
 | :-: | :------------------------------------------------------------------------ |
-| ⬜  | Soma consolidada por motorista dentro do mês selecionado.                 |
-| ⬜  | Fórmula do pagamento validada com o cliente e aplicada em um único ponto. |
-| ⬜  | Acesso restrito ao perfil Gestor.                                         |
+| ✅  | Soma consolidada por motorista dentro do mês selecionado.                 |
+| ✅  | Fórmula do pagamento validada com o cliente e aplicada em um único ponto. |
+| ✅  | Acesso restrito ao perfil Gestor.                                         |
 
 </details>
 
@@ -275,45 +268,23 @@ Seção Registros com o histórico de cada importação de manifesto e de veícu
 
 </details>
 
-#### Complementos das telas de viagem — Mapa da rota
-
-Modal com mini mapa da rota de origem e destino da viagem, com os dados principais da viagem na descrição.
-
-- **Back (serviço Operacional):** localidades com geocodificação e cache, e endpoint de detalhe da viagem com a rota por estradas (com degradação para linha reta).
-- **Front:** modal com Leaflet e OpenStreetMap, dados da viagem e estados de carregamento, erro e rota aproximada.
-
-<details>
-<summary><b>Critérios de aceite dos complementos das viagens (mapa)</b></summary>
-
-|     | Critério                                                                                   |
-| :-: | :----------------------------------------------------------------------------------------- |
-| ⬜  | Modal mostra origem, destino e a rota no lugar certo.                                      |
-| ⬜  | Rota aproximada e localidade não encontrada são sinalizadas sem perder os dados da viagem. |
-| ⬜  | Dados financeiros aparecem só para o Gestor.                                               |
-| ⬜  | Atribuição do OpenStreetMap visível.                                                       |
-
-</details>
 
 ## 🔍 Retrospectiva <a id="retrospectiva"></a>
 
-_A preencher ao fim da Sprint 3._
-
 **O que deu certo**
 
--
+- Importação do csv de veículos funcionando de ponta a ponta, atualizando tanto o dashboard inicial, quanto o guia de veículos.
+- Ranking de motoristas concluído e mostrando as informações mais importantes para o cliente.
+- Histórico de importações para csv de manifestos e veículos, identificando hora, data e quem fez o upload.
 
-**O que não deu certo / Pendências no fechamento**
+**O que não deu certo**
 
--
-
-**O que muda na Sprint 4**
-
--
+- A sprint ficou abaixo do esperado em organização, distribuição das tasks e entrega de tarefas dentro do prazo estabelecido.
 
 ## 📂 Documentos e anexos <a id="documentos"></a>
 
-- [Cenários de User Stories]()
-- [Backlog completo]()
+- [Cenários de User Stories](../documentacao-processo/Cenarios_sprint2.pdf)
+- [Backlog completo](../documentacao-processo/Backlog.pdf)
 
 ## 🎥 Link do Vídeo <a id="link-do-video"></a>
 

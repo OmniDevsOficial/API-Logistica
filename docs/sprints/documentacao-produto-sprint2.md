@@ -1,4 +1,4 @@
-<h1 align="center"> Documentação do Produto da Sprint 3 </h1>
+<h1 align="center"> Documentação da Sprint 3 </h1>
 
 <div align="center">
     <img src="https://i.imgur.com/VbBN3Tk.jpeg" width="170x" height="170x" style="border-radius:20%;">
@@ -274,8 +274,8 @@ Auxilia o gestor a identificar proativamente motoristas agregados com baixa taxa
 
 ## 📂 Documentos e anexos <a id="documentos"></a>
 
-- [Cenários de User Stories](../documentacao-produto/Cenarios_sprint2.pdf)
-- [Backlog completo](../documentacao-produto/Backlog.pdf)
+- [Cenários de User Stories](../documentacao-processo/Cenarios_sprint2.pdf)
+- [Backlog completo](../documentacao-processo/Backlog.pdf)
 
 ## 🎥 Link do Vídeo <a id="link-do-video"></a>
 
