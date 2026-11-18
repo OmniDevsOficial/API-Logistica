@@ -1,16 +1,13 @@
-import type { RankingColocacao, RankingMotorista } from "@entities/motorista";
+import type { FiltroRanking, RankingColocacao } from "@entities/motorista";
 import { ValorMonetario } from "@entities/sessao";
-import { formatCurrencyBRL, formatFrequencia } from "@shared/lib";
-
-type FaturamentoDe = (motorista: RankingMotorista) => number | null;
+import { formatCurrencyBRL } from "@shared/lib";
 
 interface RankingPodiumProps {
   /** Os 3 primeiros colocados, em ordem de posição (1º, 2º, 3º). */
   podio: RankingColocacao[];
   /** US17: abre o modal de detalhes do motorista. Sem ele o card não é clicável. */
   onMotoristaClick?: (motoristaId: number) => void;
-  /** Valor a pagar no mês. Sem ele o card não mostra o Faturamento. */
-  faturamentoDe?: FaturamentoDe;
+  filtroAtivo: FiltroRanking;
 }
 
 /** Ordem visual do Figma na tela larga: 2º, 1º (centralizado e mais alto) e 3º.
@@ -28,28 +25,22 @@ interface CardPodiumProps {
   colocacao: RankingColocacao;
   primeiro: boolean;
   onMotoristaClick?: (motoristaId: number) => void;
-  faturamentoDe?: FaturamentoDe;
+  filtroAtivo: FiltroRanking;
 }
 
 function CardPodium({
   colocacao,
   primeiro,
   onMotoristaClick,
-  faturamentoDe,
+  filtroAtivo,
 }: CardPodiumProps) {
   const { posicao, motorista } = colocacao;
   const id = motorista.motoristaId;
   const espacamento = primeiro ? "gap-2 py-9" : "gap-1.5 py-7";
 
-  const frequencia =
-    motorista.frequencia === null
-      ? "—"
-      : `${formatFrequencia(motorista.frequencia)} Frequência`;
-
-  const faturamentoMotorista = faturamentoDe ? faturamentoDe(motorista) : null;
-
-  const temFinanceiro =
-    motorista.frete !== null || motorista.custos !== null;
+  const rotuloMetrica = filtroAtivo === "FATURAMENTO"
+    ? "Faturamento"
+    : filtroAtivo === "VIAGENS" ? "Viagens" : "Rentabilidade";
 
   const conteudo = (
     <>
@@ -63,41 +54,21 @@ function CardPodium({
         <span className="text-xs text-fg-subtle">{motorista.veiculo}</span>
       )}
 
-      <ValorMonetario
-        className={`font-bold text-success ${
-          primeiro ? "text-[32px] tracking-[-0.5px]" : "text-[26px]"
-        }`}
-      >
-        {motorista.rentabilidadeMedia === null
-          ? null
-          : formatCurrencyBRL(motorista.rentabilidadeMedia, 2)}
-      </ValorMonetario>
-
-      <span className="flex flex-wrap items-center justify-center gap-x-4 text-xs font-semibold text-fg">
-        <span>{motorista.viagens} Viagens</span>
-        <span>{frequencia}</span>
-      </span>
-
-      {faturamentoDe && (
-        <span className="flex items-center justify-center gap-1 text-xs font-semibold text-fg">
-          <span>Faturamento:</span>
-          <ValorMonetario>
-            {faturamentoMotorista === null
-              ? null
-              : formatCurrencyBRL(faturamentoMotorista, 2)}
-          </ValorMonetario>
+      <span className="text-xs font-semibold text-primary">{rotuloMetrica}</span>
+      {filtroAtivo === "VIAGENS" ? (
+        <span className={`font-bold text-success ${primeiro ? "text-[32px] tracking-[-0.5px]" : "text-[26px]"}`}>
+          {motorista.viagens}
         </span>
+      ) : (
+        <ValorMonetario className={`font-bold text-success ${primeiro ? "text-[32px] tracking-[-0.5px]" : "text-[26px]"}`}>
+          {filtroAtivo === "FATURAMENTO"
+            ? motorista.faturamento === null ? null : formatCurrencyBRL(motorista.faturamento, 2)
+            : motorista.rentabilidadeMedia === null ? null : formatCurrencyBRL(motorista.rentabilidadeMedia, 2)}
+        </ValorMonetario>
       )}
-
-      {temFinanceiro && (
-        <span className="flex flex-wrap items-center justify-center gap-x-3 text-[11px] text-fg-subtle">
-          {motorista.frete !== null && (
-            <span>{`Frete: ${formatCurrencyBRL(motorista.frete, 0)}`}</span>
-          )}
-          {motorista.custos !== null && (
-            <span>{`Custos: ${formatCurrencyBRL(motorista.custos, 0)}`}</span>
-          )}
-        </span>
+      <span className="text-xs font-semibold text-fg">{motorista.viagens} Viagens</span>
+      {filtroAtivo === "FATURAMENTO" && motorista.rentabilidadeMedia !== null && (
+        <span className="text-xs text-fg-subtle">Rentabilidade: {formatCurrencyBRL(motorista.rentabilidadeMedia, 2)}</span>
       )}
     </>
   );
@@ -119,13 +90,13 @@ function CardPodium({
 }
 
 /**
- * Pódio do mês: os 3 primeiros colocados com nome e rentabilidade média.
+ * Pódio do mês: os 3 primeiros colocados com o critério de ordenação ativo.
  * Com menos de 3 motoristas só as posições existentes são renderizadas.
  */
 export function RankingPodium({
   podio,
   onMotoristaClick,
-  faturamentoDe,
+  filtroAtivo,
 }: RankingPodiumProps) {
   if (podio.length === 0) return null;
 
@@ -142,7 +113,7 @@ export function RankingPodium({
               colocacao={colocacao}
               primeiro={colocacao.posicao === 1}
               onMotoristaClick={onMotoristaClick}
-              faturamentoDe={faturamentoDe}
+              filtroAtivo={filtroAtivo}
             />
           </li>
         ))}

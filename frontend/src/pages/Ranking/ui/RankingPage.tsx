@@ -1,11 +1,8 @@
-import { useCallback, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { Search } from "lucide-react";
-import {
-  faturamentoDoMotorista,
-  indexarFaturamento,
-  type RankingMotorista,
-} from "@entities/motorista";
-import { podeVerValoresMonetarios, useSessao } from "@entities/sessao";
+import { useSearchParams } from "react-router-dom";
+import type { FiltroRanking, RankingMotorista } from "@entities/motorista";
+import { formatTipoVeiculo } from "@shared/lib";
 import { Sidebar } from "@widgets/sidebar";
 import { RankingList } from "@widgets/ranking-list";
 import { RankingPodium } from "@widgets/ranking-podium";
@@ -13,17 +10,24 @@ import { SinoNotificacoes } from "@features/alerta-utilizacao";
 import {
   NavegacaoPeriodo,
   deslocarReferencia,
-  intervaloDoPeriodo,
   podeAvancarPeriodo,
 } from "@features/period-filter";
 import { PageHeader } from "@shared/ui";
 import { distribuirRanking } from "../lib/distribuirRanking";
 import { mesDaReferencia, rotuloMes } from "../lib/rotuloMes";
-import { usePagamentoMotoristas } from "../model/usePagamentoMotoristas";
 import { useRankingMotoristas } from "../model/useRankingMotoristas";
+import { FiltroRanking as FiltroRankingButton } from "./FiltroRanking";
 
 const MENSAGEM_CLASS =
   "rounded-md bg-surface p-6 text-center text-sm text-fg-subtle";
+const FILTROS_VALIDOS: FiltroRanking[] = ["RENTABILIDADE", "FATURAMENTO", "VIAGENS", "TIPO_VEICULO"];
+
+function dataDoMes(valor: string | null): Date | null {
+  if (!valor || !/^\d{4}-\d{2}$/.test(valor)) return null;
+  const [ano, mes] = valor.split("-").map(Number);
+  if (mes < 1 || mes > 12) return null;
+  return new Date(ano, mes - 1, 1);
+}
 
 /** Busca por nome, CPF, veículo, placa ou telefone, sem acento nem caixa. */
 function combinaComABusca(motorista: RankingMotorista, termo: string): boolean {
@@ -45,31 +49,41 @@ function combinaComABusca(motorista: RankingMotorista, termo: string): boolean {
 export function RankingPage() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [busca, setBusca] = useState("");
-  // Padrão do filtro é o mês atual, como no dashboard.
-  const [referencia, setReferencia] = useState(() => new Date());
+  const [searchParams, setSearchParams] = useSearchParams();
+  const filtroParam = searchParams.get("filtro");
+  const tipoParam = searchParams.get("tipoVeiculo");
+  const filtro: FiltroRanking = FILTROS_VALIDOS.includes(filtroParam as FiltroRanking)
+    && (filtroParam !== "TIPO_VEICULO" || Boolean(tipoParam))
+    ? filtroParam as FiltroRanking
+    : "RENTABILIDADE";
+  const tipoVeiculo = filtro === "TIPO_VEICULO" ? tipoParam : null;
+  const referencia = dataDoMes(searchParams.get("mes")) ?? new Date();
+  const mes = mesDaReferencia(referencia);
+  const { dados, tiposDisponiveis, carregando, erro, recarregar } = useRankingMotoristas(
+    mes,
+    filtro,
+    tipoVeiculo ?? undefined,
+  );
 
-  const intervalo = useMemo(
-    () => intervaloDoPeriodo("mes", referencia),
-    [referencia],
-  );
-  const { dados, carregando, erro, recarregar } = useRankingMotoristas(
-    intervalo.dataInicio,
-    intervalo.dataFim,
-  );
+  const atualizarFiltro = (novoFiltro: FiltroRanking, novoTipo: string | null) => {
+    setSearchParams((atuais) => {
+      const proximos = new URLSearchParams(atuais);
+      proximos.set("mes", mes);
+      proximos.set("filtro", novoFiltro);
+      if (novoFiltro === "TIPO_VEICULO" && novoTipo) proximos.set("tipoVeiculo", novoTipo);
+      else proximos.delete("tipoVeiculo");
+      return proximos;
+    });
+  };
 
-  // Faturamento (valor a pagar) é exclusivo do Gestor: para os demais nem há consulta.
-  const { usuario } = useSessao();
-  const ehGestor = usuario !== null && podeVerValoresMonetarios(usuario.perfil);
-  const pagamentos = usePagamentoMotoristas(mesDaReferencia(referencia), ehGestor);
-  const indiceFaturamento = useMemo(
-    () => indexarFaturamento(pagamentos.dados ?? []),
-    [pagamentos.dados],
-  );
-  const faturamentoDe = useCallback(
-    (motorista: RankingMotorista) =>
-      faturamentoDoMotorista(indiceFaturamento, motorista),
-    [indiceFaturamento],
-  );
+  const atualizarMes = (novaReferencia: Date) => {
+    const novoMes = mesDaReferencia(novaReferencia);
+    setSearchParams((atuais) => {
+      const proximos = new URLSearchParams(atuais);
+      proximos.set("mes", novoMes);
+      return proximos;
+    });
+  };
 
   const { podio, lista } = useMemo(
     () => distribuirRanking(dados ?? []),
@@ -103,7 +117,7 @@ export function RankingPage() {
             notificacoes={<SinoNotificacoes />}
           />
 
-          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex flex-col gap-4">
             <div className="flex w-full items-center gap-2 rounded-md bg-surface px-4 py-2.5 sm:w-[420px]">
               <Search size={16} className="shrink-0 text-fg-muted" />
               <input
@@ -116,20 +130,23 @@ export function RankingPage() {
               />
             </div>
 
-            {/* Seletor de mês reaproveitado do dashboard. */}
-            <NavegacaoPeriodo
-              label={rotuloMes(referencia)}
-              podeAvancar={podeAvancarPeriodo("mes", referencia)}
-              onAnterior={() =>
-                setReferencia(deslocarReferencia("mes", referencia, -1))
-              }
-              onSeguinte={() =>
-                setReferencia(deslocarReferencia("mes", referencia, 1))
-              }
-              periodo="mes"
-              referencia={referencia}
-              onSelecionarData={setReferencia}
-            />
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+              <FiltroRankingButton
+                filtro={filtro}
+                tipoVeiculo={tipoVeiculo}
+                tiposDisponiveis={tiposDisponiveis}
+                onChange={atualizarFiltro}
+              />
+              <NavegacaoPeriodo
+                label={rotuloMes(referencia)}
+                podeAvancar={podeAvancarPeriodo("mes", referencia)}
+                onAnterior={() => atualizarMes(deslocarReferencia("mes", referencia, -1))}
+                onSeguinte={() => atualizarMes(deslocarReferencia("mes", referencia, 1))}
+                periodo="mes"
+                referencia={referencia}
+                onSelecionarData={atualizarMes}
+              />
+            </div>
           </div>
         </header>
 
@@ -149,35 +166,28 @@ export function RankingPage() {
             Carregando ranking...
           </p>
         ) : dados && dados.length === 0 ? (
-          <p role="status" className={MENSAGEM_CLASS}>
-            Sem viagens neste mês
-          </p>
+          <div role="status" className={MENSAGEM_CLASS}>
+            <p>{filtro === "TIPO_VEICULO"
+              ? `Nenhum motorista com viagens de ${formatTipoVeiculo(tipoVeiculo) ?? tipoVeiculo} neste mês`
+              : "Sem viagens neste mês"}</p>
+            {filtro === "TIPO_VEICULO" && (
+              <button type="button" onClick={() => atualizarFiltro("RENTABILIDADE", null)}
+                className="mt-3 cursor-pointer rounded-md bg-primary px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-primary-dark">
+                Limpar filtro
+              </button>
+            )}
+          </div>
         ) : (
           <div className="flex flex-col gap-6">
-            {ehGestor && pagamentos.erro && (
-              <div
-                role="alert"
-                className="flex flex-wrap items-center justify-between gap-3 rounded-md bg-surface px-4 py-3 text-sm text-fg-subtle"
-              >
-                <span>{pagamentos.erro}</span>
-                <button
-                  type="button"
-                  onClick={pagamentos.recarregar}
-                  className="cursor-pointer rounded-md bg-primary px-3 py-1.5 text-xs font-medium text-white transition-colors hover:bg-primary-dark"
-                >
-                  Tentar de novo
-                </button>
-              </div>
-            )}
             <RankingPodium
               podio={podioVisivel}
-              faturamentoDe={ehGestor ? faturamentoDe : undefined}
+              filtroAtivo={filtro}
             />
             {/* Com 3 motoristas ou menos não há lista: só o pódio. */}
             {lista.length > 0 && (
               <RankingList
                 motoristas={listaVisivel}
-                faturamentoDe={ehGestor ? faturamentoDe : undefined}
+                filtroAtivo={filtro}
               />
             )}
           </div>

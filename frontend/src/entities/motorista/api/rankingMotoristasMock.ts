@@ -68,12 +68,9 @@ function montarLinha(linha: LinhaDemonstracao, indice: number, semente: number):
     veiculo: linha.veiculo,
     placa: linha.placa,
     viagens: Math.max(1, Math.round(linha.viagens + oscilar(semente, indice * 3 + 1) * 3)),
-    frequencia: Math.min(
-      100,
-      Math.max(40, Math.round(linha.frequencia + oscilar(semente, indice * 3 + 2) * 6)),
-    ),
     rentabilidadeMedia: comDesvio(linha.rentabilidadeMedia, fator),
-    frete: linha.frete === undefined ? null : comDesvio(linha.frete, fator),
+    faturamento: linha.frete === undefined ? null : comDesvio(linha.frete, fator),
+    rentabilidadeTotal: null,
     custos: linha.custos === undefined ? null : comDesvio(linha.custos, fator),
   };
 }

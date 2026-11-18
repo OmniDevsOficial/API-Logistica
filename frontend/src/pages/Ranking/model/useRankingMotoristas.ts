@@ -1,13 +1,14 @@
 import { useCallback, useEffect, useState } from "react";
 import { buscarRankingMotoristas } from "@entities/motorista";
-import type { RankingMotorista } from "@entities/motorista";
+import type { FiltroRanking, RankingMotorista } from "@entities/motorista";
 
 /**
  * Ranking do mês consultado. Trocar o mês (ou pedir um recarregamento)
  * dispara uma nova chamada, abortando a anterior.
  */
-export function useRankingMotoristas(dataInicio: string, dataFim: string) {
+export function useRankingMotoristas(mes: string, filtro: FiltroRanking, tipoVeiculo?: string) {
   const [dados, setDados] = useState<RankingMotorista[] | null>(null);
+  const [tiposDisponiveis, setTiposDisponiveis] = useState<string[]>([]);
   const [carregando, setCarregando] = useState(true);
   const [erro, setErro] = useState<string | null>(null);
   const [versao, setVersao] = useState(0);
@@ -21,11 +22,13 @@ export function useRankingMotoristas(dataInicio: string, dataFim: string) {
 
       try {
         const resultado = await buscarRankingMotoristas(
-          dataInicio,
-          dataFim,
+          mes,
+          filtro,
+          tipoVeiculo,
           controller.signal,
         );
-        setDados(resultado);
+        setDados(resultado.ranking);
+        setTiposDisponiveis(resultado.tiposDisponiveis);
       } catch (erroCarregamento) {
         if (controller.signal.aborted) return;
         setErro(
@@ -41,9 +44,9 @@ export function useRankingMotoristas(dataInicio: string, dataFim: string) {
 
     void carregar();
     return () => controller.abort();
-  }, [dataInicio, dataFim, versao]);
+  }, [mes, filtro, tipoVeiculo, versao]);
 
   const recarregar = useCallback(() => setVersao((valor) => valor + 1), []);
 
-  return { dados, carregando, erro, recarregar };
+  return { dados, tiposDisponiveis, carregando, erro, recarregar };
 }

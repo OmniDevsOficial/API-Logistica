@@ -71,12 +71,18 @@ export interface RankingMotorista {
   placa: string | null;
   /** Viagens do motorista dentro do mês consultado. */
   viagens: number;
-  /** Dias com viagem ÷ dias do mês × 100, em percentual (0 a 100). */
-  frequencia: number | null;
   rentabilidadeMedia: number | null;
-  /** Frete e custos somados no mês, usados no card do 1º colocado. */
-  frete: number | null;
+  /** Soma da receita de frete no período. */
+  faturamento: number | null;
+  rentabilidadeTotal: number | null;
   custos: number | null;
+}
+
+export type FiltroRanking = "RENTABILIDADE" | "FATURAMENTO" | "VIAGENS" | "TIPO_VEICULO";
+
+export interface ResultadoRankingMotoristas {
+  ranking: RankingMotorista[];
+  tiposDisponiveis: string[];
 }
 
 /** Valor a pagar a um motorista no mês (GET /dashboard/pagamento-motoristas). */
