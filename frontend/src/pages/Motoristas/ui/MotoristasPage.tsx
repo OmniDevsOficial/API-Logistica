@@ -3,9 +3,7 @@ import { atualizarStatusMotorista } from "@entities/motorista";
 import type { MotoristaEquipe, StatusEquipe } from "@entities/motorista";
 import { Sidebar } from "@widgets/sidebar";
 import { SinoNotificacoes } from "@features/alerta-utilizacao";
-import { BotaoImportarVeiculos } from "@features/importar-veiculos";
 import { ModalHistoricoViagens } from "@features/historico-viagens";
-import { podeImportarVeiculos, useSessao } from "@entities/sessao";
 import { PageHeader } from "@shared/ui";
 import {
   EquipeStatCards,
