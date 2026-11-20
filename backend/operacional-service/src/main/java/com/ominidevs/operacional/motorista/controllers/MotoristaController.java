@@ -19,8 +19,11 @@ import com.ominidevs.operacional.indicadores.services.UtilizacaoService;
 import com.ominidevs.operacional.motorista.dto.MotoristaResumoResponse;
 import com.ominidevs.operacional.motorista.dto.MotoristaResponseDTO;
 import com.ominidevs.operacional.motorista.dto.RankingMotoristasResultado;
+import com.ominidevs.operacional.motorista.dto.PaginaHistoricoViagensResponse;
+import com.ominidevs.operacional.motorista.dto.RankingMotoristaResponse;
 import com.ominidevs.operacional.motorista.dto.StatusMotoristaRequest;
 import com.ominidevs.operacional.motorista.entities.StatusMotorista;
+import com.ominidevs.operacional.motorista.services.HistoricoViagemService;
 import com.ominidevs.operacional.motorista.services.MotoristaService;
 import com.ominidevs.operacional.motorista.services.RankingMotoristaService;
 import com.ominidevs.operacional.motorista.services.FiltroRankingMotorista;
@@ -35,15 +38,18 @@ public class MotoristaController {
     private final MotoristaService service;
     private final UtilizacaoService utilizacaoService;
     private final RankingMotoristaService rankingService;
+    private final HistoricoViagemService historicoService;
 
     public MotoristaController(
             MotoristaService service,
             UtilizacaoService utilizacaoService,
-            RankingMotoristaService rankingService
+            RankingMotoristaService rankingService,
+            HistoricoViagemService historicoService
     ) {
         this.service = service;
         this.utilizacaoService = utilizacaoService;
         this.rankingService = rankingService;
+        this.historicoService = historicoService;
     }
 
     @GetMapping("/ping")
@@ -106,6 +112,15 @@ public class MotoristaController {
         }
         return ResponseEntity.ok(rankingService.ranking(
                 periodoRanking(mes, dataInicio, dataFim), filtroRanking, tipoVeiculo));
+    }
+
+    @GetMapping("/{id}/viagens")
+    public ResponseEntity<PaginaHistoricoViagensResponse> historicoViagens(
+            @PathVariable Integer id,
+            @RequestParam(defaultValue = "0") int pagina,
+            @RequestParam(defaultValue = "10") int tamanho
+    ) {
+        return ResponseEntity.ok(historicoService.listar(id, pagina, tamanho));
     }
 
     @PatchMapping("/{id}/status")
