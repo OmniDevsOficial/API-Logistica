@@ -2,14 +2,17 @@
 import { test, afterEach } from 'node:test';
 import assert from 'node:assert/strict';
 import { buscarRankingMotoristas } from './rankingMotoristasService.ts';
+import { rankingDeDemonstracao } from './rankingMotoristasMock.ts';
 
 const fetchOriginal = globalThis.fetch;
 afterEach(() => { globalThis.fetch = fetchOriginal; });
 
+/** Resposta HTTP de sucesso com o corpo já serializado como JSON. */
 function respostaOk(corpo) {
   return { ok: true, status: 200, json: async () => corpo };
 }
 
+/** Linha de exemplo no formato do endpoint atual de ranking. */
 const itemDaApi = {
   posicao: 1,
   motoristaId: 7,
@@ -20,6 +23,7 @@ const itemDaApi = {
   placa: 'RTA4F21',
   viagens: 22,
   quantidadeViagens: 22,
+  frequencia: 78.57,
   rentabilidadeMedia: 12500,
   rentabilidadeTotal: 275000,
   faturamento: 320000,
@@ -61,6 +65,14 @@ test('envia tipoVeiculo somente para o filtro por tipo', async () => {
   assert.equal(parametros.get('tipoVeiculo'), 'TRUCK');
 });
 
+test('modo de demonstração oferece tipos e aplica o filtro de veículo', async () => {
+  const resultado = await rankingDeDemonstracao('2026-11', 'TIPO_VEICULO', 'TRUCK');
+
+  assert.ok(resultado.tiposDisponiveis.includes('TRUCK'));
+  assert.ok(resultado.ranking.length > 0);
+  assert.ok(resultado.ranking.every((motorista) => motorista.veiculo === 'Truck'));
+});
+
 test('normaliza os campos do item e mantém os tipos disponíveis', async () => {
   globalThis.fetch = async () => respostaOk(respostaRanking);
 
@@ -69,6 +81,7 @@ test('normaliza os campos do item e mantém os tipos disponíveis', async () => 
   assert.equal(motorista.motoristaId, 7);
   assert.equal(motorista.nome, 'João Silva');
   assert.equal(motorista.viagens, 22);
+  assert.equal(motorista.frequencia, 78.57);
   assert.equal(motorista.rentabilidadeMedia, 12500);
   assert.equal(motorista.rentabilidadeTotal, 275000);
   assert.equal(motorista.faturamento, 320000);

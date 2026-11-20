@@ -37,6 +37,7 @@ export function useRankingMotoristas(mes: string, filtro: FiltroRanking, tipoVei
             : "Ocorreu um erro ao carregar o ranking.",
         );
         setDados(null);
+        setTiposDisponiveis([]);
       } finally {
         if (!controller.signal.aborted) setCarregando(false);
       }

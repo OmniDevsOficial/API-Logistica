@@ -78,16 +78,16 @@ class MotoristaControllerTest {
 
         mvc.perform(get("/motoristas"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.ranking[0].id").value(1))
-                .andExpect(jsonPath("$.ranking[0].nome").value("Ana"))
-                .andExpect(jsonPath("$.ranking[0].cpf").value("00123456789"))
-                .andExpect(jsonPath("$.ranking[0].tipoVeiculo").value("Caminhão"))
-                .andExpect(jsonPath("$.ranking[0].placa").value("ABC1D23"))
-                .andExpect(jsonPath("$.ranking[0].status").value("DISPONIVEL"))
-                .andExpect(jsonPath("$.ranking[0].localizacao").value("Curitiba"))
-                .andExpect(jsonPath("$.ranking[0].ultimaOperacao").value("2026-09-10"))
-                .andExpect(jsonPath("$.ranking[0].previsaoDisponibilidade").doesNotExist())
-                .andExpect(jsonPath("$.ranking[0].quantidadeViagens").value(3));
+                .andExpect(jsonPath("$[0].id").value(1))
+                .andExpect(jsonPath("$[0].nome").value("Ana"))
+                .andExpect(jsonPath("$[0].cpf").value("00123456789"))
+                .andExpect(jsonPath("$[0].tipoVeiculo").value("Caminhão"))
+                .andExpect(jsonPath("$[0].placa").value("ABC1D23"))
+                .andExpect(jsonPath("$[0].status").value("DISPONIVEL"))
+                .andExpect(jsonPath("$[0].localizacao").value("Curitiba"))
+                .andExpect(jsonPath("$[0].ultimaOperacao").value("2026-09-10"))
+                .andExpect(jsonPath("$[0].previsaoDisponibilidade").doesNotExist())
+                .andExpect(jsonPath("$[0].quantidadeViagens").value(3));
     }
 
     @Test
@@ -248,7 +248,7 @@ class MotoristaControllerTest {
 
     private RankingMotoristaResponse itemRanking() {
         return new RankingMotoristaResponse(1, 7, "Ana", "00123456789", null, "Truck", "ABC1D23",
-                7, 5, new BigDecimal("333.33"), new BigDecimal("1000.00"),
+                7, 5, new BigDecimal("16.67"), new BigDecimal("333.33"), new BigDecimal("1000.00"),
                 new BigDecimal("1500.00"), new BigDecimal("500.00"));
     }
 
@@ -267,7 +267,7 @@ class MotoristaControllerTest {
                 .andExpect(jsonPath("$.ranking[0].quantidadeViagens").value(5))
                 .andExpect(jsonPath("$.ranking[0].viagens").value(7))
                 .andExpect(jsonPath("$.ranking[0].faturamento").value(1500.00))
-                .andExpect(jsonPath("$.ranking[0].frequencia").doesNotExist())
+                .andExpect(jsonPath("$.ranking[0].frequencia").value(16.67))
                 .andExpect(jsonPath("$.tiposDisponiveis[0]").value("Truck"));
 
         verify(rankingService).ranking(

@@ -1,7 +1,9 @@
-import { useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { Search } from "lucide-react";
 import { useSearchParams } from "react-router-dom";
 import type { FiltroRanking, RankingMotorista } from "@entities/motorista";
+import { faturamentoDoMotorista, indexarFaturamento } from "@entities/motorista";
+import { podeVerValoresMonetarios, useSessao } from "@entities/sessao";
 import { formatTipoVeiculo } from "@shared/lib";
 import { Sidebar } from "@widgets/sidebar";
 import { RankingList } from "@widgets/ranking-list";
@@ -16,6 +18,7 @@ import { PageHeader } from "@shared/ui";
 import { distribuirRanking } from "../lib/distribuirRanking";
 import { mesDaReferencia, rotuloMes } from "../lib/rotuloMes";
 import { useRankingMotoristas } from "../model/useRankingMotoristas";
+import { usePagamentoMotoristas } from "../model/usePagamentoMotoristas";
 import { FiltroRanking as FiltroRankingButton } from "./FiltroRanking";
 
 const MENSAGEM_CLASS =
@@ -25,8 +28,11 @@ const FILTROS_VALIDOS: FiltroRanking[] = ["RENTABILIDADE", "FATURAMENTO", "VIAGE
 function dataDoMes(valor: string | null): Date | null {
   if (!valor || !/^\d{4}-\d{2}$/.test(valor)) return null;
   const [ano, mes] = valor.split("-").map(Number);
-  if (mes < 1 || mes > 12) return null;
-  return new Date(ano, mes - 1, 1);
+  if (ano < 1900 || mes < 1 || mes > 12) return null;
+  const referencia = new Date(ano, mes - 1, 1);
+  const atual = new Date();
+  if (referencia > new Date(atual.getFullYear(), atual.getMonth(), 1)) return null;
+  return referencia;
 }
 
 /** Busca por nome, CPF, veículo, placa ou telefone, sem acento nem caixa. */
@@ -59,10 +65,33 @@ export function RankingPage() {
   const tipoVeiculo = filtro === "TIPO_VEICULO" ? tipoParam : null;
   const referencia = dataDoMes(searchParams.get("mes")) ?? new Date();
   const mes = mesDaReferencia(referencia);
+  useEffect(() => {
+    const mesNaUrl = searchParams.get("mes");
+    if (mesNaUrl && dataDoMes(mesNaUrl) === null) {
+      setSearchParams((atuais) => {
+        const proximos = new URLSearchParams(atuais);
+        proximos.set("mes", mesDaReferencia(new Date()));
+        return proximos;
+      }, { replace: true });
+    }
+  }, [searchParams, setSearchParams]);
   const { dados, tiposDisponiveis, carregando, erro, recarregar } = useRankingMotoristas(
     mes,
     filtro,
     tipoVeiculo ?? undefined,
+  );
+
+  // O valor a pagar é um dado separado, disponível apenas para Gestores.
+  const { usuario } = useSessao();
+  const ehGestor = usuario !== null && podeVerValoresMonetarios(usuario.perfil);
+  const pagamentos = usePagamentoMotoristas(mes, ehGestor);
+  const indiceFaturamento = useMemo(
+    () => indexarFaturamento(pagamentos.dados ?? []),
+    [pagamentos.dados],
+  );
+  const faturamentoDe = useCallback(
+    (motorista: RankingMotorista) => faturamentoDoMotorista(indiceFaturamento, motorista),
+    [indiceFaturamento],
   );
 
   const atualizarFiltro = (novoFiltro: FiltroRanking, novoTipo: string | null) => {
@@ -73,7 +102,7 @@ export function RankingPage() {
       if (novoFiltro === "TIPO_VEICULO" && novoTipo) proximos.set("tipoVeiculo", novoTipo);
       else proximos.delete("tipoVeiculo");
       return proximos;
-    });
+    }, { replace: true });
   };
 
   const atualizarMes = (novaReferencia: Date) => {
@@ -82,7 +111,7 @@ export function RankingPage() {
       const proximos = new URLSearchParams(atuais);
       proximos.set("mes", novoMes);
       return proximos;
-    });
+    }, { replace: true });
   };
 
   const { podio, lista } = useMemo(
@@ -150,6 +179,15 @@ export function RankingPage() {
           </div>
         </header>
 
+        {ehGestor && pagamentos.erro && (
+          <div role="alert" className="mb-6 flex flex-wrap items-center justify-between gap-3 rounded-md bg-surface px-4 py-3 text-sm text-fg-subtle">
+            <span>{pagamentos.erro}</span>
+            <button type="button" onClick={pagamentos.recarregar} className="cursor-pointer rounded-md bg-primary px-3 py-1.5 text-xs font-medium text-white transition-colors hover:bg-primary-dark">
+              Tentar de novo
+            </button>
+          </div>
+        )}
+
         {erro ? (
           <div role="alert" className={MENSAGEM_CLASS}>
             <p>{erro}</p>
@@ -161,7 +199,7 @@ export function RankingPage() {
               Tentar de novo
             </button>
           </div>
-        ) : carregando ? (
+        ) : carregando && dados === null ? (
           <p role="status" className={MENSAGEM_CLASS}>
             Carregando ranking...
           </p>
@@ -179,14 +217,17 @@ export function RankingPage() {
           </div>
         ) : (
           <div className="flex flex-col gap-6">
+            {carregando && <p role="status" className="text-sm text-fg-muted">Atualizando ranking...</p>}
             <RankingPodium
               podio={podioVisivel}
+              faturamentoDe={ehGestor ? faturamentoDe : undefined}
               filtroAtivo={filtro}
             />
             {/* Com 3 motoristas ou menos não há lista: só o pódio. */}
             {lista.length > 0 && (
               <RankingList
                 motoristas={listaVisivel}
+                faturamentoDe={ehGestor ? faturamentoDe : undefined}
                 filtroAtivo={filtro}
               />
             )}

@@ -62,6 +62,7 @@ function mapear(item: RankingMotorista): RankingMotorista {
     veiculo: textoOuNulo(item.veiculo),
     placa: textoOuNulo(item.placa),
     viagens: item.viagens,
+    frequencia: numeroOuNulo(item.frequencia),
     rentabilidadeMedia: numeroOuNulo(item.rentabilidadeMedia),
     faturamento: numeroOuNulo(item.faturamento),
     rentabilidadeTotal: numeroOuNulo(item.rentabilidadeTotal),
@@ -76,7 +77,7 @@ export async function buscarRankingMotoristas(
   signal?: AbortSignal,
 ): Promise<ResultadoRankingMotoristas> {
   if (RANKING_EM_DEMONSTRACAO) {
-    return { ranking: await rankingDeDemonstracao(mes, signal), tiposDisponiveis: [] };
+    return rankingDeDemonstracao(mes, filtro, tipoVeiculo, signal);
   }
 
   const parametros = new URLSearchParams({ mes, filtro });

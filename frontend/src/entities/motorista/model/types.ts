@@ -71,8 +71,10 @@ export interface RankingMotorista {
   placa: string | null;
   /** Viagens do motorista dentro do mês consultado. */
   viagens: number;
+  /** Dias com viagem ÷ 30, em percentual. */
+  frequencia: number | null;
   rentabilidadeMedia: number | null;
-  /** Soma da receita de frete no período. */
+  /** Soma da receita de frete no período, usada como métrica de ordenação. */
   faturamento: number | null;
   rentabilidadeTotal: number | null;
   custos: number | null;

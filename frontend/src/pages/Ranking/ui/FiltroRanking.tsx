@@ -12,7 +12,7 @@ interface FiltroRankingProps {
 
 const OPCOES: { valor: FiltroRanking; rotulo: string }[] = [
   { valor: "RENTABILIDADE", rotulo: "Rentabilidade" },
-  { valor: "FATURAMENTO", rotulo: "Faturamento" },
+  { valor: "FATURAMENTO", rotulo: "Receita de frete" },
   { valor: "VIAGENS", rotulo: "Número de viagens" },
   { valor: "TIPO_VEICULO", rotulo: "Tipo de veículo" },
 ];
@@ -27,29 +27,46 @@ function rotuloFiltro(filtro: FiltroRanking, tipoVeiculo: string | null): string
 
 export function FiltroRanking({ filtro, tipoVeiculo, tiposDisponiveis, onChange }: FiltroRankingProps) {
   const [aberto, setAberto] = useState(false);
-  const containerRef = useRef<HTMLDivElement>(null);
+  const botaoRef = useRef<HTMLButtonElement>(null);
+  const dialogRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (!aberto) return;
-    const fecharFora = (evento: MouseEvent) => {
-      if (evento.target instanceof Node && !containerRef.current?.contains(evento.target)) {
+    const dialogo = dialogRef.current;
+    const botaoDeRetorno = botaoRef.current;
+    const focaveis = () => Array.from(dialogo?.querySelectorAll<HTMLElement>(
+      'button:not([disabled]), input:not([disabled]), [tabindex]:not([tabindex="-1"])',
+    ) ?? []);
+    focaveis()[0]?.focus();
+    const controlarTeclado = (evento: KeyboardEvent) => {
+      if (evento.key === "Escape") {
         setAberto(false);
+        return;
+      }
+      if (evento.key !== "Tab") return;
+      const elementos = focaveis();
+      const primeiro = elementos[0];
+      const ultimo = elementos.at(-1);
+      if (!primeiro || !ultimo) return;
+      if (evento.shiftKey && document.activeElement === primeiro) {
+        evento.preventDefault();
+        ultimo.focus();
+      } else if (!evento.shiftKey && document.activeElement === ultimo) {
+        evento.preventDefault();
+        primeiro.focus();
       }
     };
-    const fecharEsc = (evento: KeyboardEvent) => {
-      if (evento.key === "Escape") setAberto(false);
-    };
-    document.addEventListener("mousedown", fecharFora);
-    window.addEventListener("keydown", fecharEsc);
+    window.addEventListener("keydown", controlarTeclado);
     return () => {
-      document.removeEventListener("mousedown", fecharFora);
-      window.removeEventListener("keydown", fecharEsc);
+      window.removeEventListener("keydown", controlarTeclado);
+      botaoDeRetorno?.focus();
     };
   }, [aberto]);
 
   return (
-    <div ref={containerRef} className="relative shrink-0">
+    <div className="relative shrink-0">
       <button
+        ref={botaoRef}
         type="button"
         aria-haspopup="dialog"
         aria-expanded={aberto}
@@ -62,11 +79,21 @@ export function FiltroRanking({ filtro, tipoVeiculo, tiposDisponiveis, onChange 
       </button>
 
       {aberto && (
-        <div
-          role="dialog"
-          aria-label="Filtrar ranking"
-          className="fixed inset-x-3 bottom-3 z-50 max-h-[80vh] overflow-y-auto rounded-2xl border border-border bg-surface p-4 shadow-2xl sm:absolute sm:inset-auto sm:right-0 sm:top-full sm:mt-2 sm:w-80 sm:max-h-[min(70vh,30rem)]"
-        >
+        <>
+          <button
+            type="button"
+            aria-label="Fechar filtros"
+            tabIndex={-1}
+            onClick={() => setAberto(false)}
+            className="fixed inset-0 z-40 cursor-default bg-slate-950/40 sm:bg-transparent"
+          />
+          <div
+            ref={dialogRef}
+            role="dialog"
+            aria-modal="true"
+            aria-label="Filtrar ranking"
+            className="fixed inset-x-3 bottom-3 z-50 max-h-[80vh] overflow-y-auto rounded-2xl border border-border bg-surface p-4 shadow-2xl sm:absolute sm:inset-auto sm:right-0 sm:top-full sm:mt-2 sm:w-80 sm:max-h-[min(70vh,30rem)]"
+          >
           <div className="mb-3 flex items-center justify-between">
             <h2 className="text-sm font-semibold text-fg">Filtrar ranking</h2>
             <button
@@ -141,7 +168,8 @@ export function FiltroRanking({ filtro, tipoVeiculo, tiposDisponiveis, onChange 
               Limpar filtro
             </button>
           </div>
-        </div>
+          </div>
+        </>
       )}
     </div>
   );

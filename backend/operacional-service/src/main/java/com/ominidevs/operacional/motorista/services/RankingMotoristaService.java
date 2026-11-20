@@ -9,6 +9,7 @@ import java.util.stream.IntStream;
 import org.springframework.stereotype.Service;
 
 import com.ominidevs.operacional.indicadores.model.PeriodoConsulta;
+import com.ominidevs.operacional.indicadores.model.Porcentagem;
 import com.ominidevs.operacional.motorista.dto.RankingMotoristaResponse;
 import com.ominidevs.operacional.motorista.dto.RankingMotoristasResultado;
 import com.ominidevs.operacional.motorista.projections.RankingMotoristaLinha;
@@ -84,6 +85,7 @@ public class RankingMotoristaService {
         // Cada grupo nasce de pelo menos uma viagem, então o divisor nunca é zero.
         BigDecimal media = linha.rentabilidadeTotal()
                 .divide(BigDecimal.valueOf(linha.quantidadeViagens()), 2, RoundingMode.HALF_UP);
+        BigDecimal frequencia = Porcentagem.calcular(linha.diasComViagem(), 30);
         return new RankingMotoristaResponse(
                 0,
                 linha.motoristaId(),
@@ -94,6 +96,7 @@ public class RankingMotoristaService {
                 linha.placa(),
                 linha.quantidadeViagens(),
                 linha.quantidadeViagens(),
+                frequencia,
                 media,
                 linha.rentabilidadeTotal(),
                 linha.frete(),
@@ -111,6 +114,7 @@ public class RankingMotoristaService {
                 item.placa(),
                 item.viagens(),
                 item.quantidadeViagens(),
+                item.frequencia(),
                 item.rentabilidadeMedia(),
                 item.rentabilidadeTotal(),
                 item.faturamento(),

@@ -1,4 +1,4 @@
-import type { RankingMotorista } from "../model/types";
+import type { FiltroRanking, RankingMotorista, ResultadoRankingMotoristas } from "../model/types";
 
 /**
  * Amostra de demonstração no formato do Figma, usada enquanto o backend da
@@ -44,7 +44,10 @@ function oscilar(semente: number, indice: number): number {
 
 /** dataInicio chega no formato dd/MM/aaaa, o mesmo das demais consultas. */
 function sementeDoMes(dataInicio: string): number {
-  const [, mes, ano] = dataInicio.split("/").map(Number);
+  const partes = dataInicio.includes("-")
+    ? dataInicio.split("-").map(Number)
+    : dataInicio.split("/").map(Number).reverse();
+  const [ano, mes] = partes;
   if (!mes || !ano) return 0;
   return ano * 12 + (mes - 1);
 }
@@ -68,6 +71,7 @@ function montarLinha(linha: LinhaDemonstracao, indice: number, semente: number):
     veiculo: linha.veiculo,
     placa: linha.placa,
     viagens: Math.max(1, Math.round(linha.viagens + oscilar(semente, indice * 3 + 1) * 3)),
+    frequencia: comDesvio(linha.frequencia, fator),
     rentabilidadeMedia: comDesvio(linha.rentabilidadeMedia, fator),
     faturamento: linha.frete === undefined ? null : comDesvio(linha.frete, fator),
     rentabilidadeTotal: null,
@@ -95,14 +99,29 @@ function esperar(ms: number, signal?: AbortSignal): Promise<void> {
 }
 
 /**
- * Ranking do mês em ordem decrescente de rentabilidade. O pequeno atraso
- * mantém a tela de carregamento visível, como aconteceria com a API real.
+ * Ranking demonstrativo ordenado pelo critério ativo e filtrável por tipo de
+ * veículo. O atraso mantém o estado de carregamento visível como na API real.
  */
 export async function rankingDeDemonstracao(
-  dataInicio: string,
+  mes: string,
+  filtro: FiltroRanking = "RENTABILIDADE",
+  tipoVeiculo?: string,
   signal?: AbortSignal,
-): Promise<RankingMotorista[]> {
+): Promise<ResultadoRankingMotoristas> {
   await esperar(250, signal);
-  const semente = sementeDoMes(dataInicio);
-  return LINHAS_DEMO.map((linha, indice) => montarLinha(linha, indice, semente));
+  const semente = sementeDoMes(mes);
+  const ranking = LINHAS_DEMO.map((linha, indice) => montarLinha(linha, indice, semente));
+  const tiposDisponiveis = [...new Set(ranking.map((motorista) => motorista.veiculo).filter((tipo): tipo is string => tipo !== null))]
+    .map((tipo) => tipo.trim().toUpperCase())
+    .sort();
+  const resultado = filtro === "TIPO_VEICULO" && tipoVeiculo
+    ? ranking.filter((motorista) => motorista.veiculo?.trim().toUpperCase() === tipoVeiculo.trim().toUpperCase())
+    : ranking;
+  const porNome = (a: RankingMotorista, b: RankingMotorista) => a.nome.localeCompare(b.nome);
+  resultado.sort((a, b) => {
+    if (filtro === "VIAGENS") return b.viagens - a.viagens || (b.rentabilidadeMedia ?? 0) - (a.rentabilidadeMedia ?? 0) || porNome(a, b);
+    if (filtro === "FATURAMENTO") return (b.faturamento ?? 0) - (a.faturamento ?? 0) || (b.rentabilidadeMedia ?? 0) - (a.rentabilidadeMedia ?? 0) || porNome(a, b);
+    return (b.rentabilidadeMedia ?? 0) - (a.rentabilidadeMedia ?? 0) || b.viagens - a.viagens || porNome(a, b);
+  });
+  return { ranking: resultado, tiposDisponiveis };
 }
