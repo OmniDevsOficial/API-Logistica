@@ -7,8 +7,8 @@ import { rankingDeDemonstracao } from "./rankingMotoristasMock.ts";
  *
  * GET /api/operacional/motoristas/ranking?dataInicio=01/11/2026&dataFim=30/11/2026
  *
- * Resposta: lista ordenada da melhor para a pior rentabilidade, sem posição
- * explícita — a posição é a ordem do array:
+ * A API atual responde { ranking, tiposDisponiveis }; o array puro é aceito
+ * durante a transição com a versão antiga do backend:
  *
  * ```json
  * [
@@ -86,7 +86,12 @@ export async function buscarRankingMotoristas(
     throw new Error("Não foi possível carregar o ranking de motoristas.");
   }
 
-  const dados: unknown = await resposta.json();
+  const corpo: unknown = await resposta.json();
+  const dados = Array.isArray(corpo)
+    ? corpo
+    : corpo !== null && typeof corpo === "object"
+      ? (corpo as { ranking?: unknown }).ranking
+      : undefined;
   if (!Array.isArray(dados) || !dados.every(validarItem)) {
     throw new Error("A resposta do ranking está inválida.");
   }

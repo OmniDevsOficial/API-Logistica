@@ -77,7 +77,7 @@ class RankingMotoristaConsultaRepositoryTest {
     }
 
     private List<RankingMotoristaLinha> setembro() {
-        return repository.consultar(LocalDate.of(2026, 9, 1), LocalDate.of(2026, 10, 1));
+        return repository.consultar(LocalDate.of(2026, 9, 1), LocalDate.of(2026, 10, 1), null);
     }
 
     @Test
@@ -93,7 +93,6 @@ class RankingMotoristaConsultaRepositoryTest {
         RankingMotoristaLinha linha = linhas.getFirst();
         assertEquals("Ana Silva", linha.nome());
         assertEquals(2, linha.quantidadeViagens());
-        assertEquals(2, linha.diasComViagem());
         assertEquals(new BigDecimal("1500.00"), linha.frete());
         assertEquals(new BigDecimal("600.00"), linha.custos());
         assertEquals(new BigDecimal("900.00"), linha.rentabilidadeTotal());
@@ -127,8 +126,9 @@ class RankingMotoristaConsultaRepositoryTest {
         assertEquals("001.234.567-89", linha.cpf());
 
         RankingMotoristaResponse item = service.ranking(
-                new PeriodoConsulta(LocalDate.of(2026, 9, 1), LocalDate.of(2026, 9, 30)))
-                .getFirst();
+                new PeriodoConsulta(LocalDate.of(2026, 9, 1), LocalDate.of(2026, 9, 30)),
+                com.ominidevs.operacional.motorista.dto.FiltroRankingMotorista.RENTABILIDADE, null)
+                .ranking().getFirst();
         assertEquals("00123456789", item.cpf());
         assertNull(item.telefone());
     }
@@ -159,7 +159,6 @@ class RankingMotoristaConsultaRepositoryTest {
         RankingMotoristaLinha linha = setembro().getFirst();
 
         assertEquals(2, linha.quantidadeViagens());
-        assertEquals(2, linha.diasComViagem());
         assertEquals(new BigDecimal("3000.00"), linha.frete());
         assertEquals(new BigDecimal("1000.00"), linha.custos());
         assertEquals(new BigDecimal("2000.00"), linha.rentabilidadeTotal());
@@ -198,11 +197,51 @@ class RankingMotoristaConsultaRepositoryTest {
                 "1000.00", "400.00")));
 
         assertTrue(repository.consultar(LocalDate.of(2026, 12, 1),
-                LocalDate.of(2027, 1, 1)).isEmpty());
+                LocalDate.of(2027, 1, 1), null).isEmpty());
     }
 
     @Test
-    void rankingCompletoOrdenaECalculaFrequenciaComVinteEOitoDias() {
+    void filtroTipoVeiculoAgregaSomenteViagensDoTipoSelecionado() {
+        Viagem viagemVan = viagem("2026-09-02", "Ana Silva", "00123456789", "ABC1D23",
+                "500.00", "100.00");
+        viagemVan.setVeiculoTipo("Van");
+        salvar(List.of(
+                viagem("2026-09-01", "Ana Silva", "00123456789", "ABC1D23", "1000.00", "400.00"),
+                viagemVan));
+
+        List<RankingMotoristaLinha> truck = repository.consultar(
+                LocalDate.of(2026, 9, 1), LocalDate.of(2026, 10, 1), "Truck");
+        List<RankingMotoristaLinha> van = repository.consultar(
+                LocalDate.of(2026, 9, 1), LocalDate.of(2026, 10, 1), "Van");
+
+        assertEquals(1, truck.getFirst().quantidadeViagens());
+        assertEquals(new BigDecimal("600.00"), truck.getFirst().rentabilidadeTotal());
+        assertEquals(1, van.getFirst().quantidadeViagens());
+        assertEquals(new BigDecimal("400.00"), van.getFirst().rentabilidadeTotal());
+        assertEquals(List.of("TRUCK", "VAN"), repository.tiposDisponiveis(
+                LocalDate.of(2026, 9, 1), LocalDate.of(2026, 10, 1)));
+    }
+
+    @Test
+    void normalizaTipoDeVeiculoParaFiltrarEDisponibilizar() {
+        Viagem truckComEspaco = viagem("2026-09-01", "Ana Silva", "00123456789", "ABC1D23",
+                "1000.00", "400.00");
+        truckComEspaco.setVeiculoTipo("Truck ");
+        Viagem truckMaiusculo = viagem("2026-09-02", "Bruno Dias", "22222222222", "DEF4E56",
+                "800.00", "300.00");
+        truckMaiusculo.setVeiculoTipo("TRUCK");
+        salvar(List.of(truckComEspaco, truckMaiusculo));
+
+        List<RankingMotoristaLinha> filtrado = repository.consultar(
+                LocalDate.of(2026, 9, 1), LocalDate.of(2026, 10, 1), "tRuCk");
+
+        assertEquals(2, filtrado.size());
+        assertEquals(List.of("TRUCK"), repository.tiposDisponiveis(
+                LocalDate.of(2026, 9, 1), LocalDate.of(2026, 10, 1)));
+    }
+
+    @Test
+    void rankingCompletoOrdenaPorRentabilidadeMedia() {
         salvar(List.of(
                 // Empate de média (400.00), de viagens (2) e de frequência: o nome decide.
                 viagem("2026-02-02", "Ana Silva", "00123456789", "ABC1D23", "600.00", "200.00"),
@@ -216,7 +255,8 @@ class RankingMotoristaConsultaRepositoryTest {
                 viagem("2026-02-07", "Zeca Lima", "33333333333", "GHI7J89", "200.00", "100.00")));
 
         List<RankingMotoristaResponse> ranking = service.ranking(
-                new PeriodoConsulta(LocalDate.of(2026, 2, 1), LocalDate.of(2026, 2, 28)));
+                new PeriodoConsulta(LocalDate.of(2026, 2, 1), LocalDate.of(2026, 2, 28)),
+                com.ominidevs.operacional.motorista.dto.FiltroRankingMotorista.RENTABILIDADE, null).ranking();
 
         assertEquals(List.of("Ana Silva", "Bruno Dias", "Zeca Lima"),
                 ranking.stream().map(RankingMotoristaResponse::nome).toList());
@@ -227,23 +267,6 @@ class RankingMotoristaConsultaRepositoryTest {
         assertEquals(new BigDecimal("400.00"), ana.rentabilidadeMedia());
         assertEquals(new BigDecimal("800.00"), ana.rentabilidadeTotal());
         assertEquals(2, ana.quantidadeViagens());
-        // Fevereiro/2026 tem 28 dias: 2 ÷ 28 × 100 = 7,14.
-        assertEquals(new BigDecimal("7.14"), ana.frequencia());
-
-        // Zeca viajou em 4 dias: 4 ÷ 28 × 100 = 14,29 (frequência maior, média menor).
-        assertEquals(new BigDecimal("14.29"), ranking.getLast().frequencia());
     }
 
-    @Test
-    void frequenciaUsaVinteENoveDiasEmFevereiroBissexto() {
-        salvar(List.of(
-                viagem("2024-02-01", "Ana Silva", "00123456789", "ABC1D23", "600.00", "200.00"),
-                viagem("2024-02-15", "Ana Silva", "00123456789", "ABC1D23", "600.00", "200.00")));
-
-        List<RankingMotoristaResponse> ranking = service.ranking(
-                new PeriodoConsulta(LocalDate.of(2024, 2, 1), LocalDate.of(2024, 2, 29)));
-
-        // 2 ÷ 29 × 100 = 6,90.
-        assertEquals(new BigDecimal("6.90"), ranking.getFirst().frequencia());
-    }
 }
