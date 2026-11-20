@@ -21,7 +21,7 @@ interface NavItem {
 const MAIN_NAV_ITEMS: NavItem[] = [
   { label: "Dashboard", icon: LayoutGrid, path: "/" },
   { label: "Motoristas", icon: User, path: "/motoristas" },
-  { label: "Registros", icon: ClipboardList },
+  { label: "Registros", icon: ClipboardList, path: "/registros" },
   { label: "Viagens", icon: Truck, path: "/viagens" },
   { label: "Ranking", icon: Trophy, path: "/ranking" },
 ];

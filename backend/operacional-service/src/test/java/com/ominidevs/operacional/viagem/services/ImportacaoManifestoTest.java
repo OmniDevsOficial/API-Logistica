@@ -1,6 +1,9 @@
 package com.ominidevs.operacional.viagem.services;
 
 import com.ominidevs.operacional.motorista.services.MotoristaService;
+import com.ominidevs.operacional.importacao.dto.ResumoImportacao;
+import com.ominidevs.operacional.importacao.entities.TipoImportacao;
+import com.ominidevs.operacional.importacao.services.ImportacaoHistoricoService;
 import com.ominidevs.operacional.viagem.clients.ManifestoClient;
 import com.ominidevs.operacional.viagem.dto.ManifestoDTO;
 import com.ominidevs.operacional.viagem.dto.ImportacaoManifestoResponse;
@@ -25,8 +28,10 @@ class ImportacaoManifestoTest {
     private final ManifestoClient client = mock(ManifestoClient.class);
     private final ViagemRepository repository = mock(ViagemRepository.class);
     private final MotoristaService motoristaService = mock(MotoristaService.class);
+    private final ImportacaoHistoricoService historico = mock(ImportacaoHistoricoService.class);
     // Mapper real: verifica a conversão dos dados enviados à persistência.
-    private final ViagemService service = new ViagemService(client, new ManifestoMapper(), repository, motoristaService);
+    private final ViagemService service =
+            new ViagemService(client, new ManifestoMapper(), repository, motoristaService, historico);
     private final MockMultipartFile file = new MockMultipartFile("file", "manifesto.csv", "text/csv", new byte[]{1});
 
     private ManifestoDTO manifesto(String numero) {
@@ -176,5 +181,42 @@ class ImportacaoManifestoTest {
         when(client.enviar(file)).thenThrow(erro);
         assertSame(erro, assertThrows(IntegracaoManifestoException.class, () -> service.importarManifesto(file)));
         verifyNoInteractions(repository);
+    }
+
+    @Test void registraNoHistoricoResumoDaImportacaoBemSucedida() {
+        when(client.enviar(file)).thenReturn(List.of(manifesto("M1"), manifesto("")));
+        when(repository.findByManifestoIn(List.of("M1"))).thenReturn(List.of());
+        when(repository.saveAll(anyList())).thenAnswer(invocation -> invocation.getArgument(0));
+
+        service.importarManifesto(file);
+
+        // Uma linha gravada e uma rejeitada -> parcial.
+        verify(historico).registrar(
+                eq(TipoImportacao.MANIFESTO), eq(file), eq(new ResumoImportacao(1, 0, 0, 1)));
+        verify(historico, never()).registrarFalha(any(), any());
+    }
+
+    @Test void reimportacaoSemMudancaNenhumaContaComoIgnorada() {
+        when(client.enviar(file)).thenReturn(List.of(manifesto("M1")));
+        when(repository.findByManifestoIn(List.of("M1"))).thenReturn(List.of());
+        when(repository.saveAll(anyList())).thenAnswer(invocation -> invocation.getArgument(0));
+        Viagem gravada = service.importarManifesto(file).viagensImportadas().get(0);
+
+        // Mesmo arquivo: a linha já gravada volta com os mesmos valores.
+        when(repository.findByManifestoIn(List.of("M1"))).thenReturn(List.of(gravada));
+        service.importarManifesto(file);
+
+        var captor = org.mockito.ArgumentCaptor.forClass(ResumoImportacao.class);
+        verify(historico, times(2)).registrar(eq(TipoImportacao.MANIFESTO), eq(file), captor.capture());
+        assertEquals(new ResumoImportacao(0, 0, 1, 0), captor.getAllValues().get(1));
+    }
+
+    @Test void falhaNaImportacaoRegistraATentativaComoErro() {
+        when(client.enviar(file)).thenThrow(new IntegracaoManifestoException(Falha.INDISPONIVEL, null));
+
+        assertThrows(IntegracaoManifestoException.class, () -> service.importarManifesto(file));
+
+        verify(historico).registrarFalha(TipoImportacao.MANIFESTO, file);
+        verify(historico, never()).registrar(any(), any(), any());
     }
 }

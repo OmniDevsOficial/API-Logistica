@@ -12,6 +12,8 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 
 import com.ominidevs.operacional.dashboard.controllers.DashboardController;
+import com.ominidevs.operacional.importacao.controllers.ImportacaoController;
+import com.ominidevs.operacional.importacao.services.ImportacaoHistoricoService;
 import com.ominidevs.operacional.dashboard.services.DashboardService;
 import com.ominidevs.operacional.motorista.controllers.MotoristaController;
 import com.ominidevs.operacional.motorista.services.HistoricoViagemService;
@@ -33,7 +35,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(controllers = {
-        DashboardController.class, ViagemController.class, MotoristaController.class, VeiculoController.class})
+        DashboardController.class, ViagemController.class, MotoristaController.class, VeiculoController.class,
+        ImportacaoController.class})
 @Import(SegurancaConfig.class)
 @TestPropertySource(properties = {
         "jwt.secret=" + TokensDeTeste.SEGREDO,
@@ -67,6 +70,9 @@ class SegurancaTest {
 
     @MockitoBean
     private VeiculoConsultaService veiculoConsultaService;
+
+    @MockitoBean
+    private ImportacaoHistoricoService importacaoHistoricoService;
 
     private MockHttpServletRequestBuilder dashboard() {
         return get("/dashboard").param("dataInicio", "01/09/2026").param("dataFim", "30/09/2026");
@@ -289,6 +295,27 @@ class SegurancaTest {
     @Test
     void semTokenNaoConsultaVeiculos() throws Exception {
         mvc.perform(get("/veiculos")).andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    void gestorConsultaOHistoricoDeImportacoes() throws Exception {
+        mvc.perform(get("/importacoes")
+                        .param("tipo", "manifesto")
+                        .header(HttpHeaders.AUTHORIZATION, bearer(TokensDeTeste.valido("GESTOR"))))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    void operadorConsultaOHistoricoDeImportacoes() throws Exception {
+        mvc.perform(get("/importacoes")
+                        .param("status", "parcial")
+                        .header(HttpHeaders.AUTHORIZATION, bearer(TokensDeTeste.valido("OPERADOR"))))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    void semTokenNaoConsultaOHistoricoDeImportacoes() throws Exception {
+        mvc.perform(get("/importacoes")).andExpect(status().isUnauthorized());
     }
 
     private static MockMultipartFile csvVeiculos() {

@@ -49,6 +49,9 @@ class ViagemServiceTest {
     @Mock
     private MotoristaService motoristaService;
 
+    @Mock
+    private com.ominidevs.operacional.importacao.services.ImportacaoHistoricoService historico;
+
     @InjectMocks
     private ViagemService viagemService;
 

@@ -1,8 +1,9 @@
 import type { Perfil } from "./types";
 
 const ROTAS_POR_PERFIL: Record<Perfil, readonly string[]> = {
-  GESTOR: ["/", "/motoristas", "/motoristas/utilizacao", "/viagens", "/ranking"],
-  OPERADOR: ["/viagens", "/motoristas"],
+  // Registros é só leitura e mostra o que o próprio perfil já pode importar.
+  GESTOR: ["/", "/motoristas", "/motoristas/utilizacao", "/viagens", "/registros", "/ranking"],
+  OPERADOR: ["/viagens", "/motoristas", "/registros"],
 };
 
 const AREAS_POR_PERFIL: Record<Perfil, readonly string[]> = {
