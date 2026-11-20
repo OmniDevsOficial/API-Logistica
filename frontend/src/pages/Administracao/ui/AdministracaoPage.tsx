@@ -7,6 +7,7 @@ import { PageHeader } from "@shared/ui";
 import { SECOES_ADMINISTRACAO } from "../config/secoes";
 import { secaoPermitida, secoesDoPerfil } from "../lib/secoesDoPerfil";
 import { NavegacaoSecoes } from "./NavegacaoSecoes";
+import { MenuPerfil } from "@features/menu-perfil";
 
 export function AdministracaoPage() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -34,6 +35,7 @@ export function AdministracaoPage() {
           <PageHeader
             title="Administração"
             onMenuClick={() => setSidebarOpen(true)}
+            perfil={<MenuPerfil />}
             notificacoes={<SinoNotificacoes />}
           />
         </header>

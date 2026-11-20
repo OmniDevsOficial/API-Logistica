@@ -1,8 +1,9 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Loader2, RotateCcw, UserPlus, Users } from "lucide-react";
+import { useSessao } from "@entities/sessao";
 import { resumirUsuarios, type Usuario } from "@entities/usuario";
 import { ModalCadastroUsuario } from "@features/cadastrar-usuario";
-import { MensagemFeedbackUpload } from "@shared/ui";
+import { MensagemFeedbackUpload, type TipoMensagemUpload } from "@shared/ui";
 import { useUsuarios } from "../model/useUsuarios";
 import { UsuariosKpis } from "./UsuariosKpis";
 import { UsuariosTabela } from "./UsuariosTabela";
@@ -16,10 +17,16 @@ function descreverQuantidade(total: number): string {
   return total === 1 ? "1 usuário cadastrado" : `${total} usuários cadastrados`;
 }
 
+interface Aviso {
+  tipo: TipoMensagemUpload;
+  mensagem: string;
+}
+
 export function SecaoUsuarios() {
-  const { dados, carregando, erro, recarregar } = useUsuarios();
+  const { dados, carregando, erro, recarregar, substituir } = useUsuarios();
+  const { usuario: usuarioSessao } = useSessao();
   const [modalAberto, setModalAberto] = useState(false);
-  const [aviso, setAviso] = useState<string | null>(null);
+  const [aviso, setAviso] = useState<Aviso | null>(null);
 
   useEffect(() => {
     if (!aviso) return;
@@ -32,11 +39,26 @@ export function SecaoUsuarios() {
   const aoCadastrar = useCallback(
     (usuario: Usuario) => {
       setModalAberto(false);
-      setAviso(`Usuário ${usuario.nome} cadastrado com sucesso.`);
+      setAviso({ tipo: "sucesso", mensagem: `Usuário ${usuario.nome} cadastrado com sucesso.` });
       recarregar();
     },
     [recarregar],
   );
+
+  const aoAlterarStatus = useCallback(
+    (usuario: Usuario) => {
+      substituir(usuario);
+      setAviso({
+        tipo: "sucesso",
+        mensagem: `Usuário ${usuario.nome} ${usuario.ativo ? "ativado" : "desativado"}.`,
+      });
+    },
+    [substituir],
+  );
+
+  const aoFalharStatus = useCallback((mensagem: string) => {
+    setAviso({ tipo: "erro", mensagem });
+  }, []);
 
   const resumo = useMemo(() => (dados ? resumirUsuarios(dados) : null), [dados]);
 
@@ -47,9 +69,9 @@ export function SecaoUsuarios() {
     <section aria-labelledby="titulo-secao-usuarios" className="flex flex-col gap-4">
       {aviso && (
         <MensagemFeedbackUpload
-          key={aviso}
-          tipo="sucesso"
-          mensagem={aviso}
+          key={`${aviso.tipo}-${aviso.mensagem}`}
+          tipo={aviso.tipo}
+          mensagem={aviso.mensagem}
           onFechar={() => setAviso(null)}
         />
       )}
@@ -109,7 +131,12 @@ export function SecaoUsuarios() {
         ) : (
           dados && (
             <div aria-busy={carregando}>
-              <UsuariosTabela usuarios={dados} />
+              <UsuariosTabela
+                usuarios={dados}
+                emailSessao={usuarioSessao?.email ?? null}
+                onStatusAlterado={aoAlterarStatus}
+                onErroStatus={aoFalharStatus}
+              />
             </div>
           )
         )}

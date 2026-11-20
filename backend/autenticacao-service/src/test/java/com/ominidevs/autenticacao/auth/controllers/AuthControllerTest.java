@@ -156,4 +156,27 @@ class AuthControllerTest {
                 .andExpect(status().isServiceUnavailable())
                 .andExpect(jsonPath("$.erro").exists());
     }
+
+    @Test
+    void usuarioDesativadoNaoConsegueEntrar() throws Exception {
+        Usuario inativo = new Usuario("Ana", "ana@newe.com.br", passwordEncoder.encode(SENHA), Perfil.OPERADOR);
+        inativo.alterarAtivo(false);
+        when(repository.findByEmail("ana@newe.com.br")).thenReturn(Optional.of(inativo));
+
+        logar("ana@newe.com.br", SENHA)
+                .andExpect(status().isForbidden())
+                .andExpect(jsonPath("$.erro").value("Seu acesso está desativado. Fale com o gestor."))
+                .andExpect(jsonPath("$.token").doesNotExist());
+    }
+
+    @Test
+    void usuarioDesativadoComSenhaErradaRecebeAMensagemGenerica() throws Exception {
+        Usuario inativo = new Usuario("Ana", "ana@newe.com.br", passwordEncoder.encode(SENHA), Perfil.OPERADOR);
+        inativo.alterarAtivo(false);
+        when(repository.findByEmail("ana@newe.com.br")).thenReturn(Optional.of(inativo));
+
+        logar("ana@newe.com.br", "senha-errada")
+                .andExpect(status().isUnauthorized())
+                .andExpect(jsonPath("$.erro").value(MENSAGEM_GENERICA));
+    }
 }
