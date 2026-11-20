@@ -1,18 +1,17 @@
 import { apiFetch } from "../../../shared/api/apiFetch.ts";
-import type { RankingMotorista } from "../model/types";
+import type { FiltroRanking, RankingMotorista, ResultadoRankingMotoristas } from "../model/types";
 import { rankingDeDemonstracao } from "./rankingMotoristasMock.ts";
 
 /**
- * Ranking mensal de motoristas por rentabilidade média.
+ * Ranking mensal de motoristas. A ordenação vem pronta do backend.
  *
- * GET /api/operacional/motoristas/ranking?dataInicio=01/11/2026&dataFim=30/11/2026
+ * GET /api/operacional/motoristas/ranking?mes=2026-11&filtro=RENTABILIDADE
  *
- * Resposta: lista ordenada da melhor para a pior rentabilidade, sem posição
- * explícita — a posição é a ordem do array:
+ * Resposta inclui o ranking e os tipos encontrados no mês:
  *
  * ```json
- * [
- *   {
+ * {
+ *   "ranking": [{
  *     "posicao": 1,
  *     "motoristaId": 1,
  *     "nome": "João Silva",
@@ -21,12 +20,12 @@ import { rankingDeDemonstracao } from "./rankingMotoristasMock.ts";
  *     "veiculo": "Truck",
  *     "placa": "RTA4F21",
  *     "viagens": 22,
- *     "frequencia": 92.0,
  *     "rentabilidadeMedia": 12500.00,
- *     "frete": 18200.00,
+ *     "faturamento": 18200.00,
  *     "custos": 5700.00
- *   }
- * ]
+ *   }],
+ *   "tiposDisponiveis": ["TRUCK", "VAN"]
+ * }
  * ```
  */
 const ENDPOINT = "/api/operacional/motoristas/ranking";
@@ -65,21 +64,26 @@ function mapear(item: RankingMotorista): RankingMotorista {
     viagens: item.viagens,
     frequencia: numeroOuNulo(item.frequencia),
     rentabilidadeMedia: numeroOuNulo(item.rentabilidadeMedia),
-    frete: numeroOuNulo(item.frete),
+    faturamento: numeroOuNulo(item.faturamento),
+    rentabilidadeTotal: numeroOuNulo(item.rentabilidadeTotal),
     custos: numeroOuNulo(item.custos),
   };
 }
 
 export async function buscarRankingMotoristas(
-  dataInicio: string,
-  dataFim: string,
+  mes: string,
+  filtro: FiltroRanking = "RENTABILIDADE",
+  tipoVeiculo?: string,
   signal?: AbortSignal,
-): Promise<RankingMotorista[]> {
+): Promise<ResultadoRankingMotoristas> {
   if (RANKING_EM_DEMONSTRACAO) {
-    return rankingDeDemonstracao(dataInicio, signal);
+    return rankingDeDemonstracao(mes, filtro, tipoVeiculo, signal);
   }
 
-  const parametros = new URLSearchParams({ dataInicio, dataFim });
+  const parametros = new URLSearchParams({ mes, filtro });
+  if (filtro === "TIPO_VEICULO" && tipoVeiculo) {
+    parametros.set("tipoVeiculo", tipoVeiculo);
+  }
   const resposta = await apiFetch(`${ENDPOINT}?${parametros}`, { signal });
 
   if (!resposta.ok) {
@@ -87,9 +91,19 @@ export async function buscarRankingMotoristas(
   }
 
   const dados: unknown = await resposta.json();
-  if (!Array.isArray(dados) || !dados.every(validarItem)) {
+  if (dados === null || typeof dados !== "object") {
     throw new Error("A resposta do ranking está inválida.");
   }
 
-  return dados.map(mapear);
+  const resultado = dados as Partial<ResultadoRankingMotoristas>;
+  if (!Array.isArray(resultado.ranking) || !resultado.ranking.every(validarItem)
+      || !Array.isArray(resultado.tiposDisponiveis)
+      || !resultado.tiposDisponiveis.every((tipo) => typeof tipo === "string")) {
+    throw new Error("A resposta do ranking está inválida.");
+  }
+
+  return {
+    ranking: resultado.ranking.map(mapear),
+    tiposDisponiveis: resultado.tiposDisponiveis,
+  };
 }

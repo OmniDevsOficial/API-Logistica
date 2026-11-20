@@ -50,6 +50,7 @@ public class RankingMotoristaConsultaRepository {
             ) m ON true
             WHERE v.data >= ? AND v.data < ?
               AND NULLIF(TRIM(v.motorista), '') IS NOT NULL
+              AND (?::text IS NULL OR v.veiculo_tipo = ?)
             GROUP BY UPPER(TRIM(v.motorista))
             """.formatted(RentabilidadeService.EXPRESSAO_SQL);
 
@@ -63,7 +64,7 @@ public class RankingMotoristaConsultaRepository {
      * @param inicio       primeiro dia do período (incluso)
      * @param fimExclusivo primeiro dia após o período (excluído)
      */
-    public List<RankingMotoristaLinha> consultar(LocalDate inicio, LocalDate fimExclusivo) {
+    public List<RankingMotoristaLinha> consultar(LocalDate inicio, LocalDate fimExclusivo, String tipoVeiculo) {
         return jdbc.query(CONSULTA,
                 (rs, row) -> new RankingMotoristaLinha(
                         rs.getString("nome"),
@@ -76,6 +77,16 @@ public class RankingMotoristaConsultaRepository {
                         rs.getBigDecimal("frete"),
                         rs.getBigDecimal("custos"),
                         rs.getBigDecimal("rentabilidade_total")),
-                Date.valueOf(inicio), Date.valueOf(fimExclusivo));
+                Date.valueOf(inicio), Date.valueOf(fimExclusivo), tipoVeiculo, tipoVeiculo);
+    }
+
+    public List<String> tiposDisponiveis(LocalDate inicio, LocalDate fimExclusivo) {
+        return jdbc.queryForList("""
+                SELECT DISTINCT TRIM(v.veiculo_tipo)
+                FROM operacional.viagem v
+                WHERE v.data >= ? AND v.data < ?
+                  AND NULLIF(TRIM(v.veiculo_tipo), '') IS NOT NULL
+                ORDER BY TRIM(v.veiculo_tipo)
+                """, String.class, Date.valueOf(inicio), Date.valueOf(fimExclusivo));
     }
 }
