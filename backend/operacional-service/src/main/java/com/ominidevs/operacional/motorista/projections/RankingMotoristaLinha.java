@@ -14,7 +14,6 @@ import java.math.BigDecimal;
  * @param veiculo             tipo do veículo: cadastro, senão a última viagem
  * @param placa               placa do veículo: cadastro, senão a última viagem
  * @param quantidadeViagens   COUNT(*) das viagens do grupo no período
- * @param diasComViagem       COUNT(DISTINCT data) das viagens do grupo
  * @param frete               Σ receita_frete
  * @param custos              Σ vale_frete
  * @param rentabilidadeTotal  Σ (receita_frete − vale_frete), nulos ignorados
@@ -26,7 +25,6 @@ public record RankingMotoristaLinha(
         String veiculo,
         String placa,
         long quantidadeViagens,
-        long diasComViagem,
         BigDecimal frete,
         BigDecimal custos,
         BigDecimal rentabilidadeTotal) {}

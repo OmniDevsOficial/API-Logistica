@@ -36,7 +36,6 @@ public class RankingMotoristaConsultaRepository {
                    COALESCE(MIN(m.veiculo_placa),
                             (ARRAY_AGG(v.veiculo ORDER BY v.data DESC, v.id DESC))[1]) AS placa,
                    COUNT(*) AS quantidade_viagens,
-                   COUNT(DISTINCT v.data) AS dias_com_viagem,
                    COALESCE(SUM(v.receita_frete), 0) AS frete,
                    COALESCE(SUM(v.vale_frete), 0) AS custos,
                    COALESCE(SUM(%s), 0) AS rentabilidade_total
@@ -50,7 +49,7 @@ public class RankingMotoristaConsultaRepository {
             ) m ON true
             WHERE v.data >= ? AND v.data < ?
               AND NULLIF(TRIM(v.motorista), '') IS NOT NULL
-              AND (?::text IS NULL OR v.veiculo_tipo = ?)
+              AND (?::text IS NULL OR UPPER(TRIM(v.veiculo_tipo)) = UPPER(TRIM(?)))
             GROUP BY UPPER(TRIM(v.motorista))
             """.formatted(RentabilidadeService.EXPRESSAO_SQL);
 
@@ -73,7 +72,6 @@ public class RankingMotoristaConsultaRepository {
                         rs.getString("veiculo"),
                         rs.getString("placa"),
                         rs.getLong("quantidade_viagens"),
-                        rs.getLong("dias_com_viagem"),
                         rs.getBigDecimal("frete"),
                         rs.getBigDecimal("custos"),
                         rs.getBigDecimal("rentabilidade_total")),
@@ -82,11 +80,11 @@ public class RankingMotoristaConsultaRepository {
 
     public List<String> tiposDisponiveis(LocalDate inicio, LocalDate fimExclusivo) {
         return jdbc.queryForList("""
-                SELECT DISTINCT TRIM(v.veiculo_tipo)
+                SELECT DISTINCT UPPER(TRIM(v.veiculo_tipo))
                 FROM operacional.viagem v
                 WHERE v.data >= ? AND v.data < ?
                   AND NULLIF(TRIM(v.veiculo_tipo), '') IS NOT NULL
-                ORDER BY TRIM(v.veiculo_tipo)
+                ORDER BY UPPER(TRIM(v.veiculo_tipo))
                 """, String.class, Date.valueOf(inicio), Date.valueOf(fimExclusivo));
     }
 }

@@ -34,7 +34,7 @@ import com.ominidevs.operacional.motorista.dto.MotoristaResumoResponse;
 import com.ominidevs.operacional.motorista.dto.MotoristaResponseDTO;
 import com.ominidevs.operacional.motorista.dto.RankingMotoristaResponse;
 import com.ominidevs.operacional.motorista.dto.RankingMotoristasResultado;
-import com.ominidevs.operacional.motorista.services.FiltroRankingMotorista;
+import com.ominidevs.operacional.motorista.dto.FiltroRankingMotorista;
 import com.ominidevs.operacional.motorista.entities.StatusMotorista;
 import com.ominidevs.operacional.motorista.exceptions.MotoristaExceptionHandler;
 import com.ominidevs.operacional.motorista.exceptions.MotoristaNaoEncontradoException;
@@ -78,16 +78,16 @@ class MotoristaControllerTest {
 
         mvc.perform(get("/motoristas"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.ranking[0].id").value(1))
-                .andExpect(jsonPath("$.ranking[0].nome").value("Ana"))
-                .andExpect(jsonPath("$.ranking[0].cpf").value("00123456789"))
-                .andExpect(jsonPath("$.ranking[0].tipoVeiculo").value("Caminhão"))
-                .andExpect(jsonPath("$.ranking[0].placa").value("ABC1D23"))
-                .andExpect(jsonPath("$.ranking[0].status").value("DISPONIVEL"))
-                .andExpect(jsonPath("$.ranking[0].localizacao").value("Curitiba"))
-                .andExpect(jsonPath("$.ranking[0].ultimaOperacao").value("2026-09-10"))
-                .andExpect(jsonPath("$.ranking[0].previsaoDisponibilidade").doesNotExist())
-                .andExpect(jsonPath("$.ranking[0].quantidadeViagens").value(3));
+                .andExpect(jsonPath("$[0].id").value(1))
+                .andExpect(jsonPath("$[0].nome").value("Ana"))
+                .andExpect(jsonPath("$[0].cpf").value("00123456789"))
+                .andExpect(jsonPath("$[0].tipoVeiculo").value("Caminhão"))
+                .andExpect(jsonPath("$[0].placa").value("ABC1D23"))
+                .andExpect(jsonPath("$[0].status").value("DISPONIVEL"))
+                .andExpect(jsonPath("$[0].localizacao").value("Curitiba"))
+                .andExpect(jsonPath("$[0].ultimaOperacao").value("2026-09-10"))
+                .andExpect(jsonPath("$[0].previsaoDisponibilidade").doesNotExist())
+                .andExpect(jsonPath("$[0].quantidadeViagens").value(3));
     }
 
     @Test
@@ -329,15 +329,15 @@ class MotoristaControllerTest {
     }
 
     @Test
-    void deveAceitarFiltroTipoVeiculoComTipo() throws Exception {
-        when(rankingService.ranking(any(), eq(FiltroRankingMotorista.TIPO_VEICULO), eq("Truck")))
+    void deveCombinarOrdenacaoComTipoDeVeiculoNormalizado() throws Exception {
+        when(rankingService.ranking(any(), eq(FiltroRankingMotorista.FATURAMENTO), eq("Truck")))
                 .thenReturn(new RankingMotoristasResultado(List.of(), List.of("Truck")));
 
-        mvc.perform(get("/motoristas/ranking").param("filtro", "TIPO_VEICULO")
-                        .param("tipoVeiculo", "Truck"))
+        mvc.perform(get("/motoristas/ranking").param("filtro", "faturamento")
+                        .param("tipoVeiculo", " Truck "))
                 .andExpect(status().isOk());
 
-        verify(rankingService).ranking(any(), eq(FiltroRankingMotorista.TIPO_VEICULO), eq("Truck"));
+        verify(rankingService).ranking(any(), eq(FiltroRankingMotorista.FATURAMENTO), eq("Truck"));
     }
 
     @Test
@@ -348,13 +348,19 @@ class MotoristaControllerTest {
     }
 
     @Test
-    void deveRejeitarTipoAusenteOuComOutroFiltro() throws Exception {
-        mvc.perform(get("/motoristas/ranking").param("filtro", "TIPO_VEICULO"))
-                .andExpect(status().isBadRequest());
+    void deveAceitarTipoVeiculoIndependenteDaOrdenacao() throws Exception {
         mvc.perform(get("/motoristas/ranking").param("filtro", "VIAGENS")
                         .param("tipoVeiculo", "Truck"))
-                .andExpect(status().isBadRequest());
-        verifyNoInteractions(rankingService);
+                .andExpect(status().isOk());
+        verify(rankingService).ranking(any(), eq(FiltroRankingMotorista.VIAGENS), eq("Truck"));
+    }
+
+    @Test
+    void filtroVazioUsaRentabilidadeEIgnoraTipoEmBranco() throws Exception {
+        mvc.perform(get("/motoristas/ranking").param("filtro", "")
+                        .param("tipoVeiculo", "  "))
+                .andExpect(status().isOk());
+        verify(rankingService).ranking(any(), eq(FiltroRankingMotorista.RENTABILIDADE), isNull());
     }
 
     @ParameterizedTest

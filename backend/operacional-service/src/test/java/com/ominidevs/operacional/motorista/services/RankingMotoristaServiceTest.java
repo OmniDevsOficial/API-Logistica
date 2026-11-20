@@ -15,6 +15,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import com.ominidevs.operacional.indicadores.model.PeriodoConsulta;
+import com.ominidevs.operacional.motorista.dto.FiltroRankingMotorista;
 import com.ominidevs.operacional.motorista.dto.RankingMotoristaResponse;
 import com.ominidevs.operacional.motorista.projections.RankingMotoristaLinha;
 import com.ominidevs.operacional.motorista.repositories.RankingMotoristaConsultaRepository;
@@ -37,7 +38,7 @@ class RankingMotoristaServiceTest {
     private RankingMotoristaLinha linha(String nome, long viagens, long diasComViagem,
             String rentabilidadeTotal, String frete, String custos) {
         return new RankingMotoristaLinha(nome, 10, "00123456789", "Truck", "ABC1D23", viagens,
-                diasComViagem, new BigDecimal(frete), new BigDecimal(custos),
+                new BigDecimal(frete), new BigDecimal(custos),
                 new BigDecimal(rentabilidadeTotal));
     }
 
@@ -165,7 +166,7 @@ class RankingMotoristaServiceTest {
     @DisplayName("Repasse os identificadores do manifesto e deixa telefone nulo (sem coluna no banco)")
     void deveRepasseIdentificadoresDoManifesto() {
         RankingMotoristaLinha linha = new RankingMotoristaLinha("Ana", 7, "001.234.567-89",
-                "Truck", "ABC1D23", 5, 5, new BigDecimal("300.00"), new BigDecimal("500.00"),
+                "Truck", "ABC1D23", 5, new BigDecimal("300.00"), new BigDecimal("500.00"),
                 new BigDecimal("200.00"));
         devolver(linha);
 
@@ -187,9 +188,9 @@ class RankingMotoristaServiceTest {
     @DisplayName("CPF vazio ou incompleto vira null e a tela cai no traço")
     void deveDevolverCpfNuloQuandoInvalido() {
         devolver(
-                new RankingMotoristaLinha("Sem CPF", null, "  ", null, null, 1, 1,
+                new RankingMotoristaLinha("Sem CPF", null, "  ", null, null, 1,
                         BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO),
-                new RankingMotoristaLinha("Curto", null, "123", null, null, 1, 1,
+                new RankingMotoristaLinha("Curto", null, "123", null, null, 1,
                         BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO));
 
         List<RankingMotoristaResponse> ranking = service.ranking(FEVEREIRO_2026, FiltroRankingMotorista.RENTABILIDADE, null).ranking();

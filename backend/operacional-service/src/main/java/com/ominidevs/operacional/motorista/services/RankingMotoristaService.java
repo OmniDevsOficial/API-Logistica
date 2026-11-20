@@ -4,11 +4,13 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Locale;
 import java.util.stream.IntStream;
 
 import org.springframework.stereotype.Service;
 
 import com.ominidevs.operacional.indicadores.model.PeriodoConsulta;
+import com.ominidevs.operacional.motorista.dto.FiltroRankingMotorista;
 import com.ominidevs.operacional.motorista.dto.RankingMotoristaResponse;
 import com.ominidevs.operacional.motorista.dto.RankingMotoristasResultado;
 import com.ominidevs.operacional.motorista.projections.RankingMotoristaLinha;
@@ -51,9 +53,11 @@ public class RankingMotoristaService {
     }
 
     public RankingMotoristasResultado ranking(PeriodoConsulta periodo, FiltroRankingMotorista filtro, String tipoVeiculo) {
+        String tipoNormalizado = tipoVeiculo == null || tipoVeiculo.isBlank()
+                ? null : tipoVeiculo.trim().toUpperCase(Locale.ROOT);
         // [inicio, fim] do período vira o semiaberto [inicio, fim + 1) do SQL.
         List<RankingMotoristaLinha> linhas = repository.consultar(
-                periodo.inicio(), periodo.fim().plusDays(1), tipoVeiculo);
+                periodo.inicio(), periodo.fim().plusDays(1), tipoNormalizado);
         List<String> tiposDisponiveis = repository.tiposDisponiveis(periodo.inicio(), periodo.fim().plusDays(1));
 
         if (linhas.isEmpty()) {
@@ -61,7 +65,7 @@ public class RankingMotoristaService {
         }
 
         List<RankingMotoristaResponse> ordenado = linhas.stream()
-                .map(this::paraResponse)
+                .map(linha -> paraResponse(linha, tipoNormalizado))
                 .sorted(comparator(filtro))
                 .toList();
 
@@ -74,13 +78,13 @@ public class RankingMotoristaService {
 
     private Comparator<RankingMotoristaResponse> comparator(FiltroRankingMotorista filtro) {
         return switch (filtro) {
-            case RENTABILIDADE, TIPO_VEICULO -> POR_RENTABILIDADE;
+            case RENTABILIDADE -> POR_RENTABILIDADE;
             case FATURAMENTO -> POR_FATURAMENTO;
             case VIAGENS -> POR_VIAGENS;
         };
     }
 
-    private RankingMotoristaResponse paraResponse(RankingMotoristaLinha linha) {
+    private RankingMotoristaResponse paraResponse(RankingMotoristaLinha linha, String tipoVeiculo) {
         // Cada grupo nasce de pelo menos uma viagem, então o divisor nunca é zero.
         BigDecimal media = linha.rentabilidadeTotal()
                 .divide(BigDecimal.valueOf(linha.quantidadeViagens()), 2, RoundingMode.HALF_UP);
@@ -90,7 +94,7 @@ public class RankingMotoristaService {
                 linha.nome(),
                 normalizarCpf(linha.cpf()),
                 null,
-                linha.veiculo(),
+                tipoVeiculo == null ? linha.veiculo() : tipoVeiculo,
                 linha.placa(),
                 linha.quantidadeViagens(),
                 linha.quantidadeViagens(),

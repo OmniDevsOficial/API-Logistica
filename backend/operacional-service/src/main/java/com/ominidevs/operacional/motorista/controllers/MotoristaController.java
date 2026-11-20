@@ -3,6 +3,7 @@ package com.ominidevs.operacional.motorista.controllers;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -11,11 +12,13 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
 
 import com.ominidevs.operacional.indicadores.dto.UtilizacaoMotoristaResponse;
 import com.ominidevs.operacional.indicadores.exceptions.IndicadorInvalidoException;
 import com.ominidevs.operacional.indicadores.model.PeriodoConsulta;
 import com.ominidevs.operacional.indicadores.services.UtilizacaoService;
+import com.ominidevs.operacional.motorista.dto.FiltroRankingMotorista;
 import com.ominidevs.operacional.motorista.dto.MotoristaResumoResponse;
 import com.ominidevs.operacional.motorista.dto.MotoristaResponseDTO;
 import com.ominidevs.operacional.motorista.dto.RankingMotoristasResultado;
@@ -23,9 +26,6 @@ import com.ominidevs.operacional.motorista.dto.StatusMotoristaRequest;
 import com.ominidevs.operacional.motorista.entities.StatusMotorista;
 import com.ominidevs.operacional.motorista.services.MotoristaService;
 import com.ominidevs.operacional.motorista.services.RankingMotoristaService;
-import com.ominidevs.operacional.motorista.services.FiltroRankingMotorista;
-import org.springframework.web.server.ResponseStatusException;
-import org.springframework.http.HttpStatus;
 
 @CrossOrigin(origins = "http://localhost:5173")
 @RestController
@@ -83,6 +83,8 @@ public class MotoristaController {
      *
      * Ex.: GET /motoristas/ranking?mes=2026-02
      *      GET /motoristas/ranking?dataInicio=01/11/2026&dataFim=30/11/2026
+     * {@code filtro} aceita RENTABILIDADE (padrão), FATURAMENTO ou VIAGENS;
+     * {@code tipoVeiculo} é opcional e pode ser combinado com qualquer ordenação.
      */
     @GetMapping("/ranking")
     public ResponseEntity<RankingMotoristasResultado> ranking(
@@ -94,18 +96,14 @@ public class MotoristaController {
     ) {
         FiltroRankingMotorista filtroRanking;
         try {
-            filtroRanking = filtro == null ? FiltroRankingMotorista.RENTABILIDADE
-                    : FiltroRankingMotorista.valueOf(filtro);
+            filtroRanking = filtro == null || filtro.isBlank() ? FiltroRankingMotorista.RENTABILIDADE
+                    : FiltroRankingMotorista.valueOf(filtro.trim().toUpperCase(java.util.Locale.ROOT));
         } catch (IllegalArgumentException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Filtro de ranking inválido");
         }
-        boolean filtroPorTipo = filtroRanking == FiltroRankingMotorista.TIPO_VEICULO;
-        if (filtroPorTipo != (tipoVeiculo != null && !tipoVeiculo.isBlank())) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-                    "tipoVeiculo é obrigatório somente com filtro TIPO_VEICULO");
-        }
+        String tipoNormalizado = tipoVeiculo == null || tipoVeiculo.isBlank() ? null : tipoVeiculo.trim();
         return ResponseEntity.ok(rankingService.ranking(
-                periodoRanking(mes, dataInicio, dataFim), filtroRanking, tipoVeiculo));
+                periodoRanking(mes, dataInicio, dataFim), filtroRanking, tipoNormalizado));
     }
 
     @PatchMapping("/{id}/status")
