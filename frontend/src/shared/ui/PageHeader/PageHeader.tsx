@@ -8,12 +8,13 @@ export interface PageHeaderProps {
   notificacoes?: ReactNode;
   /** Ações da página (ex.: botão de importação), exibidas antes dos ícones. */
   acoes?: ReactNode;
+  perfil?: ReactNode;
 }
 
 const ICON_BUTTON_CLASS =
   "flex h-10 w-10 shrink-0 cursor-pointer items-center justify-center rounded-full bg-surface text-fg hover:text-fg-muted";
 
-export function PageHeader({ title, onMenuClick, notificacoes, acoes }: PageHeaderProps) {
+export function PageHeader({ title, onMenuClick, notificacoes, acoes, perfil }: PageHeaderProps) {
   const escuro = useTema() === "escuro";
 
   return (
@@ -50,9 +51,11 @@ export function PageHeader({ title, onMenuClick, notificacoes, acoes }: PageHead
             <Bell size={18} />
           </button>
         )}
-        <div className="flex h-10 w-10 items-center justify-center rounded-full bg-border text-fg-muted">
-          <User size={18} />
-        </div>
+        {perfil ?? (
+          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-border text-fg-muted">
+            <User size={18} />
+          </div>
+        )}
       </div>
     </div>
   );

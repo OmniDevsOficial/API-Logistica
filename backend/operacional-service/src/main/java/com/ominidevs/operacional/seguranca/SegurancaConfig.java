@@ -15,6 +15,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.config.Customizer;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -35,6 +36,7 @@ import jakarta.servlet.http.HttpServletResponse;
 
 @Configuration
 @EnableWebSecurity
+@EnableMethodSecurity
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
 public class SegurancaConfig {
 
@@ -58,11 +60,12 @@ public class SegurancaConfig {
                 .authorizeHttpRequests(regras -> regras
                         .dispatcherTypeMatchers(DispatcherType.ERROR).permitAll()
                         // Operador só consulta a equipe; alterar o status continua exclusivo do gestor.
-                        .requestMatchers(HttpMethod.GET, "/motoristas", "/motoristas/resumo")
+                        .requestMatchers(HttpMethod.GET, "/motoristas", "/motoristas/resumo", "/motoristas/*/viagens")
                         .hasAnyRole(GESTOR, OPERADOR)
                         .requestMatchers("/dashboard/**", "/indicadores/**", "/motoristas/**").hasRole(GESTOR)
                         .requestMatchers("/viagens/rentabilidade/motoristas").hasRole(GESTOR)
                         .requestMatchers("/viagens/**").hasAnyRole(GESTOR, OPERADOR)
+                        .requestMatchers(HttpMethod.GET, "/veiculos/frota", "/veiculos/resumo").hasRole(GESTOR)
                         // Gestor e operador consultam e importam a frota.
                         .requestMatchers("/veiculos", "/veiculos/**").hasAnyRole(GESTOR, OPERADOR)
                         // Tela Registros: quem também pode importar vê o histórico.

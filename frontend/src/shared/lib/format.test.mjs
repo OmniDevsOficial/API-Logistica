@@ -1,7 +1,7 @@
 // Node: node --test src/shared/lib/format.test.mjs
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { formatDateOrToday, formatCpf, formatFrequencia, formatTipoVeiculo } from './format.ts';
+import { formatDateOrToday, formatCpf, formatFrequencia, formatIsoDate, formatTipoVeiculo } from './format.ts';
 
 const HOJE = new Date(2026, 9, 21);
 
@@ -44,4 +44,15 @@ test('tipo de veículo preserva siglas e trata vazio como ausente', () => {
   assert.equal(formatTipoVeiculo('Van'), 'Van');
   assert.equal(formatTipoVeiculo(''), null);
   assert.equal(formatTipoVeiculo(null), null);
+});
+
+test('data da API em AAAA-MM-DD sai como dd/mm/aaaa sem passar pelo fuso', () => {
+  assert.equal(formatIsoDate('2026-10-01'), '01/10/2026');
+  assert.equal(formatIsoDate('2026-12-31'), '31/12/2026');
+});
+
+test('data ausente ou fora do formato vira travessão', () => {
+  assert.equal(formatIsoDate(null), '—');
+  assert.equal(formatIsoDate(''), '—');
+  assert.equal(formatIsoDate('01/10/2026'), '—');
 });

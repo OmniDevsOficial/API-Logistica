@@ -1,6 +1,7 @@
 package com.ominidevs.operacional.veiculo.services;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -46,6 +47,7 @@ public class ImportacaoVeiculoService {
     private static final int TAMANHO_MAXIMO_TIPO = 50;
     private static final int TAMANHO_MAXIMO_NOME = 255;
     private static final int TAMANHO_MAXIMO_MARCA_MODELO = 100;
+    private static final int TAMANHO_MAXIMO_COMBUSTIVEL = 50;
 
     private final LeitorCsvVeiculo leitor;
     private final VeiculoRepository veiculoRepository;
@@ -108,6 +110,7 @@ public class ImportacaoVeiculoService {
         int atualizados = 0;
         int ignorados = 0;
         int semMotorista = 0;
+        LocalDateTime importadoEm = LocalDateTime.now();
 
         for (LinhaCsvVeiculo linha : validas) {
             Veiculo veiculo = existentes.get(linha.placa());
@@ -133,6 +136,7 @@ public class ImportacaoVeiculoService {
                     ignorados++;
                 }
             }
+            veiculo.setAtualizadoEm(importadoEm);
             veiculos.add(veiculo);
         }
 
@@ -162,7 +166,14 @@ public class ImportacaoVeiculoService {
      * coluna "Marca", por exemplo, a marca antiga é mantida e não conta como
      * mudança.
      */
-    private record EstadoAnterior(String tipo, String marca, String modelo, Boolean ativo, Integer motoristaId) {
+    private record EstadoAnterior(
+            String tipo,
+            String marca,
+            String modelo,
+            Boolean ativo,
+            Integer motoristaId,
+            String combustivel,
+            Map<String, String> dadosAdicionais) {
 
         static EstadoAnterior de(Veiculo veiculo) {
             Motorista motorista = veiculo.getMotorista();
@@ -171,7 +182,9 @@ public class ImportacaoVeiculoService {
                     veiculo.getMarca(),
                     veiculo.getModelo(),
                     veiculo.getAtivo(),
-                    motorista == null ? null : motorista.getId());
+                    motorista == null ? null : motorista.getId(),
+                    veiculo.getCombustivel(),
+                    new HashMap<>(veiculo.getDadosAdicionais()));
         }
 
         boolean mudou(Veiculo veiculo, PlanilhaVeiculos planilha) {
@@ -181,7 +194,10 @@ public class ImportacaoVeiculoService {
                     || !Objects.equals(motoristaId, idAtual)
                     || (planilha.possuiMarca() && !Objects.equals(marca, veiculo.getMarca()))
                     || (planilha.possuiModelo() && !Objects.equals(modelo, veiculo.getModelo()))
-                    || (planilha.possuiStatus() && !Objects.equals(ativo, veiculo.getAtivo()));
+                    || (planilha.possuiStatus() && !Objects.equals(ativo, veiculo.getAtivo()))
+                    || (planilha.possuiCombustivel() && !Objects.equals(combustivel, veiculo.getCombustivel()))
+                    || (planilha.possuiDadosAdicionais()
+                            && !Objects.equals(dadosAdicionais, veiculo.getDadosAdicionais()));
         }
     }
 
@@ -267,6 +283,17 @@ public class ImportacaoVeiculoService {
                 avisos.add(new OcorrenciaLinhaVeiculo(linha.numero(), linha.placa(),
                         "Status do veículo \"" + linha.status() + "\" não reconhecido. Use Ativo ou Inativo."));
             }
+        }
+        if (planilha.possuiCombustivel()) {
+            if (linha.combustivel() == null || linha.combustivel().length() <= TAMANHO_MAXIMO_COMBUSTIVEL) {
+                veiculo.setCombustivel(linha.combustivel());
+            } else {
+                avisos.add(new OcorrenciaLinhaVeiculo(linha.numero(), linha.placa(),
+                        "Combustível excede " + TAMANHO_MAXIMO_COMBUSTIVEL + " caracteres e não foi gravado."));
+            }
+        }
+        if (planilha.possuiDadosAdicionais()) {
+            veiculo.setDadosAdicionais(linha.dadosAdicionais());
         }
     }
 

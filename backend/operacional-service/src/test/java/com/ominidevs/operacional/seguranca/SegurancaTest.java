@@ -16,12 +16,14 @@ import com.ominidevs.operacional.importacao.controllers.ImportacaoController;
 import com.ominidevs.operacional.importacao.services.ImportacaoHistoricoService;
 import com.ominidevs.operacional.dashboard.services.DashboardService;
 import com.ominidevs.operacional.motorista.controllers.MotoristaController;
+import com.ominidevs.operacional.motorista.services.HistoricoViagemService;
 import com.ominidevs.operacional.motorista.services.MotoristaService;
 import com.ominidevs.operacional.motorista.services.RankingMotoristaService;
 import com.ominidevs.operacional.viagem.controllers.ViagemController;
 import com.ominidevs.operacional.viagem.services.ViagemService;
 import com.ominidevs.operacional.indicadores.services.UtilizacaoService;
 import com.ominidevs.operacional.veiculo.controllers.VeiculoController;
+import com.ominidevs.operacional.veiculo.services.FrotaService;
 import com.ominidevs.operacional.veiculo.services.ImportacaoVeiculoService;
 import com.ominidevs.operacional.veiculo.services.VeiculoConsultaService;
 
@@ -59,6 +61,9 @@ class SegurancaTest {
     private RankingMotoristaService rankingMotoristaService;
 
     @MockitoBean
+    private HistoricoViagemService historicoViagemService;
+
+    @MockitoBean
     private UtilizacaoService utilizacaoService;
 
     @MockitoBean
@@ -69,6 +74,9 @@ class SegurancaTest {
 
     @MockitoBean
     private ImportacaoHistoricoService importacaoHistoricoService;
+
+    @MockitoBean
+    private FrotaService frotaService;
 
     private MockHttpServletRequestBuilder dashboard() {
         return get("/dashboard").param("dataInicio", "01/09/2026").param("dataFim", "30/09/2026");
@@ -132,6 +140,22 @@ class SegurancaTest {
                 .andExpect(status().isOk());
         mvc.perform(get("/motoristas/resumo").header(HttpHeaders.AUTHORIZATION, token))
                 .andExpect(status().isOk());
+    }
+
+    @Test
+    void operadorEGestorConsultamOHistoricoDeViagens() throws Exception {
+        mvc.perform(get("/motoristas/1/viagens")
+                        .header(HttpHeaders.AUTHORIZATION, bearer(TokensDeTeste.valido("OPERADOR"))))
+                .andExpect(status().isOk());
+        mvc.perform(get("/motoristas/1/viagens")
+                        .header(HttpHeaders.AUTHORIZATION, bearer(TokensDeTeste.valido("GESTOR"))))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    void historicoDeViagensSemTokenRetorna401() throws Exception {
+        mvc.perform(get("/motoristas/1/viagens"))
+                .andExpect(status().isUnauthorized());
     }
 
     @Test
@@ -296,6 +320,30 @@ class SegurancaTest {
     @Test
     void semTokenNaoConsultaOHistoricoDeImportacoes() throws Exception {
         mvc.perform(get("/importacoes")).andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    void gestorConsultaFrotaEResumo() throws Exception {
+        for (String rota : new String[] {"/veiculos/frota", "/veiculos/resumo"}) {
+            mvc.perform(get(rota).header(HttpHeaders.AUTHORIZATION, bearer(TokensDeTeste.valido("GESTOR"))))
+                    .andExpect(status().isOk());
+        }
+    }
+
+    @Test
+    void operadorNaoConsultaFrotaNemResumo() throws Exception {
+        for (String rota : new String[] {"/veiculos/frota", "/veiculos/resumo"}) {
+            mvc.perform(get(rota).header(HttpHeaders.AUTHORIZATION, bearer(TokensDeTeste.valido("OPERADOR"))))
+                    .andExpect(status().isForbidden())
+                    .andExpect(jsonPath("$.erro").value("Seu perfil não tem permissão para acessar este recurso."));
+        }
+    }
+
+    @Test
+    void semTokenNaoConsultaFrotaNemResumo() throws Exception {
+        for (String rota : new String[] {"/veiculos/frota", "/veiculos/resumo"}) {
+            mvc.perform(get(rota)).andExpect(status().isUnauthorized());
+        }
     }
 
     private static MockMultipartFile csvVeiculos() {
