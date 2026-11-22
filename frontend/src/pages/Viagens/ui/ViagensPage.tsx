@@ -1,5 +1,4 @@
 import { useEffect, useMemo, useState } from "react";
-import type { PeriodOption } from "@entities/dashboard-metrics";
 import {
   getViagensData,
   type ViagensData,
@@ -14,18 +13,30 @@ import { filtroVazio } from "@/widgets/viagens-topbar/model/types";
 import {
   deslocarReferencia,
   intervaloDoPeriodo,
+  usePeriodoSalvo,
+  type PeriodoSalvo,
   podeAvancarPeriodo,
 } from "@features/period-filter";
 import { formatDateRange } from "@shared/lib";
 import { viagensNoPeriodo } from "../lib/viagensNoPeriodo";
 
 export function ViagensPage() {
+  const periodoSalvo = usePeriodoSalvo("viagens");
+  if (!periodoSalvo.pronto) return null;
+  return <ViagensConteudo periodoSalvo={periodoSalvo} />;
+}
+
+function ViagensConteudo({ periodoSalvo }: { periodoSalvo: PeriodoSalvo }) {
+  const {
+    periodo: period,
+    setPeriodo: setPeriod,
+    referencia,
+    setReferencia,
+  } = periodoSalvo;
   const [data, setData] = useState<ViagensData | null>(null);
   const [erro, setErro] = useState(false);
   const [search, setSearch] = useState("");
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [period, setPeriod] = useState<PeriodOption>("mes");
-  const [referencia, setReferencia] = useState(() => new Date());
   const intervalo = useMemo(
     () => intervaloDoPeriodo(period, referencia),
     [period, referencia],

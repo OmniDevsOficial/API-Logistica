@@ -27,6 +27,13 @@ public class MotoristaExceptionHandler {
                 .body(Map.of("erro", ex.getMessage()));
     }
 
+    @ExceptionHandler(PaginacaoInvalidaException.class)
+    public ResponseEntity<Map<String, String>> paginacaoInvalida(PaginacaoInvalidaException ex) {
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(Map.of("erro", ex.getMessage()));
+    }
+
     @ExceptionHandler(IndicadorInvalidoException.class)
     public ResponseEntity<Map<String, String>> periodoInvalido(IndicadorInvalidoException ex) {
         return ResponseEntity

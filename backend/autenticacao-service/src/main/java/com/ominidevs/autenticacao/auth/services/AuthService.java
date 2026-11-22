@@ -12,6 +12,7 @@ import com.ominidevs.autenticacao.auth.dto.UsuarioAutenticadoResponse;
 import com.ominidevs.autenticacao.auth.entities.Usuario;
 import com.ominidevs.autenticacao.auth.exceptions.CredenciaisInvalidasException;
 import com.ominidevs.autenticacao.auth.exceptions.TokenInvalidoException;
+import com.ominidevs.autenticacao.auth.exceptions.UsuarioInativoException;
 import com.ominidevs.autenticacao.auth.repositories.UsuarioRepository;
 
 @Service
@@ -46,6 +47,9 @@ public class AuthService {
 
         if (usuario.isEmpty() || !senhaConfere) {
             throw new CredenciaisInvalidasException();
+        }
+        if (!usuario.get().isAtivo()) {
+            throw new UsuarioInativoException();
         }
 
         return new LoginResponse(tokenService.gerar(usuario.get()));

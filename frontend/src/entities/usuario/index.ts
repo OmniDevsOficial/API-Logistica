@@ -5,6 +5,7 @@ export type {
   Usuario,
 } from "./model/types";
 export {
+  alterarStatusUsuario,
   cadastrarUsuario,
   ErroCadastroUsuario,
   listarUsuarios,
@@ -15,3 +16,7 @@ export { formatarDataCriacao } from "./lib/formatarDataCriacao";
 export { resumirUsuarios, type ResumoUsuarios } from "./lib/resumoUsuarios";
 export { PerfilBadge } from "./ui/PerfilBadge";
 export { StatusUsuarioBadge } from "./ui/StatusUsuarioBadge";
+export {
+  avisarUsuarioCadastrado,
+  EVENTO_USUARIO_CADASTRADO,
+} from "./lib/avisoUsuarioCadastrado";

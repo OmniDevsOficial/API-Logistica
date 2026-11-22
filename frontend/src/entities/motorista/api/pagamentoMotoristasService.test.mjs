@@ -26,6 +26,21 @@ test('consulta a API com o mês no formato AAAA-MM', async () => {
   assert.equal(new URLSearchParams(consulta).get('mes'), '2026-08');
 });
 
+test('consulta a API com dataInicio e dataFim quando recebe um intervalo', async () => {
+  let urlChamado = '';
+  globalThis.fetch = async (url) => {
+    urlChamado = String(url);
+    return resposta([itemDaApi]);
+  };
+
+  await buscarPagamentoMotoristas({ dataInicio: '22/11/2026', dataFim: '22/11/2026' });
+
+  const parametros = new URLSearchParams(urlChamado.split('?')[1]);
+  assert.equal(parametros.get('dataInicio'), '22/11/2026');
+  assert.equal(parametros.get('dataFim'), '22/11/2026');
+  assert.equal(parametros.has('mes'), false);
+});
+
 test('converte valorAPagar em número e mantém CPF nulo', async () => {
   globalThis.fetch = async () => resposta([
     { ...itemDaApi, valorAPagar: '37212.00' },

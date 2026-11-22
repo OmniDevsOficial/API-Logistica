@@ -1,11 +1,12 @@
 import { Search } from "lucide-react";
 import type { PeriodOption } from "@entities/dashboard-metrics";
 import { NavegacaoPeriodo, PeriodFilter } from "@features/period-filter";
-import { SinoNotificacoes } from "@features/alerta-utilizacao";
+import { SinoNotificacoes } from "@features/notificacoes";
 import { PageHeader } from "@shared/ui";
 import { FiltrarViagensButton } from "./FiltrarViagensButton";
 import type { Viagem } from "@/entities/viagem";
 import type { FiltroViagens } from "../model/types";
+import { MenuPerfil } from "@features/menu-perfil";
 
 interface ViagensTopbarProps {
   search: string;
@@ -49,7 +50,9 @@ export function ViagensTopbar({
     <header className="mb-7 flex flex-col gap-5">
       <PageHeader
         title="Viagens"
+        subtitle="Lista de viagens realizadas, com origem, destino e status"
         onMenuClick={onMenuClick}
+        perfil={<MenuPerfil />}
         notificacoes={<SinoNotificacoes />}
       />
 

@@ -1,12 +1,13 @@
 import { useState } from "react";
 import { Navigate, useParams } from "react-router-dom";
 import { rotaInicial, useSessao } from "@entities/sessao";
-import { SinoNotificacoes } from "@features/alerta-utilizacao";
+import { SinoNotificacoes } from "@features/notificacoes";
 import { Sidebar } from "@widgets/sidebar";
 import { PageHeader } from "@shared/ui";
 import { SECOES_ADMINISTRACAO } from "../config/secoes";
 import { secaoPermitida, secoesDoPerfil } from "../lib/secoesDoPerfil";
 import { NavegacaoSecoes } from "./NavegacaoSecoes";
+import { MenuPerfil } from "@features/menu-perfil";
 
 export function AdministracaoPage() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -33,7 +34,9 @@ export function AdministracaoPage() {
         <header className="mb-7">
           <PageHeader
             title="Administração"
+            subtitle="Gestão dos usuários do sistema"
             onMenuClick={() => setSidebarOpen(true)}
+            perfil={<MenuPerfil />}
             notificacoes={<SinoNotificacoes />}
           />
         </header>

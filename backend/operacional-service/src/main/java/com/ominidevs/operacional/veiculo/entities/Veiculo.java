@@ -1,8 +1,14 @@
 package com.ominidevs.operacional.veiculo.entities;
 
+import java.time.LocalDateTime;
+import java.util.Map;
+
+import org.hibernate.annotations.ColumnTransformer;
+
 import com.ominidevs.operacional.motorista.entities.Motorista;
 
 import jakarta.persistence.Column;
+import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -43,6 +49,17 @@ public class Veiculo {
     /** "Status do Veículo" da planilha: ativo ou inativo; {@code null} se não informado. */
     @Column(name = "status")
     private Boolean ativo;
+
+    @Column(name = "combustivel", length = 50)
+    private String combustivel;
+
+    @Column(name = "atualizado_em")
+    private LocalDateTime atualizadoEm;
+
+    @Convert(converter = DadosAdicionaisConverter.class)
+    @ColumnTransformer(write = "?::jsonb")
+    @Column(name = "dados_adicionais", columnDefinition = "jsonb")
+    private Map<String, String> dadosAdicionais;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "motorista_id")
@@ -98,6 +115,30 @@ public class Veiculo {
 
     public void setAtivo(Boolean ativo) {
         this.ativo = ativo;
+    }
+
+    public String getCombustivel() {
+        return combustivel;
+    }
+
+    public void setCombustivel(String combustivel) {
+        this.combustivel = combustivel;
+    }
+
+    public LocalDateTime getAtualizadoEm() {
+        return atualizadoEm;
+    }
+
+    public void setAtualizadoEm(LocalDateTime atualizadoEm) {
+        this.atualizadoEm = atualizadoEm;
+    }
+
+    public Map<String, String> getDadosAdicionais() {
+        return dadosAdicionais == null ? Map.of() : dadosAdicionais;
+    }
+
+    public void setDadosAdicionais(Map<String, String> dadosAdicionais) {
+        this.dadosAdicionais = dadosAdicionais;
     }
 
     public Motorista getMotorista() {

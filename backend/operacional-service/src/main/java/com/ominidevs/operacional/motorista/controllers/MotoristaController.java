@@ -3,6 +3,7 @@ package com.ominidevs.operacional.motorista.controllers;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -11,16 +12,21 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
 
 import com.ominidevs.operacional.indicadores.dto.UtilizacaoMotoristaResponse;
 import com.ominidevs.operacional.indicadores.exceptions.IndicadorInvalidoException;
 import com.ominidevs.operacional.indicadores.model.PeriodoConsulta;
 import com.ominidevs.operacional.indicadores.services.UtilizacaoService;
+import com.ominidevs.operacional.motorista.dto.FiltroRankingMotorista;
 import com.ominidevs.operacional.motorista.dto.MotoristaResumoResponse;
 import com.ominidevs.operacional.motorista.dto.MotoristaResponseDTO;
+import com.ominidevs.operacional.motorista.dto.RankingMotoristasResultado;
+import com.ominidevs.operacional.motorista.dto.PaginaHistoricoViagensResponse;
 import com.ominidevs.operacional.motorista.dto.RankingMotoristaResponse;
 import com.ominidevs.operacional.motorista.dto.StatusMotoristaRequest;
 import com.ominidevs.operacional.motorista.entities.StatusMotorista;
+import com.ominidevs.operacional.motorista.services.HistoricoViagemService;
 import com.ominidevs.operacional.motorista.services.MotoristaService;
 import com.ominidevs.operacional.motorista.services.RankingMotoristaService;
 
@@ -32,15 +38,18 @@ public class MotoristaController {
     private final MotoristaService service;
     private final UtilizacaoService utilizacaoService;
     private final RankingMotoristaService rankingService;
+    private final HistoricoViagemService historicoService;
 
     public MotoristaController(
             MotoristaService service,
             UtilizacaoService utilizacaoService,
-            RankingMotoristaService rankingService
+            RankingMotoristaService rankingService,
+            HistoricoViagemService historicoService
     ) {
         this.service = service;
         this.utilizacaoService = utilizacaoService;
         this.rankingService = rankingService;
+        this.historicoService = historicoService;
     }
 
     @GetMapping("/ping")
@@ -80,14 +89,40 @@ public class MotoristaController {
      *
      * Ex.: GET /motoristas/ranking?mes=2026-02
      *      GET /motoristas/ranking?dataInicio=01/11/2026&dataFim=30/11/2026
+     * {@code filtro} aceita RENTABILIDADE (padrão), FATURAMENTO ou VIAGENS;
+     * {@code tipoVeiculo} é opcional e pode ser combinado com qualquer ordenação.
      */
     @GetMapping("/ranking")
-    public ResponseEntity<List<RankingMotoristaResponse>> ranking(
+    public ResponseEntity<RankingMotoristasResultado> ranking(
             @RequestParam(required = false) String mes,
             @RequestParam(required = false) String dataInicio,
-            @RequestParam(required = false) String dataFim
+            @RequestParam(required = false) String dataFim,
+            @RequestParam(required = false) String filtro,
+            @RequestParam(required = false) String tipoVeiculo
     ) {
-        return ResponseEntity.ok(rankingService.ranking(periodoRanking(mes, dataInicio, dataFim)));
+        FiltroRankingMotorista filtroRanking;
+        try {
+            filtroRanking = filtro == null ? FiltroRankingMotorista.RENTABILIDADE
+                    : FiltroRankingMotorista.valueOf(filtro);
+        } catch (IllegalArgumentException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Filtro de ranking inválido");
+        }
+        boolean filtroPorTipo = filtroRanking == FiltroRankingMotorista.TIPO_VEICULO;
+        if (filtroPorTipo != (tipoVeiculo != null && !tipoVeiculo.isBlank())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    "tipoVeiculo é obrigatório somente com filtro TIPO_VEICULO");
+        }
+        return ResponseEntity.ok(rankingService.ranking(
+                periodoRanking(mes, dataInicio, dataFim), filtroRanking, tipoVeiculo));
+    }
+
+    @GetMapping("/{id}/viagens")
+    public ResponseEntity<PaginaHistoricoViagensResponse> historicoViagens(
+            @PathVariable Integer id,
+            @RequestParam(defaultValue = "0") int pagina,
+            @RequestParam(defaultValue = "10") int tamanho
+    ) {
+        return ResponseEntity.ok(historicoService.listar(id, pagina, tamanho));
     }
 
     @PatchMapping("/{id}/status")

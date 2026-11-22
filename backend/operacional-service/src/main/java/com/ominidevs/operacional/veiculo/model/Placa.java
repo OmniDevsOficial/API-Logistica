@@ -34,6 +34,13 @@ public final class Placa {
         return placa.isEmpty() ? null : placa;
     }
 
+    public static String formatar(String placaNormalizada) {
+        if (placaNormalizada == null || placaNormalizada.length() != 7) {
+            return placaNormalizada;
+        }
+        return placaNormalizada.substring(0, 3) + "-" + placaNormalizada.substring(3);
+    }
+
     /**
      * Indica se a placa normalizada segue o padrão antigo ou Mercosul.
      *
