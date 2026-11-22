@@ -9,7 +9,7 @@ function normalizarNome(nome: string): string {
   return nome.trim().normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLocaleLowerCase("pt-BR");
 }
 
-export function useRentabilidadeMotoristas() {
+export function useRentabilidadeMotoristas(habilitado = true) {
   const intervalo = useMemo(() => {
     const hoje = new Date();
     const primeiroDiaDoPeriodo = new Date(
@@ -32,6 +32,8 @@ export function useRentabilidadeMotoristas() {
   );
 
   useEffect(() => {
+    if (!habilitado) return;
+
     const controller = new AbortController();
 
     void buscarRentabilidadeMotoristas(
@@ -55,7 +57,7 @@ export function useRentabilidadeMotoristas() {
       });
 
     return () => controller.abort();
-  }, [intervalo]);
+  }, [intervalo, habilitado]);
 
   return rentabilidades;
 }

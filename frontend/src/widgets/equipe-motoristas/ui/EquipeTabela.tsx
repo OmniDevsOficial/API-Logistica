@@ -1,13 +1,21 @@
+import { useRef, useState } from "react";
 import type { MotoristaEquipe, StatusEquipe } from "@entities/motorista";
 import { StatusMotoristaBadge } from "@entities/motorista/ui/StatusMotoristaBadge";
 import type { VeiculoResumo } from "@entities/veiculo";
-import { formatCpf, formatDateOrToday, formatTipoVeiculo } from "@shared/lib";
+import {
+  formatCpf,
+  formatDateOrToday,
+  formatTipoVeiculo,
+  totalDePaginas,
+} from "@shared/lib";
+import { Paginacao } from "@shared/ui";
 import { ValorMonetario } from "@entities/sessao";
 
 interface EquipeTabelaProps {
   motoristas: MotoristaEquipe[];
   rentabilidades: Map<string, number | null>;
   chaveNomeMotorista: (nome: string) => string;
+  mostrarRentabilidade?: boolean;
   onStatusChange?: (id: number, novoStatus: StatusEquipe) => void;
   statusSalvando?: number | null;
   onMotoristaClick?: (motorista: MotoristaEquipe) => void;
@@ -16,6 +24,11 @@ interface EquipeTabelaProps {
 const HEADER_CELL =
   "whitespace-nowrap py-3 pr-6 text-left text-xs font-semibold text-fg-muted";
 const CELL = "py-4 pr-6 align-top";
+
+const MOTORISTAS_POR_PAGINA = 20;
+
+const LARGURAS_COM_RENTABILIDADE = ["18%", "16%", "14%", "14%", "8%", "15%", "15%"];
+const LARGURAS_SEM_RENTABILIDADE = ["22%", "20%", "16%", "16%", "10%", "16%"];
 
 const FORMATADOR_MOEDA = new Intl.NumberFormat("pt-BR", {
   style: "currency",
@@ -64,15 +77,41 @@ export function EquipeTabela({
   motoristas,
   rentabilidades,
   chaveNomeMotorista,
+  mostrarRentabilidade = true,
   onStatusChange,
   statusSalvando = null,
   onMotoristaClick,
 }: EquipeTabelaProps) {
+  const tabelaRef = useRef<HTMLDivElement>(null);
+  const [paginacao, setPaginacao] = useState({ lista: motoristas, pagina: 1 });
+  const totalPaginas = totalDePaginas(motoristas.length, MOTORISTAS_POR_PAGINA);
+  const pagina =
+    paginacao.lista === motoristas ? Math.min(paginacao.pagina, totalPaginas) : 1;
+  const inicio = (pagina - 1) * MOTORISTAS_POR_PAGINA;
+  const motoristasDaPagina = motoristas.slice(inicio, inicio + MOTORISTAS_POR_PAGINA);
+  const larguras = mostrarRentabilidade
+    ? LARGURAS_COM_RENTABILIDADE
+    : LARGURAS_SEM_RENTABILIDADE;
+
+  function mudarPagina(novaPagina: number) {
+    setPaginacao({ lista: motoristas, pagina: novaPagina });
+    const tabela = tabelaRef.current;
+    if (tabela && tabela.getBoundingClientRect().top < 0) {
+      tabela.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  }
+
   return (
-    <div className="overflow-hidden rounded-lg bg-surface">
-      <h2 className="px-6 pt-5 pb-4 text-lg font-semibold text-fg">
-        Equipe de motoristas
-      </h2>
+    <div ref={tabelaRef} className="scroll-mt-6 overflow-hidden rounded-lg bg-surface">
+      <div className="flex flex-wrap items-baseline justify-between gap-2 px-6 pt-5 pb-4">
+        <h2 className="text-lg font-semibold text-fg">Equipe de motoristas</h2>
+        {motoristas.length > 0 && (
+          <p className="text-sm tabular-nums text-fg-subtle">
+            {inicio + 1}–{inicio + motoristasDaPagina.length} de {motoristas.length}{" "}
+            {motoristas.length === 1 ? "motorista" : "motoristas"}
+          </p>
+        )}
+      </div>
 
       {motoristas.length === 0 ? (
         <p className="border-t border-border px-6 py-8 text-center text-sm text-fg-subtle">
@@ -80,15 +119,15 @@ export function EquipeTabela({
         </p>
       ) : (
         <div className="overflow-x-auto">
-          <table className="w-full min-w-[1000px] table-fixed">
+          <table
+            className={`w-full table-fixed ${
+              mostrarRentabilidade ? "min-w-[1000px]" : "min-w-[860px]"
+            }`}
+          >
             <colgroup>
-              <col className="w-[18%]" />
-              <col className="w-[16%]" />
-              <col className="w-[14%]" />
-              <col className="w-[14%]" />
-              <col className="w-[8%]" />
-              <col className="w-[15%]" />
-              <col className="w-[15%]" />
+              {larguras.map((largura, indice) => (
+                <col key={indice} style={{ width: largura }} />
+              ))}
             </colgroup>
             <thead>
               <tr className="border-y border-border">
@@ -97,13 +136,15 @@ export function EquipeTabela({
                 <th className={HEADER_CELL}>Operação</th>
                 <th className={HEADER_CELL}>Localização</th>
                 <th className={HEADER_CELL}>Viagens</th>
-                <th className={HEADER_CELL}>Rentabilidade média</th>
+                {mostrarRentabilidade && (
+                  <th className={HEADER_CELL}>Rentabilidade média</th>
+                )}
                 <th className={`${HEADER_CELL} text-right`}>Status</th>
               </tr>
             </thead>
 
             <tbody className="divide-y divide-border">
-              {motoristas.map((motorista) => {
+              {motoristasDaPagina.map((motorista) => {
                 const cpf = formatCpf(motorista.cpf);
                 const rentabilidade = rentabilidades.get(
                   chaveNomeMotorista(motorista.nome),
@@ -174,20 +215,21 @@ export function EquipeTabela({
                       </span>
                     </td>
 
-                    {/* Rentabilidade média — borrada para o operador */}
-                    <td className={CELL}>
-                      <ValorMonetario
-                        className={`whitespace-nowrap text-sm font-medium ${
-                          rentabilidade != null && rentabilidade < 0
-                            ? "text-red-600 dark:text-red-400"
-                            : "text-fg"
-                        }`}
-                      >
-                        {rentabilidade == null
-                          ? null
-                          : FORMATADOR_MOEDA.format(rentabilidade)}
-                      </ValorMonetario>
-                    </td>
+                    {mostrarRentabilidade && (
+                      <td className={CELL}>
+                        <ValorMonetario
+                          className={`whitespace-nowrap text-sm font-medium ${
+                            rentabilidade != null && rentabilidade < 0
+                              ? "text-red-600 dark:text-red-400"
+                              : "text-fg"
+                          }`}
+                        >
+                          {rentabilidade == null
+                            ? null
+                            : FORMATADOR_MOEDA.format(rentabilidade)}
+                        </ValorMonetario>
+                      </td>
+                    )}
 
                     {/* Status */}
                     <td
@@ -210,6 +252,16 @@ export function EquipeTabela({
               })}
             </tbody>
           </table>
+        </div>
+      )}
+
+      {totalPaginas > 1 && (
+        <div className="border-t border-border px-6 py-4">
+          <Paginacao
+            paginaAtual={pagina}
+            totalPaginas={totalPaginas}
+            onMudarPagina={mudarPagina}
+          />
         </div>
       )}
     </div>

@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 import { Sidebar } from "@widgets/sidebar";
 import { MotoristasTopbar, MotoristasList } from "@/widgets/motoristas-list";
-import { SinoNotificacoes } from "@features/alerta-utilizacao";
+import { SinoNotificacoes } from "@features/notificacoes";
 import { useMotoristasUtilizacao } from "../model/useMotoristasUtilizacao";
 import { intervaloDoPeriodo } from "../lib/intervaloDoPeriodo";
 

@@ -1,8 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { TipoImportacao } from "@entities/importacao";
-import { podeImportarVeiculos, useSessao } from "@entities/sessao";
 import {
-  BotaoUpload,
   EVENTO_IMPORTACAO_CONCLUIDA,
 } from "@features/importar-dados";
 import { Sidebar } from "@widgets/sidebar";
@@ -14,6 +12,8 @@ import { useImportacoes, type FiltroRegistros } from "../model/useImportacoes";
 import { CardUltimaImportacao } from "./CardUltimaImportacao";
 import { FiltrosImportacoes } from "./FiltrosImportacoes";
 import { TabelaImportacoes } from "./TabelaImportacoes";
+import { MenuPerfil } from "@/features/menu-perfil";
+import { SinoNotificacoes } from "@features/notificacoes";
 
 const IMPORTACOES_POR_PAGINA = 20;
 
@@ -49,7 +49,6 @@ function AvisoDeFalha({ fonte, onTentar }: { fonte: TipoImportacao; onTentar: ()
  */
 export function RegistrosPage() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const { usuario } = useSessao();
   const [filtro, setFiltro] = useState<FiltroRegistros>(FILTRO_INICIAL);
   const [busca, setBusca] = useState("");
   const listaRef = useRef<HTMLDivElement>(null);
@@ -95,8 +94,10 @@ export function RegistrosPage() {
         <header className="mb-7 flex flex-col gap-5">
           <PageHeader
             title="Registros"
+            subtitle="Histórico das importações de manifesto e de planilha de veículos"
             onMenuClick={() => setSidebarOpen(true)}
-            acoes={usuario && podeImportarVeiculos(usuario.perfil) ? <BotaoUpload /> : undefined}
+            perfil={<MenuPerfil />}
+            notificacoes={<SinoNotificacoes />}
           />
         </header>
 

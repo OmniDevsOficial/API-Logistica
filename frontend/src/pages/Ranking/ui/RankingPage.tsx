@@ -1,5 +1,4 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { Search } from "lucide-react";
 import { useSearchParams } from "react-router-dom";
 import type { FiltroRanking, RankingMotorista } from "@entities/motorista";
 import { faturamentoDoMotorista, indexarFaturamento } from "@entities/motorista";
@@ -8,20 +7,17 @@ import { formatTipoVeiculo } from "@shared/lib";
 import { Sidebar } from "@widgets/sidebar";
 import { RankingList } from "@widgets/ranking-list";
 import { RankingPodium } from "@widgets/ranking-podium";
-import { SinoNotificacoes } from "@features/alerta-utilizacao";
+import { RankingTopbar } from "@widgets/ranking-topbar";
 import { ModalHistoricoViagens } from "@features/historico-viagens";
 import {
-  NavegacaoPeriodo,
   deslocarReferencia,
   podeAvancarPeriodo,
 } from "@features/period-filter";
-import { PageHeader } from "@shared/ui";
 import { distribuirRanking } from "../lib/distribuirRanking";
 import { mesDaReferencia, rotuloMes } from "../lib/rotuloMes";
 import { useRankingMotoristas } from "../model/useRankingMotoristas";
 import { usePagamentoMotoristas } from "../model/usePagamentoMotoristas";
 import { FiltroRanking as FiltroRankingButton } from "./FiltroRanking";
-import { MenuPerfil } from "@features/menu-perfil";
 
 interface MotoristaSelecionado {
   id: number;
@@ -62,6 +58,9 @@ function combinaComABusca(motorista: RankingMotorista, termo: string): boolean {
 export function RankingPage() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [busca, setBusca] = useState("");
+  const [motoristaHistorico, setMotoristaHistorico] =
+    useState<MotoristaSelecionado | null>(null);
+  const [historicoAberto, setHistoricoAberto] = useState(false);
   const [searchParams, setSearchParams] = useSearchParams();
   const filtroParam = searchParams.get("filtro");
   const tipoParam = searchParams.get("tipoVeiculo");
@@ -148,46 +147,25 @@ export function RankingPage() {
       <Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
 
       <main className="min-w-0 px-4 py-6 sm:px-10 sm:py-8 lg:ml-sidebar">
-        <header className="mb-7 flex flex-col gap-5">
-          <PageHeader
-            title="Ranking"
-            onMenuClick={() => setSidebarOpen(true)}
-            perfil={<MenuPerfil />}
-            notificacoes={<SinoNotificacoes />}
-          />
-
-          <div className="flex flex-col gap-4">
-            <div className="flex w-full items-center gap-2 rounded-md bg-surface px-4 py-2.5 sm:w-[420px]">
-              <Search size={16} className="shrink-0 text-fg-muted" />
-              <input
-                type="text"
-                placeholder="Pesquisar"
-                aria-label="Pesquisar motoristas"
-                value={busca}
-                onChange={(evento) => setBusca(evento.target.value)}
-                className="w-full min-w-0 bg-transparent text-sm text-fg placeholder-fg-subtle outline-none"
-              />
-            </div>
-
-            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-              <FiltroRankingButton
-                filtro={filtro}
-                tipoVeiculo={tipoVeiculo}
-                tiposDisponiveis={tiposDisponiveis}
-                onChange={atualizarFiltro}
-              />
-              <NavegacaoPeriodo
-                label={rotuloMes(referencia)}
-                podeAvancar={podeAvancarPeriodo("mes", referencia)}
-                onAnterior={() => atualizarMes(deslocarReferencia("mes", referencia, -1))}
-                onSeguinte={() => atualizarMes(deslocarReferencia("mes", referencia, 1))}
-                periodo="mes"
-                referencia={referencia}
-                onSelecionarData={atualizarMes}
-              />
-            </div>
-          </div>
-        </header>
+        <RankingTopbar
+          search={busca}
+          onSearchChange={setBusca}
+          dateRangeLabel={rotuloMes(referencia)}
+          podeAvancar={podeAvancarPeriodo("mes", referencia)}
+          onPeriodoAnterior={() => atualizarMes(deslocarReferencia("mes", referencia, -1))}
+          onPeriodoSeguinte={() => atualizarMes(deslocarReferencia("mes", referencia, 1))}
+          referencia={referencia}
+          onSelecionarData={atualizarMes}
+          onMenuClick={() => setSidebarOpen(true)}
+          filtro={
+            <FiltroRankingButton
+              filtro={filtro}
+              tipoVeiculo={tipoVeiculo}
+              tiposDisponiveis={tiposDisponiveis}
+              onChange={atualizarFiltro}
+            />
+          }
+        />
 
         {ehGestor && pagamentos.erro && (
           <div role="alert" className="mb-6 flex flex-wrap items-center justify-between gap-3 rounded-md bg-surface px-4 py-3 text-sm text-fg-subtle">
@@ -232,6 +210,7 @@ export function RankingPage() {
               podio={podioVisivel}
               faturamentoDe={ehGestor ? faturamentoDe : undefined}
               filtroAtivo={filtro}
+              onMotoristaClick={abrirHistorico}
             />
             {/* Com 3 motoristas ou menos não há lista: só o pódio. */}
             {lista.length > 0 && (
@@ -239,6 +218,7 @@ export function RankingPage() {
                 motoristas={listaVisivel}
                 faturamentoDe={ehGestor ? faturamentoDe : undefined}
                 filtroAtivo={filtro}
+                onMotoristaClick={abrirHistorico}
               />
             )}
           </div>

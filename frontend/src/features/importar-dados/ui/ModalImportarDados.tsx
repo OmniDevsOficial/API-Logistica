@@ -5,7 +5,7 @@ import { ModalEnviarRelatorio } from "../../enviar-relatorio/ui/ModalEnviarRelat
 import type { ResultadoImportacaoVeiculos } from "../../importar-veiculos/api/importarVeiculos";
 import { ModalImportarVeiculos } from "../../importar-veiculos/ui/ModalImportarVeiculos";
 import { validarPlanilhaDoTipo } from "../lib/validarPlanilhaDoTipo";
-import { avisarImportacaoConcluida } from "../lib/avisoImportacaoConcluida";
+import { avisarImportacaoConcluida } from "@entities/importacao";
 import { SeletorTipoPlanilha } from "./SeletorTipoPlanilha";
 
 interface ModalImportarDadosProps {

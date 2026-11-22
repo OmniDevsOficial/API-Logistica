@@ -5,6 +5,7 @@ import type {
   NovoUsuario,
   Usuario,
 } from "../model/types";
+import { avisarUsuarioCadastrado } from "../lib/avisoUsuarioCadastrado.ts";
 
 const ENDPOINT = "/api/autenticacao/usuarios";
 
@@ -159,6 +160,7 @@ export async function cadastrarUsuario(novo: NovoUsuario): Promise<Usuario> {
   const usuario = lerUsuario(corpo);
   if (!usuario) throw new ErroCadastroUsuario("servidor", MENSAGEM_SERVIDOR);
 
+  avisarUsuarioCadastrado();
   return usuario;
 }
 

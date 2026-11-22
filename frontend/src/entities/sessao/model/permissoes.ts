@@ -33,6 +33,10 @@ export function podeVerAlertasUtilizacao(perfil: Perfil): boolean {
   return perfil === "GESTOR";
 }
 
+export function podeVerCadastroUsuarios(perfil: Perfil): boolean {
+  return perfil === "GESTOR";
+}
+
 /** Gestor e operador carregam a frota pela planilha de veículos. */
 export function podeImportarVeiculos(perfil: Perfil): boolean {
   return perfil === "GESTOR" || perfil === "OPERADOR";
