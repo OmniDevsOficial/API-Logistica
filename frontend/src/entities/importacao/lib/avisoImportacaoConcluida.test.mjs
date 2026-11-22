@@ -1,4 +1,4 @@
-// Node 24: node --test src/features/importar-dados/lib/avisoImportacaoConcluida.test.mjs
+// Node 24: node --test src/entities/importacao/lib/avisoImportacaoConcluida.test.mjs
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import {

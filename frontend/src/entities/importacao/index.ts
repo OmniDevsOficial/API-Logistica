@@ -12,3 +12,7 @@ export type {
   StatusImportacao,
   TipoImportacao,
 } from "./model/types";
+export {
+  avisarImportacaoConcluida,
+  EVENTO_IMPORTACAO_CONCLUIDA,
+} from "./lib/avisoImportacaoConcluida";

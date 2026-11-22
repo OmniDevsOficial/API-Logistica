@@ -1,5 +1,5 @@
 import { ArrowDownAZ, ArrowUpAZ, Calendar } from "lucide-react";
-import { SinoNotificacoes } from "@features/alerta-utilizacao";
+import { SinoNotificacoes } from "@features/notificacoes";
 import { PageHeader } from "@shared/ui";
 import type { ReactNode } from "react";
 import { MenuPerfil } from "@features/menu-perfil";
@@ -28,6 +28,7 @@ export function MotoristasTopbar({
     <header className="mb-7 flex flex-col gap-5">
       <PageHeader
         title="Motoristas"
+        subtitle="Utilização dos motoristas no período"
         onMenuClick={onMenuClick}
         perfil={<MenuPerfil />}
         notificacoes={notificacoes ?? <SinoNotificacoes />}
