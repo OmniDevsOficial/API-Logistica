@@ -35,7 +35,7 @@ import com.ominidevs.operacional.motorista.dto.MotoristaResponseDTO;
 import com.ominidevs.operacional.motorista.dto.PaginaHistoricoViagensResponse;
 import com.ominidevs.operacional.motorista.dto.RankingMotoristaResponse;
 import com.ominidevs.operacional.motorista.dto.RankingMotoristasResultado;
-import com.ominidevs.operacional.motorista.services.FiltroRankingMotorista;
+import com.ominidevs.operacional.motorista.dto.FiltroRankingMotorista;
 import com.ominidevs.operacional.motorista.dto.ViagemHistoricoResponse;
 import com.ominidevs.operacional.motorista.entities.StatusMotorista;
 import com.ominidevs.operacional.motorista.exceptions.MotoristaExceptionHandler;
