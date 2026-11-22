@@ -331,11 +331,10 @@ class SegurancaTest {
     }
 
     @Test
-    void operadorNaoConsultaFrotaNemResumo() throws Exception {
+    void operadorConsultaFrotaEResumo() throws Exception {
         for (String rota : new String[] {"/veiculos/frota", "/veiculos/resumo"}) {
             mvc.perform(get(rota).header(HttpHeaders.AUTHORIZATION, bearer(TokensDeTeste.valido("OPERADOR"))))
-                    .andExpect(status().isForbidden())
-                    .andExpect(jsonPath("$.erro").value("Seu perfil não tem permissão para acessar este recurso."));
+                    .andExpect(status().isOk());
         }
     }
 

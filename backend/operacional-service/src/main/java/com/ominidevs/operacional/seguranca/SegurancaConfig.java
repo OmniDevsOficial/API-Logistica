@@ -65,7 +65,6 @@ public class SegurancaConfig {
                         .requestMatchers("/dashboard/**", "/indicadores/**", "/motoristas/**").hasRole(GESTOR)
                         .requestMatchers("/viagens/rentabilidade/motoristas").hasRole(GESTOR)
                         .requestMatchers("/viagens/**").hasAnyRole(GESTOR, OPERADOR)
-                        .requestMatchers(HttpMethod.GET, "/veiculos/frota", "/veiculos/resumo").hasRole(GESTOR)
                         // Gestor e operador consultam e importam a frota.
                         .requestMatchers("/veiculos", "/veiculos/**").hasAnyRole(GESTOR, OPERADOR)
                         // Tela Registros: quem também pode importar vê o histórico.

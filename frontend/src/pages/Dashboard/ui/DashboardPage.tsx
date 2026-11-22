@@ -16,7 +16,7 @@ import {
 import { mesDaReferencia, rotuloDoMes } from "../lib/mesDaReferencia";
 import { useDashboard } from "../model/useDashboard";
 import { useRentabilidadePorTipo } from "../model/useRentabilidadePorTipo";
-import { PainelVeiculos } from "./PainelVeiculos";
+import { PainelVeiculos } from "@widgets/frota-overview";
 
 const PARAMETRO_GUIA = "guia";
 
