@@ -1,10 +1,9 @@
 import type { PeriodOption } from "@entities/dashboard-metrics";
 import { referenciaDaDataIso } from "./intervaloDoPeriodo.ts";
 
-const CHAVE_FILTRO = "newelog.dashboard.filtro";
 const PERIODOS: readonly string[] = ["dia", "mes", "ano"];
 
-export interface FiltroDashboard {
+export interface FiltroPeriodo {
   periodo: PeriodOption;
   referencia: Date;
 }
@@ -15,11 +14,16 @@ function paraDataIso(data: Date): string {
   return `${data.getFullYear()}-${mes}-${dia}`;
 }
 
+function chaveDaTela(tela: string): string {
+  return `newelog.${tela}.filtro`;
+}
+
 export function lerFiltroSalvo(
+  tela: string,
   armazenamento?: Pick<Storage, "getItem">,
-): FiltroDashboard | null {
+): FiltroPeriodo | null {
   try {
-    const salvo = (armazenamento ?? sessionStorage).getItem(CHAVE_FILTRO);
+    const salvo = (armazenamento ?? sessionStorage).getItem(chaveDaTela(tela));
     if (!salvo) return null;
 
     const { periodo, referencia } = JSON.parse(salvo) as Record<string, unknown>;
@@ -34,12 +38,13 @@ export function lerFiltroSalvo(
 }
 
 export function salvarFiltro(
-  filtro: FiltroDashboard,
+  tela: string,
+  filtro: FiltroPeriodo,
   armazenamento?: Pick<Storage, "setItem">,
 ): void {
   try {
     (armazenamento ?? sessionStorage).setItem(
-      CHAVE_FILTRO,
+      chaveDaTela(tela),
       JSON.stringify({
         periodo: filtro.periodo,
         referencia: paraDataIso(filtro.referencia),

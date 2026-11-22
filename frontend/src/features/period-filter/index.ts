@@ -7,3 +7,4 @@ export {
   referenciaDaDataIso,
   type IntervaloConsulta,
 } from "./lib/intervaloDoPeriodo";
+export { usePeriodoSalvo, type PeriodoSalvo } from "./model/usePeriodoSalvo";

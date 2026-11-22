@@ -175,6 +175,10 @@ public class ViagemService {
         }
     }
 
+    public LocalDate dataMaisRecente() {
+        return viagemRepository.buscarDataMaisRecente();
+    }
+
     public List<Viagem> filtrar(
             String destino,
             List<StatusViagem> status,
