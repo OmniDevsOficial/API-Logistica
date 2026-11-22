@@ -83,10 +83,9 @@ export function EquipeTabela({
   onMotoristaClick,
 }: EquipeTabelaProps) {
   const tabelaRef = useRef<HTMLDivElement>(null);
-  const [paginacao, setPaginacao] = useState({ lista: motoristas, pagina: 1 });
+  const [paginaEscolhida, setPaginaEscolhida] = useState(1);
   const totalPaginas = totalDePaginas(motoristas.length, MOTORISTAS_POR_PAGINA);
-  const pagina =
-    paginacao.lista === motoristas ? Math.min(paginacao.pagina, totalPaginas) : 1;
+  const pagina = Math.min(paginaEscolhida, totalPaginas);
   const inicio = (pagina - 1) * MOTORISTAS_POR_PAGINA;
   const motoristasDaPagina = motoristas.slice(inicio, inicio + MOTORISTAS_POR_PAGINA);
   const larguras = mostrarRentabilidade
@@ -94,7 +93,7 @@ export function EquipeTabela({
     : LARGURAS_SEM_RENTABILIDADE;
 
   function mudarPagina(novaPagina: number) {
-    setPaginacao({ lista: motoristas, pagina: novaPagina });
+    setPaginaEscolhida(novaPagina);
     const tabela = tabelaRef.current;
     if (tabela && tabela.getBoundingClientRect().top < 0) {
       tabela.scrollIntoView({ behavior: "smooth", block: "start" });

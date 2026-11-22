@@ -115,7 +115,7 @@ export function MotoristasPage() {
           <p role="alert" className={ESTADO_LISTA}>
             {erro}
           </p>
-        ) : carregando ? (
+        ) : carregando && !dados ? (
           <p role="status" className={ESTADO_LISTA}>
             Carregando motoristas...
           </p>
@@ -138,6 +138,7 @@ export function MotoristasPage() {
             )}
 
             <EquipeTabela
+              key={`${filtroStatus ?? "TODOS"}|${busca.trim().toLowerCase()}`}
               motoristas={motoristasFiltrados}
               rentabilidades={rentabilidades}
               chaveNomeMotorista={chaveNomeMotorista}
