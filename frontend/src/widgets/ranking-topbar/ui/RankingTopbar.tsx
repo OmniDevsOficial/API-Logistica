@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import { Search } from "lucide-react";
-import { NavegacaoPeriodo } from "@features/period-filter";
+import type { PeriodOption } from "@entities/dashboard-metrics";
+import { NavegacaoPeriodo, PeriodFilter } from "@features/period-filter";
 import { SinoNotificacoes } from "@features/notificacoes";
 import { MenuPerfil } from "@features/menu-perfil";
 import { PageHeader } from "@shared/ui";
@@ -8,6 +9,8 @@ import { PageHeader } from "@shared/ui";
 interface RankingTopbarProps {
   search: string;
   onSearchChange: (value: string) => void;
+  period: PeriodOption;
+  onPeriodChange: (period: PeriodOption) => void;
   dateRangeLabel: string;
   podeAvancar: boolean;
   onPeriodoAnterior: () => void;
@@ -21,6 +24,8 @@ interface RankingTopbarProps {
 export function RankingTopbar({
   search,
   onSearchChange,
+  period,
+  onPeriodChange,
   dateRangeLabel,
   podeAvancar,
   onPeriodoAnterior,
@@ -34,7 +39,7 @@ export function RankingTopbar({
     <header className="mb-7 flex flex-col gap-5">
       <PageHeader
         title="Ranking"
-        subtitle="Gamificação: pódio e lista de motoristas do mês"
+        subtitle="Gamificação: pódio e lista de motoristas do período"
         onMenuClick={onMenuClick}
         perfil={<MenuPerfil />}
         notificacoes={<SinoNotificacoes />}
@@ -55,12 +60,13 @@ export function RankingTopbar({
 
         <div className="flex flex-wrap items-center gap-3">
           {filtro}
+          <PeriodFilter value={period} onChange={onPeriodChange} />
           <NavegacaoPeriodo
             label={dateRangeLabel}
             podeAvancar={podeAvancar}
             onAnterior={onPeriodoAnterior}
             onSeguinte={onPeriodoSeguinte}
-            periodo="mes"
+            periodo={period}
             referencia={referencia}
             onSelecionarData={onSelecionarData}
           />

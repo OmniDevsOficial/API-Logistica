@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { ChevronDown, SlidersHorizontal, X } from "lucide-react";
+import { SlidersHorizontal, X } from "lucide-react";
 import { formatTipoVeiculo } from "@shared/lib";
 import type { FiltroRanking } from "@entities/motorista";
 
@@ -8,6 +8,7 @@ interface FiltroRankingProps {
   tipoVeiculo: string | null;
   tiposDisponiveis: string[];
   onChange: (filtro: FiltroRanking, tipoVeiculo: string | null) => void;
+  buttonClassName?: string;
 }
 
 const OPCOES: { valor: FiltroRanking; rotulo: string }[] = [
@@ -17,160 +18,210 @@ const OPCOES: { valor: FiltroRanking; rotulo: string }[] = [
   { valor: "TIPO_VEICULO", rotulo: "Tipo de veículo" },
 ];
 
-function rotuloFiltro(filtro: FiltroRanking, tipoVeiculo: string | null): string {
-  if (filtro === "TIPO_VEICULO") {
-    const tipo = formatTipoVeiculo(tipoVeiculo) ?? "Tipo de veículo";
-    return `Tipo: ${tipo}`;
-  }
-  return OPCOES.find((opcao) => opcao.valor === filtro)?.rotulo ?? "Rentabilidade";
-}
+const CHIP_CLASS =
+  "inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-sm font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-40";
+const CHIP_ATIVO_CLASS = "border-primary bg-primary/10 text-primary";
+const CHIP_INATIVO_CLASS =
+  "border-slate-300 text-fg-muted hover:bg-background dark:border-border";
 
-export function FiltroRanking({ filtro, tipoVeiculo, tiposDisponiveis, onChange }: FiltroRankingProps) {
+export function FiltroRanking({
+  filtro,
+  tipoVeiculo,
+  tiposDisponiveis,
+  onChange,
+  buttonClassName,
+}: FiltroRankingProps) {
   const [aberto, setAberto] = useState(false);
-  const botaoRef = useRef<HTMLButtonElement>(null);
-  const dialogRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (!aberto) return;
-    const dialogo = dialogRef.current;
-    const botaoDeRetorno = botaoRef.current;
-    const focaveis = () => Array.from(dialogo?.querySelectorAll<HTMLElement>(
-      'button:not([disabled]), input:not([disabled]), [tabindex]:not([tabindex="-1"])',
-    ) ?? []);
-    focaveis()[0]?.focus();
-    const controlarTeclado = (evento: KeyboardEvent) => {
-      if (evento.key === "Escape") {
-        setAberto(false);
-        return;
-      }
-      if (evento.key !== "Tab") return;
-      const elementos = focaveis();
-      const primeiro = elementos[0];
-      const ultimo = elementos.at(-1);
-      if (!primeiro || !ultimo) return;
-      if (evento.shiftKey && document.activeElement === primeiro) {
-        evento.preventDefault();
-        ultimo.focus();
-      } else if (!evento.shiftKey && document.activeElement === ultimo) {
-        evento.preventDefault();
-        primeiro.focus();
-      }
-    };
-    window.addEventListener("keydown", controlarTeclado);
-    return () => {
-      window.removeEventListener("keydown", controlarTeclado);
-      botaoDeRetorno?.focus();
-    };
-  }, [aberto]);
 
   return (
-    <div className="relative shrink-0">
+    <>
       <button
-        ref={botaoRef}
         type="button"
         aria-haspopup="dialog"
-        aria-expanded={aberto}
-        onClick={() => setAberto((atual) => !atual)}
-        className="inline-flex w-full items-center justify-between gap-2 rounded-lg border border-border bg-surface px-4 py-2.5 text-sm font-medium text-fg shadow-sm transition-colors hover:bg-background sm:w-auto"
+        onClick={() => setAberto(true)}
+        className={
+          buttonClassName ??
+          "inline-flex items-center gap-2 whitespace-nowrap rounded-lg border border-slate-300 bg-surface px-4 py-2 text-sm font-medium text-fg shadow-sm hover:bg-background hover:border-slate-400 transition-colors dark:border-border"
+        }
       >
-        <SlidersHorizontal aria-hidden="true" className="h-4 w-4 text-fg-muted" />
-        <span>Filtrar: {rotuloFiltro(filtro, tipoVeiculo)}</span>
-        <ChevronDown aria-hidden="true" className={`h-4 w-4 transition-transform ${aberto ? "rotate-180" : ""}`} />
+        <SlidersHorizontal className="h-4 w-4" />
+        Filtrar
       </button>
 
       {aberto && (
-        <>
+        <FiltroRankingModal
+          filtro={filtro}
+          tipoVeiculo={tipoVeiculo}
+          tiposDisponiveis={tiposDisponiveis}
+          onChange={onChange}
+          onClose={() => setAberto(false)}
+        />
+      )}
+    </>
+  );
+}
+
+interface FiltroRankingModalProps {
+  filtro: FiltroRanking;
+  tipoVeiculo: string | null;
+  tiposDisponiveis: string[];
+  onChange: (filtro: FiltroRanking, tipoVeiculo: string | null) => void;
+  onClose: () => void;
+}
+
+function FiltroRankingModal({
+  filtro,
+  tipoVeiculo,
+  tiposDisponiveis,
+  onChange,
+  onClose,
+}: FiltroRankingModalProps) {
+  const [criterio, setCriterio] = useState<FiltroRanking>(filtro);
+  const [tipo, setTipo] = useState<string | null>(tipoVeiculo);
+  const dialogRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    dialogRef.current?.querySelector<HTMLElement>("button:not([disabled])")?.focus();
+  }, []);
+
+  useEffect(() => {
+    const handleEsc = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+    };
+    window.addEventListener("keydown", handleEsc);
+    return () => window.removeEventListener("keydown", handleEsc);
+  }, [onClose]);
+
+  const selecionarCriterio = (valor: FiltroRanking) => {
+    setCriterio(valor);
+    setTipo(valor === "TIPO_VEICULO" ? tipo ?? tiposDisponiveis[0] ?? null : null);
+  };
+
+  const faltaTipo = criterio === "TIPO_VEICULO" && !tipo;
+
+  const handleAplicar = () => {
+    onChange(criterio, criterio === "TIPO_VEICULO" ? tipo : null);
+    onClose();
+  };
+
+  const handleLimpar = () => {
+    setCriterio("RENTABILIDADE");
+    setTipo(null);
+    onChange("RENTABILIDADE", null);
+  };
+
+  return (
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 backdrop-blur-sm p-4"
+      onClick={onClose}
+    >
+      <div
+        ref={dialogRef}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="titulo-filtro-ranking"
+        onClick={(e) => e.stopPropagation()}
+        className="w-full max-w-md rounded-2xl bg-surface shadow-2xl ring-1 ring-border overflow-hidden"
+      >
+        <div className="flex items-start justify-between px-6 py-5 border-b border-border">
+          <div className="flex items-center gap-3">
+            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10">
+              <SlidersHorizontal className="h-5 w-5 text-primary" />
+            </div>
+            <div>
+              <h2 id="titulo-filtro-ranking" className="text-base font-semibold text-fg">
+                Filtrar ranking
+              </h2>
+              <p className="text-sm text-fg-muted">
+                Refine o ranking pelos critérios abaixo
+              </p>
+            </div>
+          </div>
+
           <button
             type="button"
-            aria-label="Fechar filtros"
-            tabIndex={-1}
-            onClick={() => setAberto(false)}
-            className="fixed inset-0 z-40 cursor-default bg-slate-950/40 sm:bg-transparent"
-          />
-          <div
-            ref={dialogRef}
-            role="dialog"
-            aria-modal="true"
-            aria-label="Filtrar ranking"
-            className="fixed inset-x-3 bottom-3 z-50 max-h-[80vh] overflow-y-auto rounded-2xl border border-border bg-surface p-4 shadow-2xl sm:absolute sm:inset-auto sm:right-0 sm:top-full sm:mt-2 sm:w-80 sm:max-h-[min(70vh,30rem)]"
+            onClick={onClose}
+            aria-label="Fechar"
+            className="rounded-full p-1.5 text-fg-subtle hover:bg-background hover:text-fg transition-colors"
           >
-          <div className="mb-3 flex items-center justify-between">
-            <h2 className="text-sm font-semibold text-fg">Filtrar ranking</h2>
-            <button
-              type="button"
-              aria-label="Fechar filtros"
-              onClick={() => setAberto(false)}
-              className="rounded-md p-1 text-fg-muted hover:bg-background hover:text-fg"
-            >
-              <X className="h-4 w-4" />
-            </button>
+            <X className="h-5 w-5" />
+          </button>
+        </div>
+
+        <div className="px-6 py-5 space-y-5 max-h-[65vh] overflow-y-auto">
+          <div>
+            <span className="mb-2 block text-sm font-medium text-fg">
+              Ordenar por
+            </span>
+            <div className="flex flex-wrap gap-2" role="radiogroup" aria-label="Ordenar por">
+              {OPCOES.map((opcao) => {
+                const ativo = criterio === opcao.valor;
+                const semTipos = opcao.valor === "TIPO_VEICULO" && tiposDisponiveis.length === 0;
+                return (
+                  <button
+                    key={opcao.valor}
+                    type="button"
+                    role="radio"
+                    aria-checked={ativo}
+                    disabled={semTipos}
+                    onClick={() => selecionarCriterio(opcao.valor)}
+                    className={`${CHIP_CLASS} ${ativo ? CHIP_ATIVO_CLASS : CHIP_INATIVO_CLASS}`}
+                  >
+                    {opcao.rotulo}
+                  </button>
+                );
+              })}
+            </div>
           </div>
 
-          <fieldset className="space-y-1">
-            <legend className="sr-only">Critério de ordenação</legend>
-            {OPCOES.map((opcao) => {
-              const selecionado = filtro === opcao.valor;
-              const semTipos = opcao.valor === "TIPO_VEICULO" && tiposDisponiveis.length === 0;
-              return (
-                <div key={opcao.valor}>
-                  <label className={`flex cursor-pointer items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition-colors ${selecionado ? "bg-primary/10 text-primary" : "text-fg hover:bg-background"} ${semTipos ? "cursor-not-allowed opacity-50" : ""}`}>
-                    <input
-                      type="radio"
-                      name="filtro-ranking"
-                      value={opcao.valor}
-                      checked={selecionado}
-                      disabled={semTipos}
-                      onChange={() => {
-                        if (opcao.valor === "TIPO_VEICULO") {
-                          onChange(opcao.valor, tiposDisponiveis[0] ?? null);
-                        } else {
-                          onChange(opcao.valor, null);
-                        }
-                      }}
-                      className="h-4 w-4 accent-primary"
-                    />
-                    <span>{opcao.rotulo}</span>
-                  </label>
-
-                  {selecionado && opcao.valor === "TIPO_VEICULO" && (
-                    <div className="ml-10 mt-1 space-y-1 border-l border-border pl-3">
-                      {tiposDisponiveis.length === 0 ? (
-                        <p className="py-2 text-xs text-fg-muted">Nenhum tipo disponível neste mês.</p>
-                      ) : tiposDisponiveis.map((tipo) => (
-                        <label key={tipo} className="flex cursor-pointer items-center gap-2 rounded-md px-2 py-2 text-sm text-fg hover:bg-background">
-                          <input
-                            type="radio"
-                            name="tipo-veiculo-ranking"
-                            value={tipo}
-                            checked={tipoVeiculo === tipo}
-                            onChange={() => onChange("TIPO_VEICULO", tipo)}
-                            className="h-4 w-4 accent-primary"
-                          />
-                          <span>{formatTipoVeiculo(tipo) ?? tipo}</span>
-                        </label>
-                      ))}
-                    </div>
-                  )}
+          {criterio === "TIPO_VEICULO" && (
+            <div>
+              <span className="mb-2 block text-sm font-medium text-fg">
+                Tipo de veículo
+              </span>
+              {tiposDisponiveis.length === 0 ? (
+                <p className="text-sm text-fg-muted">Nenhum tipo disponível neste período.</p>
+              ) : (
+                <div className="flex flex-wrap gap-2" role="radiogroup" aria-label="Tipo de veículo">
+                  {tiposDisponiveis.map((opcao) => {
+                    const ativo = tipo === opcao;
+                    return (
+                      <button
+                        key={opcao}
+                        type="button"
+                        role="radio"
+                        aria-checked={ativo}
+                        onClick={() => setTipo(opcao)}
+                        className={`${CHIP_CLASS} ${ativo ? CHIP_ATIVO_CLASS : CHIP_INATIVO_CLASS}`}
+                      >
+                        {formatTipoVeiculo(opcao) ?? opcao}
+                      </button>
+                    );
+                  })}
                 </div>
-              );
-            })}
-          </fieldset>
+              )}
+            </div>
+          )}
+        </div>
 
-          <div className="mt-4 border-t border-border pt-3">
-            <button
-              type="button"
-              onClick={() => {
-                onChange("RENTABILIDADE", null);
-                setAberto(false);
-              }}
-              className="w-full rounded-lg px-3 py-2 text-left text-sm font-medium text-fg-muted transition-colors hover:bg-background hover:text-fg"
-            >
-              Limpar filtro
-            </button>
-          </div>
-          </div>
-        </>
-      )}
+        <div className="flex justify-between gap-2 border-t border-border bg-background px-6 py-4">
+          <button
+            type="button"
+            onClick={handleLimpar}
+            className="rounded-lg px-4 py-2 text-sm font-medium text-fg-muted hover:bg-border hover:text-fg transition-colors"
+          >
+            Limpar
+          </button>
+          <button
+            type="button"
+            onClick={handleAplicar}
+            disabled={faltaTipo}
+            className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-primary-dark disabled:opacity-40 transition-colors"
+          >
+            Aplicar filtro
+          </button>
+        </div>
+      </div>
     </div>
   );
 }

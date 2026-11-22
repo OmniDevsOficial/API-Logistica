@@ -3,10 +3,15 @@ import { buscarRankingMotoristas } from "@entities/motorista";
 import type { FiltroRanking, RankingMotorista } from "@entities/motorista";
 
 /**
- * Ranking do mês consultado. Trocar o mês (ou pedir um recarregamento)
+ * Ranking do período consultado. Trocar o período (ou pedir um recarregamento)
  * dispara uma nova chamada, abortando a anterior.
  */
-export function useRankingMotoristas(mes: string, filtro: FiltroRanking, tipoVeiculo?: string) {
+export function useRankingMotoristas(
+  dataInicio: string,
+  dataFim: string,
+  filtro: FiltroRanking,
+  tipoVeiculo?: string,
+) {
   const [dados, setDados] = useState<RankingMotorista[] | null>(null);
   const [tiposDisponiveis, setTiposDisponiveis] = useState<string[]>([]);
   const [carregando, setCarregando] = useState(true);
@@ -22,7 +27,7 @@ export function useRankingMotoristas(mes: string, filtro: FiltroRanking, tipoVei
 
       try {
         const resultado = await buscarRankingMotoristas(
-          mes,
+          { dataInicio, dataFim },
           filtro,
           tipoVeiculo,
           controller.signal,
@@ -45,7 +50,7 @@ export function useRankingMotoristas(mes: string, filtro: FiltroRanking, tipoVei
 
     void carregar();
     return () => controller.abort();
-  }, [mes, filtro, tipoVeiculo, versao]);
+  }, [dataInicio, dataFim, filtro, tipoVeiculo, versao]);
 
   const recarregar = useCallback(() => setVersao((valor) => valor + 1), []);
 

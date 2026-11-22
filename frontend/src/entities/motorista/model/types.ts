@@ -82,6 +82,8 @@ export interface RankingMotorista {
 
 export type FiltroRanking = "RENTABILIDADE" | "FATURAMENTO" | "VIAGENS" | "TIPO_VEICULO";
 
+export type PeriodoRanking = string | { dataInicio: string; dataFim: string };
+
 export interface ResultadoRankingMotoristas {
   ranking: RankingMotorista[];
   tiposDisponiveis: string[];

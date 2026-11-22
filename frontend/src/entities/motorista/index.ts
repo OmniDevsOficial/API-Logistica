@@ -9,6 +9,7 @@ export type {
   RankingColocacao,
   RankingMotorista,
   FiltroRanking,
+  PeriodoRanking,
   ResultadoRankingMotoristas,
   StatusEquipe,
 } from "./model/types";

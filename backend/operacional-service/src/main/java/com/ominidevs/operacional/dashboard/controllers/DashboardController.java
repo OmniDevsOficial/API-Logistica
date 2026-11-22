@@ -36,14 +36,22 @@ public class DashboardController {
     }
 
     /**
-     * Pagamento consolidado por motorista no mês. Restrito ao perfil GESTOR via
+     * Pagamento consolidado por motorista no período. Restrito ao perfil GESTOR via
      * {@code /dashboard/**} em {@code SegurancaConfig}.
      *
-     * @param mes mês no formato AAAA-MM, obrigatório.
+     * @param mes        mês no formato AAAA-MM, usado quando não há datas.
+     * @param dataInicio data inicial dd/MM/aaaa, junto com {@code dataFim}.
+     * @param dataFim    data final dd/MM/aaaa, junto com {@code dataInicio}.
      * @return um item por motorista com nome, quantidade de viagens e valor a pagar.
      */
     @GetMapping("/pagamento-motoristas")
-    public List<PagamentoMotoristaResponse> pagamentoMotoristas(@RequestParam("mes") String mes) {
-        return service.pagamentoMotoristas(PeriodoConsulta.doMesObrigatorio(mes));
+    public List<PagamentoMotoristaResponse> pagamentoMotoristas(
+            @RequestParam(required = false) String mes,
+            @RequestParam(required = false) String dataInicio,
+            @RequestParam(required = false) String dataFim) {
+        PeriodoConsulta periodo = dataInicio == null && dataFim == null
+                ? PeriodoConsulta.doMesObrigatorio(mes)
+                : PeriodoConsulta.parse(dataInicio, dataFim);
+        return service.pagamentoMotoristas(periodo);
     }
 }

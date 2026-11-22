@@ -1,9 +1,9 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import type { FiltroRanking, RankingMotorista } from "@entities/motorista";
 import { faturamentoDoMotorista, indexarFaturamento } from "@entities/motorista";
 import { podeVerValoresMonetarios, useSessao } from "@entities/sessao";
-import { formatTipoVeiculo } from "@shared/lib";
+import { formatDateRange, formatTipoVeiculo } from "@shared/lib";
 import { Sidebar } from "@widgets/sidebar";
 import { RankingList } from "@widgets/ranking-list";
 import { RankingPodium } from "@widgets/ranking-podium";
@@ -11,10 +11,12 @@ import { RankingTopbar } from "@widgets/ranking-topbar";
 import { ModalHistoricoViagens } from "@features/historico-viagens";
 import {
   deslocarReferencia,
+  intervaloDoPeriodo,
   podeAvancarPeriodo,
+  usePeriodoSalvo,
+  type PeriodoSalvo,
 } from "@features/period-filter";
 import { distribuirRanking } from "../lib/distribuirRanking";
-import { mesDaReferencia, rotuloMes } from "../lib/rotuloMes";
 import { useRankingMotoristas } from "../model/useRankingMotoristas";
 import { usePagamentoMotoristas } from "../model/usePagamentoMotoristas";
 import { FiltroRanking as FiltroRankingButton } from "./FiltroRanking";
@@ -27,16 +29,8 @@ interface MotoristaSelecionado {
 const MENSAGEM_CLASS =
   "rounded-md bg-surface p-6 text-center text-sm text-fg-subtle";
 const FILTROS_VALIDOS: FiltroRanking[] = ["RENTABILIDADE", "FATURAMENTO", "VIAGENS", "TIPO_VEICULO"];
-
-function dataDoMes(valor: string | null): Date | null {
-  if (!valor || !/^\d{4}-\d{2}$/.test(valor)) return null;
-  const [ano, mes] = valor.split("-").map(Number);
-  if (ano < 1900 || mes < 1 || mes > 12) return null;
-  const referencia = new Date(ano, mes - 1, 1);
-  const atual = new Date();
-  if (referencia > new Date(atual.getFullYear(), atual.getMonth(), 1)) return null;
-  return referencia;
-}
+const PILL_CLASS =
+  "flex items-center gap-2 whitespace-nowrap rounded-md bg-surface px-4 py-2.5 text-sm font-medium text-fg";
 
 /** Busca por nome, CPF, veículo, placa ou telefone, sem acento nem caixa. */
 function combinaComABusca(motorista: RankingMotorista, termo: string): boolean {
@@ -52,10 +46,17 @@ function combinaComABusca(motorista: RankingMotorista, termo: string): boolean {
 }
 
 /**
- * Ranking mensal de motoristas (gamificação): pódio com os 3 primeiros e
- * lista com os demais, filtrados pelo mês escolhido.
+ * Ranking de motoristas (gamificação): pódio com os 3 primeiros e
+ * lista com os demais, filtrados pelo período escolhido.
  */
 export function RankingPage() {
+  const periodoSalvo = usePeriodoSalvo("ranking");
+  if (!periodoSalvo.pronto) return null;
+  return <RankingConteudo periodoSalvo={periodoSalvo} />;
+}
+
+function RankingConteudo({ periodoSalvo }: { periodoSalvo: PeriodoSalvo }) {
+  const { periodo, setPeriodo, referencia, setReferencia } = periodoSalvo;
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [busca, setBusca] = useState("");
   const [motoristaHistorico, setMotoristaHistorico] =
@@ -69,20 +70,10 @@ export function RankingPage() {
     ? filtroParam as FiltroRanking
     : "RENTABILIDADE";
   const tipoVeiculo = filtro === "TIPO_VEICULO" ? tipoParam : null;
-  const referencia = dataDoMes(searchParams.get("mes")) ?? new Date();
-  const mes = mesDaReferencia(referencia);
-  useEffect(() => {
-    const mesNaUrl = searchParams.get("mes");
-    if (mesNaUrl && dataDoMes(mesNaUrl) === null) {
-      setSearchParams((atuais) => {
-        const proximos = new URLSearchParams(atuais);
-        proximos.set("mes", mesDaReferencia(new Date()));
-        return proximos;
-      }, { replace: true });
-    }
-  }, [searchParams, setSearchParams]);
+  const { dataInicio, dataFim } = intervaloDoPeriodo(periodo, referencia);
   const { dados, tiposDisponiveis, carregando, erro, recarregar } = useRankingMotoristas(
-    mes,
+    dataInicio,
+    dataFim,
     filtro,
     tipoVeiculo ?? undefined,
   );
@@ -90,7 +81,7 @@ export function RankingPage() {
   // O valor a pagar é um dado separado, disponível apenas para Gestores.
   const { usuario } = useSessao();
   const ehGestor = usuario !== null && podeVerValoresMonetarios(usuario.perfil);
-  const pagamentos = usePagamentoMotoristas(mes, ehGestor);
+  const pagamentos = usePagamentoMotoristas(dataInicio, dataFim, ehGestor);
   const indiceFaturamento = useMemo(
     () => indexarFaturamento(pagamentos.dados ?? []),
     [pagamentos.dados],
@@ -103,19 +94,9 @@ export function RankingPage() {
   const atualizarFiltro = (novoFiltro: FiltroRanking, novoTipo: string | null) => {
     setSearchParams((atuais) => {
       const proximos = new URLSearchParams(atuais);
-      proximos.set("mes", mes);
       proximos.set("filtro", novoFiltro);
       if (novoFiltro === "TIPO_VEICULO" && novoTipo) proximos.set("tipoVeiculo", novoTipo);
       else proximos.delete("tipoVeiculo");
-      return proximos;
-    }, { replace: true });
-  };
-
-  const atualizarMes = (novaReferencia: Date) => {
-    const novoMes = mesDaReferencia(novaReferencia);
-    setSearchParams((atuais) => {
-      const proximos = new URLSearchParams(atuais);
-      proximos.set("mes", novoMes);
       return proximos;
     }, { replace: true });
   };
@@ -150,12 +131,14 @@ export function RankingPage() {
         <RankingTopbar
           search={busca}
           onSearchChange={setBusca}
-          dateRangeLabel={rotuloMes(referencia)}
-          podeAvancar={podeAvancarPeriodo("mes", referencia)}
-          onPeriodoAnterior={() => atualizarMes(deslocarReferencia("mes", referencia, -1))}
-          onPeriodoSeguinte={() => atualizarMes(deslocarReferencia("mes", referencia, 1))}
+          period={periodo}
+          onPeriodChange={setPeriodo}
+          dateRangeLabel={formatDateRange(dataInicio, dataFim)}
+          podeAvancar={podeAvancarPeriodo(periodo, referencia)}
+          onPeriodoAnterior={() => setReferencia(deslocarReferencia(periodo, referencia, -1))}
+          onPeriodoSeguinte={() => setReferencia(deslocarReferencia(periodo, referencia, 1))}
           referencia={referencia}
-          onSelecionarData={atualizarMes}
+          onSelecionarData={setReferencia}
           onMenuClick={() => setSidebarOpen(true)}
           filtro={
             <FiltroRankingButton
@@ -163,6 +146,7 @@ export function RankingPage() {
               tipoVeiculo={tipoVeiculo}
               tiposDisponiveis={tiposDisponiveis}
               onChange={atualizarFiltro}
+              buttonClassName={PILL_CLASS}
             />
           }
         />
@@ -194,8 +178,8 @@ export function RankingPage() {
         ) : dados && dados.length === 0 ? (
           <div role="status" className={MENSAGEM_CLASS}>
             <p>{filtro === "TIPO_VEICULO"
-              ? `Nenhum motorista com viagens de ${formatTipoVeiculo(tipoVeiculo) ?? tipoVeiculo} neste mês`
-              : "Sem viagens neste mês"}</p>
+              ? `Nenhum motorista com viagens de ${formatTipoVeiculo(tipoVeiculo) ?? tipoVeiculo} neste período`
+              : "Sem viagens neste período"}</p>
             {filtro === "TIPO_VEICULO" && (
               <button type="button" onClick={() => atualizarFiltro("RENTABILIDADE", null)}
                 className="mt-3 cursor-pointer rounded-md bg-primary px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-primary-dark">
