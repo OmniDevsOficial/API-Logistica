@@ -3,7 +3,6 @@ package com.ominidevs.operacional.veiculo.controllers;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -43,7 +42,6 @@ public class VeiculoController {
         this.frotaService = frotaService;
     }
 
-    @PreAuthorize("hasRole('GESTOR')")
     @GetMapping("/frota")
     public ResponseEntity<PaginaResponse<VeiculoFrotaResponse>> listarFrota(
             @RequestParam(defaultValue = "0") int pagina,
@@ -56,7 +54,6 @@ public class VeiculoController {
                 pagina, tamanho, tipo, busca, FrotaService.periodo(dataInicio, dataFim)));
     }
 
-    @PreAuthorize("hasRole('GESTOR')")
     @GetMapping("/resumo")
     public ResponseEntity<ResumoFrotaResponse> resumirFrota(
             @RequestParam(required = false) String dataInicio,

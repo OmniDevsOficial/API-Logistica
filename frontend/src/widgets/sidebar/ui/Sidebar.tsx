@@ -5,6 +5,7 @@ import {
   User,
   ClipboardList,
   Truck,
+  CarFront,
   Trophy,
   ShieldCheck,
   LogOut,
@@ -32,6 +33,7 @@ const MAIN_NAV_ITEMS: NavItem[] = [
   { label: "Motoristas", icon: User, path: "/motoristas" },
   { label: "Registros", icon: ClipboardList, path: "/registros" },
   { label: "Viagens", icon: Truck, path: "/viagens" },
+  { label: "Frota", icon: CarFront, path: "/frota" },
   { label: "Ranking", icon: Trophy, path: "/ranking" },
 ];
 

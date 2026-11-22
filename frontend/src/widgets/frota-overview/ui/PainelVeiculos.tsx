@@ -1,6 +1,7 @@
 import { useState } from "react";
 import type { PeriodoFrota } from "@entities/veiculo";
-import { FrotaOverview, FrotaTabela } from "@widgets/frota-overview";
+import { FrotaOverview } from "./FrotaOverview";
+import { FrotaTabela } from "./FrotaTabela";
 import { useFrota } from "../model/useFrota";
 import { useResumoFrota } from "../model/useResumoFrota";
 import { useValorAdiado } from "../model/useValorAdiado";
