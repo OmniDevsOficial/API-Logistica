@@ -1,6 +1,8 @@
+import { useEffect, useRef, useState } from "react";
+import { Paginacao } from "@/shared/ui";
 import type { FiltroRanking, RankingColocacao, RankingMotorista } from "@entities/motorista";
 import { ValorMonetario } from "@entities/sessao";
-import { formatCpf, formatCurrencyBRL } from "@shared/lib";
+import { formatCpf, formatCurrencyBRL, totalDePaginas } from "@shared/lib";
 
 interface RankingListProps {
   /** Do 4º em diante, em ordem de posição. */
@@ -17,12 +19,29 @@ const HEADER_CELL = "whitespace-nowrap py-3 pr-6 text-left text-xs font-semibold
 const CELL = "py-4 pr-6 align-top";
 const REALCE_HEADER = "bg-primary/10 text-primary";
 const REALCE_CELL = "bg-primary/5";
+const MOTORISTAS_POR_PAGINA = 20;
 
 function formatarValor(valor: number | null): string | null {
   return valor === null ? null : formatCurrencyBRL(valor, 2);
 }
-
+  
 export function RankingList({ motoristas, filtroAtivo, onMotoristaClick, faturamentoDe }: RankingListProps) {
+  
+  const tabelaRef = useRef<HTMLDivElement>(null);
+  const [paginaEscolhida, setPaginaEscolhida] = useState(1);
+  const totalPaginas = totalDePaginas(motoristas.length, MOTORISTAS_POR_PAGINA);
+  const pagina = Math.min(paginaEscolhida, totalPaginas);
+  const inicio = (pagina - 1) * MOTORISTAS_POR_PAGINA;
+  const motoristasDaPagina = motoristas.slice(inicio, inicio + MOTORISTAS_POR_PAGINA);
+
+  function mudarPagina(novaPagina: number) {
+    setPaginaEscolhida(novaPagina);
+    const tabela = tabelaRef.current;
+    if (tabela && tabela.getBoundingClientRect().top < 0) {
+      tabela.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  }
+  
   const exibirValorAPagar = faturamentoDe !== undefined;
   if (motoristas.length === 0) {
     return (
@@ -35,14 +54,25 @@ export function RankingList({ motoristas, filtroAtivo, onMotoristaClick, faturam
     );
   }
 
+  useEffect(() => {
+    setPaginaEscolhida(1);
+  }, [motoristas]);
+
   const destacarViagens = filtroAtivo === "VIAGENS";
   const destacarRentabilidade = filtroAtivo === "RENTABILIDADE" || filtroAtivo === "TIPO_VEICULO";
   const destacarFaturamento = filtroAtivo === "FATURAMENTO";
 
   return (
-    <div className="overflow-hidden rounded-lg bg-surface">
+    <div className="flex flex-wrap items-baseline justify-between overflow-hidden rounded-lg bg-surface px-6 ">
       <h2 className="px-6 pb-4 pt-5 text-lg font-semibold text-fg">Equipe de motoristas</h2>
-      <div className="overflow-x-auto">
+      {motoristas.length > 0 && (
+          <p className="text-sm tabular-nums text-fg-subtle">
+            {inicio + 1}–{inicio + motoristasDaPagina.length} de {motoristas.length}{" "}
+            {motoristas.length === 1 ? "motorista" : "motoristas"}
+          </p>
+        )}
+        
+      <div ref={tabelaRef} className="overflow-x-auto">
         <table className={`w-full ${exibirValorAPagar ? "min-w-[1020px]" : "min-w-[840px]"} table-fixed`}>
           <colgroup>
             <col className={exibirValorAPagar ? "w-[24%]" : "w-[28%]"} />
@@ -63,7 +93,7 @@ export function RankingList({ motoristas, filtroAtivo, onMotoristaClick, faturam
             </tr>
           </thead>
           <tbody className="divide-y divide-border">
-            {motoristas.map(({ posicao, motorista }) => {
+            {motoristasDaPagina.map(({ posicao, motorista }) => {
               const id = motorista.motoristaId;
               const selecionar = onMotoristaClick && id !== null
                 ? () => onMotoristaClick(id)
@@ -115,6 +145,15 @@ export function RankingList({ motoristas, filtroAtivo, onMotoristaClick, faturam
             })}
           </tbody>
         </table>
+        {totalPaginas > 1 && (
+                <div className="border-t border-border px-6 py-4">
+                  <Paginacao
+                    paginaAtual={pagina}
+                    totalPaginas={totalPaginas}
+                    onMudarPagina={mudarPagina}
+                  />
+                </div>
+              )}
       </div>
     </div>
   );
