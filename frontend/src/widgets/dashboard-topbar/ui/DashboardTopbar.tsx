@@ -35,7 +35,7 @@ export function DashboardTopbar({
   return (
     <header className="mb-7 flex flex-col gap-5">
       <PageHeader
-        title="cuzinho"
+        title="Dashboard"
         subtitle="Visão geral de viagens, motoristas e veículos"
         onMenuClick={onMenuClick}
         perfil={<MenuPerfil />}
