@@ -8,7 +8,12 @@ export type {
   ViagemHistorico,
   PaginaHistoricoViagens,
 } from "./model/types";
-export { getViagensData, getRentabilidade, getRankingDestinos } from "./api/viagemService";
+export {
+  buscarDataMaisRecente,
+  getViagensData,
+  getRentabilidade,
+  getRankingDestinos,
+} from "./api/viagemService";
 export { buscarHistoricoViagens } from "./api/historicoViagensService";
 export { StatusViagemBadge } from "./ui/StatusViagemBadge";
 export { StatusHistoricoBadge } from "./ui/StatusHistoricoBadge";

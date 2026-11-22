@@ -1,19 +1,18 @@
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { useSearchParams } from "react-router-dom";
-import type { PeriodOption } from "@entities/dashboard-metrics";
 import type { ResultadoImportacao } from "@features/enviar-relatorio/api/importarManifesto";
 import { podeVerValoresMonetarios, useSessao } from "@entities/sessao";
 import { Sidebar } from "@widgets/sidebar";
 import { DashboardTopbar, type GuiaDashboard } from "@widgets/dashboard-topbar";
 import { DashboardOverview } from "@widgets/dashboard-overview";
 import { formatDateRange } from "@shared/lib";
+import { usePeriodoSalvo, type PeriodoSalvo } from "@features/period-filter";
 import {
   deslocarReferencia,
   intervaloDoPeriodo,
   podeAvancarPeriodo,
   referenciaDaDataIso,
 } from "../lib/intervaloDoPeriodo";
-import { lerFiltroSalvo, salvarFiltro } from "../lib/filtroSalvo";
 import { mesDaReferencia, rotuloDoMes } from "../lib/mesDaReferencia";
 import { useDashboard } from "../model/useDashboard";
 import { useRentabilidadePorTipo } from "../model/useRentabilidadePorTipo";
@@ -25,13 +24,18 @@ const MENSAGEM_CLASS =
   "rounded-md bg-surface p-6 text-center text-sm text-fg-subtle";
 
 export function DashboardPage() {
-  const [filtroSalvo] = useState(() => lerFiltroSalvo());
-  const [period, setPeriod] = useState<PeriodOption>(
-    filtroSalvo?.periodo ?? "mes",
-  );
-  const [referencia, setReferencia] = useState(
-    () => filtroSalvo?.referencia ?? new Date(),
-  );
+  const periodoSalvo = usePeriodoSalvo("dashboard");
+  if (!periodoSalvo.pronto) return null;
+  return <DashboardConteudo periodoSalvo={periodoSalvo} />;
+}
+
+function DashboardConteudo({ periodoSalvo }: { periodoSalvo: PeriodoSalvo }) {
+  const {
+    periodo: period,
+    setPeriodo: setPeriod,
+    referencia,
+    setReferencia,
+  } = periodoSalvo;
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [versaoFrota, setVersaoFrota] = useState(0);
   const [parametros, setParametros] = useSearchParams();
@@ -43,10 +47,6 @@ export function DashboardPage() {
       replace: true,
     });
   }
-
-  useEffect(() => {
-    salvarFiltro({ periodo: period, referencia });
-  }, [period, referencia]);
 
   const intervalo = useMemo(
     () => intervaloDoPeriodo(period, referencia),

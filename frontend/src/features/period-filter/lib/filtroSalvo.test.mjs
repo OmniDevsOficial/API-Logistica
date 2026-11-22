@@ -14,8 +14,8 @@ function armazenamentoFalso(inicial = {}) {
 test('guarda o periodo e a referencia e le de volta o mesmo filtro', () => {
   const armazenamento = armazenamentoFalso();
 
-  salvarFiltro({ periodo: 'mes', referencia: new Date(2026, 7, 1) }, armazenamento);
-  const filtro = lerFiltroSalvo(armazenamento);
+  salvarFiltro('dashboard', { periodo: 'mes', referencia: new Date(2026, 7, 1) }, armazenamento);
+  const filtro = lerFiltroSalvo('dashboard', armazenamento);
 
   assert.equal(filtro.periodo, 'mes');
   assert.equal(filtro.referencia.getFullYear(), 2026);
@@ -26,7 +26,7 @@ test('guarda o periodo e a referencia e le de volta o mesmo filtro', () => {
 test('salva a referencia como data local, sem deslocar o dia pelo fuso', () => {
   const armazenamento = armazenamentoFalso();
 
-  salvarFiltro({ periodo: 'dia', referencia: new Date(2026, 7, 16, 23, 30) }, armazenamento);
+  salvarFiltro('dashboard', { periodo: 'dia', referencia: new Date(2026, 7, 16, 23, 30) }, armazenamento);
 
   assert.deepEqual(
     JSON.parse(Object.values(armazenamento.dados)[0]),
@@ -34,8 +34,8 @@ test('salva a referencia como data local, sem deslocar o dia pelo fuso', () => {
   );
 });
 
-test('sem filtro salvo nao devolve nada, para a tela abrir no mes atual', () => {
-  assert.equal(lerFiltroSalvo(armazenamentoFalso()), null);
+test('sem filtro salvo nao devolve nada, para a tela buscar o periodo com dados', () => {
+  assert.equal(lerFiltroSalvo('dashboard', armazenamentoFalso()), null);
 });
 
 test('ignora filtro salvo corrompido ou fora do formato', () => {
@@ -46,7 +46,7 @@ test('ignora filtro salvo corrompido ou fora do formato', () => {
     JSON.stringify({ periodo: 'mes' }),
   ]) {
     const armazenamento = armazenamentoFalso({ 'newelog.dashboard.filtro': salvo });
-    assert.equal(lerFiltroSalvo(armazenamento), null);
+    assert.equal(lerFiltroSalvo('dashboard', armazenamento), null);
   }
 });
 
@@ -56,7 +56,19 @@ test('navegador sem armazenamento disponivel nao quebra a tela', () => {
     setItem: () => { throw new Error('bloqueado'); },
   };
 
-  assert.equal(lerFiltroSalvo(bloqueado), null);
+  assert.equal(lerFiltroSalvo('dashboard', bloqueado), null);
   assert.doesNotThrow(() =>
-    salvarFiltro({ periodo: 'mes', referencia: new Date(2026, 7, 1) }, bloqueado));
+    salvarFiltro('dashboard', { periodo: 'mes', referencia: new Date(2026, 7, 1) }, bloqueado));
+});
+
+test('cada tela guarda o proprio filtro', () => {
+  const armazenamento = armazenamentoFalso();
+
+  salvarFiltro('dashboard', { periodo: 'mes', referencia: new Date(2026, 7, 1) }, armazenamento);
+  salvarFiltro('ranking', { periodo: 'ano', referencia: new Date(2026, 3, 1) }, armazenamento);
+
+  assert.equal(lerFiltroSalvo('dashboard', armazenamento).periodo, 'mes');
+  assert.equal(lerFiltroSalvo('ranking', armazenamento).periodo, 'ano');
+  assert.equal(lerFiltroSalvo('viagens', armazenamento), null);
+  assert.ok('newelog.dashboard.filtro' in armazenamento.dados);
 });
