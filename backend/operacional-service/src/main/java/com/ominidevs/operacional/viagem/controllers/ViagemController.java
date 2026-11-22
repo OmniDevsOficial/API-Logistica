@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.ominidevs.operacional.viagem.dto.DataMaisRecenteResponse;
 import com.ominidevs.operacional.viagem.dto.RankingDestinoResponse;
 import com.ominidevs.operacional.viagem.dto.RentabilidadeMotoristaResponse;
 import com.ominidevs.operacional.viagem.dto.ViagemResponseDTO;
@@ -29,6 +30,11 @@ public class ViagemController {
 
     public ViagemController(ViagemService viagemService) {
         this.viagemService = viagemService;
+    }
+
+    @GetMapping("/data-mais-recente")
+    public ResponseEntity<DataMaisRecenteResponse> dataMaisRecente() {
+        return ResponseEntity.ok(new DataMaisRecenteResponse(viagemService.dataMaisRecente()));
     }
 
     @GetMapping("/{manifesto}/rentabilidade")

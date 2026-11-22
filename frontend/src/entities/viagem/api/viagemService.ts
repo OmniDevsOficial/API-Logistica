@@ -35,3 +35,10 @@ export async function getRankingDestinos(
   if (!response.ok) throw new Error("Não foi possível carregar o ranking de destinos.");
   return (await response.json()) as RankingDestino[];
 }
+
+export async function buscarDataMaisRecente(signal?: AbortSignal): Promise<string | null> {
+  const response = await apiFetch("/api/operacional/viagens/data-mais-recente", { signal });
+  if (!response.ok) throw new Error("Não foi possível consultar a data mais recente.");
+  const { data } = (await response.json()) as { data: string | null };
+  return data;
+}

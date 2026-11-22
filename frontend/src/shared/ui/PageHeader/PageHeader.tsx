@@ -4,16 +4,18 @@ import { alternarTema, useTema } from "@shared/lib";
 
 export interface PageHeaderProps {
   title: string;
+  subtitle: string;
   onMenuClick: () => void;
   notificacoes?: ReactNode;
   /** Ações da página (ex.: botão de importação), exibidas antes dos ícones. */
   acoes?: ReactNode;
+  perfil?: ReactNode;
 }
 
 const ICON_BUTTON_CLASS =
   "flex h-10 w-10 shrink-0 cursor-pointer items-center justify-center rounded-full bg-surface text-fg hover:text-fg-muted";
 
-export function PageHeader({ title, onMenuClick, notificacoes, acoes }: PageHeaderProps) {
+export function PageHeader({ title, subtitle, onMenuClick, notificacoes, acoes, perfil }: PageHeaderProps) {
   const escuro = useTema() === "escuro";
 
   return (
@@ -27,7 +29,11 @@ export function PageHeader({ title, onMenuClick, notificacoes, acoes }: PageHead
         >
           <Menu size={18} />
         </button>
+        <div className="min-w-0 truncate">
         <h1 className="min-w-0 truncate text-2xl font-semibold text-fg sm:text-[28px]">{title}</h1>
+        
+        <p className="text-fg-subtle">{subtitle}</p>
+        </div>
       </div>
 
       <div className="flex shrink-0 items-center gap-3">
@@ -50,9 +56,11 @@ export function PageHeader({ title, onMenuClick, notificacoes, acoes }: PageHead
             <Bell size={18} />
           </button>
         )}
-        <div className="flex h-10 w-10 items-center justify-center rounded-full bg-border text-fg-muted">
-          <User size={18} />
-        </div>
+        {perfil ?? (
+          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-border text-fg-muted">
+            <User size={18} />
+          </div>
+        )}
       </div>
     </div>
   );

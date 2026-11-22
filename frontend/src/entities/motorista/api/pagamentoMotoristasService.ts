@@ -1,5 +1,6 @@
 import { apiFetch } from "../../../shared/api/apiFetch.ts";
-import type { PagamentoMotorista } from "../model/types";
+import type { PagamentoMotorista, PeriodoRanking } from "../model/types";
+import { parametrosDoPeriodo } from "../lib/parametrosDoPeriodo.ts";
 
 /**
  * Valor a pagar por motorista no mês. Exclusivo do perfil Gestor.
@@ -26,15 +27,15 @@ function validarItem(item: unknown): boolean {
 /**
  * Busca o pagamento consolidado de cada motorista no mês.
  *
- * @param mes Mês no formato AAAA-MM.
- * @param signal Cancela a requisição quando o mês muda.
+ * @param periodo Mês no formato AAAA-MM ou intervalo dataInicio/dataFim (dd/MM/aaaa).
+ * @param signal Cancela a requisição quando o período muda.
  * @returns Um item por motorista com viagens no mês.
  */
 export async function buscarPagamentoMotoristas(
-  mes: string,
+  periodo: PeriodoRanking,
   signal?: AbortSignal,
 ): Promise<PagamentoMotorista[]> {
-  const parametros = new URLSearchParams({ mes });
+  const parametros = new URLSearchParams(parametrosDoPeriodo(periodo));
   const resposta = await apiFetch(`${ENDPOINT}?${parametros}`, { signal });
 
   if (!resposta.ok) {

@@ -3,6 +3,7 @@ export {
   podeAcessar,
   podeImportarVeiculos,
   podeVerAlertasUtilizacao,
+  podeVerCadastroUsuarios,
   podeVerValoresMonetarios,
   rotaInicial,
 } from "./model/permissoes";

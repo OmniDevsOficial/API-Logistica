@@ -8,6 +8,9 @@ export type {
   PagamentoMotorista,
   RankingColocacao,
   RankingMotorista,
+  FiltroRanking,
+  PeriodoRanking,
+  ResultadoRankingMotoristas,
   StatusEquipe,
 } from "./model/types";
 export { buscarAlertasUtilizacao } from "./api/alertaUtilizacaoService";
