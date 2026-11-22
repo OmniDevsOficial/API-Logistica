@@ -7,7 +7,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
+import com.ominidevs.operacional.indicadores.exceptions.IndicadorInvalidoException;
 import com.ominidevs.operacional.veiculo.controllers.VeiculoController;
 
 /**
@@ -21,6 +23,21 @@ public class VeiculoExceptionHandler {
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
                 .body(Map.of("erro", ex.getMessage()));
+    }
+
+    @ExceptionHandler(ParametroFrotaInvalidoException.class)
+    public ResponseEntity<Map<String, String>> parametroInvalido(ParametroFrotaInvalidoException ex) {
+        return ResponseEntity.badRequest().body(Map.of("erro", ex.getMessage()));
+    }
+
+    @ExceptionHandler(IndicadorInvalidoException.class)
+    public ResponseEntity<Map<String, String>> periodoInvalido(IndicadorInvalidoException ex) {
+        return ResponseEntity.badRequest().body(Map.of("erro", ex.getMessage()));
+    }
+
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    public ResponseEntity<Map<String, String>> parametroNaoNumerico(MethodArgumentTypeMismatchException ex) {
+        return ResponseEntity.badRequest().body(Map.of("erro", "O parâmetro " + ex.getName() + " é inválido."));
     }
 
     @ExceptionHandler(VeiculoNaoEncontradoException.class)

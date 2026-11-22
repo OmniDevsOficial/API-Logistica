@@ -27,7 +27,7 @@ public class UsuarioExceptionHandler {
 
     private static final Logger LOG = LoggerFactory.getLogger(UsuarioExceptionHandler.class);
     private static final String CAMPOS_INVALIDOS = "Campos inválidos.";
-    private static final List<String> ORDEM_CAMPOS = List.of("nome", "email", "perfil", "senha");
+    private static final List<String> ORDEM_CAMPOS = List.of("nome", "email", "perfil", "senha", "ativo");
     private static final List<String> PRIORIDADE_REGRAS = List.of("NotBlank", "NotEmpty", "Size", "Pattern");
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
@@ -55,6 +55,16 @@ public class UsuarioExceptionHandler {
 
     @ExceptionHandler(EmailEmUsoException.class)
     public ResponseEntity<Map<String, Object>> emailEmUso(EmailEmUsoException ex) {
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(Map.of("erro", ex.getMessage()));
+    }
+
+    @ExceptionHandler(UsuarioNaoEncontradoException.class)
+    public ResponseEntity<Map<String, Object>> naoEncontrado(UsuarioNaoEncontradoException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("erro", ex.getMessage()));
+    }
+
+    @ExceptionHandler(AutoDesativacaoException.class)
+    public ResponseEntity<Map<String, Object>> autoDesativacao(AutoDesativacaoException ex) {
         return ResponseEntity.status(HttpStatus.CONFLICT).body(Map.of("erro", ex.getMessage()));
     }
 

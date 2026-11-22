@@ -14,10 +14,13 @@ import org.springframework.transaction.annotation.Transactional;
 import com.ominidevs.autenticacao.auth.entities.Perfil;
 import com.ominidevs.autenticacao.auth.entities.Usuario;
 import com.ominidevs.autenticacao.auth.repositories.UsuarioRepository;
+import com.ominidevs.autenticacao.usuarios.dto.AlterarStatusRequest;
 import com.ominidevs.autenticacao.usuarios.dto.CriarUsuarioRequest;
 import com.ominidevs.autenticacao.usuarios.dto.UsuarioResponse;
+import com.ominidevs.autenticacao.usuarios.exceptions.AutoDesativacaoException;
 import com.ominidevs.autenticacao.usuarios.exceptions.CamposInvalidosException;
 import com.ominidevs.autenticacao.usuarios.exceptions.EmailEmUsoException;
+import com.ominidevs.autenticacao.usuarios.exceptions.UsuarioNaoEncontradoException;
 
 @Service
 public class UsuarioService {
@@ -62,5 +65,17 @@ public class UsuarioService {
     @Transactional(readOnly = true)
     public List<UsuarioResponse> listar() {
         return repository.findAll(POR_NOME).stream().map(UsuarioResponse::de).toList();
+    }
+
+    @Transactional
+    public UsuarioResponse alterarStatus(Integer id, AlterarStatusRequest request, String emailDoGestor) {
+        Usuario usuario = repository.findById(id).orElseThrow(UsuarioNaoEncontradoException::new);
+
+        if (!request.ativo() && usuario.getEmail().equalsIgnoreCase(emailDoGestor)) {
+            throw new AutoDesativacaoException();
+        }
+
+        usuario.alterarAtivo(request.ativo());
+        return UsuarioResponse.de(repository.saveAndFlush(usuario));
     }
 }

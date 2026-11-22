@@ -4,6 +4,7 @@ import type { Credenciais } from "../lib/validarCredenciais";
 const ENDPOINT = "/api/autenticacao/auth/login";
 
 const CREDENCIAIS_INVALIDAS = "E-mail ou senha inválidos.";
+const ACESSO_DESATIVADO = "Seu acesso está desativado. Fale com o gestor.";
 const SERVICO_INDISPONIVEL =
   "Não foi possível entrar no momento. Tente novamente em instantes.";
 
@@ -26,9 +27,8 @@ export async function autenticar(credenciais: Credenciais): Promise<void> {
     throw new ErroLogin(SERVICO_INDISPONIVEL);
   }
 
-  if (resposta.status === 401 || resposta.status === 403) {
-    throw new ErroLogin(CREDENCIAIS_INVALIDAS);
-  }
+  if (resposta.status === 401) throw new ErroLogin(CREDENCIAIS_INVALIDAS);
+  if (resposta.status === 403) throw new ErroLogin(ACESSO_DESATIVADO);
   if (!resposta.ok) throw new ErroLogin(SERVICO_INDISPONIVEL);
 
   const dados: unknown = await resposta.json().catch(() => null);

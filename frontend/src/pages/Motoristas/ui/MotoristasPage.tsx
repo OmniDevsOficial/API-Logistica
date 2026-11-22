@@ -1,8 +1,9 @@
 import { useMemo, useState } from "react";
 import { atualizarStatusMotorista } from "@entities/motorista";
-import type { StatusEquipe } from "@entities/motorista";
+import type { MotoristaEquipe, StatusEquipe } from "@entities/motorista";
 import { Sidebar } from "@widgets/sidebar";
 import { SinoNotificacoes } from "@features/alerta-utilizacao";
+import { ModalHistoricoViagens } from "@features/historico-viagens";
 import { PageHeader } from "@shared/ui";
 import {
   EquipeStatCards,
@@ -14,6 +15,12 @@ import {
   chaveNomeMotorista,
   useRentabilidadeMotoristas,
 } from "../model/useRentabilidadeMotoristas";
+import { MenuPerfil } from "@features/menu-perfil";
+
+interface MotoristaSelecionado {
+  id: number;
+  nome: string;
+}
 
 const ESTADO_LISTA =
   "rounded-md bg-surface p-6 text-center text-sm text-fg-subtle";
@@ -24,6 +31,9 @@ export function MotoristasPage() {
   const [filtroStatus, setFiltroStatus] = useState<StatusEquipe | null>(null);
   const [statusSalvando, setStatusSalvando] = useState<number | null>(null);
   const [erroStatus, setErroStatus] = useState<string | null>(null);
+  const [motoristaHistorico, setMotoristaHistorico] =
+    useState<MotoristaSelecionado | null>(null);
+  const [historicoAberto, setHistoricoAberto] = useState(false);
 
   const { dados, carregando, erro, recarregar } =
     useEquipeMotoristas(filtroStatus);
@@ -66,6 +76,11 @@ export function MotoristasPage() {
     }
   }
 
+  function abrirHistorico(motorista: MotoristaEquipe) {
+    setMotoristaHistorico({ id: motorista.id, nome: motorista.nome });
+    setHistoricoAberto(true);
+  }
+
   return (
     <div className="min-h-screen">
       <Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
@@ -75,6 +90,7 @@ export function MotoristasPage() {
           <PageHeader
             title="Motoristas"
             onMenuClick={() => setSidebarOpen(true)}
+            perfil={<MenuPerfil />}
             notificacoes={<SinoNotificacoes />}
           />
 
@@ -118,9 +134,17 @@ export function MotoristasPage() {
               chaveNomeMotorista={chaveNomeMotorista}
               statusSalvando={statusSalvando}
               onStatusChange={alterarStatus}
+              onMotoristaClick={abrirHistorico}
             />
           </div>
         ) : null}
+
+        <ModalHistoricoViagens
+          motoristaId={motoristaHistorico?.id ?? null}
+          nome={motoristaHistorico?.nome ?? ""}
+          open={historicoAberto}
+          onClose={() => setHistoricoAberto(false)}
+        />
       </main>
     </div>
   );
