@@ -14,6 +14,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.ominidevs.operacional.importacao.dto.ResumoImportacao;
+import com.ominidevs.operacional.importacao.entities.TipoImportacao;
+import com.ominidevs.operacional.importacao.services.ImportacaoHistoricoService;
 import com.ominidevs.operacional.motorista.entities.Motorista;
 import com.ominidevs.operacional.motorista.entities.StatusMotorista;
 import com.ominidevs.operacional.motorista.model.NomeMotorista;
@@ -49,15 +52,18 @@ public class ImportacaoVeiculoService {
     private final LeitorCsvVeiculo leitor;
     private final VeiculoRepository veiculoRepository;
     private final MotoristaRepository motoristaRepository;
+    private final ImportacaoHistoricoService historico;
 
     public ImportacaoVeiculoService(
             LeitorCsvVeiculo leitor,
             VeiculoRepository veiculoRepository,
-            MotoristaRepository motoristaRepository
+            MotoristaRepository motoristaRepository,
+            ImportacaoHistoricoService historico
     ) {
         this.leitor = leitor;
         this.veiculoRepository = veiculoRepository;
         this.motoristaRepository = motoristaRepository;
+        this.historico = historico;
     }
 
     /**
@@ -70,6 +76,18 @@ public class ImportacaoVeiculoService {
      */
     @Transactional
     public ImportacaoVeiculoResponse importar(MultipartFile arquivo) {
+        try {
+            return importarERegistrarHistorico(arquivo);
+        } catch (RuntimeException excecao) {
+            // Arquivo inválido ou falha na gravação: a tentativa entra no
+            // histórico como ERRO. Transação própria para sobreviver ao
+            // rollback desta importação.
+            historico.registrarFalha(TipoImportacao.VEICULO, arquivo);
+            throw excecao;
+        }
+    }
+
+    private ImportacaoVeiculoResponse importarERegistrarHistorico(MultipartFile arquivo) {
         PlanilhaVeiculos planilha = leitor.ler(arquivo);
         List<LinhaCsvVeiculo> linhas = planilha.linhas();
 
@@ -88,15 +106,18 @@ public class ImportacaoVeiculoService {
 
         List<Motorista> motoristasNovos = new ArrayList<>();
         List<Veiculo> veiculos = new ArrayList<>();
-        int cadastrados = 0;
+        int criados = 0;
+        int atualizados = 0;
+        int ignorados = 0;
         int semMotorista = 0;
         LocalDateTime importadoEm = LocalDateTime.now();
 
         for (LinhaCsvVeiculo linha : validas) {
             Veiculo veiculo = existentes.get(linha.placa());
+            EstadoAnterior antes = veiculo == null ? null : EstadoAnterior.de(veiculo);
             if (veiculo == null) {
                 veiculo = new Veiculo(linha.placa());
-                cadastrados++;
+                criados++;
             }
 
             Motorista motorista = resolverMotorista(
@@ -108,6 +129,13 @@ public class ImportacaoVeiculoService {
             veiculo.setTipo(linha.tipo());
             veiculo.setMotorista(motorista);
             aplicarColunasOpcionais(planilha, linha, veiculo, avisos);
+            if (antes != null) {
+                if (antes.mudou(veiculo, planilha)) {
+                    atualizados++;
+                } else {
+                    ignorados++;
+                }
+            }
             veiculo.setAtualizadoEm(importadoEm);
             veiculos.add(veiculo);
         }
@@ -115,15 +143,62 @@ public class ImportacaoVeiculoService {
         motoristaRepository.saveAll(motoristasNovos);
         veiculoRepository.saveAll(veiculos);
 
+        historico.registrar(TipoImportacao.VEICULO, arquivo,
+                new ResumoImportacao(criados, atualizados, ignorados, erros.size()));
+
         return new ImportacaoVeiculoResponse(
                 linhas.size(),
-                cadastrados,
-                veiculos.size() - cadastrados,
+                criados,
+                veiculos.size() - criados,
                 motoristasNovos.size(),
                 semMotorista,
                 erros.size(),
                 erros,
                 avisos);
+    }
+
+    /**
+     * Valores do veículo antes da linha ser aplicada. É o que permite contar
+     * a linha como atualizada (algo mudou) ou ignorada (já estava igual) sem
+     * alterar nada do que é gravado.
+     *
+     * <p>Só entram na comparação as colunas que existem na planilha: sem a
+     * coluna "Marca", por exemplo, a marca antiga é mantida e não conta como
+     * mudança.
+     */
+    private record EstadoAnterior(
+            String tipo,
+            String marca,
+            String modelo,
+            Boolean ativo,
+            Integer motoristaId,
+            String combustivel,
+            Map<String, String> dadosAdicionais) {
+
+        static EstadoAnterior de(Veiculo veiculo) {
+            Motorista motorista = veiculo.getMotorista();
+            return new EstadoAnterior(
+                    veiculo.getTipo(),
+                    veiculo.getMarca(),
+                    veiculo.getModelo(),
+                    veiculo.getAtivo(),
+                    motorista == null ? null : motorista.getId(),
+                    veiculo.getCombustivel(),
+                    new HashMap<>(veiculo.getDadosAdicionais()));
+        }
+
+        boolean mudou(Veiculo veiculo, PlanilhaVeiculos planilha) {
+            Motorista motoristaAtual = veiculo.getMotorista();
+            Integer idAtual = motoristaAtual == null ? null : motoristaAtual.getId();
+            return !Objects.equals(tipo, veiculo.getTipo())
+                    || !Objects.equals(motoristaId, idAtual)
+                    || (planilha.possuiMarca() && !Objects.equals(marca, veiculo.getMarca()))
+                    || (planilha.possuiModelo() && !Objects.equals(modelo, veiculo.getModelo()))
+                    || (planilha.possuiStatus() && !Objects.equals(ativo, veiculo.getAtivo()))
+                    || (planilha.possuiCombustivel() && !Objects.equals(combustivel, veiculo.getCombustivel()))
+                    || (planilha.possuiDadosAdicionais()
+                            && !Objects.equals(dadosAdicionais, veiculo.getDadosAdicionais()));
+        }
     }
 
     /**

@@ -68,6 +68,8 @@ public class SegurancaConfig {
                         .requestMatchers(HttpMethod.GET, "/veiculos/frota", "/veiculos/resumo").hasRole(GESTOR)
                         // Gestor e operador consultam e importam a frota.
                         .requestMatchers("/veiculos", "/veiculos/**").hasAnyRole(GESTOR, OPERADOR)
+                        // Tela Registros: quem também pode importar vê o histórico.
+                        .requestMatchers(HttpMethod.GET, "/importacoes").hasAnyRole(GESTOR, OPERADOR)
                         .anyRequest().authenticated())
                 .oauth2ResourceServer(oauth2 -> oauth2
                         .jwt(jwt -> jwt.jwtAuthenticationConverter(conversorDePerfil()))

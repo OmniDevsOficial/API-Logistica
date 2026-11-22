@@ -5,6 +5,7 @@ import { ModalEnviarRelatorio } from "../../enviar-relatorio/ui/ModalEnviarRelat
 import type { ResultadoImportacaoVeiculos } from "../../importar-veiculos/api/importarVeiculos";
 import { ModalImportarVeiculos } from "../../importar-veiculos/ui/ModalImportarVeiculos";
 import { validarPlanilhaDoTipo } from "../lib/validarPlanilhaDoTipo";
+import { avisarImportacaoConcluida } from "../lib/avisoImportacaoConcluida";
 import { SeletorTipoPlanilha } from "./SeletorTipoPlanilha";
 
 interface ModalImportarDadosProps {
@@ -35,7 +36,10 @@ export function ModalImportarDados({
       seletor={seletor}
       validarArquivo={validarArquivo}
       onFechar={onFechar}
-      onImportado={onManifestoImportado}
+      onImportado={(resultado) => {
+        avisarImportacaoConcluida("manifesto");
+        onManifestoImportado?.(resultado);
+      }}
     />
   ) : (
     <ModalImportarVeiculos
@@ -43,7 +47,10 @@ export function ModalImportarDados({
       seletor={seletor}
       validarArquivo={validarArquivo}
       onFechar={onFechar}
-      onImportado={onVeiculosImportados}
+      onImportado={(resultado) => {
+        avisarImportacaoConcluida("veiculos");
+        onVeiculosImportados?.(resultado);
+      }}
     />
   );
 }
