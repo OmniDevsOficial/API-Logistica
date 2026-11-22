@@ -136,10 +136,15 @@ export function Sidebar({
             <button
               type="button"
               onClick={abrirUpload}
-              className="mb-3 inline-flex w-full cursor-pointer items-center justify-center gap-2 whitespace-nowrap rounded-md bg-primary px-5 py-3 text-sm font-semibold text-white transition-colors duration-150 hover:bg-primary-dark"
+              className="group mb-4 flex w-full cursor-pointer flex-col items-center gap-1 rounded-xl border border-dashed border-primary/40 bg-primary/5 px-3 pt-4 pb-3.5 text-center transition-colors duration-150 hover:border-primary hover:bg-primary/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
             >
-              <Upload size={16} aria-hidden="true" />
-              Upload
+              <span className="mb-1.5 flex h-10 w-10 items-center justify-center rounded-full bg-primary text-white shadow-md shadow-primary/30 transition-transform duration-150 group-hover:-translate-y-0.5">
+                <Upload size={18} strokeWidth={2.25} aria-hidden="true" />
+              </span>
+              <span className="text-sm font-semibold text-fg">Importar dados</span>
+              <span className="text-xs leading-snug text-fg-muted">
+                Manifesto ou veículos
+              </span>
             </button>
           )}
           {podeVerAdministracao && (
