@@ -53,11 +53,9 @@ public class RankingMotoristaService {
     }
 
     public RankingMotoristasResultado ranking(PeriodoConsulta periodo, FiltroRankingMotorista filtro, String tipoVeiculo) {
-        String tipoNormalizado = tipoVeiculo == null || tipoVeiculo.isBlank()
-                ? null : tipoVeiculo.trim().toUpperCase(Locale.ROOT);
         // [inicio, fim] do período vira o semiaberto [inicio, fim + 1) do SQL.
         List<RankingMotoristaLinha> linhas = repository.consultar(
-                periodo.inicio(), periodo.fim().plusDays(1), tipoNormalizado);
+                periodo.inicio(), periodo.fim().plusDays(1), tipoVeiculo);
         List<String> tiposDisponiveis = repository.tiposDisponiveis(periodo.inicio(), periodo.fim().plusDays(1));
 
         if (linhas.isEmpty()) {
@@ -65,7 +63,7 @@ public class RankingMotoristaService {
         }
 
         List<RankingMotoristaResponse> ordenado = linhas.stream()
-                .map(linha -> paraResponse(linha, tipoNormalizado))
+                .map(this::paraResponse)
                 .sorted(comparator(filtro))
                 .toList();
 
@@ -74,6 +72,14 @@ public class RankingMotoristaService {
                 .mapToObj(indice -> comPosicao(ordenado.get(indice), indice + 1))
                 .toList();
         return new RankingMotoristasResultado(posicionados, tiposDisponiveis);
+    }
+
+    private Comparator<RankingMotoristaResponse> comparator(FiltroRankingMotorista filtro) {
+        return switch (filtro) {
+            case RENTABILIDADE, TIPO_VEICULO -> POR_RENTABILIDADE;
+            case FATURAMENTO -> POR_FATURAMENTO;
+            case VIAGENS -> POR_VIAGENS;
+        };
     }
 
     private Comparator<RankingMotoristaResponse> comparator(FiltroRankingMotorista filtro) {
@@ -88,6 +94,7 @@ public class RankingMotoristaService {
         // Cada grupo nasce de pelo menos uma viagem, então o divisor nunca é zero.
         BigDecimal media = linha.rentabilidadeTotal()
                 .divide(BigDecimal.valueOf(linha.quantidadeViagens()), 2, RoundingMode.HALF_UP);
+        BigDecimal frequencia = Porcentagem.calcular(linha.diasComViagem(), 30);
         return new RankingMotoristaResponse(
                 0,
                 linha.motoristaId(),

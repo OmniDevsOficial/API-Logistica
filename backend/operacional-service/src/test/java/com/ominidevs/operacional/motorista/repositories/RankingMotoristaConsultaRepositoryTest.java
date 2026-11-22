@@ -127,7 +127,7 @@ class RankingMotoristaConsultaRepositoryTest {
 
         RankingMotoristaResponse item = service.ranking(
                 new PeriodoConsulta(LocalDate.of(2026, 9, 1), LocalDate.of(2026, 9, 30)),
-                com.ominidevs.operacional.motorista.dto.FiltroRankingMotorista.RENTABILIDADE, null)
+                com.ominidevs.operacional.motorista.services.FiltroRankingMotorista.RENTABILIDADE, null)
                 .ranking().getFirst();
         assertEquals("00123456789", item.cpf());
         assertNull(item.telefone());
@@ -218,25 +218,7 @@ class RankingMotoristaConsultaRepositoryTest {
         assertEquals(new BigDecimal("600.00"), truck.getFirst().rentabilidadeTotal());
         assertEquals(1, van.getFirst().quantidadeViagens());
         assertEquals(new BigDecimal("400.00"), van.getFirst().rentabilidadeTotal());
-        assertEquals(List.of("TRUCK", "VAN"), repository.tiposDisponiveis(
-                LocalDate.of(2026, 9, 1), LocalDate.of(2026, 10, 1)));
-    }
-
-    @Test
-    void normalizaTipoDeVeiculoParaFiltrarEDisponibilizar() {
-        Viagem truckComEspaco = viagem("2026-09-01", "Ana Silva", "00123456789", "ABC1D23",
-                "1000.00", "400.00");
-        truckComEspaco.setVeiculoTipo("Truck ");
-        Viagem truckMaiusculo = viagem("2026-09-02", "Bruno Dias", "22222222222", "DEF4E56",
-                "800.00", "300.00");
-        truckMaiusculo.setVeiculoTipo("TRUCK");
-        salvar(List.of(truckComEspaco, truckMaiusculo));
-
-        List<RankingMotoristaLinha> filtrado = repository.consultar(
-                LocalDate.of(2026, 9, 1), LocalDate.of(2026, 10, 1), "tRuCk");
-
-        assertEquals(2, filtrado.size());
-        assertEquals(List.of("TRUCK"), repository.tiposDisponiveis(
+        assertEquals(List.of("Truck", "Van"), repository.tiposDisponiveis(
                 LocalDate.of(2026, 9, 1), LocalDate.of(2026, 10, 1)));
     }
 
@@ -256,7 +238,7 @@ class RankingMotoristaConsultaRepositoryTest {
 
         List<RankingMotoristaResponse> ranking = service.ranking(
                 new PeriodoConsulta(LocalDate.of(2026, 2, 1), LocalDate.of(2026, 2, 28)),
-                com.ominidevs.operacional.motorista.dto.FiltroRankingMotorista.RENTABILIDADE, null).ranking();
+                com.ominidevs.operacional.motorista.services.FiltroRankingMotorista.RENTABILIDADE, null).ranking();
 
         assertEquals(List.of("Ana Silva", "Bruno Dias", "Zeca Lima"),
                 ranking.stream().map(RankingMotoristaResponse::nome).toList());

@@ -11,10 +11,11 @@ import {
 } from "lucide-react";
 import { useFiltroViagens } from "../model/useFiltroViagens";
 import { filtroVazio, type FiltroViagens } from "../model/types";
+import type { Viagem } from "@entities/viagem";
 
 type FiltrarViagensModalProps = {
   onClose: () => void;
-  onFiltroAplicado?: (resultado: any[]) => void;
+  onFiltroAplicado?: (resultado: Viagem[]) => void;
   onFiltroLimpo?: () => void;
   filtroModal: FiltroViagens;
   onFiltroModalChange: (filtro: FiltroViagens) => void;

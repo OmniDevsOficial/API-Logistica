@@ -29,6 +29,9 @@ import com.ominidevs.operacional.motorista.entities.StatusMotorista;
 import com.ominidevs.operacional.motorista.services.HistoricoViagemService;
 import com.ominidevs.operacional.motorista.services.MotoristaService;
 import com.ominidevs.operacional.motorista.services.RankingMotoristaService;
+import com.ominidevs.operacional.motorista.services.FiltroRankingMotorista;
+import org.springframework.web.server.ResponseStatusException;
+import org.springframework.http.HttpStatus;
 
 @CrossOrigin(origins = "http://localhost:5173")
 @RestController
@@ -102,14 +105,18 @@ public class MotoristaController {
     ) {
         FiltroRankingMotorista filtroRanking;
         try {
-            filtroRanking = filtro == null || filtro.isBlank() ? FiltroRankingMotorista.RENTABILIDADE
-                    : FiltroRankingMotorista.valueOf(filtro.trim().toUpperCase(java.util.Locale.ROOT));
+            filtroRanking = filtro == null ? FiltroRankingMotorista.RENTABILIDADE
+                    : FiltroRankingMotorista.valueOf(filtro);
         } catch (IllegalArgumentException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Filtro de ranking inválido");
         }
-        String tipoNormalizado = tipoVeiculo == null || tipoVeiculo.isBlank() ? null : tipoVeiculo.trim();
+        boolean filtroPorTipo = filtroRanking == FiltroRankingMotorista.TIPO_VEICULO;
+        if (filtroPorTipo != (tipoVeiculo != null && !tipoVeiculo.isBlank())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    "tipoVeiculo é obrigatório somente com filtro TIPO_VEICULO");
+        }
         return ResponseEntity.ok(rankingService.ranking(
-                periodoRanking(mes, dataInicio, dataFim), filtroRanking, tipoNormalizado));
+                periodoRanking(mes, dataInicio, dataFim), filtroRanking, tipoVeiculo));
     }
 
     @GetMapping("/{id}/viagens")

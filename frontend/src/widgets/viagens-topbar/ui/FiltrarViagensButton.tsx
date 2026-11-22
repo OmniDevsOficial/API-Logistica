@@ -2,9 +2,10 @@ import { useState } from "react";
 import { SlidersHorizontal } from "lucide-react";
 import { FiltrarViagensModal } from "./FiltrarViagensModal";
 import type { FiltroViagens } from "../model/types";
+import type { Viagem } from "@entities/viagem";
 
 type FiltrarViagensButtonProps = {
-  onFiltroAplicado?: (resultado: any[]) => void;
+  onFiltroAplicado?: (resultado: Viagem[]) => void;
   onFiltroLimpo?: () => void;
   filtroModal: FiltroViagens;
   onFiltroModalChange: (filtro: FiltroViagens) => void;

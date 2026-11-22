@@ -49,7 +49,7 @@ public class RankingMotoristaConsultaRepository {
             ) m ON true
             WHERE v.data >= ? AND v.data < ?
               AND NULLIF(TRIM(v.motorista), '') IS NOT NULL
-              AND (?::text IS NULL OR UPPER(TRIM(v.veiculo_tipo)) = UPPER(TRIM(?)))
+              AND (?::text IS NULL OR v.veiculo_tipo = ?)
             GROUP BY UPPER(TRIM(v.motorista))
             """.formatted(RentabilidadeService.EXPRESSAO_SQL);
 
@@ -80,11 +80,11 @@ public class RankingMotoristaConsultaRepository {
 
     public List<String> tiposDisponiveis(LocalDate inicio, LocalDate fimExclusivo) {
         return jdbc.queryForList("""
-                SELECT DISTINCT UPPER(TRIM(v.veiculo_tipo))
+                SELECT DISTINCT TRIM(v.veiculo_tipo)
                 FROM operacional.viagem v
                 WHERE v.data >= ? AND v.data < ?
                   AND NULLIF(TRIM(v.veiculo_tipo), '') IS NOT NULL
-                ORDER BY UPPER(TRIM(v.veiculo_tipo))
+                ORDER BY TRIM(v.veiculo_tipo)
                 """, String.class, Date.valueOf(inicio), Date.valueOf(fimExclusivo));
     }
 }
