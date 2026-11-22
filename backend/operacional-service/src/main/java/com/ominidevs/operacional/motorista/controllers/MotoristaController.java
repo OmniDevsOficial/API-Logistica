@@ -29,9 +29,6 @@ import com.ominidevs.operacional.motorista.entities.StatusMotorista;
 import com.ominidevs.operacional.motorista.services.HistoricoViagemService;
 import com.ominidevs.operacional.motorista.services.MotoristaService;
 import com.ominidevs.operacional.motorista.services.RankingMotoristaService;
-import com.ominidevs.operacional.motorista.services.FiltroRankingMotorista;
-import org.springframework.web.server.ResponseStatusException;
-import org.springframework.http.HttpStatus;
 
 @CrossOrigin(origins = "http://localhost:5173")
 @RestController

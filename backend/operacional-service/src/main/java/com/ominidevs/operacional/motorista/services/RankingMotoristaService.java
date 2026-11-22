@@ -4,7 +4,6 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Locale;
 import java.util.stream.IntStream;
 
 import org.springframework.stereotype.Service;
@@ -63,7 +62,7 @@ public class RankingMotoristaService {
         }
 
         List<RankingMotoristaResponse> ordenado = linhas.stream()
-                .map(this::paraResponse)
+                .map(linha -> paraResponse(linha, tipoVeiculo))
                 .sorted(comparator(filtro))
                 .toList();
 
@@ -82,19 +81,10 @@ public class RankingMotoristaService {
         };
     }
 
-    private Comparator<RankingMotoristaResponse> comparator(FiltroRankingMotorista filtro) {
-        return switch (filtro) {
-            case RENTABILIDADE -> POR_RENTABILIDADE;
-            case FATURAMENTO -> POR_FATURAMENTO;
-            case VIAGENS -> POR_VIAGENS;
-        };
-    }
-
     private RankingMotoristaResponse paraResponse(RankingMotoristaLinha linha, String tipoVeiculo) {
         // Cada grupo nasce de pelo menos uma viagem, então o divisor nunca é zero.
         BigDecimal media = linha.rentabilidadeTotal()
                 .divide(BigDecimal.valueOf(linha.quantidadeViagens()), 2, RoundingMode.HALF_UP);
-        BigDecimal frequencia = Porcentagem.calcular(linha.diasComViagem(), 30);
         return new RankingMotoristaResponse(
                 0,
                 linha.motoristaId(),

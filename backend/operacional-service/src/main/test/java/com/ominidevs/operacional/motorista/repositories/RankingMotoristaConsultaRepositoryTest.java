@@ -127,7 +127,7 @@ class RankingMotoristaConsultaRepositoryTest {
 
         RankingMotoristaResponse item = service.ranking(
                 new PeriodoConsulta(LocalDate.of(2026, 9, 1), LocalDate.of(2026, 9, 30)),
-                com.ominidevs.operacional.motorista.services.FiltroRankingMotorista.RENTABILIDADE, null)
+                com.ominidevs.operacional.motorista.dto.FiltroRankingMotorista.RENTABILIDADE, null)
                 .ranking().getFirst();
         assertEquals("00123456789", item.cpf());
         assertNull(item.telefone());
@@ -238,7 +238,7 @@ class RankingMotoristaConsultaRepositoryTest {
 
         List<RankingMotoristaResponse> ranking = service.ranking(
                 new PeriodoConsulta(LocalDate.of(2026, 2, 1), LocalDate.of(2026, 2, 28)),
-                com.ominidevs.operacional.motorista.services.FiltroRankingMotorista.RENTABILIDADE, null).ranking();
+                com.ominidevs.operacional.motorista.dto.FiltroRankingMotorista.RENTABILIDADE, null).ranking();
 
         assertEquals(List.of("Ana Silva", "Bruno Dias", "Zeca Lima"),
                 ranking.stream().map(RankingMotoristaResponse::nome).toList());
