@@ -18,6 +18,7 @@ import com.ominidevs.operacional.indicadores.model.PeriodoConsulta;
 import com.ominidevs.operacional.indicadores.services.UtilizacaoService;
 import com.ominidevs.operacional.motorista.dto.MotoristaResumoResponse;
 import com.ominidevs.operacional.motorista.dto.MotoristaResponseDTO;
+import com.ominidevs.operacional.motorista.dto.RankingMotoristasResultado;
 import com.ominidevs.operacional.motorista.dto.PaginaHistoricoViagensResponse;
 import com.ominidevs.operacional.motorista.dto.RankingMotoristaResponse;
 import com.ominidevs.operacional.motorista.dto.StatusMotoristaRequest;
@@ -25,6 +26,9 @@ import com.ominidevs.operacional.motorista.entities.StatusMotorista;
 import com.ominidevs.operacional.motorista.services.HistoricoViagemService;
 import com.ominidevs.operacional.motorista.services.MotoristaService;
 import com.ominidevs.operacional.motorista.services.RankingMotoristaService;
+import com.ominidevs.operacional.motorista.services.FiltroRankingMotorista;
+import org.springframework.web.server.ResponseStatusException;
+import org.springframework.http.HttpStatus;
 
 @CrossOrigin(origins = "http://localhost:5173")
 @RestController
@@ -87,12 +91,27 @@ public class MotoristaController {
      *      GET /motoristas/ranking?dataInicio=01/11/2026&dataFim=30/11/2026
      */
     @GetMapping("/ranking")
-    public ResponseEntity<List<RankingMotoristaResponse>> ranking(
+    public ResponseEntity<RankingMotoristasResultado> ranking(
             @RequestParam(required = false) String mes,
             @RequestParam(required = false) String dataInicio,
-            @RequestParam(required = false) String dataFim
+            @RequestParam(required = false) String dataFim,
+            @RequestParam(required = false) String filtro,
+            @RequestParam(required = false) String tipoVeiculo
     ) {
-        return ResponseEntity.ok(rankingService.ranking(periodoRanking(mes, dataInicio, dataFim)));
+        FiltroRankingMotorista filtroRanking;
+        try {
+            filtroRanking = filtro == null ? FiltroRankingMotorista.RENTABILIDADE
+                    : FiltroRankingMotorista.valueOf(filtro);
+        } catch (IllegalArgumentException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Filtro de ranking inválido");
+        }
+        boolean filtroPorTipo = filtroRanking == FiltroRankingMotorista.TIPO_VEICULO;
+        if (filtroPorTipo != (tipoVeiculo != null && !tipoVeiculo.isBlank())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    "tipoVeiculo é obrigatório somente com filtro TIPO_VEICULO");
+        }
+        return ResponseEntity.ok(rankingService.ranking(
+                periodoRanking(mes, dataInicio, dataFim), filtroRanking, tipoVeiculo));
     }
 
     @GetMapping("/{id}/viagens")

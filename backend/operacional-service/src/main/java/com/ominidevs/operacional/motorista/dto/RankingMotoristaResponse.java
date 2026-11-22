@@ -4,8 +4,7 @@ import java.math.BigDecimal;
 
 /**
  * Item do ranking mensal de motoristas (US13). A lista vem ordenada pelo
- * Comparator do serviço (rentabilidade média, quantidade de viagens,
- * frequência e, por fim, nome) e a posição é atribuída depois da ordenação,
+ * Comparator do serviço conforme o filtro e a posição é atribuída depois da ordenação,
  * de 1 a n. Motoristas sem viagem no mês não aparecem.
  *
  * @param posicao             1-based, sequencial após a ordenação
@@ -19,10 +18,10 @@ import java.math.BigDecimal;
  * @param viagens             viagens do motorista no período (alias de
  *                            {@code quantidadeViagens}, consumido pelo front)
  * @param quantidadeViagens   viagens do motorista no período
- * @param frequencia          dias em operação ÷ 30 × 100
+ * @param frequencia          dias com viagem ÷ 30 × 100
  * @param rentabilidadeMedia  rentabilidadeTotal ÷ quantidadeViagens (média da US09)
  * @param rentabilidadeTotal  Σ (receita_frete − vale_frete) no período
- * @param frete               Σ receita_frete no período
+ * @param faturamento         Σ receita_frete no período
  * @param custos              Σ vale_frete no período (entra na rentabilidade)
  */
 public record RankingMotoristaResponse(
@@ -38,5 +37,5 @@ public record RankingMotoristaResponse(
         BigDecimal frequencia,
         BigDecimal rentabilidadeMedia,
         BigDecimal rentabilidadeTotal,
-        BigDecimal frete,
+        BigDecimal faturamento,
         BigDecimal custos) {}
