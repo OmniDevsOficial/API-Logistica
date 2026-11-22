@@ -1,5 +1,6 @@
 import { apiFetch } from "../../../shared/api/apiFetch.ts";
-import type { FiltroRanking, RankingMotorista, ResultadoRankingMotoristas } from "../model/types";
+import type { FiltroRanking, PeriodoRanking, RankingMotorista, ResultadoRankingMotoristas } from "../model/types";
+import { parametrosDoPeriodo } from "../lib/parametrosDoPeriodo.ts";
 import { rankingDeDemonstracao } from "./rankingMotoristasMock.ts";
 
 /**
@@ -71,16 +72,17 @@ function mapear(item: RankingMotorista): RankingMotorista {
 }
 
 export async function buscarRankingMotoristas(
-  mes: string,
+  periodo: PeriodoRanking,
   filtro: FiltroRanking = "RENTABILIDADE",
   tipoVeiculo?: string,
   signal?: AbortSignal,
 ): Promise<ResultadoRankingMotoristas> {
   if (RANKING_EM_DEMONSTRACAO) {
-    return rankingDeDemonstracao(mes, filtro, tipoVeiculo, signal);
+    const referencia = typeof periodo === "string" ? periodo : periodo.dataInicio;
+    return rankingDeDemonstracao(referencia, filtro, tipoVeiculo, signal);
   }
 
-  const parametros = new URLSearchParams({ mes, filtro });
+  const parametros = new URLSearchParams({ ...parametrosDoPeriodo(periodo), filtro });
   if (filtro === "TIPO_VEICULO" && tipoVeiculo) {
     parametros.set("tipoVeiculo", tipoVeiculo);
   }

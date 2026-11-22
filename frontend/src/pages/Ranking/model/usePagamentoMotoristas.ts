@@ -3,10 +3,10 @@ import { buscarPagamentoMotoristas } from "@entities/motorista";
 import type { PagamentoMotorista } from "@entities/motorista";
 
 /**
- * Valor a pagar por motorista no mês (AAAA-MM). Só consulta quando
+ * Valor a pagar por motorista no período (dd/MM/aaaa). Só consulta quando
  * `habilitado` (perfil Gestor); a falha fica isolada e não derruba o ranking.
  */
-export function usePagamentoMotoristas(mes: string, habilitado: boolean) {
+export function usePagamentoMotoristas(dataInicio: string, dataFim: string, habilitado: boolean) {
   const [dados, setDados] = useState<PagamentoMotorista[] | null>(null);
   const [carregando, setCarregando] = useState(habilitado);
   const [erro, setErro] = useState<string | null>(null);
@@ -22,7 +22,7 @@ export function usePagamentoMotoristas(mes: string, habilitado: boolean) {
       setErro(null);
 
       try {
-        setDados(await buscarPagamentoMotoristas(mes, controller.signal));
+        setDados(await buscarPagamentoMotoristas({ dataInicio, dataFim }, controller.signal));
       } catch (erroCarregamento) {
         if (controller.signal.aborted) return;
         setErro(
@@ -38,7 +38,7 @@ export function usePagamentoMotoristas(mes: string, habilitado: boolean) {
 
     void carregar();
     return () => controller.abort();
-  }, [mes, habilitado, versao]);
+  }, [dataInicio, dataFim, habilitado, versao]);
 
   const recarregar = useCallback(() => setVersao((valor) => valor + 1), []);
 

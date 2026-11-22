@@ -52,6 +52,22 @@ test('consulta a API com mês e filtro', async () => {
   assert.equal(parametros.has('tipoVeiculo'), false);
 });
 
+test('consulta a API com dataInicio e dataFim quando recebe um intervalo', async () => {
+  let urlChamado = '';
+  globalThis.fetch = async (url) => {
+    urlChamado = String(url);
+    return respostaOk(respostaRanking);
+  };
+
+  await buscarRankingMotoristas({ dataInicio: '01/01/2026', dataFim: '31/12/2026' }, 'VIAGENS');
+
+  const parametros = new URLSearchParams(urlChamado.split('?')[1]);
+  assert.equal(parametros.get('dataInicio'), '01/01/2026');
+  assert.equal(parametros.get('dataFim'), '31/12/2026');
+  assert.equal(parametros.get('filtro'), 'VIAGENS');
+  assert.equal(parametros.has('mes'), false);
+});
+
 test('envia tipoVeiculo somente para o filtro por tipo', async () => {
   let urlChamado = '';
   globalThis.fetch = async (url) => {
