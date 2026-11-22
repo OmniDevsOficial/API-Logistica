@@ -96,6 +96,15 @@ test('aceita ranking vazio e tipos sem itens no ranking', async () => {
   assert.deepEqual(resultado.tiposDisponiveis, ['VAN']);
 });
 
+test('aceita o contrato novo com ranking e tiposDisponiveis', async () => {
+  globalThis.fetch = async () => respostaOk({ ranking: [itemDaApi], tiposDisponiveis: ['TRUCK', 'VAN'] });
+
+  const ranking = await buscarRankingMotoristas('01/11/2026', '30/11/2026');
+
+  assert.equal(ranking.length, 1);
+  assert.equal(ranking[0].nome, 'João Silva');
+});
+
 test('transforma campos opcionais nulos ou vazios em null', async () => {
   globalThis.fetch = async () => respostaOk({
     ranking: [{ ...itemDaApi, motoristaId: null, cpf: '', telefone: '', veiculo: undefined,

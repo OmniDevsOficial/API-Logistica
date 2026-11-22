@@ -93,7 +93,6 @@ class RankingMotoristaConsultaRepositoryTest {
         RankingMotoristaLinha linha = linhas.getFirst();
         assertEquals("Ana Silva", linha.nome());
         assertEquals(2, linha.quantidadeViagens());
-        assertEquals(2, linha.diasComViagem());
         assertEquals(new BigDecimal("1500.00"), linha.frete());
         assertEquals(new BigDecimal("600.00"), linha.custos());
         assertEquals(new BigDecimal("900.00"), linha.rentabilidadeTotal());
@@ -160,7 +159,6 @@ class RankingMotoristaConsultaRepositoryTest {
         RankingMotoristaLinha linha = setembro().getFirst();
 
         assertEquals(2, linha.quantidadeViagens());
-        assertEquals(2, linha.diasComViagem());
         assertEquals(new BigDecimal("3000.00"), linha.frete());
         assertEquals(new BigDecimal("1000.00"), linha.custos());
         assertEquals(new BigDecimal("2000.00"), linha.rentabilidadeTotal());

@@ -4,12 +4,13 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Locale;
 import java.util.stream.IntStream;
 
 import org.springframework.stereotype.Service;
 
 import com.ominidevs.operacional.indicadores.model.PeriodoConsulta;
-import com.ominidevs.operacional.indicadores.model.Porcentagem;
+import com.ominidevs.operacional.motorista.dto.FiltroRankingMotorista;
 import com.ominidevs.operacional.motorista.dto.RankingMotoristaResponse;
 import com.ominidevs.operacional.motorista.dto.RankingMotoristasResultado;
 import com.ominidevs.operacional.motorista.projections.RankingMotoristaLinha;
@@ -81,7 +82,15 @@ public class RankingMotoristaService {
         };
     }
 
-    private RankingMotoristaResponse paraResponse(RankingMotoristaLinha linha) {
+    private Comparator<RankingMotoristaResponse> comparator(FiltroRankingMotorista filtro) {
+        return switch (filtro) {
+            case RENTABILIDADE -> POR_RENTABILIDADE;
+            case FATURAMENTO -> POR_FATURAMENTO;
+            case VIAGENS -> POR_VIAGENS;
+        };
+    }
+
+    private RankingMotoristaResponse paraResponse(RankingMotoristaLinha linha, String tipoVeiculo) {
         // Cada grupo nasce de pelo menos uma viagem, então o divisor nunca é zero.
         BigDecimal media = linha.rentabilidadeTotal()
                 .divide(BigDecimal.valueOf(linha.quantidadeViagens()), 2, RoundingMode.HALF_UP);
@@ -92,11 +101,10 @@ public class RankingMotoristaService {
                 linha.nome(),
                 normalizarCpf(linha.cpf()),
                 null,
-                linha.veiculo(),
+                tipoVeiculo == null ? linha.veiculo() : tipoVeiculo,
                 linha.placa(),
                 linha.quantidadeViagens(),
                 linha.quantidadeViagens(),
-                frequencia,
                 media,
                 linha.rentabilidadeTotal(),
                 linha.frete(),
@@ -114,7 +122,6 @@ public class RankingMotoristaService {
                 item.placa(),
                 item.viagens(),
                 item.quantidadeViagens(),
-                item.frequencia(),
                 item.rentabilidadeMedia(),
                 item.rentabilidadeTotal(),
                 item.faturamento(),

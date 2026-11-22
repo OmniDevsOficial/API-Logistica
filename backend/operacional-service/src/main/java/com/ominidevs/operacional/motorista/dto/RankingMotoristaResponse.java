@@ -34,7 +34,6 @@ public record RankingMotoristaResponse(
         String placa,
         long viagens,
         long quantidadeViagens,
-        BigDecimal frequencia,
         BigDecimal rentabilidadeMedia,
         BigDecimal rentabilidadeTotal,
         BigDecimal faturamento,
