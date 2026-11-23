@@ -26,7 +26,7 @@ Também entram tarefas de complemento em telas já existentes, como gerenciament
 
 |    Período    |     Status      |
 | :-----------: | :-------------: |
-| 02/11 - 22/11 | 🟡 Em andamento |
+| 02/11 - 22/11 | 🟢 Encerrada |
 
 ## 🎯 Metas da Sprint 3 <a id="sprint-3-meta"></a>
 
@@ -223,10 +223,10 @@ Cadastro simples de usuários para o Gestor e a tela de Configurações que o ab
 
 |     | Critério                                                                                             |
 | :-: | :--------------------------------------------------------------------------------------------------- |
-| ⬜  | Gestor cadastra usuário com nome, login, perfil e senha, e a senha nunca aparece em resposta ou log. |
-| ⬜  | Login repetido (sem diferença de maiúsculas) retorna erro claro.                                     |
-| ⬜  | Tela de Configurações acessível só ao Gestor, com URL própria por seção.                             |
-| ⬜  | Operador recebe 403 nos endpoints e é redirecionado da tela.                                         |
+| ✅  | Gestor cadastra usuário com nome, login, perfil e senha, e a senha nunca aparece em resposta ou log. |
+| ✅  | Login repetido (sem diferença de maiúsculas) retorna erro claro.                                     |
+| ✅  | Tela de Configurações acessível só ao Gestor, com URL própria por seção.                             |
+| ✅  | Operador recebe 403 nos endpoints e é redirecionado da tela.                                         |
 
 </details>
 
@@ -242,10 +242,10 @@ Página com a lista completa dos veículos e o resumo por tipo, dentro do dashbo
 
 |     | Critério                                                                         |
 | :-: | :------------------------------------------------------------------------------- |
-| ⬜  | Sem veículos cadastrados, a página mostra o mesmo tratamento do dashboard atual. |
-| ⬜  | O guia é fixo, independente dos dados na plataforma.                             |
-| ⬜  | A página de veículos é responsiva.                                               |
-| ⬜  | O botão de upload fica na sidebar e o endpoint de upload não muda.               |
+| ✅  | Sem veículos cadastrados, a página mostra o mesmo tratamento do dashboard atual. |
+| ✅  | O guia é fixo, independente dos dados na plataforma.                             |
+| ✅  | A página de veículos é responsiva.                                               |
+| ✅  | O botão de upload fica na sidebar e o endpoint de upload não muda.               |
 
 </details>
 
@@ -261,10 +261,10 @@ Seção Registros com o histórico de cada importação de manifesto e de veícu
 
 |     | Critério                                                                                    |
 | :-: | :------------------------------------------------------------------------------------------ |
-| ⬜  | Toda importação gera um registro, e falha ao gravar o registro não interrompe a importação. |
-| ⬜  | Reimportação do mesmo arquivo é identificada.                                               |
-| ⬜  | Detalhe lista as ocorrências, e o CSV baixado abre com acentos corretos no Excel.           |
-| ⬜  | Falha de um dos serviços não esconde os dados do outro.                                     |
+| ✅  | Toda importação gera um registro, e falha ao gravar o registro não interrompe a importação. |
+| ✅  | Reimportação do mesmo arquivo é identificada.                                               |
+| ✅  | Detalhe lista as ocorrências, e o CSV baixado abre com acentos corretos no Excel.           |
+| ✅  | Falha de um dos serviços não esconde os dados do outro.                                     |
 
 </details>
 
@@ -283,14 +283,14 @@ Seção Registros com o histórico de cada importação de manifesto e de veícu
 
 ## 📂 Documentos e anexos <a id="documentos"></a>
 
-- [Cenários de User Stories](../documentacao-processo/Cenarios_sprint2.pdf)
+- [Cenários de User Stories](../documentacao-processo/Cenarios_Sprint_3.pdf)
 - [Backlog completo](../documentacao-processo/Backlog.pdf)
 
 ## 🎥 Link do Vídeo <a id="link-do-video"></a>
 
 Neste vídeo é mostrado o desenvolvimento da **Plataforma de Controle de Motoristas Agregados**, feito pela equipe **OmniDevs** ao decorrer do ciclo da 3ª (terceira) Sprint.
 
-<a href="#"><img src="https://img.shields.io/badge/YouTube-FF0000?style=for-the-badge&logo=youtube&logoColor=white"/></a>
+<a href="https://www.youtube.com/watch?v=ub_1o-uZBoA"><img src="https://img.shields.io/badge/YouTube-FF0000?style=for-the-badge&logo=youtube&logoColor=white"/></a>
 
 ## 👥 **Equipe** <a id="equipe"></a>
 
