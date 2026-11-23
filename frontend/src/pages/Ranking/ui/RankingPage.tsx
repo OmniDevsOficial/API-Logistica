@@ -199,6 +199,7 @@ function RankingConteudo({ periodoSalvo }: { periodoSalvo: PeriodoSalvo }) {
             {/* Com 3 motoristas ou menos não há lista: só o pódio. */}
             {lista.length > 0 && (
               <RankingList
+                key={`${filtro}-${termo}`}
                 motoristas={listaVisivel}
                 faturamentoDe={ehGestor ? faturamentoDe : undefined}
                 filtroAtivo={filtro}
