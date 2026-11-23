@@ -5,6 +5,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import com.ominidevs.operacional.indicadores.exceptions.IndicadorInvalidoException;
+
 import java.util.Map;
 
 /**
@@ -20,6 +22,13 @@ public class ViagemExceptionHandler {
 
     @ExceptionHandler(FiltroInvalidoException.class)
     public ResponseEntity<Map<String, String>> handleFiltroInvalido(FiltroInvalidoException ex) {
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(Map.of("erro", ex.getMessage()));
+    }
+
+    @ExceptionHandler(IndicadorInvalidoException.class)
+    public ResponseEntity<Map<String, String>> handleIndicadorInvalido(IndicadorInvalidoException ex) {
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
                 .body(Map.of("erro", ex.getMessage()));

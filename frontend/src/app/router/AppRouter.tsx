@@ -1,8 +1,12 @@
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import { DashboardPage } from "@pages/Dashboard";
 import { LoginPage } from "@pages/Login";
+import { RankingPage } from "@pages/Ranking";
+import { AdministracaoPage } from "@pages/Administracao";
 import { ViagensPage } from "@pages/Viagens";
 import { MotoristasPage, UtilizacaoMotoristasPage } from "@/pages/Motoristas";
+import { RegistrosPage } from "@pages/Registros";
+import { FrotaPage } from "@pages/Frota";
 import { RotaProtegida } from "./RotaProtegida";
 import { RotaPublica } from "./RotaPublica";
 
@@ -19,6 +23,10 @@ export function AppRouter() {
           <Route path="/motoristas" element={<MotoristasPage />} />
           <Route path="/motoristas/utilizacao" element={<UtilizacaoMotoristasPage />} />
           <Route path="/viagens" element={<ViagensPage />} />
+          <Route path="/registros" element={<RegistrosPage />} />
+          <Route path="/frota" element={<FrotaPage />} />
+          <Route path="/ranking" element={<RankingPage />} />
+          <Route path="/administracao/:secao?" element={<AdministracaoPage />} />
         </Route>
 
         <Route path="*" element={<Navigate to="/" replace />} />

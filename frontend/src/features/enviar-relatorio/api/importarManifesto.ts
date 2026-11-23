@@ -13,10 +13,38 @@ interface ViagemImportada {
   data?: unknown;
 }
 
+/** Linha do manifesto recusada pelo backend (não foi gravada). */
+export interface ErroLinhaManifesto {
+  linha: number | null;
+  manifesto: string | null;
+  mensagem: string;
+}
+
 export interface ResultadoImportacao {
   viagensImportadas: number;
   manifestosDuplicados: string[];
+  /** Linhas rejeitadas; o restante do arquivo foi gravado. */
+  erros: ErroLinhaManifesto[];
   dataMaisRecente: string | null;
+}
+
+const MOTIVO_PADRAO = 'Linha inválida.';
+
+/** `erros` é opcional no contrato: itens fora do formato viram uma linha genérica. */
+function lerErros(valor: unknown): ErroLinhaManifesto[] {
+  if (!Array.isArray(valor)) return [];
+  return valor.map((item) => {
+    const registro = item !== null && typeof item === 'object' ? item as Record<string, unknown> : {};
+    return {
+      linha: Number.isInteger(registro.linha) ? registro.linha as number : null,
+      manifesto: typeof registro.manifesto === 'string' && registro.manifesto.trim() !== ''
+        ? registro.manifesto
+        : null,
+      mensagem: typeof registro.mensagem === 'string' && registro.mensagem.trim() !== ''
+        ? registro.mensagem
+        : MOTIVO_PADRAO,
+    };
+  });
 }
 
 // Apenas mensagens controladas pelo frontend são apresentadas ao operador.
@@ -94,7 +122,9 @@ export async function importarManifesto(arquivo: File): Promise<ResultadoImporta
 
     const dados: unknown = await resposta.json();
     if (!validarResposta(dados)) throw new ErroImportacao(RESULTADO_INCERTO);
-    if (dados.viagensImportadas.length === 0 && dados.manifestosDuplicados.length === 0) {
+    const erros = lerErros((dados as Record<string, unknown>).erros);
+    // Com linhas rejeitadas o resumo mostra o motivo, mesmo sem nenhuma gravada.
+    if (dados.viagensImportadas.length === 0 && dados.manifestosDuplicados.length === 0 && erros.length === 0) {
       throw new ErroImportacao('Nenhuma viagem foi importada. Verifique se o manifesto contém linhas de dados.');
     }
 
@@ -102,6 +132,7 @@ export async function importarManifesto(arquivo: File): Promise<ResultadoImporta
     return {
       viagensImportadas: dados.viagensImportadas.length,
       manifestosDuplicados: dados.manifestosDuplicados,
+      erros,
       dataMaisRecente: dataMaisRecente(dados.viagensImportadas),
     };
   } catch (erro) {

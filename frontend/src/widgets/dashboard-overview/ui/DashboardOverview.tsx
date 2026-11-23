@@ -1,10 +1,18 @@
-import type { DashboardData } from "@entities/dashboard-metrics";
+import type {
+  DashboardData,
+  DestinoMaisRentavel,
+} from "@entities/dashboard-metrics";
 import { ChartCard, StatCard } from "@shared/ui";
 import { formatCurrencyBRL, formatPercent } from "@shared/lib";
-import { GraficoSemDados } from "./GraficoSemDados";
+import { GraficoRentabilidadeViagens } from "./GraficoRentabilidadeViagens";
+import {
+  CardRentabilidadePorTipo,
+  type EstadoRentabilidadePorTipo,
+} from "./CardRentabilidadePorTipo";
 
 interface DashboardOverviewProps {
   data: DashboardData;
+  rentabilidadePorTipo: EstadoRentabilidadePorTipo | null;
 }
 
 const SEM_DADO = "-";
@@ -21,7 +29,22 @@ function quantidade(valor: number | null): string {
   return valor === null ? SEM_DADO : String(valor);
 }
 
-export function DashboardOverview({ data }: DashboardOverviewProps) {
+function legendaDestino(destino: DestinoMaisRentavel | null): string {
+  if (destino === null) return "No período";
+  const viagens = destino.viagens === 1 ? "1 viagem" : `${destino.viagens} viagens`;
+  return `${moeda(destino.rentabilidadeTotal)} em ${viagens}`;
+}
+
+function decimal(valor: number | null): string {
+  return valor === null
+    ? SEM_DADO
+    : valor.toLocaleString("pt-BR", {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      });
+}
+
+export function DashboardOverview({ data, rentabilidadePorTipo }: DashboardOverviewProps) {
   const { metrics } = data;
 
   return (
@@ -47,66 +70,67 @@ export function DashboardOverview({ data }: DashboardOverviewProps) {
       />
       <StatCard
         className="lg:col-start-4 lg:row-start-1"
-        title="Disponíveis"
-        value={SEM_DADO}
-        caption="Em tempo real"
+        title="Motoristas em operação"
+        value={quantidade(metrics.motoristasAtivos)}
+        caption="No período"
       />
 
       <ChartCard
         title="Rentabilidade x Viagens"
         className="sm:col-span-2 lg:col-start-1 lg:col-span-2 lg:row-start-2 lg:row-span-2"
       >
-        <GraficoSemDados />
+        <GraficoRentabilidadeViagens serie={data.serieRentabilidade} />
       </ChartCard>
       <StatCard
-        className="sm:col-span-2 lg:col-start-3 lg:col-span-2 lg:row-start-2"
+        className="lg:col-start-3 lg:row-start-2"
+        title="Valor dos fretes"
+        value={moeda(metrics.freteTotal)}
+        caption="No período"
+      />
+      <StatCard
+        className="lg:col-start-4 lg:row-start-2"
+        title="Ticket médio do frete"
+        value={moeda(metrics.freteMedio)}
+        caption="Por viagem"
+      />
+      <StatCard
+        className="lg:col-start-3 lg:row-start-3"
         title="Custo total"
         value={moeda(metrics.custoTotal)}
         caption="No período"
       />
       <StatCard
-        className="lg:col-start-3 lg:row-start-3"
-        title="Taxa de ocupação"
-        value={porcentagem(metrics.taxaOcupacao)}
-        caption="Frota"
-      />
-      <StatCard
         className="lg:col-start-4 lg:row-start-3"
-        title="Tempo de alocação"
-        value={SEM_DADO}
-        caption="Média"
-      />
-
-      <StatCard
-        className="lg:col-start-1 lg:row-start-4"
-        title="Utilização da frota"
-        value={SEM_DADO}
-        caption="Média"
-      />
-      <StatCard
-        className="lg:col-start-2 lg:row-start-4"
-        title="Disponíveis"
-        value={SEM_DADO}
-        caption="Média"
-      />
-      <ChartCard
-        title="Utilização média da frota"
-        className="sm:col-span-2 lg:col-start-3 lg:col-span-2 lg:row-start-4 lg:row-span-2"
-      >
-        <GraficoSemDados />
-      </ChartCard>
-      <StatCard
-        className="lg:col-start-1 lg:row-start-5"
-        title="Fretes"
-        value={moeda(metrics.freteTotal)}
-        caption="Valor total"
-      />
-      <StatCard
-        className="lg:col-start-2 lg:row-start-5"
         title="Custo médio"
         value={moeda(metrics.custoMedio)}
         caption="Por viagem"
       />
+
+      <StatCard
+        className="lg:col-start-1 lg:row-start-4"
+        title="Margem"
+        value={porcentagem(metrics.margem)}
+        caption="Rentabilidade sobre o valor dos fretes"
+      />
+      <StatCard
+        className="lg:col-start-2 lg:row-start-4"
+        title="Viagens por motorista"
+        value={decimal(metrics.viagensPorMotorista)}
+        caption="Média no período"
+      />
+      <StatCard
+        className="sm:col-span-2 lg:col-start-1 lg:col-span-2 lg:row-start-5"
+        title="Destino mais rentável"
+        value={metrics.destinoMaisRentavel?.destino ?? SEM_DADO}
+        caption={legendaDestino(metrics.destinoMaisRentavel)}
+      />
+
+      {rentabilidadePorTipo && (
+        <CardRentabilidadePorTipo
+          estado={rentabilidadePorTipo}
+          className="sm:col-span-2 lg:col-start-3 lg:col-span-2 lg:row-start-4 lg:row-span-2"
+        />
+      )}
     </div>
   );
 }

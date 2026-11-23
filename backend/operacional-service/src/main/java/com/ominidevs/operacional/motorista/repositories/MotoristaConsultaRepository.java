@@ -1,6 +1,5 @@
 package com.ominidevs.operacional.motorista.repositories;
 
-import java.sql.Date;
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
@@ -17,7 +16,7 @@ import com.ominidevs.operacional.motorista.projections.MotoristaListagem;
 public class MotoristaConsultaRepository {
 
     private static final String CONSULTA = """
-            SELECT m.id, m.nome, m.veiculo_tipo, m.veiculo_placa, m.status,
+            SELECT m.id, m.nome, m.cpf, m.veiculo_tipo, m.veiculo_placa, m.status,
                    m.ultima_localizacao, m.ultima_operacao, m.previsao_disponibilidade,
                    COALESCE(v.quantidade, 0) AS quantidade
             FROM operacional.motorista m
@@ -26,7 +25,6 @@ public class MotoristaConsultaRepository {
                        LOWER(TRIM(motorista)) AS nome,
                        COUNT(*) AS quantidade
                 FROM operacional.viagem
-                WHERE data BETWEEN :inicio AND :fim
                 GROUP BY 1, 2
             ) v ON v.cpf = NULLIF(regexp_replace(m.cpf, '[^0-9]', '', 'g'), '')
                 OR (v.cpf IS NULL AND v.nome = LOWER(TRIM(m.nome)))
@@ -41,15 +39,18 @@ public class MotoristaConsultaRepository {
     }
 
     public List<MotoristaListagem> consultar(PeriodoConsulta periodo, StatusMotorista status) {
+        return consultar(status);
+    }
+
+    public List<MotoristaListagem> consultar(StatusMotorista status) {
         Map<String, Object> parametros = new HashMap<>();
-        parametros.put("inicio", Date.valueOf(periodo.inicio()));
-        parametros.put("fim", Date.valueOf(periodo.fim()));
         parametros.put("status", status == null ? null : status.name());
 
         return jdbc.query(CONSULTA, parametros,
                 (rs, row) -> new MotoristaListagem(
                         rs.getObject("id", Integer.class),
                         rs.getString("nome"),
+                        rs.getString("cpf"),
                         rs.getString("veiculo_tipo"),
                         rs.getString("veiculo_placa"),
                         rs.getString("status"),

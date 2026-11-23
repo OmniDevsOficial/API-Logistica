@@ -23,7 +23,7 @@ const OPCOES_FILTRO: OpcaoFiltro[] = [
 ];
 
 const TAB_BASE =
-  "cursor-pointer whitespace-nowrap rounded-full px-4 py-2 text-sm font-medium transition-colors";
+  "cursor-pointer whitespace-nowrap rounded-xl px-5 py-2.5 text-sm font-medium transition-colors";
 const TAB_ACTIVE = `${TAB_BASE} bg-primary text-white`;
 const TAB_INACTIVE = `${TAB_BASE} bg-surface text-fg hover:bg-border`;
 
@@ -36,19 +36,19 @@ export function EquipeFiltros({
   return (
     <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
       {/* Campo de busca */}
-      <div className="flex items-center gap-2 rounded-md bg-surface px-4 py-2.5">
+      <div className="flex w-full items-center gap-2 rounded-xl bg-surface px-4 py-3 sm:max-w-md">
         <Search size={16} className="shrink-0 text-fg-muted" />
         <input
           type="text"
           placeholder="Pesquisar"
           value={busca}
           onChange={(e) => onBuscaChange(e.target.value)}
-          className="w-full bg-transparent text-sm text-fg placeholder-fg-subtle outline-none sm:w-56"
+          className="w-full min-w-0 bg-transparent text-sm text-fg placeholder-fg-subtle outline-none"
         />
       </div>
 
       {/* Tabs de filtro */}
-      <div className="flex items-center gap-2">
+      <div className="flex flex-wrap items-center gap-2">
         {OPCOES_FILTRO.map(({ label, valor }) => (
           <button
             key={label}

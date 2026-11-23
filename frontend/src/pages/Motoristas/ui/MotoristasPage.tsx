@@ -1,31 +1,89 @@
 import { useMemo, useState } from "react";
-import type { StatusEquipe } from "@entities/motorista";
-import { getEquipeMotoristasData } from "@entities/motorista";
+import { atualizarStatusMotorista } from "@entities/motorista";
+import type { MotoristaEquipe, StatusEquipe } from "@entities/motorista";
+import { podeVerValoresMonetarios, useSessao } from "@entities/sessao";
 import { Sidebar } from "@widgets/sidebar";
+import { SinoNotificacoes } from "@features/notificacoes";
+import { ModalHistoricoViagens } from "@features/historico-viagens";
 import { PageHeader } from "@shared/ui";
 import {
   EquipeStatCards,
   EquipeFiltros,
   EquipeTabela,
 } from "@widgets/equipe-motoristas";
+import { useEquipeMotoristas } from "../model/useEquipeMotoristas";
+import {
+  chaveNomeMotorista,
+  useRentabilidadeMotoristas,
+} from "../model/useRentabilidadeMotoristas";
+import { MenuPerfil } from "@features/menu-perfil";
+
+interface MotoristaSelecionado {
+  id: number;
+  nome: string;
+}
+
+const ESTADO_LISTA =
+  "rounded-md bg-surface p-6 text-center text-sm text-fg-subtle";
 
 export function MotoristasPage() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [busca, setBusca] = useState("");
   const [filtroStatus, setFiltroStatus] = useState<StatusEquipe | null>(null);
+  const [statusSalvando, setStatusSalvando] = useState<number | null>(null);
+  const [erroStatus, setErroStatus] = useState<string | null>(null);
+  const [motoristaHistorico, setMotoristaHistorico] =
+    useState<MotoristaSelecionado | null>(null);
+  const [historicoAberto, setHistoricoAberto] = useState(false);
 
-  const dados = getEquipeMotoristasData(filtroStatus);
+  const { dados, carregando, erro, recarregar } =
+    useEquipeMotoristas(filtroStatus);
+  const { usuario } = useSessao();
+  const mostrarRentabilidade =
+    usuario !== null && podeVerValoresMonetarios(usuario.perfil);
+  const rentabilidades = useRentabilidadeMotoristas(mostrarRentabilidade);
 
   const motoristasFiltrados = useMemo(() => {
     const termo = busca.trim().toLowerCase();
-    if (!termo) return dados.motoristas;
-    return dados.motoristas.filter(
+    const motoristas = dados?.motoristas ?? [];
+    if (!termo) return motoristas;
+    // Placa é comparada sem hífen/espaço: "abc-1d23" encontra "ABC1D23".
+    const termoPlaca = termo.replace(/[\s-]/g, "");
+    return motoristas.filter(
       (m) =>
         m.nome.toLowerCase().includes(termo) ||
         m.localizacao.toLowerCase().includes(termo) ||
-        m.veiculo.toLowerCase().includes(termo),
+        m.veiculo.toLowerCase().includes(termo) ||
+        (m.modelo?.toLowerCase().includes(termo) ?? false) ||
+        (termoPlaca !== "" &&
+          [m.placa, ...m.outrosVeiculos.map((v) => v.placa)].some((placa) =>
+            placa.toLowerCase().includes(termoPlaca),
+          )),
     );
-  }, [dados.motoristas, busca]);
+  }, [dados, busca]);
+
+  async function alterarStatus(id: number, novoStatus: StatusEquipe) {
+    setStatusSalvando(id);
+    setErroStatus(null);
+
+    try {
+      await atualizarStatusMotorista(id, novoStatus);
+      recarregar();
+    } catch (erroAtualizacao) {
+      setErroStatus(
+        erroAtualizacao instanceof Error
+          ? erroAtualizacao.message
+          : "Não foi possível atualizar o status do motorista.",
+      );
+    } finally {
+      setStatusSalvando(null);
+    }
+  }
+
+  function abrirHistorico(motorista: MotoristaEquipe) {
+    setMotoristaHistorico({ id: motorista.id, nome: motorista.nome });
+    setHistoricoAberto(true);
+  }
 
   return (
     <div className="min-h-screen">
@@ -34,8 +92,15 @@ export function MotoristasPage() {
       <main className="min-w-0 px-4 py-6 sm:px-10 sm:py-8 lg:ml-sidebar">
         <header className="mb-7 flex flex-col gap-5">
           <PageHeader
-            title="Dashboard"
+            title="Motoristas"
+            subtitle={
+              mostrarRentabilidade
+                ? "Lista de motoristas da equipe, com status e rentabilidade"
+                : "Lista de motoristas da equipe, com status"
+            }
             onMenuClick={() => setSidebarOpen(true)}
+            perfil={<MenuPerfil />}
+            notificacoes={<SinoNotificacoes />}
           />
 
           <EquipeFiltros
@@ -46,21 +111,51 @@ export function MotoristasPage() {
           />
         </header>
 
-        <div className="flex flex-col gap-6">
-          <EquipeStatCards
-            totalMotoristas={dados.totalMotoristas}
-            disponiveis={dados.disponiveis}
-            emViagem={dados.emViagem}
-            indisponiveis={dados.indisponiveis}
-          />
+        {erro ? (
+          <p role="alert" className={ESTADO_LISTA}>
+            {erro}
+          </p>
+        ) : carregando && !dados ? (
+          <p role="status" className={ESTADO_LISTA}>
+            Carregando motoristas...
+          </p>
+        ) : dados ? (
+          <div className="flex flex-col gap-6">
+            <EquipeStatCards
+              totalMotoristas={dados.totalMotoristas}
+              disponiveis={dados.disponiveis}
+              emViagem={dados.emViagem}
+              indisponiveis={dados.indisponiveis}
+            />
 
-          <div>
-            <h2 className="mb-4 text-lg font-semibold text-fg">
-              Equipe de motoristas
-            </h2>
-            <EquipeTabela motoristas={motoristasFiltrados} />
+            {erroStatus && (
+              <p
+                role="alert"
+                className="rounded-md bg-red-500/10 px-4 py-3 text-sm text-red-500"
+              >
+                {erroStatus}
+              </p>
+            )}
+
+            <EquipeTabela
+              key={`${filtroStatus ?? "TODOS"}|${busca.trim().toLowerCase()}`}
+              motoristas={motoristasFiltrados}
+              rentabilidades={rentabilidades}
+              chaveNomeMotorista={chaveNomeMotorista}
+              mostrarRentabilidade={mostrarRentabilidade}
+              statusSalvando={statusSalvando}
+              onStatusChange={alterarStatus}
+              onMotoristaClick={abrirHistorico}
+            />
           </div>
-        </div>
+        ) : null}
+
+        <ModalHistoricoViagens
+          motoristaId={motoristaHistorico?.id ?? null}
+          nome={motoristaHistorico?.nome ?? ""}
+          open={historicoAberto}
+          onClose={() => setHistoricoAberto(false)}
+        />
       </main>
     </div>
   );

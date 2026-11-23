@@ -43,6 +43,7 @@ test('envia o arquivo uma vez ao operacional e conta as entidades retornadas', a
   assert.deepEqual(await importarManifesto(arquivo()), {
     viagensImportadas: 2,
     manifestosDuplicados: ['100'],
+    erros: [],
     dataMaisRecente: null,
   });
   assert.equal(chamadas, 1);
@@ -56,6 +57,7 @@ test('importa resposta composta somente por manifestos duplicados', async () => 
   assert.deepEqual(await importarManifesto(arquivo()), {
     viagensImportadas: 0,
     manifestosDuplicados: ['123'],
+    erros: [],
     dataMaisRecente: null,
   });
 });
@@ -89,6 +91,33 @@ test('HTML com HTTP 200 não é sucesso', async () => {
   await assert.rejects(importarManifesto(arquivo()), /antes de reenviar/);
 });
 
+test('repassa as linhas rejeitadas devolvidas pelo backend', async () => {
+  globalThis.fetch = async () => Response.json({
+    viagensImportadas: [{ id: 1, manifesto: '123' }],
+    manifestosDuplicados: [],
+    erros: [
+      { linha: 4, manifesto: '124', mensagem: 'Data inválida: 31/02/2026' },
+      { linha: 'x', manifesto: '', mensagem: '' },
+    ],
+  });
+  const resultado = await importarManifesto(arquivo());
+  assert.deepEqual(resultado.erros, [
+    { linha: 4, manifesto: '124', mensagem: 'Data inválida: 31/02/2026' },
+    { linha: null, manifesto: null, mensagem: 'Linha inválida.' },
+  ]);
+});
+
+test('arquivo só com linhas rejeitadas mostra o resumo em vez de falhar', async () => {
+  globalThis.fetch = async () => Response.json({
+    viagensImportadas: [],
+    manifestosDuplicados: [],
+    erros: [{ linha: 2, manifesto: '9', mensagem: 'Manifesto inválido ou incompleto.' }],
+  });
+  const resultado = await importarManifesto(arquivo());
+  assert.equal(resultado.viagensImportadas, 0);
+  assert.equal(resultado.erros.length, 1);
+});
+
 test('lista vazia não é sucesso de importação', async () => {
   globalThis.fetch = async () => Response.json({ viagensImportadas: [], manifestosDuplicados: [] });
   await assert.rejects(importarManifesto(arquivo()), /Nenhuma viagem/);
@@ -120,6 +149,7 @@ test('informa a data mais recente do manifesto para a tela achar o periodo', asy
   assert.deepEqual(await importarManifesto(arquivo()), {
     viagensImportadas: 3,
     manifestosDuplicados: [],
+    erros: [],
     dataMaisRecente: '2025-03-28',
   });
 });

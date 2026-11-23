@@ -15,6 +15,9 @@ dependencies {
     implementation 'org.flywaydb:flyway-core:12.9.0'
     implementation 'org.flywaydb:flyway-database-postgresql:12.9.0'
 
+    // Leitura do CSV de veículos (mesma versão usada no relatorio-service).
+    implementation 'com.opencsv:opencsv:5.9'
+
     // PostgreSQL
     runtimeOnly 'org.postgresql:postgresql'
 

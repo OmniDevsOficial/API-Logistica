@@ -3,10 +3,17 @@ import type {
   DashboardData,
   DashboardMetrics,
   DashboardStatus,
+  DestinoMaisRentavel,
+  RentabilidadeTipoVeiculo,
+  SerieRentabilidade,
   ViagensPorStatus,
 } from "../model/types";
 
 const ENDPOINT = "/api/operacional/dashboard";
+const ENDPOINT_RENTABILIDADE_POR_TIPO = `${ENDPOINT}/rentabilidade-por-tipo`;
+const TIPO_NAO_IDENTIFICADO = "NAO_IDENTIFICADO";
+const FALHA_RENTABILIDADE_POR_TIPO =
+  "Não foi possível carregar a rentabilidade por tipo de veículo.";
 const TEMPO_LIMITE_MS = 30_000;
 const RESPOSTA_INVALIDA = "A resposta do serviço está inválida.";
 const FALHA_NA_CONSULTA = "Não foi possível carregar os dados do dashboard.";
@@ -57,6 +64,20 @@ function mapearViagensPorStatus(dados: unknown): ViagensPorStatus {
   };
 }
 
+function mapearDestinoMaisRentavel(dados: unknown): DestinoMaisRentavel | null {
+  if (dados === null || dados === undefined) {
+    return null;
+  }
+
+  const destino = registro(dados);
+
+  return {
+    destino: texto(destino.destino),
+    viagens: numero(destino.viagens),
+    rentabilidadeTotal: numero(destino.rentabilidadeTotal),
+  };
+}
+
 function mapearMetricas(dados: unknown): DashboardMetrics {
   const metricas = registro(dados);
 
@@ -66,13 +87,15 @@ function mapearMetricas(dados: unknown): DashboardMetrics {
     freteMedio: numeroOuNulo(metricas.freteMedio),
     kmTotal: numeroOuNulo(metricas.kmTotal),
     motoristasAtivos: numero(metricas.motoristasAtivos),
+    viagensPorMotorista: numeroOuNulo(metricas.viagensPorMotorista),
     veiculosUtilizados: numero(metricas.veiculosUtilizados),
     viagensPorStatus: mapearViagensPorStatus(metricas.viagensPorStatus),
     custoTotal: numeroOuNulo(metricas.custoTotal),
     custoMedio: numeroOuNulo(metricas.custoMedio),
     rentabilidadeTotal: numeroOuNulo(metricas.rentabilidadeTotal),
     rentabilidadeMedia: numeroOuNulo(metricas.rentabilidadeMedia),
-    taxaOcupacao: numeroOuNulo(metricas.taxaOcupacao),
+    margem: numeroOuNulo(metricas.margem),
+    destinoMaisRentavel: mapearDestinoMaisRentavel(metricas.destinoMaisRentavel),
   };
 }
 
@@ -86,6 +109,28 @@ function mapearResposta(dados: unknown): DashboardData {
     },
     status: mapearStatus(resposta.status),
     metrics: mapearMetricas(resposta.metricas),
+    serieRentabilidade: mapearSerieRentabilidade(resposta.series),
+  };
+}
+
+function mapearSerieRentabilidade(dados: unknown): SerieRentabilidade {
+  const serie = registro(registro(dados).rentabilidadePorPeriodo);
+
+  if (!Array.isArray(serie.pontos)) {
+    throw new Error(RESPOSTA_INVALIDA);
+  }
+
+  return {
+    agrupamento: texto(serie.agrupamento) === "DIA" ? "DIA" : "MES",
+    pontos: serie.pontos.map((item) => {
+      const ponto = registro(item);
+      return {
+        rotulo: texto(ponto.rotulo),
+        viagens: numero(ponto.viagens),
+        custo: numero(ponto.custo),
+        rentabilidade: numero(ponto.rentabilidade),
+      };
+    }),
   };
 }
 
@@ -103,6 +148,7 @@ async function consultar(url: string, signal?: AbortSignal): Promise<Response> {
       erro instanceof Error && erro.name === "TimeoutError"
         ? SERVICO_DEMOROU
         : SEM_CONEXAO,
+      { cause: erro },
     );
   }
 }
@@ -123,4 +169,41 @@ export async function buscarDashboard(
   }
 
   return mapearResposta(await resposta.json());
+}
+
+function mapearTipoVeiculo(dados: unknown): RentabilidadeTipoVeiculo {
+  const item = registro(dados);
+  const tipo = texto(item.tipo);
+
+  return {
+    tipo,
+    naoIdentificado: tipo === TIPO_NAO_IDENTIFICADO,
+    viagens: numero(item.viagens),
+    receita: numero(item.receita),
+    custo: numero(item.custo),
+    rentabilidade: numero(item.rentabilidade),
+    mediaPorViagem: numeroOuNulo(item.mediaPorViagem),
+  };
+}
+
+export async function getRentabilidadePorTipo(
+  mes: string,
+  signal?: AbortSignal,
+): Promise<RentabilidadeTipoVeiculo[]> {
+  const parametros = new URLSearchParams({ mes });
+  const resposta = await consultar(
+    `${ENDPOINT_RENTABILIDADE_POR_TIPO}?${parametros.toString()}`,
+    signal,
+  );
+
+  if (!resposta.ok) {
+    throw new Error(FALHA_RENTABILIDADE_POR_TIPO);
+  }
+
+  const dados: unknown = await resposta.json();
+  if (!Array.isArray(dados)) {
+    throw new Error(RESPOSTA_INVALIDA);
+  }
+
+  return dados.map(mapearTipoVeiculo);
 }

@@ -25,8 +25,10 @@ public class DashboardExceptionHandler {
 
     @ExceptionHandler(MissingServletRequestParameterException.class)
     public ResponseEntity<Map<String, String>> ausente(MissingServletRequestParameterException ex) {
-        return ResponseEntity.badRequest().body(Map.of("erro",
-                "Informe dataInicio e dataFim no formato dd/MM/aaaa."));
+        String mensagem = "mes".equals(ex.getParameterName())
+                ? "Informe o mês no formato AAAA-MM."
+                : "Informe dataInicio e dataFim no formato dd/MM/aaaa.";
+        return ResponseEntity.badRequest().body(Map.of("erro", mensagem));
     }
 
     @ExceptionHandler(DataAccessException.class)

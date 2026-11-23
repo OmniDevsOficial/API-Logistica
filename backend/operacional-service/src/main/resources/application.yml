@@ -32,6 +32,9 @@ relatorio:
   service:
     url: ${RELATORIO_SERVICE_URL:http://localhost:8082}
 
+utilizacao:
+  limite-baixa: ${UTILIZACAO_LIMITE_BAIXA:30}
+
 jwt:
   secret: ${JWT_SECRET}
 

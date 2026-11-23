@@ -6,7 +6,12 @@ import java.util.List;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
+import com.ominidevs.operacional.dashboard.model.AgrupamentoSerie;
+import com.ominidevs.operacional.dashboard.projections.ComponentesPagamentoMotorista;
+import com.ominidevs.operacional.dashboard.projections.DestinoRentavel;
+import com.ominidevs.operacional.dashboard.projections.PontoRentabilidade;
 import com.ominidevs.operacional.dashboard.projections.PontoSerie;
+import com.ominidevs.operacional.dashboard.projections.RentabilidadeTipoVeiculo;
 import com.ominidevs.operacional.dashboard.projections.ResumoViagens;
 import com.ominidevs.operacional.dashboard.projections.ValoresFinanceirosViagem;
 import com.ominidevs.operacional.indicadores.model.PeriodoConsulta;
@@ -16,8 +21,6 @@ public class DashboardRepository {
 
     private static final String SQL_RESUMO = """
             SELECT COUNT(*) AS total_viagens,
-                   SUM(valor_frete) AS frete_total,
-                   AVG(valor_frete) AS frete_medio,
                    SUM(CASE WHEN km_saida IS NOT NULL AND km_chegada IS NOT NULL
                             THEN km_chegada - km_saida END) AS km_total,
                    COUNT(DISTINCT NULLIF(regexp_replace(cpf_motorista, '[^0-9]', '', 'g'), '')) AS motoristas_ativos,
@@ -29,14 +32,17 @@ public class DashboardRepository {
             WHERE data BETWEEN ? AND ?
             """;
 
-    private static final String SQL_SERIE_MENSAL = """
-            SELECT to_char(date_trunc('month', data), 'MM/YYYY') AS rotulo,
-                   COUNT(*) AS viagens,
-                   SUM(valor_frete) AS frete_total
-            FROM operacional.viagem
-            WHERE data BETWEEN ? AND ?
-            GROUP BY date_trunc('month', data)
-            ORDER BY date_trunc('month', data)
+    private static final String SQL_SERIE_RENTABILIDADE = """
+            SELECT to_char(p.inicio, '%2$s') AS rotulo,
+                   COUNT(v.data) AS viagens,
+                   COALESCE(SUM(v.vale_frete), 0) AS custo,
+                   COALESCE(SUM(COALESCE(v.receita_frete, 0) - COALESCE(v.vale_frete, 0)), 0) AS rentabilidade
+            FROM generate_series(date_trunc('%1$s', CAST(? AS date)), CAST(? AS date), INTERVAL '1 %1$s') AS p(inicio)
+            LEFT JOIN operacional.viagem v
+                   ON v.data >= p.inicio AND v.data < p.inicio + INTERVAL '1 %1$s'
+                  AND v.data BETWEEN ? AND ?
+            GROUP BY p.inicio
+            ORDER BY p.inicio
             """;
 
     private static final String SQL_SERIE_POR_VEICULO = """
@@ -49,6 +55,54 @@ public class DashboardRepository {
             ORDER BY COUNT(*) DESC, 1
             """;
 
+    private static final String SQL_DESTINO_MAIS_RENTAVEL = """
+            SELECT MIN(TRIM(cidade_destino)) AS destino,
+                   COUNT(*) AS viagens,
+                   SUM(COALESCE(receita_frete, 0) - COALESCE(vale_frete, 0)) AS rentabilidade_total
+            FROM operacional.viagem
+            WHERE data BETWEEN ? AND ?
+              AND NULLIF(TRIM(cidade_destino), '') IS NOT NULL
+            GROUP BY UPPER(TRIM(cidade_destino))
+            HAVING COUNT(receita_frete) + COUNT(vale_frete) > 0
+            ORDER BY rentabilidade_total DESC, viagens DESC, UPPER(TRIM(cidade_destino))
+            LIMIT 1
+            """;
+
+    public static final String TIPO_NAO_IDENTIFICADO = "NAO_IDENTIFICADO";
+
+    private static final String SQL_RENTABILIDADE_POR_TIPO = """
+            SELECT tipo, viagens, receita, custo
+            FROM (
+                SELECT COALESCE(NULLIF(UPPER(TRIM(ve.tipo)), ''), '%1$s') AS tipo,
+                       COUNT(*) AS viagens,
+                       COALESCE(SUM(v.receita_frete), 0) AS receita,
+                       COALESCE(SUM(v.vale_frete), 0) AS custo
+                FROM operacional.viagem v
+                LEFT JOIN operacional.veiculo ve
+                       ON ve.placa = UPPER(regexp_replace(v.veiculo, '[[:space:]-]', '', 'g'))
+                WHERE v.data >= ? AND v.data < ?
+                GROUP BY 1
+            ) por_tipo
+            ORDER BY tipo = '%1$s', receita - custo DESC, tipo
+            """.formatted(TIPO_NAO_IDENTIFICADO);
+
+    public static final String SEM_IDENTIFICACAO = "SEM_IDENTIFICACAO";
+
+    // CPF normalizado identifica o motorista; nomes variam de grafia entre manifestos.
+    // Todas as viagens do mês entram, independentemente do status.
+    private static final String SQL_COMPONENTES_PAGAMENTO = """
+            SELECT COALESCE(NULLIF(regexp_replace(cpf_motorista, '[^0-9]', '', 'g'), ''), '%1$s') AS chave,
+                   CASE WHEN NULLIF(regexp_replace(cpf_motorista, '[^0-9]', '', 'g'), '') IS NULL
+                        THEN 'Sem motorista identificado'
+                        ELSE COALESCE(MIN(NULLIF(TRIM(motorista), '')), 'Motorista sem nome')
+                   END AS motorista,
+                   COUNT(*) AS viagens,
+                   SUM(valor_frete) AS valor_frete
+            FROM operacional.viagem
+            WHERE data >= ? AND data < ?
+            GROUP BY NULLIF(regexp_replace(cpf_motorista, '[^0-9]', '', 'g'), '')
+            """.formatted(SEM_IDENTIFICACAO);
+
     private final JdbcTemplate jdbc;
 
     public DashboardRepository(JdbcTemplate jdbc) {
@@ -59,8 +113,6 @@ public class DashboardRepository {
         return jdbc.queryForObject(SQL_RESUMO,
                 (rs, row) -> new ResumoViagens(
                         rs.getLong("total_viagens"),
-                        rs.getBigDecimal("frete_total"),
-                        rs.getBigDecimal("frete_medio"),
                         rs.getObject("km_total", Long.class),
                         rs.getLong("motoristas_ativos"),
                         rs.getLong("veiculos_utilizados"),
@@ -70,9 +122,14 @@ public class DashboardRepository {
                 Date.valueOf(periodo.inicio()), Date.valueOf(periodo.fim()));
     }
 
-    public List<PontoSerie> consultarSerieMensal(PeriodoConsulta periodo) {
-        return jdbc.query(SQL_SERIE_MENSAL, pontoSerie(),
-                Date.valueOf(periodo.inicio()), Date.valueOf(periodo.fim()));
+    public List<PontoRentabilidade> consultarSerieRentabilidade(PeriodoConsulta periodo, AgrupamentoSerie agrupamento) {
+        Date inicio = Date.valueOf(periodo.inicio());
+        Date fim = Date.valueOf(periodo.fim());
+        return jdbc.query(SQL_SERIE_RENTABILIDADE.formatted(agrupamento.unidadeSql(), agrupamento.formatoRotulo()),
+                (rs, row) -> new PontoRentabilidade(
+                        rs.getString("rotulo"), rs.getLong("viagens"), rs.getBigDecimal("custo"),
+                        rs.getBigDecimal("rentabilidade")),
+                inicio, fim, inicio, fim);
     }
 
     public List<PontoSerie> consultarSeriePorVeiculo(PeriodoConsulta periodo) {
@@ -82,12 +139,42 @@ public class DashboardRepository {
 
     public List<ValoresFinanceirosViagem> consultarValoresFinanceiros(PeriodoConsulta periodo) {
         return jdbc.query("""
-                SELECT receita_frete, custo_frete, pedagio
+                SELECT receita_frete, vale_frete
                 FROM operacional.viagem
                 WHERE data BETWEEN ? AND ?
                 """, (rs, row) -> new ValoresFinanceirosViagem(
-                    rs.getBigDecimal("receita_frete"), rs.getBigDecimal("custo_frete"), rs.getBigDecimal("pedagio")),
+                    rs.getBigDecimal("receita_frete"), rs.getBigDecimal("vale_frete")),
                 Date.valueOf(periodo.inicio()), Date.valueOf(periodo.fim()));
+    }
+
+    public DestinoRentavel consultarDestinoMaisRentavel(PeriodoConsulta periodo) {
+        return jdbc.query(SQL_DESTINO_MAIS_RENTAVEL,
+                (rs, row) -> new DestinoRentavel(
+                        rs.getString("destino"), rs.getLong("viagens"), rs.getBigDecimal("rentabilidade_total")),
+                Date.valueOf(periodo.inicio()), Date.valueOf(periodo.fim()))
+                .stream().findFirst().orElse(null);
+    }
+
+    public List<RentabilidadeTipoVeiculo> consultarRentabilidadePorTipo(PeriodoConsulta periodo) {
+        return jdbc.query(SQL_RENTABILIDADE_POR_TIPO,
+                (rs, row) -> new RentabilidadeTipoVeiculo(
+                        rs.getString("tipo"), rs.getLong("viagens"),
+                        rs.getBigDecimal("receita"), rs.getBigDecimal("custo")),
+                Date.valueOf(periodo.inicio()), Date.valueOf(periodo.fim().plusDays(1)));
+    }
+
+    /**
+     * Soma, por motorista, os valores que compõem o pagamento no período.
+     *
+     * @param periodo período consultado, com início e fim inclusivos.
+     * @return uma linha por motorista com viagens no período, sem ordem definida.
+     */
+    public List<ComponentesPagamentoMotorista> consultarComponentesPagamento(PeriodoConsulta periodo) {
+        return jdbc.query(SQL_COMPONENTES_PAGAMENTO,
+                (rs, row) -> new ComponentesPagamentoMotorista(
+                        rs.getString("chave"), rs.getString("motorista"),
+                        rs.getLong("viagens"), rs.getBigDecimal("valor_frete")),
+                Date.valueOf(periodo.inicio()), Date.valueOf(periodo.fim().plusDays(1)));
     }
 
     private org.springframework.jdbc.core.RowMapper<PontoSerie> pontoSerie() {
