@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { Paginacao } from "@/shared/ui";
 import type { FiltroRanking, RankingColocacao, RankingMotorista } from "@entities/motorista";
 import { ValorMonetario } from "@entities/sessao";
@@ -41,7 +41,7 @@ export function RankingList({ motoristas, filtroAtivo, onMotoristaClick, faturam
       tabela.scrollIntoView({ behavior: "smooth", block: "start" });
     }
   }
-  
+
   const exibirValorAPagar = faturamentoDe !== undefined;
   if (motoristas.length === 0) {
     return (
@@ -53,10 +53,6 @@ export function RankingList({ motoristas, filtroAtivo, onMotoristaClick, faturam
       </div>
     );
   }
-
-  useEffect(() => {
-    setPaginaEscolhida(1);
-  }, [motoristas]);
 
   const destacarViagens = filtroAtivo === "VIAGENS";
   const destacarRentabilidade = filtroAtivo === "RENTABILIDADE" || filtroAtivo === "TIPO_VEICULO";
