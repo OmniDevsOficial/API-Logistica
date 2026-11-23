@@ -62,8 +62,8 @@ Parceiro: <strong>Newelog</strong>
 | Sprint | Período | Documentação | Status | Vídeo |
 |:---:|:---:|:---:|:---:|:---:|
 | **SPRINT 1** | 07/09 - 27/09 | [Sprint 1 docs](docs/sprints/sprint-1.md) | 🟢 Concluído | [🎥 Assistir](https://www.youtube.com/watch?v=BLwNPkoQqVA) |
-| **SPRINT 2** | 05/10 - 25/10 | [Sprint 2 docs](docs/sprints/sprint-2.md) | 🟢 Concluído | [🎥 Assistir](https://youtu.be/eVJscMSMfT4) |
-| **SPRINT 3** | 02/11 - 22/11 | [Sprint 3 docs](docs/sprints/sprint-3.md) | ⚪ Não iniciada | |
+| **SPRINT 2** | 05/10 - 25/10 | [Sprint 2 docs](docs/sprints/sprint-2.md) | 🟢 Concluído | [🎥 Assistir](https://www.youtube.com/watch?v=pGZIkPQ8sR8) |
+| **SPRINT 3** | 02/11 - 22/11 | [Sprint 3 docs](docs/sprints/sprint-3.md) | 🟢 Concluído | [🎥 Assistir](https://www.youtube.com/watch?v=ub_1o-uZBoA)|
 
 ### 📋Definition of Ready (DoR) <a id="definition-of-ready-dor"></a>
 
@@ -114,7 +114,7 @@ Parceiro: <strong>Newelog</strong>
 
 ## 📁 Estrutura do Projeto <a id="estrutura-do-projeto"></a>
 
-[![Ver Estrutura](https://img.shields.io/badge/📁_Ver_Estrutura-2496ED?style=for-the-badge&logo=files&logoColor=white)](docs/documentacao-produto/file_tree.md)
+[![Ver Estrutura](https://img.shields.io/badge/📁_Ver_Estrutura-2496ED?style=for-the-badge&logo=files&logoColor=white)](docs/documentacao-processo/file_tree.md)
 
 ## 🛠️ Estratégia de Branch → Github Flow <a id="estrategia-de-branch"></a>
 
@@ -147,10 +147,10 @@ Ao término de toda US (User Story) é criado outro PR, só que desta vez da `de
 
 ## 📚 Manuais <a id="manuais"></a>
 Documentação do produto destinada ao cliente.
-- [Manual de Instalação](docs/documentacao-cliente/manual-instalacao.md):
+- [Manual de Instalação](docs/documentacao-produto/manual-instalacao.pdf):
   instruções para configurar o ambiente e executar a aplicação.
 
-- [Manual do Usuário](docs/documentacao-cliente/manual-usuario.md):
+- [Manual do Usuário](docs/documentacao-produto/manual-usuario.pdf):
   instruções para utilizar as funcionalidades da plataforma.
   
 ## 👥 **Equipe** <a id="equipe"></a>
