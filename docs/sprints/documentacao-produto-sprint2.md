@@ -1,4 +1,4 @@
-<h1 align="center"> Documentação da Sprint 3 </h1>
+<h1 align="center"> Documentação da Sprint 2 </h1>
 
 <div align="center">
     <img src="https://i.imgur.com/VbBN3Tk.jpeg" width="170x" height="170x" style="border-radius:20%;">
@@ -274,14 +274,14 @@ Auxilia o gestor a identificar proativamente motoristas agregados com baixa taxa
 
 ## 📂 Documentos e anexos <a id="documentos"></a>
 
-- [Cenários de User Stories](../documentacao-processo/Cenarios_sprint2.pdf)
+- [Cenários de User Stories](../documentacao-processo/Cenarios_Sprint_2.pdf)
 - [Backlog completo](../documentacao-processo/Backlog.pdf)
 
 ## 🎥 Link do Vídeo <a id="link-do-video"></a>
 
 Neste vídeo é mostrado o desenvolvimento da **Plataforma de Controle de Motoristas Agregados**, feito pela equipe **OmniDevs** ao decorrer do ciclo da 2ª (segunda) Sprint.
 
-<a href="https://youtu.be/eVJscMSMfT4"><img src="https://img.shields.io/badge/YouTube-FF0000?style=for-the-badge&logo=youtube&logoColor=white"/></a>
+<a href="https://www.youtube.com/watch?v=pGZIkPQ8sR8"><img src="https://img.shields.io/badge/YouTube-FF0000?style=for-the-badge&logo=youtube&logoColor=white"/></a>
 
 ## 👥 **Equipe** <a id="equipe"></a>
 
