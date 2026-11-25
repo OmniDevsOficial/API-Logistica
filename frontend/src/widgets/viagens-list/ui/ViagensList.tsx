@@ -7,7 +7,7 @@ interface ViagensListProps {
   viagens: Viagem[];
 }
 
-const VIAGENS_POR_PAGINA = 30;
+const VIAGENS_POR_PAGINA = 20;
 
 export function ViagensList({ viagens }: ViagensListProps) {
   const listaRef = useRef<HTMLDivElement>(null);

@@ -59,6 +59,7 @@ class UsuarioControllerTest {
 
     static final String SEGREDO = "segredo-apenas-para-testes-com-mais-de-32-caracteres";
     private static final Instant CRIADO_EM = Instant.parse("2026-11-17T12:00:00Z");
+    private static final String FOTO = "data:image/jpeg;base64,/9j/4AAQ";
     private static final String CORPO_VALIDO = """
             {"nome":"Ana Souza","email":"ana@newe.com.br","perfil":"OPERADOR","senha":"senha-forte-123"}
             """;
@@ -100,7 +101,7 @@ class UsuarioControllerTest {
     }
 
     private static UsuarioResponse ana() {
-        return new UsuarioResponse(3, "Ana Souza", "ana@newe.com.br", Perfil.OPERADOR, true, CRIADO_EM);
+        return new UsuarioResponse(3, "Ana Souza", "ana@newe.com.br", Perfil.OPERADOR, true, CRIADO_EM, FOTO);
     }
 
     @Test
@@ -211,6 +212,7 @@ class UsuarioControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].email").value("ana@newe.com.br"))
                 .andExpect(jsonPath("$[0].ativo").value(true))
+                .andExpect(jsonPath("$[0].foto").value(FOTO))
                 .andExpect(content().string(not(containsString("senha"))));
     }
 
@@ -229,7 +231,7 @@ class UsuarioControllerTest {
     @Test
     void gestorDesativaUsuarioERecebeOStatusNovo() throws Exception {
         UsuarioResponse desativada = new UsuarioResponse(
-                3, "Ana Souza", "ana@newe.com.br", Perfil.OPERADOR, false, CRIADO_EM);
+                3, "Ana Souza", "ana@newe.com.br", Perfil.OPERADOR, false, CRIADO_EM, null);
         when(usuarioService.alterarStatus(eq(3), any(), anyString())).thenReturn(desativada);
 
         alterarStatus(gestor(), 3, "{\"ativo\":false}")

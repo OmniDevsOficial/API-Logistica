@@ -5,6 +5,7 @@ import type {
   NovoUsuario,
   Usuario,
 } from "../model/types";
+import { avisarUsuarioCadastrado } from "../lib/avisoUsuarioCadastrado.ts";
 
 const ENDPOINT = "/api/autenticacao/usuarios";
 
@@ -58,7 +59,8 @@ function lerUsuario(item: unknown): Usuario | null {
     typeof registro.perfil !== "string" ||
     !PERFIS.includes(registro.perfil) ||
     typeof registro.ativo !== "boolean" ||
-    typeof registro.criadoEm !== "string"
+    typeof registro.criadoEm !== "string" ||
+    (registro.foto !== null && registro.foto !== undefined && typeof registro.foto !== "string")
   ) {
     return null;
   }
@@ -70,6 +72,7 @@ function lerUsuario(item: unknown): Usuario | null {
     perfil: registro.perfil as Usuario["perfil"],
     ativo: registro.ativo,
     criadoEm: registro.criadoEm,
+    foto: typeof registro.foto === "string" ? registro.foto : null,
   };
 }
 
@@ -157,6 +160,7 @@ export async function cadastrarUsuario(novo: NovoUsuario): Promise<Usuario> {
   const usuario = lerUsuario(corpo);
   if (!usuario) throw new ErroCadastroUsuario("servidor", MENSAGEM_SERVIDOR);
 
+  avisarUsuarioCadastrado();
   return usuario;
 }
 

@@ -13,6 +13,10 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.ominidevs.operacional.veiculo.dto.FiltroVeiculo;
 import com.ominidevs.operacional.veiculo.dto.ImportacaoVeiculoResponse;
+import com.ominidevs.operacional.veiculo.dto.PaginaResponse;
+import com.ominidevs.operacional.veiculo.dto.ResumoFrotaResponse;
+import com.ominidevs.operacional.veiculo.dto.VeiculoFrotaResponse;
+import com.ominidevs.operacional.veiculo.services.FrotaService;
 import com.ominidevs.operacional.veiculo.dto.VeiculoResponse;
 import com.ominidevs.operacional.veiculo.services.ImportacaoVeiculoService;
 import com.ominidevs.operacional.veiculo.services.VeiculoConsultaService;
@@ -26,13 +30,35 @@ public class VeiculoController {
 
     private final ImportacaoVeiculoService importacaoService;
     private final VeiculoConsultaService consultaService;
+    private final FrotaService frotaService;
 
     public VeiculoController(
             ImportacaoVeiculoService importacaoService,
-            VeiculoConsultaService consultaService
+            VeiculoConsultaService consultaService,
+            FrotaService frotaService
     ) {
         this.importacaoService = importacaoService;
         this.consultaService = consultaService;
+        this.frotaService = frotaService;
+    }
+
+    @GetMapping("/frota")
+    public ResponseEntity<PaginaResponse<VeiculoFrotaResponse>> listarFrota(
+            @RequestParam(defaultValue = "0") int pagina,
+            @RequestParam(defaultValue = "20") int tamanho,
+            @RequestParam(required = false) String tipo,
+            @RequestParam(required = false) String busca,
+            @RequestParam(required = false) String dataInicio,
+            @RequestParam(required = false) String dataFim) {
+        return ResponseEntity.ok(frotaService.listar(
+                pagina, tamanho, tipo, busca, FrotaService.periodo(dataInicio, dataFim)));
+    }
+
+    @GetMapping("/resumo")
+    public ResponseEntity<ResumoFrotaResponse> resumirFrota(
+            @RequestParam(required = false) String dataInicio,
+            @RequestParam(required = false) String dataFim) {
+        return ResponseEntity.ok(frotaService.resumir(FrotaService.periodo(dataInicio, dataFim)));
     }
 
     /**

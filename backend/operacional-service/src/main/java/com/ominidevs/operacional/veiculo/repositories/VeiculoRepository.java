@@ -4,6 +4,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.EntityGraph;
@@ -27,6 +29,10 @@ public interface VeiculoRepository extends JpaRepository<Veiculo, Integer>, JpaS
     @Override
     @EntityGraph(attributePaths = "motorista")
     List<Veiculo> findAll(Specification<Veiculo> spec, Sort sort);
+
+    @Override
+    @EntityGraph(attributePaths = "motorista")
+    Page<Veiculo> findAll(Specification<Veiculo> spec, Pageable pageable);
 
     @Query("SELECT DISTINCT v.tipo FROM Veiculo v WHERE v.tipo IS NOT NULL ORDER BY v.tipo")
     List<String> listarTipos();

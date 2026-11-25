@@ -9,8 +9,9 @@ import java.util.stream.IntStream;
 import org.springframework.stereotype.Service;
 
 import com.ominidevs.operacional.indicadores.model.PeriodoConsulta;
-import com.ominidevs.operacional.indicadores.model.Porcentagem;
+import com.ominidevs.operacional.motorista.dto.FiltroRankingMotorista;
 import com.ominidevs.operacional.motorista.dto.RankingMotoristaResponse;
+import com.ominidevs.operacional.motorista.dto.RankingMotoristasResultado;
 import com.ominidevs.operacional.motorista.projections.RankingMotoristaLinha;
 import com.ominidevs.operacional.motorista.repositories.RankingMotoristaConsultaRepository;
 
@@ -18,28 +19,30 @@ import com.ominidevs.operacional.motorista.repositories.RankingMotoristaConsulta
  * Ranking mensal de desempenho dos motoristas (US13), restrito ao Gestor.
  *
  * Somente as viagens do mês selecionado entram no cálculo. Para cada motorista:
- * rentabilidade média = rentabilidade total ÷ quantidade de viagens (a média da
- * US09) e frequência = dias em operação ÷ 30 × 100. A ordenação usa um
- * único Comparator — rentabilidade média (desc), quantidade de viagens (desc),
- * frequência (desc) e nome (asc) — e a posição sequencial (1..n) é atribuída
+ * rentabilidade média = rentabilidade total ÷ quantidade de viagens. A ordenação usa
+ * comparators definidos aqui, e a posição sequencial (1..n) é atribuída
  * depois de ordenar. O nome é o desempate final, então a ordem é sempre
  * determinística, sem empates. Quem não viajou no mês não aparece; o front
  * separa pódio e demais a partir da lista completa.
  *
- * A rentabilidade reaproveita a expressão da US09 ({@code EXPRESSAO_SQL}) e a
- * frequência reaproveita {@link Porcentagem}, sem duplicar lógica.
+ * A rentabilidade reaproveita a expressão da US09 ({@code EXPRESSAO_SQL}),
+ * usando os agregados da consulta.
  */
 @Service
 public class RankingMotoristaService {
 
-    // Um Comparator só, na ordem acordada: média (desc), viagens (desc),
-    // frequência (desc) e nome (asc). BigDecimal compara por valor, então
-    // escalas diferentes (100.00 vs 100.0) não geram empate falso.
-    private static final Comparator<RankingMotoristaResponse> ORDEM =
+    private static final Comparator<RankingMotoristaResponse> POR_RENTABILIDADE =
             Comparator.comparing(RankingMotoristaResponse::rentabilidadeMedia).reversed()
                     .thenComparing(RankingMotoristaResponse::quantidadeViagens,
                             Comparator.reverseOrder())
-                    .thenComparing(RankingMotoristaResponse::frequencia, Comparator.reverseOrder())
+                    .thenComparing(RankingMotoristaResponse::nome);
+    private static final Comparator<RankingMotoristaResponse> POR_FATURAMENTO =
+            Comparator.comparing(RankingMotoristaResponse::faturamento).reversed()
+                    .thenComparing(RankingMotoristaResponse::rentabilidadeMedia, Comparator.reverseOrder())
+                    .thenComparing(RankingMotoristaResponse::nome);
+    private static final Comparator<RankingMotoristaResponse> POR_VIAGENS =
+            Comparator.comparing(RankingMotoristaResponse::quantidadeViagens, Comparator.reverseOrder())
+                    .thenComparing(RankingMotoristaResponse::rentabilidadeMedia, Comparator.reverseOrder())
                     .thenComparing(RankingMotoristaResponse::nome);
 
     private final RankingMotoristaConsultaRepository repository;
@@ -48,44 +51,50 @@ public class RankingMotoristaService {
         this.repository = repository;
     }
 
-    public List<RankingMotoristaResponse> ranking(PeriodoConsulta periodo) {
+    public RankingMotoristasResultado ranking(PeriodoConsulta periodo, FiltroRankingMotorista filtro, String tipoVeiculo) {
         // [inicio, fim] do período vira o semiaberto [inicio, fim + 1) do SQL.
         List<RankingMotoristaLinha> linhas = repository.consultar(
-                periodo.inicio(), periodo.fim().plusDays(1));
+                periodo.inicio(), periodo.fim().plusDays(1), tipoVeiculo);
+        List<String> tiposDisponiveis = repository.tiposDisponiveis(periodo.inicio(), periodo.fim().plusDays(1));
 
         if (linhas.isEmpty()) {
-            return List.of();
+            return new RankingMotoristasResultado(List.of(), tiposDisponiveis);
         }
 
         List<RankingMotoristaResponse> ordenado = linhas.stream()
-                .map(this::paraResponse)
-                .sorted(ORDEM)
+                .map(linha -> paraResponse(linha, tipoVeiculo))
+                .sorted(comparator(filtro))
                 .toList();
 
         // Posição sequencial (1..n) somente depois da ordenação.
-        return IntStream.range(0, ordenado.size())
+        List<RankingMotoristaResponse> posicionados = IntStream.range(0, ordenado.size())
                 .mapToObj(indice -> comPosicao(ordenado.get(indice), indice + 1))
                 .toList();
+        return new RankingMotoristasResultado(posicionados, tiposDisponiveis);
     }
 
-    private RankingMotoristaResponse paraResponse(RankingMotoristaLinha linha) {
+    private Comparator<RankingMotoristaResponse> comparator(FiltroRankingMotorista filtro) {
+        return switch (filtro) {
+            case RENTABILIDADE, TIPO_VEICULO -> POR_RENTABILIDADE;
+            case FATURAMENTO -> POR_FATURAMENTO;
+            case VIAGENS -> POR_VIAGENS;
+        };
+    }
+
+    private RankingMotoristaResponse paraResponse(RankingMotoristaLinha linha, String tipoVeiculo) {
         // Cada grupo nasce de pelo menos uma viagem, então o divisor nunca é zero.
         BigDecimal media = linha.rentabilidadeTotal()
                 .divide(BigDecimal.valueOf(linha.quantidadeViagens()), 2, RoundingMode.HALF_UP);
-        // Fórmula acordada para utilização: dias em operação ÷ 30 × 100.
-        BigDecimal frequencia = Porcentagem.calcular(linha.diasComViagem(), 30);
-
         return new RankingMotoristaResponse(
                 0,
                 linha.motoristaId(),
                 linha.nome(),
                 normalizarCpf(linha.cpf()),
                 null,
-                linha.veiculo(),
+                tipoVeiculo == null ? linha.veiculo() : tipoVeiculo,
                 linha.placa(),
                 linha.quantidadeViagens(),
                 linha.quantidadeViagens(),
-                frequencia,
                 media,
                 linha.rentabilidadeTotal(),
                 linha.frete(),
@@ -103,10 +112,9 @@ public class RankingMotoristaService {
                 item.placa(),
                 item.viagens(),
                 item.quantidadeViagens(),
-                item.frequencia(),
                 item.rentabilidadeMedia(),
                 item.rentabilidadeTotal(),
-                item.frete(),
+                item.faturamento(),
                 item.custos());
     }
 

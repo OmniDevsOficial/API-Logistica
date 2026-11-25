@@ -1,16 +1,26 @@
-import type { ComponentType } from "react";
+import { useState, type ComponentType } from "react";
 import { NavLink } from "react-router-dom";
 import {
   LayoutGrid,
   User,
   ClipboardList,
   Truck,
+  CarFront,
   Trophy,
   ShieldCheck,
   LogOut,
+  Upload,
   X,
 } from "lucide-react";
-import { encerrarSessao, podeAcessar, useSessao } from "@entities/sessao";
+import {
+  encerrarSessao,
+  podeAcessar,
+  podeImportarVeiculos,
+  useSessao,
+} from "@entities/sessao";
+import { ModalImportarDados } from "@features/importar-dados";
+import type { ResultadoImportacao } from "@features/enviar-relatorio/api/importarManifesto";
+import type { ResultadoImportacaoVeiculos } from "@features/importar-veiculos/api/importarVeiculos";
 
 interface NavItem {
   label: string;
@@ -21,8 +31,9 @@ interface NavItem {
 const MAIN_NAV_ITEMS: NavItem[] = [
   { label: "Dashboard", icon: LayoutGrid, path: "/" },
   { label: "Motoristas", icon: User, path: "/motoristas" },
-  { label: "Registros", icon: ClipboardList },
+  { label: "Registros", icon: ClipboardList, path: "/registros" },
   { label: "Viagens", icon: Truck, path: "/viagens" },
+  { label: "Frota", icon: CarFront, path: "/frota" },
   { label: "Ranking", icon: Trophy, path: "/ranking" },
 ];
 
@@ -37,10 +48,25 @@ const NAV_ITEM_DISABLED_CLASS = `${NAV_ITEM_BASE_CLASS} cursor-default text-fg`;
 interface SidebarProps {
   open: boolean;
   onClose: () => void;
+  onManifestoImportado?: (resultado: ResultadoImportacao) => void;
+  onVeiculosImportados?: (resultado: ResultadoImportacaoVeiculos) => void;
 }
 
-export function Sidebar({ open, onClose }: SidebarProps) {
+export function Sidebar({
+  open,
+  onClose,
+  onManifestoImportado,
+  onVeiculosImportados,
+}: SidebarProps) {
   const { usuario } = useSessao();
+  const [uploadAberto, setUploadAberto] = useState(false);
+  const podeFazerUpload =
+    usuario !== null && podeImportarVeiculos(usuario.perfil);
+
+  function abrirUpload() {
+    onClose();
+    setUploadAberto(true);
+  }
   const itensVisiveis = MAIN_NAV_ITEMS.filter(
     ({ path }) =>
       !path || (usuario !== null && podeAcessar(usuario.perfil, path)),
@@ -108,6 +134,21 @@ export function Sidebar({ open, onClose }: SidebarProps) {
         </nav>
 
         <div className="flex flex-col gap-1">
+          {podeFazerUpload && (
+            <button
+              type="button"
+              onClick={abrirUpload}
+              className="group mb-4 flex w-full cursor-pointer flex-col items-center gap-1 rounded-xl border border-dashed border-primary/40 bg-primary/5 px-3 pt-4 pb-3.5 text-center transition-colors duration-150 hover:border-primary hover:bg-primary/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
+            >
+              <span className="mb-1.5 flex h-10 w-10 items-center justify-center rounded-full bg-primary text-white shadow-md shadow-primary/30 transition-transform duration-150 group-hover:-translate-y-0.5">
+                <Upload size={18} strokeWidth={2.25} aria-hidden="true" />
+              </span>
+              <span className="text-sm font-semibold text-fg">Importar dados</span>
+              <span className="text-xs leading-snug text-fg-muted">
+                Manifesto ou veículos
+              </span>
+            </button>
+          )}
           {podeVerAdministracao && (
             <NavLink
               to={ROTA_ADMINISTRACAO}
@@ -130,6 +171,14 @@ export function Sidebar({ open, onClose }: SidebarProps) {
           </button>
         </div>
       </aside>
+
+      {uploadAberto && (
+        <ModalImportarDados
+          onFechar={() => setUploadAberto(false)}
+          onManifestoImportado={onManifestoImportado}
+          onVeiculosImportados={onVeiculosImportados}
+        />
+      )}
     </>
   );
 }

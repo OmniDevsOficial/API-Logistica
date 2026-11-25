@@ -38,6 +38,9 @@ public class Usuario {
     @Column(name = "data_criacao", nullable = false, updatable = false)
     private Instant dataCriacao;
 
+    @Column(name = "foto")
+    private String foto;
+
     protected Usuario() {
     }
 
@@ -84,5 +87,17 @@ public class Usuario {
 
     public Instant getDataCriacao() {
         return dataCriacao;
+    }
+
+    public String getFoto() {
+        return foto;
+    }
+
+    public void alterarNome(String nome) {
+        this.nome = nome;
+    }
+
+    public void alterarFoto(String foto) {
+        this.foto = foto;
     }
 }

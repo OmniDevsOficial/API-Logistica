@@ -1,43 +1,52 @@
-import type { RankingColocacao, RankingMotorista } from "@entities/motorista";
+import { useRef, useState } from "react";
+import { Paginacao } from "@/shared/ui";
+import type { FiltroRanking, RankingColocacao, RankingMotorista } from "@entities/motorista";
 import { ValorMonetario } from "@entities/sessao";
-import { formatCpf, formatCurrencyBRL } from "@shared/lib";
+import { formatCpf, formatCurrencyBRL, totalDePaginas } from "@shared/lib";
 
 interface RankingListProps {
   /** Do 4º em diante, em ordem de posição. */
   motoristas: RankingColocacao[];
-  /** US17: abre o modal de detalhes do motorista. Sem ele a linha não é clicável. */
-  onMotoristaClick?: (motoristaId: number) => void;
-  /**
-   * Valor a pagar do motorista no mês. Sem ele a coluna Faturamento não
-   * aparece (perfil sem acesso ao dado).
-   */
+  /** Critério que determina a ordenação e a coluna destacada. */
+  filtroAtivo: FiltroRanking;
+  /** Valor a pagar no mês; omitido para perfis sem acesso financeiro. */
   faturamentoDe?: (motorista: RankingMotorista) => number | null;
+  /** US17: abre o modal de detalhes do motorista. */
+  onMotoristaClick?: (motoristaId: number) => void;
 }
 
-const HEADER_CELL =
-  "whitespace-nowrap py-3 pr-6 text-left text-xs font-semibold text-fg-muted";
-const HEADER_CELL_PRIMEIRA =
-  "whitespace-nowrap py-3 pr-6 pl-6 text-left text-xs font-semibold text-fg-muted";
+const HEADER_CELL = "whitespace-nowrap py-3 pr-6 text-left text-xs font-semibold text-fg-muted";
 const CELL = "py-4 pr-6 align-top";
-const CELL_PRIMEIRO = "py-4 pr-6 pl-6 align-top";
+const REALCE_HEADER = "bg-primary/10 text-primary";
+const REALCE_CELL = "bg-primary/5";
+const MOTORISTAS_POR_PAGINA = 20;
 
-function formatarFaturamento(valor: number | null): string | null {
+function formatarValor(valor: number | null): string | null {
   return valor === null ? null : formatCurrencyBRL(valor, 2);
 }
+  
+export function RankingList({ motoristas, filtroAtivo, onMotoristaClick, faturamentoDe }: RankingListProps) {
+  
+  const tabelaRef = useRef<HTMLDivElement>(null);
+  const [paginaEscolhida, setPaginaEscolhida] = useState(1);
+  const totalPaginas = totalDePaginas(motoristas.length, MOTORISTAS_POR_PAGINA);
+  const pagina = Math.min(paginaEscolhida, totalPaginas);
+  const inicio = (pagina - 1) * MOTORISTAS_POR_PAGINA;
+  const motoristasDaPagina = motoristas.slice(inicio, inicio + MOTORISTAS_POR_PAGINA);
 
-export function RankingList({
-  motoristas,
-  onMotoristaClick,
-  faturamentoDe,
-}: RankingListProps) {
-  const comFaturamento = faturamentoDe !== undefined;
+  function mudarPagina(novaPagina: number) {
+    setPaginaEscolhida(novaPagina);
+    const tabela = tabelaRef.current;
+    if (tabela && tabela.getBoundingClientRect().top < 0) {
+      tabela.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  }
 
+  const exibirValorAPagar = faturamentoDe !== undefined;
   if (motoristas.length === 0) {
     return (
       <div className="overflow-hidden rounded-lg bg-surface">
-        <h2 className="px-6 pt-5 pb-4 text-lg font-semibold text-fg">
-          Equipe de motoristas
-        </h2>
+        <h2 className="px-6 pb-4 pt-5 text-lg font-semibold text-fg">Equipe de motoristas</h2>
         <p className="border-t border-border px-6 py-8 text-center text-sm text-fg-subtle">
           Nenhum motorista encontrado.
         </p>
@@ -45,125 +54,85 @@ export function RankingList({
     );
   }
 
-  return (
-    <div className="overflow-hidden rounded-lg bg-surface">
-      <h2 className="px-6 pt-5 pb-4 text-lg font-semibold text-fg">
-        Equipe de motoristas
-      </h2>
+  const destacarViagens = filtroAtivo === "VIAGENS";
+  const destacarRentabilidade = filtroAtivo === "RENTABILIDADE" || filtroAtivo === "TIPO_VEICULO";
+  const destacarFaturamento = filtroAtivo === "FATURAMENTO";
 
-      <div className="overflow-x-auto">
-        <table
-          className={`w-full table-fixed ${comFaturamento ? "min-w-[840px]" : "min-w-[720px]"}`}
-        >
-          {comFaturamento ? (
-            <colgroup>
-              <col className="w-[28%]" />
-              <col className="w-[20%]" />
-              <col className="w-[12%]" />
-              <col className="w-[20%]" />
-              <col className="w-[20%]" />
-            </colgroup>
-          ) : (
-            <colgroup>
-              <col className="w-[32%]" />
-              <col className="w-[22%]" />
-              <col className="w-[14%]" />
-              <col className="w-[32%]" />
-            </colgroup>
-          )}
+  return (
+    <div className="flex flex-wrap items-baseline justify-between overflow-hidden rounded-lg bg-surface px-6 ">
+      <h2 className="px-6 pb-4 pt-5 text-lg font-semibold text-fg">Equipe de motoristas</h2>
+      {motoristas.length > 0 && (
+          <p className="text-sm tabular-nums text-fg-subtle">
+            {inicio + 1}–{inicio + motoristasDaPagina.length} de {motoristas.length}{" "}
+            {motoristas.length === 1 ? "motorista" : "motoristas"}
+          </p>
+        )}
+        
+      <div ref={tabelaRef} className="overflow-x-auto">
+        <table className={`w-full ${exibirValorAPagar ? "min-w-[1020px]" : "min-w-[840px]"} table-fixed`}>
+          <colgroup>
+            <col className={exibirValorAPagar ? "w-[24%]" : "w-[28%]"} />
+            <col className={exibirValorAPagar ? "w-[18%]" : "w-[20%]"} />
+            <col className={exibirValorAPagar ? "w-[10%]" : "w-[12%]"} />
+            <col className={exibirValorAPagar ? "w-[16%]" : "w-[20%]"} />
+            <col className={exibirValorAPagar ? "w-[16%]" : "w-[20%]"} />
+            {exibirValorAPagar && <col className="w-[16%]" />}
+          </colgroup>
           <thead>
             <tr className="border-y border-border">
-              <th className={HEADER_CELL_PRIMEIRA} scope="col">
-                Motorista
-              </th>
-              <th className={HEADER_CELL} scope="col">
-                Veículo/Placa
-              </th>
-              <th className={HEADER_CELL} scope="col">
-                Viagens
-              </th>
-              <th className={`${HEADER_CELL} text-right`} scope="col">
-                Rentabilidade
-              </th>
-              {comFaturamento && (
-                <th className={`${HEADER_CELL} text-right`} scope="col">
-                  Faturamento
-                </th>
-              )}
+              <th className={`${HEADER_CELL} pl-6`} scope="col">Motorista</th>
+              <th className={HEADER_CELL} scope="col">Veículo/Placa</th>
+              <th className={`${HEADER_CELL} ${destacarViagens ? REALCE_HEADER : ""}`} scope="col">Viagens</th>
+              <th className={`${HEADER_CELL} text-right ${destacarRentabilidade ? REALCE_HEADER : ""}`} scope="col">Rentabilidade</th>
+              <th className={`${HEADER_CELL} text-right ${destacarFaturamento ? REALCE_HEADER : ""}`} scope="col">Receita de frete</th>
+              {exibirValorAPagar && <th className={`${HEADER_CELL} text-right`} scope="col">Valor a pagar</th>}
             </tr>
           </thead>
-
           <tbody className="divide-y divide-border">
-            {motoristas.map(({ posicao, motorista }) => {
+            {motoristasDaPagina.map(({ posicao, motorista }) => {
               const id = motorista.motoristaId;
-              const clicavel = onMotoristaClick !== undefined && id !== null;
-              const selecionar = clicavel
-                ? () => onMotoristaClick?.(id)
+              const selecionar = onMotoristaClick && id !== null
+                ? () => onMotoristaClick(id)
                 : undefined;
-
+              // O valor a pagar permanece separado da receita de frete do ranking.
+              const valorAPagar = faturamentoDe?.(motorista) ?? null;
               return (
-                <tr
-                  key={posicao}
-                  onClick={selecionar}
-                  className={clicavel ? "cursor-pointer hover:bg-background" : undefined}
-                >
-                  {/* Motorista — telefone logo abaixo; sem telefone (o banco
-                      ainda não tem a coluna) o CPF entra como fallback. */}
-                  <td className={CELL_PRIMEIRO}>
+                <tr key={posicao} onClick={selecionar} className={selecionar ? "cursor-pointer hover:bg-background" : undefined}>
+                  {/* O CPF fica como fallback quando o cadastro não tem telefone. */}
+                  <td className={`${CELL} pl-6`}>
                     <div className="flex flex-col">
                       {selecionar ? (
-                        <button
-                          type="button"
-                          className="cursor-pointer text-left text-sm font-semibold text-fg transition-colors hover:text-primary"
-                          onClick={(evento) => {
-                            evento.stopPropagation();
-                            selecionar();
-                          }}
-                        >
+                        <button type="button" className="cursor-pointer text-left text-sm font-semibold text-fg hover:text-primary" onClick={(e) => { e.stopPropagation(); selecionar(); }}>
                           {motorista.nome}
                         </button>
-                      ) : (
-                        <span className="text-sm font-semibold text-fg">
-                          {motorista.nome}
-                        </span>
-                      )}
-                      <span className="text-xs text-fg-muted">
-                        {motorista.telefone ?? formatCpf(motorista.cpf) ?? "—"}
-                      </span>
+                      ) : <span className="text-sm font-semibold text-fg">{motorista.nome}</span>}
+                      <span className="text-xs text-fg-muted">{motorista.telefone ?? formatCpf(motorista.cpf) ?? "—"}</span>
                     </div>
                   </td>
-
-                  {/* Veículo/Placa */}
+                  {/* Veículo e placa identificam o veículo principal do motorista. */}
                   <td className={CELL}>
                     <div className="flex flex-col">
-                      <span className="text-sm text-fg">
-                        {motorista.veiculo ?? "-"}
-                      </span>
-                      <span className="text-xs text-fg-muted">
-                        {motorista.placa ?? "-"}
-                      </span>
+                      <span className="text-sm text-fg">{motorista.veiculo ?? "-"}</span>
+                      <span className="text-xs text-fg-muted">{motorista.placa ?? "-"}</span>
                     </div>
                   </td>
-
-                  {/* Viagens */}
-                  <td className={CELL}>
-                    <span className="text-sm text-fg">{motorista.viagens}</span>
+                  <td className={`${CELL} ${destacarViagens ? REALCE_CELL : ""}`}>
+                    <span className={`text-sm ${destacarViagens ? "font-semibold text-primary" : "text-fg"}`}>{motorista.viagens}</span>
                   </td>
-
-                  {/* Rentabilidade média no mês */}
-                  <td className={`${CELL} text-right`}>
-                    <ValorMonetario className="whitespace-nowrap text-sm font-medium text-fg">
-                      {motorista.rentabilidadeMedia === null
-                        ? null
-                        : formatCurrencyBRL(motorista.rentabilidadeMedia, 2)}
+                  <td className={`${CELL} text-right ${destacarRentabilidade ? REALCE_CELL : ""}`}>
+                    <ValorMonetario className={`whitespace-nowrap text-sm ${destacarRentabilidade ? "font-semibold text-primary" : "font-medium text-fg"}`}>
+                      {motorista.rentabilidadeMedia === null ? null : formatCurrencyBRL(motorista.rentabilidadeMedia, 2)}
                     </ValorMonetario>
                   </td>
-
-                  {/* Faturamento: valor a pagar ao motorista no mês */}
-                  {faturamentoDe && (
+                  <td className={`${CELL} text-right ${destacarFaturamento ? REALCE_CELL : ""}`}>
+                    <ValorMonetario className={`whitespace-nowrap text-sm ${destacarFaturamento ? "font-semibold text-primary" : "font-medium text-fg"}`}>
+                      {formatarValor(motorista.faturamento)}
+                    </ValorMonetario>
+                  </td>
+                  {exibirValorAPagar && (
                     <td className={`${CELL} text-right`}>
                       <ValorMonetario className="whitespace-nowrap text-sm font-medium text-fg">
-                        {formatarFaturamento(faturamentoDe(motorista))}
+                        {formatarValor(valorAPagar)}
                       </ValorMonetario>
                     </td>
                   )}
@@ -172,6 +141,15 @@ export function RankingList({
             })}
           </tbody>
         </table>
+        {totalPaginas > 1 && (
+                <div className="border-t border-border px-6 py-4">
+                  <Paginacao
+                    paginaAtual={pagina}
+                    totalPaginas={totalPaginas}
+                    onMudarPagina={mudarPagina}
+                  />
+                </div>
+              )}
       </div>
     </div>
   );

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import type { SyntheticEvent } from "react";
-import { Link } from "react-router-dom";
+/* import { Link } from "react-router-dom"; */
 import { Eye, EyeOff, User } from "lucide-react";
 import { autenticar, mensagemErroLogin } from "../api/autenticar";
 import {
@@ -93,13 +93,6 @@ export function FormularioLogin() {
         />
       </div>
 
-      <Link
-        to="/recuperar-senha"
-        className="mt-2 self-end rounded-sm text-xs text-black hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#204af4]"
-      >
-        Esqueceu sua senha?
-      </Link>
-
       {erroLogin && (
         <p
           role="alert"
@@ -116,16 +109,6 @@ export function FormularioLogin() {
       >
         {enviando ? "Entrando..." : "Continuar"}
       </button>
-
-      <p className="mt-6 text-center text-sm font-medium text-black">
-        Não tem uma conta?{" "}
-        <Link
-          to="/cadastro"
-          className="rounded-sm text-[#0088ff] hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#204af4]"
-        >
-          Cadastre-se
-        </Link>
-      </p>
     </form>
   );
 }

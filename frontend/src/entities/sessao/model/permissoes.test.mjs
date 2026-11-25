@@ -1,7 +1,12 @@
 // Node: node --test src/entities/sessao/model/permissoes.test.mjs
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { podeAcessar, podeVerAlertasUtilizacao, podeVerValoresMonetarios } from './permissoes.ts';
+import {
+  podeAcessar,
+  podeVerAlertasUtilizacao,
+  podeVerCadastroUsuarios,
+  podeVerValoresMonetarios,
+} from './permissoes.ts';
 
 test('gestor enxerga valores monetários', () => {
   assert.equal(podeVerValoresMonetarios('GESTOR'), true);
@@ -30,4 +35,9 @@ test('a área de administração não libera rotas com o mesmo começo', () => {
 test('rotas exatas continuam sem liberar sub-rotas para o operador', () => {
   assert.equal(podeAcessar('OPERADOR', '/motoristas'), true);
   assert.equal(podeAcessar('OPERADOR', '/motoristas/utilizacao'), false);
+});
+
+test('só o gestor é notificado de usuários cadastrados', () => {
+  assert.equal(podeVerCadastroUsuarios('GESTOR'), true);
+  assert.equal(podeVerCadastroUsuarios('OPERADOR'), false);
 });

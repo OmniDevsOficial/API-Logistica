@@ -120,8 +120,9 @@ class UsuarioServiceTest {
 
     @Test
     void listaOrdenadaPorNomeSemDiferenciarMaiusculas() {
-        when(repository.findAll(any(Sort.class))).thenReturn(List.of(
-                new Usuario("Ana", "ana@newe.com.br", "hash", Perfil.OPERADOR, AGORA)));
+        Usuario ana = new Usuario("Ana", "ana@newe.com.br", "hash", Perfil.OPERADOR, AGORA);
+        ana.alterarFoto("data:image/jpeg;base64,/9j/4AAQ");
+        when(repository.findAll(any(Sort.class))).thenReturn(List.of(ana));
 
         List<UsuarioResponse> usuarios = service.listar();
 
@@ -131,6 +132,7 @@ class UsuarioServiceTest {
         assertTrue(porNome.isAscending());
         assertTrue(porNome.isIgnoreCase());
         assertEquals("Ana", usuarios.get(0).nome());
+        assertEquals("data:image/jpeg;base64,/9j/4AAQ", usuarios.get(0).foto());
     }
 
     @Test
