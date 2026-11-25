@@ -55,6 +55,7 @@ Parceiro: <strong>Newelog</strong>
 | 14 | US10 | Média | Como gestor, quero ver quanto cada motorista recebeu no mês, para controle de pagamento. | 3 | 3 |
 | 15 | US13 | Baixa | Como gestor, quero um ranking mensal de motoristas, para identificar os melhores resultados. | 4 | 3 |
 | 16 | US12 | Baixa | Como gestor, quero segmentar indicadores por gênero do motorista, para análise de diversidade da frota. | 3 | 3 |
+| 17 | US17 | Baixa | Como operador, quero visualizar o histórico detalhado de vagas de um motorista para consultar as suas operações passadas. | 5 | 3 |
 
 
 ## 📅 **Cronograma de Sprints** <a id="cronograma"></a>
